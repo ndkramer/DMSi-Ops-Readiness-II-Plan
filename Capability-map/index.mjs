@@ -18,8 +18,14 @@ export const handler = async (event) => {
   const contentType = CONTENT_TYPES[ext] || 'text/plain';
 
   try {
-    const content = readFileSync(join(__dirname, filePath), 'utf8');
-    return { statusCode: 200, headers: { 'Content-Type': contentType }, body: content };
+    // Resolve path relative to this script (no leading slash so join works in Lambda)
+    const resolved = filePath.startsWith('/') ? filePath.slice(1) : filePath;
+    const content = readFileSync(join(__dirname, resolved), 'utf8');
+    const headers = {
+      'Content-Type': contentType,
+      'Cache-Control': 'no-cache, max-age=0',
+    };
+    return { statusCode: 200, headers, body: content };
   } catch {
     return { statusCode: 404, body: 'Not found' };
   }

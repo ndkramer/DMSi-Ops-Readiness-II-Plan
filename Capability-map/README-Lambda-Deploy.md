@@ -43,3 +43,8 @@ Your Lambda should be:
 - **Function URL:** Enable a function URL (HTTP) so the map is reachable in a browser.
 
 After the first deploy from GitHub, the Lambda will serve the latest `capability-map.html` from this repo at the function URL root.
+
+## If the new HTML doesn’t show after a successful deploy
+
+1. **Browser cache** – Do a hard refresh (e.g. Cmd+Shift+R / Ctrl+Shift+R) or open the Function URL in an incognito/private window. The handler sends `Cache-Control: no-cache, max-age=0` so new loads should not be cached.
+2. **Lambda warm starts** – A warm execution environment may still be running the previous deployment. Wait a few minutes and reload, or invoke the function a few times so Lambda spins up new environments with the new code.
