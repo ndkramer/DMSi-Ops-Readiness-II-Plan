@@ -1810,9 +1810,21 @@ function toggleEl(id) {
 var EMBEDDED_STATE = {
   "lastUpdated": "Mar 17, 2026",
   "summary": {
-    "headline": "Sprint 2 is active across all workstreams.",
+    "headline": "Sprint 3 is active across all workstreams.",
     "narrative": "Work Management and Visibility Infrastructure are on track. Pipeline Automation is in discovery. Workstreams B, C, and D planning is underway with timelines TBD pending tooling decisions."
   },
+  "recentlyCompleted": [
+    { "stage": "S1", "title": "Config Inventory Complete", "date": "Completed Mar 13, 2026", "capability": "Pipeline Automation" },
+    { "stage": "S0", "title": "PagerDuty AIOps Installed and Configured", "date": "Completed Mar 14, 2026", "capability": "Visibility Infrastructure" },
+    { "stage": "S0", "title": "Scorecard Requirements and Gap Analysis Complete", "date": "Completed Mar 14, 2026", "capability": "Strategic Visibility" },
+    { "stage": "S0", "title": "Decision Package Delivered for Executive Review", "date": "Completed Mar 14, 2026", "capability": "Proactive Detection" }
+  ],
+  "comingNext": [
+    { "stage": "S2", "title": "Work Taxonomy Defined", "date": "Target: Mar 28, 2026", "capability": "Work Management" },
+    { "stage": "S3", "title": "System Configured and Ready", "date": "Target: Apr 10, 2026", "capability": "Work Management" },
+    { "stage": "S2", "title": "Migration Path Defined (POC)", "date": "Target: [Apr ?], 2026", "capability": "Pipeline Automation" },
+    { "stage": "S0", "title": "Monitoring Strategy Defined (Dynatrace POC)", "date": "Target: [Apr ?], 2026", "capability": "Proactive Detection" }
+  ],
   "milestones": [
     {
       "id": "M2",
@@ -1880,7 +1892,7 @@ var EMBEDDED_STATE = {
       "capabilityId": "wm",
       "num": 0,
       "status": "done",
-      "artifactsUrl": "sharepoint-wm-s0.html",
+      "artifactsUrl": "#",
       "blockers": [],
       "targetStart": "Feb 16, 2026",
       "targetEnd": "Feb 27, 2026"
@@ -1889,7 +1901,7 @@ var EMBEDDED_STATE = {
       "capabilityId": "wm",
       "num": 1,
       "status": "done",
-      "artifactsUrl": "#",
+      "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgAM_v5ZSDtbTZpSOGJExm7JAb8bOZUih-v-F0MJdVLnxDo?e=Iav3qO",
       "blockers": [],
       "targetStart": "Feb 16, 2026",
       "targetEnd": "Feb 27, 2026"
@@ -1898,7 +1910,7 @@ var EMBEDDED_STATE = {
       "capabilityId": "wm",
       "num": 2,
       "status": "in-progress",
-      "artifactsUrl": "#",
+      "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCQYCCV_9UMQ5_xCaJmFjmEATsb7XOD8J_mv-sk8DjJgXE?e=WPgs5e",
       "blockers": [],
       "targetStart": "Feb 29, 2026",
       "targetEnd": "Mar 20, 2026"
@@ -1907,7 +1919,7 @@ var EMBEDDED_STATE = {
       "capabilityId": "wm",
       "num": 3,
       "status": "in-progress",
-      "artifactsUrl": "#",
+      "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCesn-mHu54RLP2dj7D7iUoAb7FqufrhwIgagO25rHXbRs?e=draens",
       "blockers": [],
       "targetStart": "Mar 16, 2026",
       "targetEnd": "Apr 10, 2026"
@@ -1943,7 +1955,7 @@ var EMBEDDED_STATE = {
       "capabilityId": "vi",
       "num": 0,
       "status": "in-progress",
-      "artifactsUrl": "sharepoint-wm-s0.html",
+      "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgAmn5KtPFQKQp-qWNJmk1VnAfCiuec5ybw8kq_pGhio7To?e=oEPR2p",
       "blockers": [],
       "targetStart": "Feb 16, 2026",
       "targetEnd": "Apr 17, 2026"
@@ -2070,7 +2082,7 @@ var EMBEDDED_STATE = {
       "capabilityId": "pa",
       "num": 1,
       "status": "done",
-      "artifactsUrl": "#",
+      "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgDjbLSvA53HSLVg9lEi3q-PAXme5aHgy6n_0KdHNDRediM?e=9StF0h",
       "blockers": [],
       "targetStart": "Mar 2, 2026",
       "targetEnd": "Mar 13, 2026"
@@ -2434,40 +2446,59 @@ function renderSummaryPanel(state) {
     }
   }
 
-  // Recent completions (done stages, up to 4)
-  const all = getAllStages();
-  const done = all.filter(s => s.status === 'done').slice(0, 4);
+  // Recent completions: use state.recentlyCompleted if provided, else derive from done stages
   const recentEl = document.getElementById('recentList');
   if (recentEl) {
-    if (done.length === 0) {
-      recentEl.innerHTML = '<div class="activity-item"><span class="a-meta">None completed yet.</span></div>';
+    if (state.recentlyCompleted && state.recentlyCompleted.length > 0) {
+      recentEl.innerHTML = state.recentlyCompleted.map(r =>
+        `<div class="activity-item">
+          <span class="a-title">${r.stage}: ${r.title}</span>
+          <span class="a-meta">${r.date} &middot; <span class="a-cap">${r.capability}</span></span>
+        </div>`
+      ).join('');
     } else {
-      recentEl.innerHTML = done.map(s => `
-        <div class="activity-item">
-          <span class="a-title">S${s.num}: ${s.title}</span>
-          <span class="a-meta">${s.targetEnd ? 'Completed ' + s.targetEnd : 'Complete'} &middot; <span class="a-cap">${CAP_LABELS[s.capId] || s.capId}</span></span>
-        </div>`).join('');
+      const all = getAllStages();
+      const done = all.filter(s => s.status === 'done').slice(0, 4);
+      if (done.length === 0) {
+        recentEl.innerHTML = '<div class="activity-item"><span class="a-meta">None completed yet.</span></div>';
+      } else {
+        recentEl.innerHTML = done.map(s => `
+          <div class="activity-item">
+            <span class="a-title">S${s.num}: ${s.title}</span>
+            <span class="a-meta">${s.targetEnd ? 'Completed ' + s.targetEnd : 'Complete'} &middot; <span class="a-cap">${CAP_LABELS[s.capId] || s.capId}</span></span>
+          </div>`).join('');
+      }
     }
   }
 
-  // Coming next (in-progress first, then not-started with targetStart, up to 4)
-  const inProg = all.filter(s => s.status === 'in-progress');
-  const upcoming = all.filter(s => s.status === 'not-started' && s.targetStart && s.targetStart !== 'TBD');
-  const next = [...inProg, ...upcoming].slice(0, 4);
+  // Coming next: use state.comingNext if provided, else derive from in-progress + not-started
   const upcomingEl = document.getElementById('upcomingList');
   if (upcomingEl) {
-    if (next.length === 0) {
-      upcomingEl.innerHTML = '<div class="activity-item"><span class="a-meta">Dates TBD.</span></div>';
+    if (state.comingNext && state.comingNext.length > 0) {
+      upcomingEl.innerHTML = state.comingNext.map(r =>
+        `<div class="activity-item">
+          <span class="a-title">${r.stage}: ${r.title}</span>
+          <span class="a-meta">${r.date} &middot; <span class="a-cap">${r.capability}</span></span>
+        </div>`
+      ).join('');
     } else {
-      upcomingEl.innerHTML = next.map(s => {
-        const dateStr = s.status === 'in-progress'
-          ? (s.targetEnd ? 'Target: ' + s.targetEnd : 'In progress')
-          : (s.targetStart ? 'Starts: ' + s.targetStart : '');
-        return `<div class="activity-item">
-          <span class="a-title">S${s.num}: ${s.title}</span>
-          <span class="a-meta">${dateStr} &middot; <span class="a-cap">${CAP_LABELS[s.capId] || s.capId}</span></span>
-        </div>`;
-      }).join('');
+      const all = getAllStages();
+      const inProg = all.filter(s => s.status === 'in-progress');
+      const upcoming = all.filter(s => s.status === 'not-started' && s.targetStart && s.targetStart !== 'TBD');
+      const next = [...inProg, ...upcoming].slice(0, 4);
+      if (next.length === 0) {
+        upcomingEl.innerHTML = '<div class="activity-item"><span class="a-meta">Dates TBD.</span></div>';
+      } else {
+        upcomingEl.innerHTML = next.map(s => {
+          const dateStr = s.status === 'in-progress'
+            ? (s.targetEnd ? 'Target: ' + s.targetEnd : 'In progress')
+            : (s.targetStart ? 'Starts: ' + s.targetStart : '');
+          return `<div class="activity-item">
+            <span class="a-title">S${s.num}: ${s.title}</span>
+            <span class="a-meta">${dateStr} &middot; <span class="a-cap">${CAP_LABELS[s.capId] || s.capId}</span></span>
+          </div>`;
+        }).join('');
+      }
     }
   }
 }
