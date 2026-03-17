@@ -89,6 +89,32 @@ function run(capability) {
 ${jsonArchived ? `- **Jira import JSON archived:** \`${jsonArchived}\`` : '- **Jira import JSON:** not present for this capability (no archive created).'}
 - **Report generated:** ${new Date().toISOString().slice(0, 10)}
 
+## Change summary
+
+Counts are relative to the archived JSON for this run. Fill after regenerating WBS/JSON, or run \`node Scripts/wbs-load-report-counts.js ${capability} ${dateStamp}\` to compute from current JSON.
+
+| Category    | Added | Deleted | Updated |
+|-------------|-------|---------|---------|
+| Work items  | 0     | 0       | 0       |
+| Risks       | 0     | 0       | 0       |
+| Decisions   | 0     | 0       | 0       |
+| Questions   | 0     | 0       | 0       |
+
+## Input files processed
+
+For **each file** in \`${capability}/Input/\`: list the filename; briefly state what was extracted (e.g. outcomes, phases, risks, decisions, timeline, tables); state what WBS changes were made (e.g. "Added PA-OC-X", "Updated PA-R-X2") or "Mapped to existing PA-OC-01 through PA-OC-09; no WBS edit." Do not leave this section generic; the user must see that each Input file was read and processed.
+${(function () {
+    const inputDir = path.join(folderPath, 'Input');
+    if (!fs.existsSync(inputDir)) return '\n(No Input folder or no files listed.)';
+    const onlyFiles = fs.readdirSync(inputDir).filter((f) => {
+      if (f.startsWith('.')) return false;
+      const full = path.join(inputDir, f);
+      return fs.statSync(full).isFile();
+    });
+    if (onlyFiles.length === 0) return '\n(Input folder is empty or contains no files.)';
+    return '\n\n**Files in scope for this run:** ' + onlyFiles.join(', ');
+  })()}
+
 ## Outcome map / constraint map changes
 
 (After reviewing Input vs current WBS and maps, document material changes here.)

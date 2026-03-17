@@ -1,0 +1,59 @@
+# Deploy Capability Map to existing AWS Lambda.
+# Pushes the latest capability-map.html and Lambda handler to your Lambda on push to main
+# or when run manually.
+#
+# Required GitHub secrets:
+#   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY  (or configure OIDC and use role)
+#   LAMBDA_FUNCTION_NAME                       (e.g. capability-map or your Lambda name)
+# Optional: AWS_REGION (defaults to us-east-1)
+
+name: Deploy Capability Map to Lambda
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Capability-map/capability-map.html'
+      - 'Capability-map/index.mjs'
+      - '.github/workflows/deploy-capability-map.yml'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create deployment package
+        run: |
+          cd Capability-map
+          zip -r ../deploy.zip index.mjs capability-map.html
+          cd ..
+          echo "Package size: $(du -h deploy.zip | cut -f1)"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update Lambda function code
+        run: |
+          aws lambda update-function-code \
+            --function-name "${{ secrets.LAMBDA_FUNCTION_NAME }}" \
+            --zip-file fileb://deploy.zip
+
+      - name: Wait for Lambda to be updated
+        run: |
+          aws lambda wait function-updated \
+            --function-name "${{ secrets.LAMBDA_FUNCTION_NAME }}"
+
+      - name: Deployment summary
+        run: |
+          echo "Deployed capability-map to Lambda: ${{ secrets.LAMBDA_FUNCTION_NAME }}"
+          echo "Region: ${{ env.AWS_REGION }}"
