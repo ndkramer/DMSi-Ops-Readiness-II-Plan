@@ -14,6 +14,7 @@ on:
     branches: [main]
     paths:
       - 'Capability-map/capability-map.html'
+      - 'Capability-map/capability-map-state.json'
       - 'Capability-map/index.mjs'
       - '.github/workflows/deploy-capability-map.yml'
   workflow_dispatch:
@@ -31,7 +32,7 @@ jobs:
       - name: Create deployment package
         run: |
           cd Capability-map
-          zip -r ../deploy.zip index.mjs capability-map.html
+          zip -r ../deploy.zip index.mjs capability-map.html capability-map-state.json
           cd ..
           echo "Package size: $(du -h deploy.zip | cut -f1)"
 
