@@ -674,6 +674,11 @@
   .summary-narrative {
     font-size: 12px; color: var(--text-dim); line-height: 1.6;
   }
+  .summary-explainer {
+    margin-top: 5.5em;
+    font-size: 12px; color: var(--text-dim); line-height: 1.6;
+  }
+  .summary-explainer b { font-weight: 700; color: var(--text); }
 
   /* Milestone pills */
   .milestone-list {
@@ -852,6 +857,14 @@
       <div class="summary-section-label">Status Summary</div>
       <div class="summary-headline" id="summaryHeadline">Loading...</div>
       <div class="summary-narrative" id="summaryNarrativeText"></div>
+
+      <div class="summary-explainer">
+        <p style="margin-top:1.2em;"><b>Why Visibility Infrastructure and Proactive Detection Were Combined</b></p>
+        <p>Proactive Detection cannot work without a Visibility Infrastructure in place first. You cannot detect problems you cannot see.</p>
+        <p>Keeping them separate made it look like two independent efforts, but in practice, every detection milestone was blocked until visibility was delivered. Two tracks, one dependency chain creating confusion.</p>
+        <p>We merged them into a single staged plan (S0 through S9) that moves from tooling setup through monitoring, data quality, alerting, and ultimately proactive operations. One owner, one set of milestones, one honest view of where we stand.</p>
+      </div>
+
       <button class="sprint-detail-btn" onclick="openSprintModal()" style="display:none;">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         Sprint Detail
