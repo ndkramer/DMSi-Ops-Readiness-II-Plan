@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+<!-- archive snapshot -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DMSi Operational Readiness - Capability Map</title>
+<title>DMSi Operational Readiness II - Capability Map</title>
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -621,7 +622,7 @@
 
   /* ── Horizontal scroll on small screens ── */
   .capabilities-row {
-    min-width: 2350px;
+    min-width: 1900px;
   }
   .bc-row {
     min-width: 600px;
@@ -918,34 +919,13 @@
         </div>
         <div class="cap-card-body">
           <div class="cap-card-content">
-            <p>Engineering, leadership, and support teams see real-time system health through dashboards they trust and reference daily. Decisions and customer updates are informed by data, not anecdote.</p>
-            <p><strong>What customers notice:</strong> Support conversations are faster and more informed. When customers call with questions, customer support can see what's happening without escalating or saying "let me check and get back to you." Issues get diagnosed faster because the team isn't starting from scratch each time.</p>
+            <p>Engineering, leadership, and support teams see real-time system health through dashboards they trust and reference daily. Anomalies are detected and alerts fire before customers raise issues. The team responds to signals from the system, not complaints from customers.</p>
+            <p><strong>What customers notice:</strong> DMSi reaches out about issues before customers report them. When customers do call, support already knows what's happening and can provide status immediately. Issues get diagnosed faster because the team isn't starting from scratch each time.</p>
             <div class="future-state-tag">Future State</div>
           </div>
         </div>
       </div>
       <div class="stages-column" id="stagesVI"></div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- PROACTIVE DETECTION (right column, branching) -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="capability-column theme-blue" id="colPD">
-      <div class="cap-card theme-blue expanded" id="capPD">
-        <div class="cap-card-header" onclick="toggleEl('capPD')">
-          <h2><span class="cap-icon">&#9678;</span> Proactive Detection</h2>
-          <span class="confidence-label discovery">Discovery</span>
-          <span class="expand-icon">&#9662;</span>
-        </div>
-        <div class="cap-card-body">
-          <div class="cap-card-content">
-            <p>Anomalies are detected and alerts fire before customers raise issues. Engineering has a comprehensive view into customer-impacting problems through multiple monitoring layers, and the team responds to signals from the system, not complaints from customers.</p>
-            <p><strong>What customers notice:</strong> DMSi reaches out about issues before customers report them. When customers do call, support already knows what's happening and can provide status immediately.</p>
-            <div class="future-state-tag">Future State</div>
-          </div>
-        </div>
-      </div>
-      <div class="stages-column" id="stagesPD"></div>
     </div>
 
     <!-- ═══════════════════════════════════════════════ -->
@@ -1122,98 +1102,61 @@ const wmStages = [
     without: "Without this, we get polished answers instead of reality. The system we build solves the wrong problems."}
 ];
 
-// Proactive Detection: linear stages (top), then splits, then merges to bottom
-const pdLinearTop = [
-  { num: 7, title: "Predictive Operations Capability", status: "not-started",
-    targetStart: "Oct 2026", targetEnd: "Dec 2026",
-    desc: "The full monitoring stack drives proactive customer communication and confidence in IT performance.",
-    prereqs: ["Data from all monitoring layers rolls to the right people at the right time","Tests perform to automatically flag quality, detect trends that suggest capacity planning and proactive maintenance","Model infrastructure for synthetic and APM signals correlated with customer experience","SLI dashboards drive priority for Engineering, Customer Service, and executive reports"],
-    without: "Without this, monitoring exists but doesn't change how the organization operates. Detection improves, but customer and communication still remain reactive.",
-    bubble: { title: '"Proactive communication"', text: "Customers receive outreach about issues before they call; support can say \"we're aware and working on it.\"" }},
-  { num: 6, title: "APM, RUM, and Advanced Platform Capabilities Operational", status: "not-started",
-    targetStart: "Aug 2026", targetEnd: "Oct 2026",
-    desc: "Full observability platform capabilities are enabled and providing deep application insight.",
-    prereqs: ["Observability platform deployed and configured","Metrics, events, logs, and traces correlated across services","RUM enabled, capturing real user sessions from browsers","Real-time alerting covering slow queries, error rate thresholds","Data integrated with Elastic at ingestion","OpenTelemetry instrumentation staged for applicability","Move APM, RUM, and aggregated tracing to production environments","Observability platform (New Relic, Datadog, Elastic APM, or equivalent) covering app, infra, logging (CheckMK, Elastic alerts)"],
-    without: "Without this, we have synthetic monitoring and synthetic monitoring. But not deep capabilities that come with real user monitoring and observability, detection in good and diagnostic decision-making.",
-    bubble: { title: '"Faster diagnosis"', text: "When issues occur, root cause identification is dramatically faster due to end-to-end tracing." }}
-];
-
-const pdBranchLeft = [
-  { num: 5, title: "Synthetic Monitoring Operational and Trusted", status: "not-started",
-    targetStart: "Jun 2026", targetEnd: "Aug 2026",
-    desc: "Synthetic tests simulate critical user journeys and alerts are tuned and trusted.",
-    prereqs: ["Synthetic monitors running continuously from external locations","Tests cover critical API calls (login, search, order creation, data transactions, data lookups)","Alert thresholds tuned to reduce false alerts","False positive rate below a target threshold","Synthetic monitoring integrated with incident creation, on-call notification","Alert tuning in place: right thresholds, severity level detection, on-alert-failure routing"],
-    without: "Without this, synthetic monitoring fires but also rises too often and diagnostics aren't invoked. We know 2-3 is broken but not why.",
-    bubble: { title: '"We usually know first"', text: "DMSi detects user-facing issues before customer reports." }},
-  { num: 4, title: "Application Telemetry Operational", status: "not-started",
-    targetStart: "Apr 2026", targetEnd: "Jun 2026",
-    desc: "Application-level telemetry is flowing from ABL and Frameworks, providing visibility into what the application is doing internally.",
-    prereqs: ["Key ABL procedures instrumented with distributed tracing signals, log correlation","Staging complete: determine which layers, modules, critical checkpoints to instrument","ABL Error logging standardized, application-level event classification, auth events, cache performance","Data flowing to centralized observability platform via standard protocols","Latency, error rate, custom diagnostic metrics, throughput, for key modules, partners, and user journeys configured"],
-    without: "Without this, external monitoring (synthetic, network path) can tell you something is wrong, but you have no visibility into what the application is actually doing. \"We can see it broke but can't unravel why.\""},
-  { num: 1, title: "Telemetry Strategy Validated", status: "in-progress",
-    targetStart: "Feb 2026", targetEnd: "Apr 2026",
-    blockers: ["Waiting on Elastic access from Dustin"],
-    desc: "ABL telemetry strategy evaluated against requirements for effective monitoring.",
-    prereqs: ["Existing ABL telemetry requirements documented. What are the critical checkpoints?","Quality audit of ABL/OE telemetry strategy reviewed against industry standards","Diagnostic coverage assessment","Log analytics platform, existing instrumentation and metrics, SLIs","Configuration plan for future platform integration for any identified gaps","Decision on Elastic, Prometheus, and additional telemetry needs"],
-    without: "Without this, we add ABL monitoring on top of fragmented telemetry. Garbage in, garbage out."}
-];
-
-const pdBranchRight = [
-  { num: 3, title: "External Availability and Network Path Monitoring Operational", status: "not-started",
-    targetStart: "Apr 2026", targetEnd: "Jun 2026",
-    desc: "External monitoring confirms systems are reachable and network paths are working.",
-    prereqs: ["Ping, HTTP, and RDP synthetic checks for customer-facing endpoints with availability","Synthetic uptime from external vantage points (customer premises, third-party)","SSL and certificate test with Certificate Authority validation, DNS health, network path continuity, and connectivity"],
-    without: "Without this, network-layer issues outside DMSi control remain invisible. We're unable to distinguish: \"Is the customer network to DMSI broken or is it a DMSI issue?\"",
-    bubble: { title: '"ISP issues identified quickly"', text: "When problems are outside DMSi control, the team knows immediately and can communicate proactively." }},
-  { num: 2, title: "Infrastructure Monitoring Modernized", status: "not-started",
-    targetStart: "Mar 2026", targetEnd: "Apr 2026",
-    desc: "Infrastructure-level monitoring generates actionable signals rather than noise.",
-    prereqs: ["CheckMK monitoring adjusted for relevance and verified performance","Refined threshold tuning: right-sizing alerts for scale signals, not constant noise","Integration with PagerDuty operational","Legacy signal deprecated where no value: retired checks, redundant alerts","Source mapping established: what tool is the authoritative signal for what resource"],
-    without: "Without this, other monitoring layers lack foundation. Infrastructure noise caused noise that streams not applicable without cleanup."}
-];
-
-const pdBottom = [
-  { num: 0, title: "Tool Landscape and Plan Alignment", status: "in-progress",
-    targetStart: "Feb 2026", targetEnd: "Mar 2026",
-    desc: "Current tools have been evaluated and we are aligned on desired approach.",
-    prereqs: ["Current monitoring landscape inventoried (CheckMK, Elastic, Prometheus, other deployed probes, etc.)","Tool validation: what's configured, what's been deployed, what is vendor-readable",{ main: "Evaluation of preferred path options:", sub: ["Path A (Current tools): checkMK, cost, Elastic, Elastic, CheckMK, native monitoring, or best option among current tooling.","Path B (New platform): higher cost, faster results, cleaner architecture, full capability tooling."] },"ITIL readiness: can we configure response vs. alerting models?","Stakeholder agreement with entire team strategy with outside guidance and team goals"],
-    without: "Without this, we start work without knowing if we are covering with appropriate tools and/or resources."}
-];
-
+// Visibility Infrastructure: Combined Constraints Model (S0-S9)
 const viStages = [
-  { num: 5, title: "Operational Adoption", status: "not-started",
-    targetStart: "Aug 2026", targetEnd: "Oct 2026",
-    desc: "Dashboards are part of daily workflows. People check them, reference them in conversations, and trust what they see.",
-    prereqs: ["Dashboards are automatic-to-the-right-person","Data has been validated against reality (trust established)","No competing 'shadow' spreadsheets or manual reports undermining confidence","Habit formation has occurred (people know where to look how find)"],
-    without: "Without this, dashboards exist but collect dust. The system is built but not used.",
-    bubble: { title: '"Informed conversations"', text: "Customer interactions reference real data; \"let me check\" becomes \"here's what I see.\"" }},
-  { num: 4, title: "Persona-Relevant Views", status: "not-started",
-    targetStart: "Jun 2026", targetEnd: "Aug 2026",
-    desc: "Each stakeholder group has views that answer their specific questions.",
-    prereqs: ["We know what questions each persona needs answered","Dashboards have been built to persona-first priorities","Data supports those views (right fields, right granularity, right time ranges)","Navigation and access patterns match how people actually work"],
-    without: "Without this, dashboards exist but don't answer the questions people are asking. Users bounce off.",
-    bubble: { title: '"Support sees what\'s happening"', text: "Support can answer customer questions without escalating; faster first-call resolution." }},
-  { num: 3, title: "Data Quality Validated", status: "not-started",
+  { num: 9, title: "Predictive Operations and Advanced Capabilities", status: "not-started",
+    targetStart: "Oct 2026", targetEnd: "Dec 2026",
+    desc: "Full monitoring stack drives predictive operations. DORA metrics visible. Advanced platform capabilities operational.",
+    prereqs: ["S8 exit gate satisfied (proactive operations proven)","DORA metrics visible -- all five metrics derivable from SDLC events","Data from all monitoring layers rolls to the right people at the right time","Synthetic and APM signals correlated with customer experience models","SLI dashboards drive priority for engineering"],
+    without: "Without this, the team is reactive-with-good-tools instead of predictive. They detect and respond; they don't anticipate."},
+  { num: 8, title: "Proactive Operations Capability", status: "not-started",
+    targetStart: "Jul 2026", targetEnd: "Sep 2026",
+    desc: "MTTD ≤10 min validated. Status page auto-updates live. Dashboards part of daily workflows. System drives proactive customer communication.",
+    prereqs: ["S7 exit gate satisfied (alerting tuned, dashboards trusted)","MTTD ≤10 min validated -- 4 consecutive weeks of synthetic data showing detection before customer reports","Status page auto-updates live -- Dynatrace synthetic failures trigger automatic degraded state","Dashboards are part of daily workflows -- people check them, reference them, trust what they see"],
+    without: "Without this, the tools work, but the organization hasn't adopted them. Monitoring is a reporting artifact, not an operational capability.",
+    bubble: { title: '"Proactive communication"', text: "Customers receive outreach about issues before they call." }},
+  { num: 7, title: "Alerting Tuned, Persona Views Live, and Trusted", status: "not-started",
+    targetStart: "Jun 2026", targetEnd: "Jul 2026",
+    desc: "Alert volume rationalized. Persona-specific dashboards delivered. On-call schedules operational. The system is trusted.",
+    prereqs: ["S6 exit gate satisfied (baselines established, data quality validated)","Alert rationalization completed -- target 50% reduction from baseline","On-call schedule by product pod finalized","Persona-relevant dashboards delivered -- engineering, support, leadership each get tailored views"],
+    without: "Without this, alerts are noisy. People don't know where to look. The monitoring stack works technically but nobody uses it as their source of truth.",
+    bubble: { title: '"Informed conversations"', text: "Customer interactions reference real data; support can answer without escalating." }},
+  { num: 6, title: "Baselines Established and Data Quality Validated", status: "not-started",
     targetStart: "May 2026", targetEnd: "Jun 2026",
-    desc: "Data in Elastic is accurate, timely, and complete.",
-    prereqs: ["Data freshness validated against source systems (spot checks, reconciliation)","Gaps and inconsistencies have been identified and resolved","Sentinel tests that guarantee inbound data quality at runtime (canary tests)","Stale-badge: a health-check-stamp people know when numbers came from"],
-    without: "Without this, dashboards show data but no one trusts it. Inaccurate numbers kill adoption."},
-  { num: 2, title: "Data Flowing from All Sources", status: "not-started",
+    desc: "Davis AI baselines learned. Anomaly detection tuned. Data trusted. Elastic fully decommissioned.",
+    prereqs: ["S5 exit gate satisfied (APM live, Elastic migration path confirmed)","Davis AI baseline learning period completed -- minimum 1 week for service baselines, 14 days for full seasonal patterns","Anomaly detection validated against known incident history -- sensitivity tuned per service before PagerDuty routing goes live","Threshold tuning completed across all monitoring layers -- synthetic, infrastructure, APM"],
+    without: "Without this, alerts fire on noise. Teams lose trust. Dashboards exist but nobody believes them. Elastic lingers as a safety blanket."},
+  { num: 5, title: "Application Telemetry Operational", status: "not-started",
     targetStart: "Apr 2026", targetEnd: "May 2026",
-    desc: "All critical source systems are streaming data to Elastic continuously.",
-    prereqs: ["Connectivity established for each source","Data pipelines pushing without intervention","No gaps in the data stream (reliable, continuous flow)","Monitoring in place to detect broken pipelines"],
-    without: "Without this, some dashboards work and some are empty. Partial visibility is often worse than none."},
-  { num: 1, title: "Per-Source Connectivity", status: "in-progress",
+    desc: "APM visibility into application behavior. JVM-level and (optionally) ABL-level instrumentation live.",
+    prereqs: ["S4 exit gate satisfied (external availability monitoring live)","PASOE JVM APM operational -- OneAgent auto-detects JVM","Infrastructure and service dashboards built -- engineer-facing views: host health, PASOE instance status, storage IOPS, network latency"],
+    without: "Without this, external monitoring tells you something is wrong, but you have no visibility into what the application is actually doing."},
+  { num: 4, title: "External Availability Monitoring Operational", status: "not-started",
     targetStart: "Mar 2026", targetEnd: "Apr 2026",
-    blockers: ["Waiting on read-only server access across environments"],
-    desc: "Each individual source system has a working, validated connection to Elastic.",
-    prereqs: ["Elastic configured to receive data from this source type","Auth/certs/infra and network access in place","Initial data transfer validated (data arrives, format correct)","Known issues documented"],
-    without: "Without this, we're still in integration work. Each source is its own set of tests."},
-  { num: 0, title: "Foundation Ready", status: "in-progress",
+    desc: "Synthetic monitoring live. External availability measured continuously. MTTD measurement baseline established.",
+    prereqs: ["S3 exit gate satisfied (data flowing from all sources)","Public synthetic locations validated -- reachability from external Dynatrace nodes to TierPoint-hosted endpoints confirmed","Login flow synthetic test operational -- 1-min cadence for login, 5-min for transactions","Critical transaction synthetic tests built -- top 3-5 business flows"],
+    without: "Without this, external availability is unknown. MTTD cannot be measured. The team cannot prove they detect issues before customers.",
+    bubble: { title: '"We usually know first"', text: "DMSi detects user-facing issues before customer reports." }},
+  { num: 3, title: "Data Flowing from All Sources", status: "not-started",
+    targetStart: "Mar 2026", targetEnd: "Apr 2026",
+    desc: "Log ingestion pipeline operational. Dynatrace and Elastic running in parallel. All monitoring data sources connected and flowing.",
+    prereqs: ["S2 exit gate satisfied (infrastructure monitoring live)","Dynatrace log ingest configured -- NGINX access/error logs, PASOE application logs, OpenEdge database logs","Custom log parsing rules built -- NGINX, PASOE, and OpenEdge formats require structured field extraction","Log ingestion scope decided -- all logs vs. WARN+ only vs. prod full / non-prod sampled","30-day parallel validation period initiated -- Elastic and Dynatrace log ingestion run simultaneously"],
+    without: "Without this, log migration happens blind. Dashboards get built on incomplete data. Elastic gets decommissioned before Dynatrace proves it can replace it."},
+  { num: 2, title: "Infrastructure Monitoring Modernized", status: "not-started",
     targetStart: "Feb 2026", targetEnd: "Mar 2026",
-    desc: "Elastic is prepared and we know what needs to connect.",
-    prereqs: ["Current Elastic configuration has been analyzed","Required configuration changes are documented and implemented","Critical source systems that feed dashboards are inventoried","Priority order for source connections is established"],
-    without: "Without this, we don't know what we're building toward or whether Elastic can handle it."}
+    desc: "OneAgent deployed to all production hosts. ActiveGate in place. Host and service topology validated. Basic infrastructure metrics flowing.",
+    prereqs: ["S1 exit gate satisfied (telemetry strategy, licensing, retention confirmed)","OneAgent rollout to production hosts completed (RHEL 7 compatibility confirmed per-server)","ActiveGate deployed at network boundary for TierPoint hosts lacking direct internet","PASOE process group naming convention established (auto-naming with overrides recommended)","Host and service topology validated in Dynatrace UI -- all production PASOE instances visible and correctly grouped"],
+    without: "Without this, no baseline. No infrastructure signals. Everything above this stage (synthetics, APM, log migration, dashboards) has nothing to attach to."},
+  { num: 1, title: "Telemetry Strategy Validated", status: "in-progress",
+    targetStart: "Feb 2026", targetEnd: "Mar 2026",
+    desc: "Telemetry approach is defined, licensing is procured, and the team knows exactly what will be instrumented, ingested, and retained.",
+    prereqs: ["S0 exit gate satisfied (D-01, D-02 resolved)","ABL telemetry strategy evaluated against monitoring requirements -- what are the critical checkpoints?","Quality audit of ABL/OE telemetry reviewed against industry standards","Diagnostic coverage assessment completed (log analytics platform, existing instrumentation, metrics, SLIs)","Decision on Elastic migration path, Prometheus, and any additional telemetry needs"],
+    without: "Without this, we deploy agents and ingest logs without knowing what \"good\" looks like. Garbage in, garbage out. Licensing surprises hit mid-implementation."},
+  { num: 0, title: "Foundation and Plan Alignment", status: "in-progress",
+    targetStart: "Feb 2026", targetEnd: "Mar 2026",
+    desc: "Tool landscape assessed, engagement secured, plan aligned with all stakeholders.",
+    prereqs: ["Read-only access to all production environments granted (servers, Elastic, CheckMK, PagerDuty)","Full environment inventory completed -- server OS versions, PASOE instance count, custom services, trial infrastructure scope","TierPoint network topology mapped -- which hosts reach internet directly vs. require ActiveGate relay","Elastic usage confirmed as monitoring/observability only (not app search or customer-facing)","Key stakeholders identified and engaged (Andy, Brent, Leanne GRC, Jared Support, Hilltop)"],
+    without: "Without this, everything downstream is built on assumptions. Wrong deployment model, wrong licensing, wrong scope. The entire timeline resets."}
 ];
 
 const paStages = [
@@ -1305,7 +1248,7 @@ const lsStages = [
     targetStart: "Feb 2026", targetEnd: "Mar 2026",
     blockers: ["Depends on Workstream A capabilities and Workstream B/C alignment"],
     desc: "Other Workstream A capabilities and Workstream B/C work are far enough along that Learning System has clean data to work with and infrastructure to build on.",
-    prereqs: ["Visibility Infrastructure: Elastic operational, data flowing, dashboards in progress","Proactive Detection: config/alerting system up and running, data flow corrections underway","Pipeline Automation: config inventory started, Git ready, pipeline early/in progress","Workstream B/C alignment: direct confirmation that Learning System's workload dependencies confirmed","Scope alignment: does this overlap/use Visibility Infrastructure or Learning System as a data source?","Milestone dependency: M3 brings Learning System S1; M4 brings S1 and S2; plan for early maturity"],
+    prereqs: ["Visibility Infrastructure: monitoring operational, data flowing, dashboards in progress","Pipeline Automation: config inventory started, Git ready, pipeline early/in progress","Workstream B/C alignment: direct confirmation that Learning System's workload dependencies confirmed","Scope alignment: does this overlap/use Visibility Infrastructure or Learning System as a data source?","Milestone dependency: M3 brings Learning System S1; M4 brings S1 and S2; plan for early maturity"],
     without: "Without this, Learning System tries building without reliable data or clear foundation. Starting too early means it ingests garbage."}
 ];
 
@@ -1800,74 +1743,6 @@ function renderLS() {
   });
 }
 
-function renderPD() {
-  const col = document.getElementById('stagesPD');
-  col.innerHTML = '';
-
-  // Top linear stages (7, 6)
-  pdLinearTop.forEach((stage, idx) => {
-    if (idx > 0) col.appendChild(makeConnector(false, 'blue'));
-    col.appendChild(makeStageCard(stage, 'pd', idx, 'blue'));
-  });
-
-  // Split connector
-  const splitDiv = document.createElement('div');
-  splitDiv.className = 'split-connector';
-  splitDiv.innerHTML = `<svg viewBox="0 0 100 36" preserveAspectRatio="none" style="width:100%;height:36px;">
-    <line x1="50" y1="36" x2="50" y2="20" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
-    <line x1="25" y1="20" x2="75" y2="20" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
-    <line x1="25" y1="20" x2="25" y2="0" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
-    <line x1="75" y1="20" x2="75" y2="0" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
-    <polygon points="23.5,5 25,0 26.5,5" fill="#bdbdbd"/>
-    <polygon points="73.5,5 75,0 76.5,5" fill="#bdbdbd"/>
-  </svg>`;
-  col.appendChild(splitDiv);
-
-  // Build left branch (3 items with connectors between)
-  const leftBranch = document.createElement('div');
-  leftBranch.className = 'parallel-branch';
-  pdBranchLeft.forEach((stage, idx) => {
-    if (idx > 0) leftBranch.appendChild(makeConnector(false, 'blue'));
-    leftBranch.appendChild(makeStageCard(stage, 'pd', idx, 'blue'));
-  });
-
-  // Build right branch (2 items with connector between, plus tail to match left height)
-  const rightBranch = document.createElement('div');
-  rightBranch.className = 'parallel-branch';
-  pdBranchRight.forEach((stage, idx) => {
-    if (idx > 0) rightBranch.appendChild(makeConnector(false, 'blue'));
-    rightBranch.appendChild(makeStageCard(stage, 'pd', idx, 'blue'));
-  });
-  // Tail fills remaining vertical space so both branches end at same height
-  const tail = document.createElement('div');
-  tail.className = 'branch-tail';
-  rightBranch.appendChild(tail);
-
-  const parallelRow = document.createElement('div');
-  parallelRow.className = 'parallel-row';
-  parallelRow.appendChild(leftBranch);
-  parallelRow.appendChild(rightBranch);
-  col.appendChild(parallelRow);
-
-  // Merge connector
-  const mergeDiv = document.createElement('div');
-  mergeDiv.className = 'merge-connector';
-  mergeDiv.innerHTML = `<svg viewBox="0 0 100 36" preserveAspectRatio="none" style="width:100%;height:36px;">
-    <line x1="25" y1="0" x2="25" y2="16" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
-    <line x1="75" y1="0" x2="75" y2="16" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
-    <line x1="25" y1="16" x2="75" y2="16" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
-    <line x1="50" y1="16" x2="50" y2="36" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
-    <circle cx="50" cy="36" r="1" fill="#bdbdbd"/>
-  </svg>`;
-  col.appendChild(mergeDiv);
-
-  // Bottom stage (0)
-  col.appendChild(makeStageCard(pdBottom[0], 'pd', 0, 'blue'));
-
-  // Update progress
-  const allPdStages = [...pdLinearTop, ...pdBranchLeft, ...pdBranchRight, ...pdBottom];
-}
-
 function renderWSB() {
   const col = document.getElementById('stagesWSB');
   col.innerHTML = '';
@@ -1908,7 +1783,7 @@ function toggleStageCard(id) {
 }
 
 function updateStageStatus(capId, stageNum, value) {
-  const allArrays = capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [pdLinearTop, pdBranchLeft, pdBranchRight, pdBottom];
+  const allArrays = capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [];
   for (const arr of allArrays) {
     const found = arr.find(s => s.num === stageNum);
     if (found) { found.status = value; break; }
@@ -1920,7 +1795,6 @@ function updateStageStatus(capId, stageNum, value) {
   else if (capId === 'wsb') renderWSB();
   else if (capId === 'wsc') renderWSC();
   else if (capId === 'wsd') renderWSD();
-  else renderPD();
 }
 
 function toggleEl(id) {
@@ -1937,7 +1811,7 @@ var EMBEDDED_STATE = {
   "lastUpdated": "Mar 17, 2026",
   "summary": {
     "headline": "Sprint 2 is active across all workstreams.",
-    "narrative": "Work Management and Visibility Infrastructure are on track. Proactive Detection and Pipeline Automation are in discovery. Workstreams B, C, and D planning is underway with timelines TBD pending tooling decisions."
+    "narrative": "Work Management and Visibility Infrastructure are on track. Pipeline Automation is in discovery. Workstreams B, C, and D planning is underway with timelines TBD pending tooling decisions."
   },
   "milestones": [
     {
@@ -1978,10 +1852,6 @@ var EMBEDDED_STATE = {
     },
     {
       "id": "vi",
-      "confidence": "on-track"
-    },
-    {
-      "id": "pd",
       "confidence": "on-track"
     },
     {
@@ -2476,7 +2346,7 @@ var EMBEDDED_STATE = {
 
 
 function getStageArrays(capId) {
-  return capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [pdLinearTop, pdBranchLeft, pdBranchRight, pdBottom];
+  return capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [];
 }
 
 function applyState(state) {
@@ -2523,7 +2393,7 @@ function applyState(state) {
 
 /* ── Summary panel ── */
 const CAP_LABELS = {
-  wm: 'Work Management', vi: 'Visibility Infrastructure', pd: 'Proactive Detection',
+  wm: 'Work Management', vi: 'Visibility Infrastructure',
   pa: 'Pipeline Automation', ls: 'Learning System', wsb: 'Support Operating Model',
   wsc: 'Support & Engineering Tooling', wsd: 'Strategic Visibility'
 };
@@ -2532,10 +2402,6 @@ function getAllStages() {
   return [
     ...wmStages.map(s => ({ ...s, capId: 'wm' })),
     ...viStages.map(s => ({ ...s, capId: 'vi' })),
-    ...pdLinearTop.map(s => ({ ...s, capId: 'pd' })),
-    ...pdBranchLeft.map(s => ({ ...s, capId: 'pd' })),
-    ...pdBranchRight.map(s => ({ ...s, capId: 'pd' })),
-    ...pdBottom.map(s => ({ ...s, capId: 'pd' })),
     ...paStages.map(s => ({ ...s, capId: 'pa' })),
     ...lsStages.map(s => ({ ...s, capId: 'ls' })),
     ...wsbStages.map(s => ({ ...s, capId: 'wsb' })),
@@ -2639,7 +2505,6 @@ document.addEventListener('keydown', function(e) {
 function renderAll() {
   renderWM();
   renderVI();
-  renderPD();
   renderPA();
   renderLS();
   renderWSB();
@@ -2677,7 +2542,7 @@ function switchTab(tabId) {
 
 // Equalize capability card heights
 function equalizeCapCards() {
-  const ids = ['capWM','capVI','capPD','capPA','capLS'];
+  const ids = ['capWM','capVI','capPA','capLS'];
   const cards = ids.map(id => document.getElementById(id)).filter(Boolean);
   if (!cards.length || !cards[0].offsetParent) return;
   cards.forEach(c => c.style.minHeight = '');
@@ -2760,14 +2625,9 @@ window.addEventListener('resize', function () { equalizeCapCards(); equalizeBCCa
             <td><span class="target-badge">Pipeline design framework scoped and documented; GitHub Actions feasibility assessed</span></td>
           </tr>
           <tr>
-            <td>WSA: Proactive Detection</td>
-            <td>Consolidate existing analysis into executive decision package with cost comparison and transition plan.</td>
-            <td><span class="target-badge">Decision package ready for executive review</span></td>
-          </tr>
-          <tr>
             <td>WSA: Visibility Infrastructure</td>
-            <td>CheckMK script cleanup and reduction to stabilize current monitoring baseline.</td>
-            <td><span class="target-badge">Continued reduction of script overhead and alert noise</span></td>
+            <td>Foundation and plan alignment; consolidate existing analysis into executive decision package with cost comparison and transition plan. CheckMK script cleanup to stabilize current monitoring baseline.</td>
+            <td><span class="target-badge">Decision package ready; continued reduction of script overhead and alert noise</span></td>
           </tr>
           <tr>
             <td>WSD: Strategic Visibility</td>
