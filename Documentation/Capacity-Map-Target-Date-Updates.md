@@ -12,9 +12,10 @@ This document describes the reusable process that updates stage target dates in 
    - **PA** (Pipeline Automation): `PA/PA-Outcome-map.html`
    - **WSB-WSC** (Workstream B & C): `WSB-WSC/WSB-WSC-Outcome-Map.html`
 
-2. **Parses dates** from each source:
-   - WM/VI: `dateRange` strings (e.g. "Feb 16 - Feb 27", "Apr 1 - Apr 25").
-   - PA: `start`/`end` week numbers (Week 1 = Mar 16, 2026).
+2. **Parses dates** from each source (day-level when available for accurate display and sprint indicators):
+   - WM: `dateRange` strings (e.g. "Wk 1-2 (Feb 16 - Feb 27)") → start/end day extracted.
+   - VI: `dateRange` strings (e.g. "Apr 1 - Apr 25", "Jun 30 - Aug 8") → start/end day extracted.
+   - PA: `start`/`end` week numbers (Week 1 = Mar 16, 2026) → week Monday–Friday computed.
    - WSB-WSC: `activities` array with `start`/`end` sprint numbers (24 sprints, 2 weeks each; Sprint 1 assumed Mar 1, 2026).
 
 3. **Maps constraint stages to outcomes/activities** using the same logic as the Constraint-vs-Outcome mapping documents:
@@ -24,7 +25,7 @@ This document describes the reusable process that updates stage target dates in 
    - WSB stages 0–5 → Operational/Environmental activities (O1–O4, E1–E3).
    - WSC stages 0–5 → Environmental/Technological activities (E1–E3, T1–T6).
 
-4. **Computes targetStart and targetEnd** per stage (month + year, e.g. "Mar 2026"). For stages that map to multiple outcomes, it uses the earliest start and latest end.
+4. **Computes targetStart and targetEnd** per stage in **"Mon D, YYYY"** format (e.g. "Feb 16, 2026") when the outcome map provides day-level dates, so the capability map and sprint indicators show accurate ranges. For stages that map to multiple outcomes, it uses the earliest start and latest end.
 
 5. **Writes updates** to:
    - **Capability-map/capability-map-state.json**: updates `stages[].targetStart` and `stages[].targetEnd` for wm, vi, pa, wsb, wsc; sets `lastUpdated` to the run date.
@@ -49,7 +50,7 @@ flowchart LR
     Parse[Parse dates from each HTML]
     Map[Map stages to outcomes or activities]
     Aggregate[Aggregate min start / max end per stage]
-    Format[Format as Mon YYYY]
+    Format[Format as Mon D, YYYY]
   end
 
   subgraph outputs [Updated files]

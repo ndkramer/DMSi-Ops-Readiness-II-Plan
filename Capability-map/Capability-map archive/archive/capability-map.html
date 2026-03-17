@@ -424,42 +424,6 @@
     gap: 8px; margin-top: 2px;
   }
 
-  .stage-dates-col {
-    display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
-  }
-
-  .sprint-indicator {
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 700; padding: 2px 6px;
-    border-radius: 4px; min-width: 24px; text-align: center;
-    border: 1px solid transparent;
-    cursor: default; position: relative;
-  }
-  .sprint-indicator.sprint-past {
-    background: #e5e7eb; color: #6b7280; border-color: #d1d5db;
-  }
-  .sprint-indicator.sprint-current {
-    background: #d1fae5; color: #065f46; border-color: #a7f3d0;
-  }
-  .sprint-indicator.sprint-future {
-    background: #fef9c3; color: #854d0e; border-color: #fde047;
-  }
-  .sprint-indicators-wrap {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
-  }
-  .sprint-indicator-tooltip {
-    display: none; position: absolute; bottom: calc(100% + 6px); left: 0;
-    background: #1a1a1a; color: #fff;
-    font-size: 11px; font-weight: 400; padding: 6px 10px; border-radius: 6px;
-    white-space: nowrap; pointer-events: none; z-index: 20;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  }
-  .sprint-indicator-tooltip::after {
-    content: ''; position: absolute; top: 100%; left: 8px;
-    border: 5px solid transparent; border-top-color: #1a1a1a;
-  }
-  .sprint-indicator:hover .sprint-indicator-tooltip { display: block; }
-
   /* ── Blocker badge ── */
   .stage-card { position: relative; }
   .blocker-badge {
@@ -621,7 +585,7 @@
 
   /* ── Horizontal scroll on small screens ── */
   .capabilities-row {
-    min-width: 1900px;
+    min-width: 2350px;
   }
   .bc-row {
     min-width: 600px;
@@ -636,197 +600,6 @@
     .top-bar-inner { flex-direction: column; align-items: flex-start; }
     .main { padding: 20px 12px 60px; }
   }
-
-  /* ── Summary Panel ── */
-  .summary-panel {
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    box-shadow: var(--shadow-sm);
-  }
-
-  .summary-panel-inner {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 18px 32px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 0;
-    align-items: start;
-  }
-
-  .summary-section {
-    padding: 0 24px;
-    border-right: 1px solid var(--border);
-  }
-  .summary-section:first-child { padding-left: 0; }
-  .summary-section:last-child { border-right: none; padding-right: 0; }
-
-  .summary-section-label {
-    font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.7px; color: var(--text-muted); margin-bottom: 10px;
-  }
-
-  /* Narrative section */
-  .summary-headline {
-    font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.4;
-  }
-  .summary-narrative {
-    font-size: 12px; color: var(--text-dim); line-height: 1.6;
-  }
-
-  /* Milestone pills */
-  .milestone-list {
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .milestone-pill {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 12px; color: var(--text-dim);
-  }
-  .milestone-pill .m-badge {
-    font-size: 10px; font-weight: 700; padding: 2px 7px;
-    border-radius: 4px; flex-shrink: 0; letter-spacing: 0.3px;
-    min-width: 28px; text-align: center;
-  }
-  .milestone-pill.m-done .m-badge { background: var(--status-done-bg); color: var(--status-done); }
-  .milestone-pill.m-in-progress .m-badge { background: var(--status-progress-bg); color: var(--status-progress); }
-  .milestone-pill.m-not-started .m-badge { background: var(--status-not-started-bg); color: var(--status-not-started); }
-  .milestone-pill .m-label { font-size: 12px; }
-  .milestone-pill.m-in-progress .m-label { font-weight: 600; color: var(--text); }
-  .milestone-pill.m-done .m-label { color: var(--status-done); }
-
-  /* Recent / Upcoming lists */
-  .activity-list { display: flex; flex-direction: column; gap: 7px; }
-  .activity-item { display: flex; flex-direction: column; gap: 1px; }
-  .activity-item .a-title { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.4; }
-  .activity-item .a-meta { font-size: 11px; color: var(--text-muted); }
-  .activity-item .a-cap { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); }
-
-  /* Summary toggle button */
-  .summary-toggle {
-    max-width: 1600px; margin: 0 auto;
-    display: flex; align-items: center; justify-content: flex-end;
-    padding: 0 32px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg);
-  }
-  .summary-toggle-btn {
-    font-family: inherit; font-size: 11px; font-weight: 600;
-    color: var(--text-muted); background: none; border: none;
-    cursor: pointer; padding: 6px 0; display: flex; align-items: center; gap: 4px;
-    transition: color 0.15s;
-  }
-  .summary-toggle-btn:hover { color: var(--text); }
-
-  /* Artifacts link (inside expanded body) */
-  .artifacts-link {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 11px; font-weight: 600; color: #2563eb;
-    text-decoration: none; margin-top: 10px;
-    padding: 5px 10px; border-radius: 6px;
-    border: 1px solid #bfdbfe; background: #eff6ff;
-    transition: background 0.15s, border-color 0.15s;
-  }
-  .artifacts-link:hover { background: #dbeafe; border-color: #93c5fd; }
-  .artifacts-link svg { flex-shrink: 0; }
-
-  /* Artifact icon on collapsed card header */
-  .artifact-indicator {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 18px; height: 18px; flex-shrink: 0;
-    color: #2563eb; opacity: 0.75;
-  }
-  .stage-card.expanded .artifact-indicator { display: none; }
-
-  /* Sprint detail button */
-  .sprint-detail-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    margin-top: 12px;
-    font-family: inherit; font-size: 12px; font-weight: 600;
-    color: #1B2A4A; background: #f1f5f9;
-    border: 1px solid #cbd5e1; border-radius: 6px;
-    padding: 6px 12px; cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-  }
-  .sprint-detail-btn:hover { background: #e2e8f0; border-color: #94a3b8; }
-
-  /* Sprint detail modal */
-  .sprint-modal-overlay {
-    display: none; position: fixed; inset: 0; z-index: 500;
-    background: rgba(0,0,0,0.45); backdrop-filter: blur(2px);
-    align-items: flex-start; justify-content: center;
-    padding: 40px 20px;
-    overflow-y: auto;
-  }
-  .sprint-modal-overlay.open { display: flex; }
-
-  .sprint-modal {
-    background: var(--bg); border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
-    width: 100%; max-width: 820px;
-    overflow: hidden; position: relative;
-  }
-
-  .sprint-modal-header {
-    background: #1B2A4A; color: #fff;
-    padding: 20px 28px 16px;
-    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
-  }
-  .sprint-modal-header h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-  .sprint-modal-header .sprint-meta { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 3px; }
-  .sprint-modal-close {
-    background: rgba(255,255,255,0.12); border: none; color: #fff;
-    width: 30px; height: 30px; border-radius: 50%; font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; flex-shrink: 0; transition: background 0.15s;
-    font-family: inherit;
-  }
-  .sprint-modal-close:hover { background: rgba(255,255,255,0.22); }
-
-  .sprint-modal-body { padding: 24px 28px; }
-
-  .sprint-section-label {
-    font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.7px; color: var(--text-muted); margin-bottom: 10px;
-  }
-
-  .sprint-narrative {
-    font-size: 13px; color: var(--text-dim); line-height: 1.65;
-    margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
-  }
-  .sprint-narrative strong { color: var(--text); }
-
-  .sprint-table {
-    width: 100%; border-collapse: collapse; margin-bottom: 24px;
-    font-size: 12.5px;
-  }
-  .sprint-table th {
-    text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.5px; color: var(--text-muted);
-    padding: 6px 10px; border-bottom: 2px solid var(--border);
-    background: var(--surface);
-  }
-  .sprint-table td {
-    padding: 10px 10px; border-bottom: 1px solid var(--border);
-    vertical-align: top; line-height: 1.55; color: var(--text-dim);
-  }
-  .sprint-table tr:last-child td { border-bottom: none; }
-  .sprint-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
-  .sprint-table .target-badge {
-    display: inline-block; font-size: 10px; font-weight: 600;
-    padding: 2px 7px; border-radius: 4px; margin-top: 4px;
-    background: #d1fae5; color: #065f46;
-  }
-
-  .sprint-value-grid {
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
-  }
-  .sprint-value-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 12px 14px;
-  }
-  .sprint-value-card .vc-icon { font-size: 18px; margin-bottom: 6px; }
-  .sprint-value-card .vc-title { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-  .sprint-value-card .vc-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -838,40 +611,6 @@
       <div class="subtitle">Phase 2 Workstream Tracker <span class="last-updated">-- as of Feb 23, 2026</span></div>
     </div>
   </div>
-</div>
-
-<!-- ── Summary Panel ── -->
-<div class="summary-panel" id="summaryPanel">
-  <div class="summary-panel-inner">
-    <!-- Col 1: Narrative -->
-    <div class="summary-section" id="summaryNarrative">
-      <div class="summary-section-label">Status Summary</div>
-      <div class="summary-headline" id="summaryHeadline">Loading...</div>
-      <div class="summary-narrative" id="summaryNarrativeText"></div>
-      <button class="sprint-detail-btn" onclick="openSprintModal()" style="display:none;">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        Sprint Detail
-      </button>
-    </div>
-    <!-- Col 2: Milestones -->
-    <div class="summary-section">
-      <div class="summary-section-label">Milestone Progress</div>
-      <div class="milestone-list" id="milestonePills"></div>
-    </div>
-    <!-- Col 3: Recent + Upcoming -->
-    <div class="summary-section">
-      <div class="summary-section-label" style="margin-bottom:6px;">Recently Completed</div>
-      <div class="activity-list" id="recentList" style="margin-bottom:14px;"></div>
-      <div class="summary-section-label" style="margin-bottom:6px;">Coming Next</div>
-      <div class="activity-list" id="upcomingList"></div>
-    </div>
-  </div>
-</div>
-<div class="summary-toggle">
-  <button class="summary-toggle-btn" onclick="toggleSummary()">
-    <span id="summaryToggleLabel">Hide summary</span>
-    <span id="summaryToggleIcon">&#9650;</span>
-  </button>
 </div>
 
 <div class="tab-bar">
@@ -918,13 +657,34 @@
         </div>
         <div class="cap-card-body">
           <div class="cap-card-content">
-            <p>Engineering, leadership, and support teams see real-time system health through dashboards they trust and reference daily. Anomalies are detected and alerts fire before customers raise issues. The team responds to signals from the system, not complaints from customers.</p>
-            <p><strong>What customers notice:</strong> DMSi reaches out about issues before customers report them. When customers do call, support already knows what's happening and can provide status immediately. Issues get diagnosed faster because the team isn't starting from scratch each time.</p>
+            <p>Engineering, leadership, and support teams see real-time system health through dashboards they trust and reference daily. Decisions and customer updates are informed by data, not anecdote.</p>
+            <p><strong>What customers notice:</strong> Support conversations are faster and more informed. When customers call with questions, customer support can see what's happening without escalating or saying "let me check and get back to you." Issues get diagnosed faster because the team isn't starting from scratch each time.</p>
             <div class="future-state-tag">Future State</div>
           </div>
         </div>
       </div>
       <div class="stages-column" id="stagesVI"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- PROACTIVE DETECTION (right column, branching) -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="capability-column theme-blue" id="colPD">
+      <div class="cap-card theme-blue expanded" id="capPD">
+        <div class="cap-card-header" onclick="toggleEl('capPD')">
+          <h2><span class="cap-icon">&#9678;</span> Proactive Detection</h2>
+          <span class="confidence-label discovery">Discovery</span>
+          <span class="expand-icon">&#9662;</span>
+        </div>
+        <div class="cap-card-body">
+          <div class="cap-card-content">
+            <p>Anomalies are detected and alerts fire before customers raise issues. Engineering has a comprehensive view into customer-impacting problems through multiple monitoring layers, and the team responds to signals from the system, not complaints from customers.</p>
+            <p><strong>What customers notice:</strong> DMSi reaches out about issues before customers report them. When customers do call, support already knows what's happening and can provide status immediately.</p>
+            <div class="future-state-tag">Future State</div>
+          </div>
+        </div>
+      </div>
+      <div class="stages-column" id="stagesPD"></div>
     </div>
 
     <!-- ═══════════════════════════════════════════════ -->
@@ -1101,61 +861,98 @@ const wmStages = [
     without: "Without this, we get polished answers instead of reality. The system we build solves the wrong problems."}
 ];
 
-// Visibility Infrastructure: Combined Constraints Model (S0-S9)
-const viStages = [
-  { num: 9, title: "Predictive Operations and Advanced Capabilities", status: "not-started",
+// Proactive Detection: linear stages (top), then splits, then merges to bottom
+const pdLinearTop = [
+  { num: 7, title: "Predictive Operations Capability", status: "not-started",
     targetStart: "Oct 2026", targetEnd: "Dec 2026",
-    desc: "Full monitoring stack drives predictive operations. DORA metrics visible. Advanced platform capabilities operational.",
-    prereqs: ["S8 exit gate satisfied (proactive operations proven)","DORA metrics visible -- all five metrics derivable from SDLC events","Data from all monitoring layers rolls to the right people at the right time","Synthetic and APM signals correlated with customer experience models","SLI dashboards drive priority for engineering"],
-    without: "Without this, the team is reactive-with-good-tools instead of predictive. They detect and respond; they don't anticipate."},
-  { num: 8, title: "Proactive Operations Capability", status: "not-started",
-    targetStart: "Jul 2026", targetEnd: "Sep 2026",
-    desc: "MTTD ≤10 min validated. Status page auto-updates live. Dashboards part of daily workflows. System drives proactive customer communication.",
-    prereqs: ["S7 exit gate satisfied (alerting tuned, dashboards trusted)","MTTD ≤10 min validated -- 4 consecutive weeks of synthetic data showing detection before customer reports","Status page auto-updates live -- Dynatrace synthetic failures trigger automatic degraded state","Dashboards are part of daily workflows -- people check them, reference them, trust what they see"],
-    without: "Without this, the tools work, but the organization hasn't adopted them. Monitoring is a reporting artifact, not an operational capability.",
-    bubble: { title: '"Proactive communication"', text: "Customers receive outreach about issues before they call." }},
-  { num: 7, title: "Alerting Tuned, Persona Views Live, and Trusted", status: "not-started",
-    targetStart: "Jun 2026", targetEnd: "Jul 2026",
-    desc: "Alert volume rationalized. Persona-specific dashboards delivered. On-call schedules operational. The system is trusted.",
-    prereqs: ["S6 exit gate satisfied (baselines established, data quality validated)","Alert rationalization completed -- target 50% reduction from baseline","On-call schedule by product pod finalized","Persona-relevant dashboards delivered -- engineering, support, leadership each get tailored views"],
-    without: "Without this, alerts are noisy. People don't know where to look. The monitoring stack works technically but nobody uses it as their source of truth.",
-    bubble: { title: '"Informed conversations"', text: "Customer interactions reference real data; support can answer without escalating." }},
-  { num: 6, title: "Baselines Established and Data Quality Validated", status: "not-started",
-    targetStart: "May 2026", targetEnd: "Jun 2026",
-    desc: "Davis AI baselines learned. Anomaly detection tuned. Data trusted. Elastic fully decommissioned.",
-    prereqs: ["S5 exit gate satisfied (APM live, Elastic migration path confirmed)","Davis AI baseline learning period completed -- minimum 1 week for service baselines, 14 days for full seasonal patterns","Anomaly detection validated against known incident history -- sensitivity tuned per service before PagerDuty routing goes live","Threshold tuning completed across all monitoring layers -- synthetic, infrastructure, APM"],
-    without: "Without this, alerts fire on noise. Teams lose trust. Dashboards exist but nobody believes them. Elastic lingers as a safety blanket."},
-  { num: 5, title: "Application Telemetry Operational", status: "not-started",
-    targetStart: "Apr 2026", targetEnd: "May 2026",
-    desc: "APM visibility into application behavior. JVM-level and (optionally) ABL-level instrumentation live.",
-    prereqs: ["S4 exit gate satisfied (external availability monitoring live)","PASOE JVM APM operational -- OneAgent auto-detects JVM","Infrastructure and service dashboards built -- engineer-facing views: host health, PASOE instance status, storage IOPS, network latency"],
-    without: "Without this, external monitoring tells you something is wrong, but you have no visibility into what the application is actually doing."},
-  { num: 4, title: "External Availability Monitoring Operational", status: "not-started",
-    targetStart: "Mar 2026", targetEnd: "Apr 2026",
-    desc: "Synthetic monitoring live. External availability measured continuously. MTTD measurement baseline established.",
-    prereqs: ["S3 exit gate satisfied (data flowing from all sources)","Public synthetic locations validated -- reachability from external Dynatrace nodes to TierPoint-hosted endpoints confirmed","Login flow synthetic test operational -- 1-min cadence for login, 5-min for transactions","Critical transaction synthetic tests built -- top 3-5 business flows"],
-    without: "Without this, external availability is unknown. MTTD cannot be measured. The team cannot prove they detect issues before customers.",
+    desc: "The full monitoring stack drives proactive customer communication and confidence in IT performance.",
+    prereqs: ["Data from all monitoring layers rolls to the right people at the right time","Tests perform to automatically flag quality, detect trends that suggest capacity planning and proactive maintenance","Model infrastructure for synthetic and APM signals correlated with customer experience","SLI dashboards drive priority for Engineering, Customer Service, and executive reports"],
+    without: "Without this, monitoring exists but doesn't change how the organization operates. Detection improves, but customer and communication still remain reactive.",
+    bubble: { title: '"Proactive communication"', text: "Customers receive outreach about issues before they call; support can say \"we're aware and working on it.\"" }},
+  { num: 6, title: "APM, RUM, and Advanced Platform Capabilities Operational", status: "not-started",
+    targetStart: "Aug 2026", targetEnd: "Oct 2026",
+    desc: "Full observability platform capabilities are enabled and providing deep application insight.",
+    prereqs: ["Observability platform deployed and configured","Metrics, events, logs, and traces correlated across services","RUM enabled, capturing real user sessions from browsers","Real-time alerting covering slow queries, error rate thresholds","Data integrated with Elastic at ingestion","OpenTelemetry instrumentation staged for applicability","Move APM, RUM, and aggregated tracing to production environments","Observability platform (New Relic, Datadog, Elastic APM, or equivalent) covering app, infra, logging (CheckMK, Elastic alerts)"],
+    without: "Without this, we have synthetic monitoring and synthetic monitoring. But not deep capabilities that come with real user monitoring and observability, detection in good and diagnostic decision-making.",
+    bubble: { title: '"Faster diagnosis"', text: "When issues occur, root cause identification is dramatically faster due to end-to-end tracing." }}
+];
+
+const pdBranchLeft = [
+  { num: 5, title: "Synthetic Monitoring Operational and Trusted", status: "not-started",
+    targetStart: "Jun 2026", targetEnd: "Aug 2026",
+    desc: "Synthetic tests simulate critical user journeys and alerts are tuned and trusted.",
+    prereqs: ["Synthetic monitors running continuously from external locations","Tests cover critical API calls (login, search, order creation, data transactions, data lookups)","Alert thresholds tuned to reduce false alerts","False positive rate below a target threshold","Synthetic monitoring integrated with incident creation, on-call notification","Alert tuning in place: right thresholds, severity level detection, on-alert-failure routing"],
+    without: "Without this, synthetic monitoring fires but also rises too often and diagnostics aren't invoked. We know 2-3 is broken but not why.",
     bubble: { title: '"We usually know first"', text: "DMSi detects user-facing issues before customer reports." }},
-  { num: 3, title: "Data Flowing from All Sources", status: "not-started",
-    targetStart: "Mar 2026", targetEnd: "Apr 2026",
-    desc: "Log ingestion pipeline operational. Dynatrace and Elastic running in parallel. All monitoring data sources connected and flowing.",
-    prereqs: ["S2 exit gate satisfied (infrastructure monitoring live)","Dynatrace log ingest configured -- NGINX access/error logs, PASOE application logs, OpenEdge database logs","Custom log parsing rules built -- NGINX, PASOE, and OpenEdge formats require structured field extraction","Log ingestion scope decided -- all logs vs. WARN+ only vs. prod full / non-prod sampled","30-day parallel validation period initiated -- Elastic and Dynatrace log ingestion run simultaneously"],
-    without: "Without this, log migration happens blind. Dashboards get built on incomplete data. Elastic gets decommissioned before Dynatrace proves it can replace it."},
-  { num: 2, title: "Infrastructure Monitoring Modernized", status: "not-started",
-    targetStart: "Feb 2026", targetEnd: "Mar 2026",
-    desc: "OneAgent deployed to all production hosts. ActiveGate in place. Host and service topology validated. Basic infrastructure metrics flowing.",
-    prereqs: ["S1 exit gate satisfied (telemetry strategy, licensing, retention confirmed)","OneAgent rollout to production hosts completed (RHEL 7 compatibility confirmed per-server)","ActiveGate deployed at network boundary for TierPoint hosts lacking direct internet","PASOE process group naming convention established (auto-naming with overrides recommended)","Host and service topology validated in Dynatrace UI -- all production PASOE instances visible and correctly grouped"],
-    without: "Without this, no baseline. No infrastructure signals. Everything above this stage (synthetics, APM, log migration, dashboards) has nothing to attach to."},
+  { num: 4, title: "Application Telemetry Operational", status: "not-started",
+    targetStart: "Apr 2026", targetEnd: "Jun 2026",
+    desc: "Application-level telemetry is flowing from ABL and Frameworks, providing visibility into what the application is doing internally.",
+    prereqs: ["Key ABL procedures instrumented with distributed tracing signals, log correlation","Staging complete: determine which layers, modules, critical checkpoints to instrument","ABL Error logging standardized, application-level event classification, auth events, cache performance","Data flowing to centralized observability platform via standard protocols","Latency, error rate, custom diagnostic metrics, throughput, for key modules, partners, and user journeys configured"],
+    without: "Without this, external monitoring (synthetic, network path) can tell you something is wrong, but you have no visibility into what the application is actually doing. \"We can see it broke but can't unravel why.\""},
   { num: 1, title: "Telemetry Strategy Validated", status: "in-progress",
+    targetStart: "Feb 2026", targetEnd: "Apr 2026",
+    blockers: ["Waiting on Elastic access from Dustin"],
+    desc: "ABL telemetry strategy evaluated against requirements for effective monitoring.",
+    prereqs: ["Existing ABL telemetry requirements documented. What are the critical checkpoints?","Quality audit of ABL/OE telemetry strategy reviewed against industry standards","Diagnostic coverage assessment","Log analytics platform, existing instrumentation and metrics, SLIs","Configuration plan for future platform integration for any identified gaps","Decision on Elastic, Prometheus, and additional telemetry needs"],
+    without: "Without this, we add ABL monitoring on top of fragmented telemetry. Garbage in, garbage out."}
+];
+
+const pdBranchRight = [
+  { num: 3, title: "External Availability and Network Path Monitoring Operational", status: "not-started",
+    targetStart: "Apr 2026", targetEnd: "Jun 2026",
+    desc: "External monitoring confirms systems are reachable and network paths are working.",
+    prereqs: ["Ping, HTTP, and RDP synthetic checks for customer-facing endpoints with availability","Synthetic uptime from external vantage points (customer premises, third-party)","SSL and certificate test with Certificate Authority validation, DNS health, network path continuity, and connectivity"],
+    without: "Without this, network-layer issues outside DMSi control remain invisible. We're unable to distinguish: \"Is the customer network to DMSI broken or is it a DMSI issue?\"",
+    bubble: { title: '"ISP issues identified quickly"', text: "When problems are outside DMSi control, the team knows immediately and can communicate proactively." }},
+  { num: 2, title: "Infrastructure Monitoring Modernized", status: "not-started",
+    targetStart: "Mar 2026", targetEnd: "Apr 2026",
+    desc: "Infrastructure-level monitoring generates actionable signals rather than noise.",
+    prereqs: ["CheckMK monitoring adjusted for relevance and verified performance","Refined threshold tuning: right-sizing alerts for scale signals, not constant noise","Integration with PagerDuty operational","Legacy signal deprecated where no value: retired checks, redundant alerts","Source mapping established: what tool is the authoritative signal for what resource"],
+    without: "Without this, other monitoring layers lack foundation. Infrastructure noise caused noise that streams not applicable without cleanup."}
+];
+
+const pdBottom = [
+  { num: 0, title: "Tool Landscape and Plan Alignment", status: "in-progress",
     targetStart: "Feb 2026", targetEnd: "Mar 2026",
-    desc: "Telemetry approach is defined, licensing is procured, and the team knows exactly what will be instrumented, ingested, and retained.",
-    prereqs: ["S0 exit gate satisfied (D-01, D-02 resolved)","ABL telemetry strategy evaluated against monitoring requirements -- what are the critical checkpoints?","Quality audit of ABL/OE telemetry reviewed against industry standards","Diagnostic coverage assessment completed (log analytics platform, existing instrumentation, metrics, SLIs)","Decision on Elastic migration path, Prometheus, and any additional telemetry needs"],
-    without: "Without this, we deploy agents and ingest logs without knowing what \"good\" looks like. Garbage in, garbage out. Licensing surprises hit mid-implementation."},
-  { num: 0, title: "Foundation and Plan Alignment", status: "in-progress",
+    desc: "Current tools have been evaluated and we are aligned on desired approach.",
+    prereqs: ["Current monitoring landscape inventoried (CheckMK, Elastic, Prometheus, other deployed probes, etc.)","Tool validation: what's configured, what's been deployed, what is vendor-readable",{ main: "Evaluation of preferred path options:", sub: ["Path A (Current tools): checkMK, cost, Elastic, Elastic, CheckMK, native monitoring, or best option among current tooling.","Path B (New platform): higher cost, faster results, cleaner architecture, full capability tooling."] },"ITIL readiness: can we configure response vs. alerting models?","Stakeholder agreement with entire team strategy with outside guidance and team goals"],
+    without: "Without this, we start work without knowing if we are covering with appropriate tools and/or resources."}
+];
+
+const viStages = [
+  { num: 5, title: "Operational Adoption", status: "not-started",
+    targetStart: "Aug 2026", targetEnd: "Oct 2026",
+    desc: "Dashboards are part of daily workflows. People check them, reference them in conversations, and trust what they see.",
+    prereqs: ["Dashboards are automatic-to-the-right-person","Data has been validated against reality (trust established)","No competing 'shadow' spreadsheets or manual reports undermining confidence","Habit formation has occurred (people know where to look how find)"],
+    without: "Without this, dashboards exist but collect dust. The system is built but not used.",
+    bubble: { title: '"Informed conversations"', text: "Customer interactions reference real data; \"let me check\" becomes \"here's what I see.\"" }},
+  { num: 4, title: "Persona-Relevant Views", status: "not-started",
+    targetStart: "Jun 2026", targetEnd: "Aug 2026",
+    desc: "Each stakeholder group has views that answer their specific questions.",
+    prereqs: ["We know what questions each persona needs answered","Dashboards have been built to persona-first priorities","Data supports those views (right fields, right granularity, right time ranges)","Navigation and access patterns match how people actually work"],
+    without: "Without this, dashboards exist but don't answer the questions people are asking. Users bounce off.",
+    bubble: { title: '"Support sees what\'s happening"', text: "Support can answer customer questions without escalating; faster first-call resolution." }},
+  { num: 3, title: "Data Quality Validated", status: "not-started",
+    targetStart: "May 2026", targetEnd: "Jun 2026",
+    desc: "Data in Elastic is accurate, timely, and complete.",
+    prereqs: ["Data freshness validated against source systems (spot checks, reconciliation)","Gaps and inconsistencies have been identified and resolved","Sentinel tests that guarantee inbound data quality at runtime (canary tests)","Stale-badge: a health-check-stamp people know when numbers came from"],
+    without: "Without this, dashboards show data but no one trusts it. Inaccurate numbers kill adoption."},
+  { num: 2, title: "Data Flowing from All Sources", status: "not-started",
+    targetStart: "Apr 2026", targetEnd: "May 2026",
+    desc: "All critical source systems are streaming data to Elastic continuously.",
+    prereqs: ["Connectivity established for each source","Data pipelines pushing without intervention","No gaps in the data stream (reliable, continuous flow)","Monitoring in place to detect broken pipelines"],
+    without: "Without this, some dashboards work and some are empty. Partial visibility is often worse than none."},
+  { num: 1, title: "Per-Source Connectivity", status: "in-progress",
+    targetStart: "Mar 2026", targetEnd: "Apr 2026",
+    blockers: ["Waiting on read-only server access across environments"],
+    desc: "Each individual source system has a working, validated connection to Elastic.",
+    prereqs: ["Elastic configured to receive data from this source type","Auth/certs/infra and network access in place","Initial data transfer validated (data arrives, format correct)","Known issues documented"],
+    without: "Without this, we're still in integration work. Each source is its own set of tests."},
+  { num: 0, title: "Foundation Ready", status: "in-progress",
     targetStart: "Feb 2026", targetEnd: "Mar 2026",
-    desc: "Tool landscape assessed, engagement secured, plan aligned with all stakeholders.",
-    prereqs: ["Read-only access to all production environments granted (servers, Elastic, CheckMK, PagerDuty)","Full environment inventory completed -- server OS versions, PASOE instance count, custom services, trial infrastructure scope","TierPoint network topology mapped -- which hosts reach internet directly vs. require ActiveGate relay","Elastic usage confirmed as monitoring/observability only (not app search or customer-facing)","Key stakeholders identified and engaged (Andy, Brent, Leanne GRC, Jared Support, Hilltop)"],
-    without: "Without this, everything downstream is built on assumptions. Wrong deployment model, wrong licensing, wrong scope. The entire timeline resets."}
+    desc: "Elastic is prepared and we know what needs to connect.",
+    prereqs: ["Current Elastic configuration has been analyzed","Required configuration changes are documented and implemented","Critical source systems that feed dashboards are inventoried","Priority order for source connections is established"],
+    without: "Without this, we don't know what we're building toward or whether Elastic can handle it."}
 ];
 
 const paStages = [
@@ -1247,7 +1044,7 @@ const lsStages = [
     targetStart: "Feb 2026", targetEnd: "Mar 2026",
     blockers: ["Depends on Workstream A capabilities and Workstream B/C alignment"],
     desc: "Other Workstream A capabilities and Workstream B/C work are far enough along that Learning System has clean data to work with and infrastructure to build on.",
-    prereqs: ["Visibility Infrastructure: monitoring operational, data flowing, dashboards in progress","Pipeline Automation: config inventory started, Git ready, pipeline early/in progress","Workstream B/C alignment: direct confirmation that Learning System's workload dependencies confirmed","Scope alignment: does this overlap/use Visibility Infrastructure or Learning System as a data source?","Milestone dependency: M3 brings Learning System S1; M4 brings S1 and S2; plan for early maturity"],
+    prereqs: ["Visibility Infrastructure: Elastic operational, data flowing, dashboards in progress","Proactive Detection: config/alerting system up and running, data flow corrections underway","Pipeline Automation: config inventory started, Git ready, pipeline early/in progress","Workstream B/C alignment: direct confirmation that Learning System's workload dependencies confirmed","Scope alignment: does this overlap/use Visibility Infrastructure or Learning System as a data source?","Milestone dependency: M3 brings Learning System S1; M4 brings S1 and S2; plan for early maturity"],
     without: "Without this, Learning System tries building without reliable data or clear foundation. Starting too early means it ingests garbage."}
 ];
 
@@ -1485,108 +1282,6 @@ const wsdStages = [
     without: "We build dashboards that answer the wrong questions for the wrong people, or we discover mismatches late -- the data doesn't exist." }
 ];
 
-/* Sprint calendar: matches Capability-map/Sprint Calendar.csv (Start, End per sprint) */
-const sprintCalendar = [
-  { start: "02/16/26", end: "02/27/26" },
-  { start: "03/02/26", end: "03/13/26" },
-  { start: "03/16/26", end: "03/27/26" },
-  { start: "03/30/26", end: "04/13/26" },
-  { start: "04/13/26", end: "04/27/26" },
-  { start: "04/27/26", end: "05/11/26" },
-  { start: "05/11/26", end: "05/25/26" },
-  { start: "05/25/26", end: "06/08/26" },
-  { start: "06/08/26", end: "06/22/26" },
-  { start: "06/22/26", end: "07/06/26" },
-  { start: "07/06/26", end: "07/20/26" },
-  { start: "07/20/26", end: "08/03/26" },
-  { start: "08/03/26", end: "08/17/26" },
-  { start: "08/17/26", end: "08/31/26" },
-  { start: "08/31/26", end: "09/14/26" },
-  { start: "09/14/26", end: "09/28/26" },
-  { start: "09/28/26", end: "10/12/26" },
-  { start: "10/12/26", end: "10/26/26" },
-  { start: "10/26/26", end: "11/09/26" },
-  { start: "11/09/26", end: "11/23/26" },
-  { start: "11/23/26", end: "12/07/26" },
-  { start: "12/07/26", end: "12/21/26" },
-  { start: "12/21/26", end: "01/04/27" },
-  { start: "01/04/27", end: "01/18/27" },
-  { start: "01/18/27", end: "02/01/27" }
-];
-
-/** Parse MM/DD/YY, "Mon D, YYYY", or "Mon YYYY" to Date for sprint lookup. */
-function parseStageDate(str) {
-  if (!str || typeof str !== "string") return null;
-  const s = str.trim();
-  const mdy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
-  if (mdy) {
-    const yy = mdy[3].length === 2 ? 2000 + parseInt(mdy[3], 10) : parseInt(mdy[3], 10);
-    return new Date(yy, parseInt(mdy[1], 10) - 1, parseInt(mdy[2], 10));
-  }
-  const months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
-  const monDayY = s.match(/^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})$/);
-  if (monDayY) {
-    const mi = months.indexOf(monDayY[1]);
-    if (mi !== -1) return new Date(parseInt(monDayY[3], 10), mi, parseInt(monDayY[2], 10));
-  }
-  const monY = s.match(/^([A-Za-z]+)\s+(\d{4})$/);
-  if (monY) {
-    const mi = months.indexOf(monY[1]);
-    if (mi !== -1) return new Date(parseInt(monY[2], 10), mi, 15);
-  }
-  return null;
-}
-
-function parseSprintMDY(str) {
-  const [mm, dd, yy] = str.split("/").map(Number);
-  const year = yy < 100 ? 2000 + yy : yy;
-  return new Date(year, mm - 1, dd);
-}
-
-/** Return { num, start, end } for the sprint containing the given date string, or null. */
-function getSprintForDate(dateStr) {
-  const d = parseStageDate(dateStr);
-  if (!d) return null;
-  for (let i = 0; i < sprintCalendar.length; i++) {
-    const s = sprintCalendar[i];
-    const start = parseSprintMDY(s.start);
-    const end = parseSprintMDY(s.end);
-    if (d >= start && d <= end) return { num: i + 1, start: s.start, end: s.end };
-  }
-  return null;
-}
-
-/** Return array of { num, start, end } for all sprints that overlap the stage date range. */
-function getSprintsForDateRange(startStr, endStr) {
-  const startD = parseStageDate(startStr);
-  const endD = parseStageDate(endStr);
-  if (!startD && !endD) return [];
-  const rangeStart = startD || endD;
-  const rangeEnd = endD || startD;
-  const result = [];
-  for (let i = 0; i < sprintCalendar.length; i++) {
-    const s = sprintCalendar[i];
-    const sprintStart = parseSprintMDY(s.start);
-    const sprintEnd = parseSprintMDY(s.end);
-    if (rangeEnd < sprintStart || rangeStart > sprintEnd) continue;
-    result.push({ num: i + 1, start: s.start, end: s.end });
-  }
-  return result;
-}
-
-/** Return 'past' | 'current' | 'future' for a sprint (by num 1..n). */
-function getSprintStatus(sprintNum) {
-  if (!sprintNum || sprintNum < 1 || sprintNum > sprintCalendar.length) return 'future';
-  const s = sprintCalendar[sprintNum - 1];
-  const start = parseSprintMDY(s.start);
-  const end = parseSprintMDY(s.end);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  if (today > end) return 'past';
-  if (today >= start && today <= end) return 'current';
-  return 'future';
-}
-
 /* ═══════════════════════════════ */
 /* RENDERING                       */
 /* ═══════════════════════════════ */
@@ -1610,22 +1305,9 @@ function makeStageCard(stage, capId, idx, theme) {
   const dateText = hasDates
     ? (stage.targetStart === stage.targetEnd ? stage.targetStart : `${stage.targetStart || '?'} &ndash; ${stage.targetEnd || '?'}`)
     : 'Not scheduled';
-  const sprintInfos = getSprintsForDateRange(stage.targetStart, stage.targetEnd);
-  const sprintHtml = sprintInfos.length
-    ? `<div class="sprint-indicators-wrap">` + sprintInfos.map(function (sprintInfo) {
-        const status = getSprintStatus(sprintInfo.num);
-        return `<span class="sprint-indicator sprint-${status}" title="Sprint ${sprintInfo.num}: ${sprintInfo.start} – ${sprintInfo.end}">
-          S${sprintInfo.num}
-          <span class="sprint-indicator-tooltip">Start: ${sprintInfo.start} &nbsp; End: ${sprintInfo.end}</span>
-        </span>`;
-      }).join('') + `</div>`
-    : '';
-  const dateHtml = `<div class="stage-dates-col">
-    <div class="stage-dates">
-      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v4M11 1v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      ${dateText}
-    </div>
-    ${sprintHtml}
+  const dateHtml = `<div class="stage-dates">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v4M11 1v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    ${dateText}
   </div>`;
 
   // Blocker badge (collapsed header)
@@ -1658,9 +1340,6 @@ function makeStageCard(stage, capId, idx, theme) {
           <span class="stage-status-badge">${getStatusLabel(stage.status)}</span>
         </div>
       </div>
-      ${stage.artifactsUrl && stage.artifactsUrl !== '#' ? `<span class="artifact-indicator" title="Artifacts available">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h5.586a1 1 0 01.707.293l3.414 3.414A1 1 0 0113 6.414V13a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" stroke="#2563eb" stroke-width="1.5"/><path d="M8 2v4h4" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </span>` : ''}
       <span class="stage-expand-icon">&#9662;</span>
     </div>
     <div class="stage-body">
@@ -1676,10 +1355,6 @@ function makeStageCard(stage, capId, idx, theme) {
         }).join('')}</ul>
         <div class="without-this">${stage.without}</div>
         ${bubbleHtml}
-        ${stage.artifactsUrl && stage.artifactsUrl !== '#' ? `<a class="artifacts-link" href="${stage.artifactsUrl}" target="_blank" rel="noopener">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h5.586a1 1 0 01.707.293l3.414 3.414A1 1 0 0113 6.414V13a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" stroke="#2563eb" stroke-width="1.5"/><path d="M8 2v4h4" stroke="#2563eb" stroke-width="1.5"/></svg>
-          Stage Artifacts Folder
-        </a>` : ''}
         <div class="status-select">
           <label>Status:</label>
           <select onchange="event.stopPropagation(); updateStageStatus('${capId}', ${stage.num}, this.value)">
@@ -1742,6 +1417,74 @@ function renderLS() {
   });
 }
 
+function renderPD() {
+  const col = document.getElementById('stagesPD');
+  col.innerHTML = '';
+
+  // Top linear stages (7, 6)
+  pdLinearTop.forEach((stage, idx) => {
+    if (idx > 0) col.appendChild(makeConnector(false, 'blue'));
+    col.appendChild(makeStageCard(stage, 'pd', idx, 'blue'));
+  });
+
+  // Split connector
+  const splitDiv = document.createElement('div');
+  splitDiv.className = 'split-connector';
+  splitDiv.innerHTML = `<svg viewBox="0 0 100 36" preserveAspectRatio="none" style="width:100%;height:36px;">
+    <line x1="50" y1="36" x2="50" y2="20" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
+    <line x1="25" y1="20" x2="75" y2="20" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
+    <line x1="25" y1="20" x2="25" y2="0" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
+    <line x1="75" y1="20" x2="75" y2="0" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
+    <polygon points="23.5,5 25,0 26.5,5" fill="#bdbdbd"/>
+    <polygon points="73.5,5 75,0 76.5,5" fill="#bdbdbd"/>
+  </svg>`;
+  col.appendChild(splitDiv);
+
+  // Build left branch (3 items with connectors between)
+  const leftBranch = document.createElement('div');
+  leftBranch.className = 'parallel-branch';
+  pdBranchLeft.forEach((stage, idx) => {
+    if (idx > 0) leftBranch.appendChild(makeConnector(false, 'blue'));
+    leftBranch.appendChild(makeStageCard(stage, 'pd', idx, 'blue'));
+  });
+
+  // Build right branch (2 items with connector between, plus tail to match left height)
+  const rightBranch = document.createElement('div');
+  rightBranch.className = 'parallel-branch';
+  pdBranchRight.forEach((stage, idx) => {
+    if (idx > 0) rightBranch.appendChild(makeConnector(false, 'blue'));
+    rightBranch.appendChild(makeStageCard(stage, 'pd', idx, 'blue'));
+  });
+  // Tail fills remaining vertical space so both branches end at same height
+  const tail = document.createElement('div');
+  tail.className = 'branch-tail';
+  rightBranch.appendChild(tail);
+
+  const parallelRow = document.createElement('div');
+  parallelRow.className = 'parallel-row';
+  parallelRow.appendChild(leftBranch);
+  parallelRow.appendChild(rightBranch);
+  col.appendChild(parallelRow);
+
+  // Merge connector
+  const mergeDiv = document.createElement('div');
+  mergeDiv.className = 'merge-connector';
+  mergeDiv.innerHTML = `<svg viewBox="0 0 100 36" preserveAspectRatio="none" style="width:100%;height:36px;">
+    <line x1="25" y1="0" x2="25" y2="16" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
+    <line x1="75" y1="0" x2="75" y2="16" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
+    <line x1="25" y1="16" x2="75" y2="16" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
+    <line x1="50" y1="16" x2="50" y2="36" stroke="#bdbdbd" stroke-width="0.5" vector-effect="non-scaling-stroke" style="stroke-width:2px"/>
+    <circle cx="50" cy="36" r="1" fill="#bdbdbd"/>
+  </svg>`;
+  col.appendChild(mergeDiv);
+
+  // Bottom stage (0)
+  col.appendChild(makeStageCard(pdBottom[0], 'pd', 0, 'blue'));
+
+  // Update progress
+  const allPdStages = [...pdLinearTop, ...pdBranchLeft, ...pdBranchRight, ...pdBottom];
+}
+
 function renderWSB() {
   const col = document.getElementById('stagesWSB');
   col.innerHTML = '';
@@ -1782,7 +1525,7 @@ function toggleStageCard(id) {
 }
 
 function updateStageStatus(capId, stageNum, value) {
-  const allArrays = capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [];
+  const allArrays = capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [pdLinearTop, pdBranchLeft, pdBranchRight, pdBottom];
   for (const arr of allArrays) {
     const found = arr.find(s => s.num === stageNum);
     if (found) { found.status = value; break; }
@@ -1794,6 +1537,7 @@ function updateStageStatus(capId, stageNum, value) {
   else if (capId === 'wsb') renderWSB();
   else if (capId === 'wsc') renderWSC();
   else if (capId === 'wsd') renderWSD();
+  else renderPD();
 }
 
 function toggleEl(id) {
@@ -1807,545 +1551,77 @@ function toggleEl(id) {
 /* ═══════════════════════════════ */
 
 var EMBEDDED_STATE = {
-  "lastUpdated": "Mar 17, 2026",
-  "summary": {
-    "headline": "Sprint 2 is active across all workstreams.",
-    "narrative": "Work Management and Visibility Infrastructure are on track. Pipeline Automation is in discovery. Workstreams B, C, and D planning is underway with timelines TBD pending tooling decisions."
-  },
-  "milestones": [
-    {
-      "id": "M2",
-      "label": "Establish the Structure",
-      "status": "in-progress"
-    },
-    {
-      "id": "M3",
-      "label": "Build the Foundation",
-      "status": "not-started"
-    },
-    {
-      "id": "M4",
-      "label": "Operationalize Intelligence",
-      "status": "not-started"
-    },
-    {
-      "id": "M5",
-      "label": "Support Excellence",
-      "status": "not-started"
-    },
-    {
-      "id": "M6",
-      "label": "Modernized Release Management",
-      "status": "not-started"
-    },
-    {
-      "id": "M7",
-      "label": "Completion",
-      "status": "not-started"
-    }
-  ],
+  "lastUpdated": "Feb 23, 2026",
   "capabilities": [
-    {
-      "id": "wm",
-      "confidence": "on-track"
-    },
-    {
-      "id": "vi",
-      "confidence": "on-track"
-    },
-    {
-      "id": "pa",
-      "confidence": "on-track"
-    },
-    {
-      "id": "ls",
-      "confidence": "on-track"
-    },
-    {
-      "id": "wsb",
-      "confidence": "discovery"
-    },
-    {
-      "id": "wsc",
-      "confidence": "discovery"
-    },
-    {
-      "id": "wsd",
-      "confidence": "discovery"
-    }
+    { "id": "wm", "confidence": "on-track" },
+    { "id": "vi", "confidence": "on-track" },
+    { "id": "pd", "confidence": "on-track" },
+    { "id": "pa", "confidence": "on-track" },
+    { "id": "ls", "confidence": "on-track" },
+    { "id": "wsb", "confidence": "discovery" },
+    { "id": "wsc", "confidence": "discovery" },
+    { "id": "wsd", "confidence": "discovery" }
   ],
   "stages": [
-    {
-      "capabilityId": "wm",
-      "num": 0,
-      "status": "done",
-      "artifactsUrl": "sharepoint-wm-s0.html",
-      "blockers": [],
-      "targetStart": "Feb 16, 2026",
-      "targetEnd": "Feb 27, 2026"
-    },
-    {
-      "capabilityId": "wm",
-      "num": 1,
-      "status": "done",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Feb 16, 2026",
-      "targetEnd": "Feb 27, 2026"
-    },
-    {
-      "capabilityId": "wm",
-      "num": 2,
-      "status": "in-progress",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Feb 29, 2026",
-      "targetEnd": "Mar 20, 2026"
-    },
-    {
-      "capabilityId": "wm",
-      "num": 3,
-      "status": "in-progress",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Mar 16, 2026",
-      "targetEnd": "Apr 10, 2026"
-    },
-    {
-      "capabilityId": "wm",
-      "num": 4,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Mar 29, 2026",
-      "targetEnd": "Apr 17, 2026"
-    },
-    {
-      "capabilityId": "wm",
-      "num": 5,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "May 4, 2026",
-      "targetEnd": "Jun 5, 2026"
-    },
-    {
-      "capabilityId": "wm",
-      "num": 6,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "May 18, 2026",
-      "targetEnd": "Jun 19, 2026"
-    },
-    {
-      "capabilityId": "vi",
-      "num": 0,
-      "status": "done",
-      "artifactsUrl": "sharepoint-wm-s0.html",
-      "blockers": [],
-      "targetStart": "Feb 16, 2026",
-      "targetEnd": "Feb 27, 2026"
-    },
-    {
-      "capabilityId": "vi",
-      "num": 1,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Apr 28, 2026",
-      "targetEnd": "May 23, 2026"
-    },
-    {
-      "capabilityId": "vi",
-      "num": 2,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "May 26, 2026",
-      "targetEnd": "Aug 8, 2026"
-    },
-    {
-      "capabilityId": "vi",
-      "num": 3,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Jun 8, 2026",
-      "targetEnd": "Aug 8, 2026"
-    },
-    {
-      "capabilityId": "vi",
-      "num": 4,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Jun 15, 2026",
-      "targetEnd": "Jul 11, 2026"
-    },
-    {
-      "capabilityId": "vi",
-      "num": 5,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Jul 20, 2026",
-      "targetEnd": "Aug 15, 2026"
-    },
-    {
-      "capabilityId": "pd",
-      "num": 0,
-      "status": "in-progress",
-      "artifactsUrl": "sharepoint-wm-s0.html",
-      "blockers": [],
-      "targetStart": "Feb 2026",
-      "targetEnd": "Mar 16, 2026"
-    },
-    {
-      "capabilityId": "pd",
-      "num": 1,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "March 2026",
-      "targetEnd": "Apr 2026"
-    },
-    {
-      "capabilityId": "pd",
-      "num": 2,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Mar 2026",
-      "targetEnd": "Apr 2026"
-    },
-    {
-      "capabilityId": "pd",
-      "num": 3,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "pd",
-      "num": 4,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "pd",
-      "num": 5,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "pd",
-      "num": 6,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "pd",
-      "num": 7,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Oct 2026",
-      "targetEnd": "Dec 2026"
-    },
-    {
-      "capabilityId": "pa",
-      "num": 0,
-      "status": "done",
-      "artifactsUrl": "sharepoint-wm-s0.html",
-      "blockers": [],
-      "targetStart": "Feb 16, 2026",
-      "targetEnd": "Feb 22, 2026"
-    },
-    {
-      "capabilityId": "pa",
-      "num": 1,
-      "status": "done",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Mar 2, 2026",
-      "targetEnd": "Mar 13, 2026"
-    },
-    {
-      "capabilityId": "pa",
-      "num": 2,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Mar 16, 2026",
-      "targetEnd": "May 29, 2026"
-    },
-    {
-      "capabilityId": "pa",
-      "num": 3,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Jun 1, 2026",
-      "targetEnd": "Jul 3, 2026"
-    },
-    {
-      "capabilityId": "pa",
-      "num": 4,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Jul 6, 2026",
-      "targetEnd": "Sep 25, 2026"
-    },
-    {
-      "capabilityId": "pa",
-      "num": 5,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Sep 28, 2026",
-      "targetEnd": "Oct 30, 2026"
-    },
-    {
-      "capabilityId": "pa",
-      "num": 6,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "pa",
-      "num": 7,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "pa",
-      "num": 8,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "ls",
-      "num": 0,
-      "status": "not-started",
-      "artifactsUrl": "sharepoint-wm-s0.html",
-      "blockers": []
-    },
-    {
-      "capabilityId": "ls",
-      "num": 1,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "ls",
-      "num": 2,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "ls",
-      "num": 3,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "ls",
-      "num": 4,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "ls",
-      "num": 5,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "ls",
-      "num": 6,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": []
-    },
-    {
-      "capabilityId": "wsb",
-      "num": 0,
-      "status": "not-started",
-      "artifactsUrl": "sharepoint-wm-s0.html",
-      "blockers": [],
-      "targetStart": "Mar 1, 2026",
-      "targetEnd": "Mar 28, 2026"
-    },
-    {
-      "capabilityId": "wsb",
-      "num": 1,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Mar 1, 2026",
-      "targetEnd": "Apr 11, 2026"
-    },
-    {
-      "capabilityId": "wsb",
-      "num": 2,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Mar 15, 2026",
-      "targetEnd": "Apr 25, 2026"
-    },
-    {
-      "capabilityId": "wsb",
-      "num": 3,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Mar 15, 2026",
-      "targetEnd": "May 9, 2026"
-    },
-    {
-      "capabilityId": "wsb",
-      "num": 4,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Apr 12, 2026",
-      "targetEnd": "Jun 20, 2026"
-    },
-    {
-      "capabilityId": "wsb",
-      "num": 5,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Apr 12, 2026",
-      "targetEnd": "Jun 20, 2026"
-    },
-    {
-      "capabilityId": "wsc",
-      "num": 0,
-      "status": "not-started",
-      "artifactsUrl": "sharepoint-wm-s0.html",
-      "blockers": [],
-      "targetStart": "Mar 1, 2026",
-      "targetEnd": "Apr 11, 2026"
-    },
-    {
-      "capabilityId": "wsc",
-      "num": 1,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Mar 15, 2026",
-      "targetEnd": "Apr 11, 2026"
-    },
-    {
-      "capabilityId": "wsc",
-      "num": 2,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Mar 29, 2026",
-      "targetEnd": "May 23, 2026"
-    },
-    {
-      "capabilityId": "wsc",
-      "num": 3,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "May 10, 2026",
-      "targetEnd": "Jun 20, 2026"
-    },
-    {
-      "capabilityId": "wsc",
-      "num": 4,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Jun 21, 2026",
-      "targetEnd": "Oct 24, 2026"
-    },
-    {
-      "capabilityId": "wsc",
-      "num": 5,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "Apr 12, 2026",
-      "targetEnd": "Jan 30, 2027"
-    },
-    {
-      "capabilityId": "wsd",
-      "num": 0,
-      "status": "in-progress",
-      "artifactsUrl": "sharepoint-wm-s0.html",
-      "blockers": [],
-      "targetStart": "March 2026",
-      "targetEnd": "March 2026"
-    },
-    {
-      "capabilityId": "wsd",
-      "num": 1,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "TBD",
-      "targetEnd": "TBD"
-    },
-    {
-      "capabilityId": "wsd",
-      "num": 2,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "TBD",
-      "targetEnd": "TBD"
-    },
-    {
-      "capabilityId": "wsd",
-      "num": 3,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "TBD",
-      "targetEnd": "TBD"
-    },
-    {
-      "capabilityId": "wsd",
-      "num": 4,
-      "status": "not-started",
-      "artifactsUrl": "#",
-      "blockers": [],
-      "targetStart": "TBD",
-      "targetEnd": "TBD"
-    }
+    { "capabilityId": "wm", "num": 0, "status": "done", "blockers": [], "targetStart": "Feb 2026", "targetEnd": "Feb 2026" },
+    { "capabilityId": "wm", "num": 1, "status": "done", "blockers": [], "targetStart": "Feb 2026", "targetEnd": "Mar 2026" },
+    { "capabilityId": "wm", "num": 2, "status": "in-progress", "blockers": [], "targetStart": "Mar 2026", "targetEnd": "Mar 2026" },
+    { "capabilityId": "wm", "num": 3, "status": "not-started", "blockers": [], "targetStart": "Mar 2026", "targetEnd": "Apr 2026" },
+    { "capabilityId": "wm", "num": 4, "status": "not-started", "blockers": [], "targetStart": "Apr 2026", "targetEnd": "May 2026" },
+    { "capabilityId": "wm", "num": 5, "status": "not-started", "blockers": [], "targetStart": "May 2026", "targetEnd": "Jun 2026" },
+    { "capabilityId": "wm", "num": 6, "status": "not-started", "blockers": [] },
+    { "capabilityId": "vi", "num": 0, "status": "in-progress", "blockers": [], "targetStart": "Feb 2026", "targetEnd": "Mar 2026" },
+    { "capabilityId": "vi", "num": 1, "status": "not-started", "blockers": [], "targetStart": "Mar 2026", "targetEnd": "June 2026" },
+    { "capabilityId": "vi", "num": 2, "status": "not-started", "blockers": [], "targetStart": "Apr 2026", "targetEnd": "June 2026" },
+    { "capabilityId": "vi", "num": 3, "status": "not-started", "blockers": [] },
+    { "capabilityId": "vi", "num": 4, "status": "not-started", "blockers": [] },
+    { "capabilityId": "vi", "num": 5, "status": "not-started", "blockers": [] },
+    { "capabilityId": "pd", "num": 0, "status": "in-progress", "blockers": [], "targetStart": "Feb 2026", "targetEnd": "Mar 2026" },
+    { "capabilityId": "pd", "num": 1, "status": "not-started", "blockers": [], "targetStart": "March 2026", "targetEnd": "Apr 2026" },
+    { "capabilityId": "pd", "num": 2, "status": "not-started", "blockers": [], "targetStart": "Mar 2026", "targetEnd": "Apr 2026" },
+    { "capabilityId": "pd", "num": 3, "status": "not-started", "blockers": [] },
+    { "capabilityId": "pd", "num": 4, "status": "not-started", "blockers": [] },
+    { "capabilityId": "pd", "num": 5, "status": "not-started", "blockers": [] },
+    { "capabilityId": "pd", "num": 6, "status": "not-started", "blockers": [] },
+    { "capabilityId": "pd", "num": 7, "status": "not-started", "blockers": [], "targetStart": "Oct 2026", "targetEnd": "Dec 2026" },
+    { "capabilityId": "pa", "num": 0, "status": "done", "blockers": [], "targetStart": "Feb 2026", "targetEnd": "Mar 2026" },
+    { "capabilityId": "pa", "num": 1, "status": "in-progress", "blockers": [], "targetStart": "Feb 2026", "targetEnd": "Mar 2026" },
+    { "capabilityId": "pa", "num": 2, "status": "not-started", "blockers": [], "targetStart": "Mar 2026", "targetEnd": "Apr 2026" },
+    { "capabilityId": "pa", "num": 3, "status": "not-started", "blockers": [], "targetStart": "Apr 2026", "targetEnd": "May 2026" },
+    { "capabilityId": "pa", "num": 4, "status": "not-started", "blockers": [], "targetStart": "May 2026", "targetEnd": "Jun 2026" },
+    { "capabilityId": "pa", "num": 5, "status": "not-started", "blockers": [], "targetStart": "Jun 2026", "targetEnd": "Jul 2026" },
+    { "capabilityId": "pa", "num": 6, "status": "not-started", "blockers": [] },
+    { "capabilityId": "pa", "num": 7, "status": "not-started", "blockers": [] },
+    { "capabilityId": "pa", "num": 8, "status": "not-started", "blockers": [] },
+    { "capabilityId": "ls", "num": 0, "status": "not-started", "blockers": [] },
+    { "capabilityId": "ls", "num": 1, "status": "not-started", "blockers": [] },
+    { "capabilityId": "ls", "num": 2, "status": "not-started", "blockers": [] },
+    { "capabilityId": "ls", "num": 3, "status": "not-started", "blockers": [] },
+    { "capabilityId": "ls", "num": 4, "status": "not-started", "blockers": [] },
+    { "capabilityId": "ls", "num": 5, "status": "not-started", "blockers": [] },
+    { "capabilityId": "ls", "num": 6, "status": "not-started", "blockers": [] },
+    { "capabilityId": "wsb", "num": 0, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsb", "num": 1, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsb", "num": 2, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsb", "num": 3, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsb", "num": 4, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsb", "num": 5, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsc", "num": 0, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsc", "num": 1, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsc", "num": 2, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsc", "num": 3, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsc", "num": 4, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsc", "num": 5, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsd", "num": 0, "status": "in-progress", "blockers": [], "targetStart": "March 2026", "targetEnd": "March 2026" },
+    { "capabilityId": "wsd", "num": 1, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsd", "num": 2, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsd", "num": 3, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" },
+    { "capabilityId": "wsd", "num": 4, "status": "not-started", "blockers": [], "targetStart": "TBD", "targetEnd": "TBD" }
   ]
 };
 
-
-
-
-
-
-
-
-
 function getStageArrays(capId) {
-  return capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [];
+  return capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [pdLinearTop, pdBranchLeft, pdBranchRight, pdBottom];
 }
 
 function applyState(state) {
@@ -2377,133 +1653,18 @@ function applyState(state) {
           found.blockers = Array.isArray(s.blockers) ? s.blockers : (found.blockers || []);
           if ('targetStart' in s) found.targetStart = s.targetStart;
           if ('targetEnd' in s) found.targetEnd = s.targetEnd;
-          // Do not clear dates when state has no dates for this stage (e.g. PA 6–8 are unmapped)
-          if ('artifactsUrl' in s) found.artifactsUrl = s.artifactsUrl;
+          if (!('targetStart' in s) && !('targetEnd' in s)) { found.targetStart = undefined; found.targetEnd = undefined; }
           break;
         }
       }
     });
   }
-  // Render summary panel
-  if (state.summary || state.milestones) {
-    renderSummaryPanel(state);
-  }
 }
-
-/* ── Summary panel ── */
-const CAP_LABELS = {
-  wm: 'Work Management', vi: 'Visibility Infrastructure',
-  pa: 'Pipeline Automation', ls: 'Learning System', wsb: 'Support Operating Model',
-  wsc: 'Support & Engineering Tooling', wsd: 'Strategic Visibility'
-};
-
-function getAllStages() {
-  return [
-    ...wmStages.map(s => ({ ...s, capId: 'wm' })),
-    ...viStages.map(s => ({ ...s, capId: 'vi' })),
-    ...paStages.map(s => ({ ...s, capId: 'pa' })),
-    ...lsStages.map(s => ({ ...s, capId: 'ls' })),
-    ...wsbStages.map(s => ({ ...s, capId: 'wsb' })),
-    ...wscStages.map(s => ({ ...s, capId: 'wsc' })),
-    ...wsdStages.map(s => ({ ...s, capId: 'wsd' }))
-  ];
-}
-
-function renderSummaryPanel(state) {
-  // Narrative
-  if (state.summary) {
-    const h = document.getElementById('summaryHeadline');
-    const n = document.getElementById('summaryNarrativeText');
-    if (h) h.textContent = state.summary.headline || '';
-    if (n) n.textContent = state.summary.narrative || '';
-  }
-
-  // Milestones
-  if (state.milestones) {
-    const container = document.getElementById('milestonePills');
-    if (container) {
-      container.innerHTML = state.milestones.map(m => {
-        const cls = m.status === 'done' ? 'm-done' : m.status === 'in-progress' ? 'm-in-progress' : 'm-not-started';
-        const badge = m.status === 'done' ? '&#10003;' : m.id;
-        return `<div class="milestone-pill ${cls}">
-          <span class="m-badge">${badge}</span>
-          <span class="m-label">${m.label}</span>
-        </div>`;
-      }).join('');
-    }
-  }
-
-  // Recent completions (done stages, up to 4)
-  const all = getAllStages();
-  const done = all.filter(s => s.status === 'done').slice(0, 4);
-  const recentEl = document.getElementById('recentList');
-  if (recentEl) {
-    if (done.length === 0) {
-      recentEl.innerHTML = '<div class="activity-item"><span class="a-meta">None completed yet.</span></div>';
-    } else {
-      recentEl.innerHTML = done.map(s => `
-        <div class="activity-item">
-          <span class="a-title">S${s.num}: ${s.title}</span>
-          <span class="a-meta">${s.targetEnd ? 'Completed ' + s.targetEnd : 'Complete'} &middot; <span class="a-cap">${CAP_LABELS[s.capId] || s.capId}</span></span>
-        </div>`).join('');
-    }
-  }
-
-  // Coming next (in-progress first, then not-started with targetStart, up to 4)
-  const inProg = all.filter(s => s.status === 'in-progress');
-  const upcoming = all.filter(s => s.status === 'not-started' && s.targetStart && s.targetStart !== 'TBD');
-  const next = [...inProg, ...upcoming].slice(0, 4);
-  const upcomingEl = document.getElementById('upcomingList');
-  if (upcomingEl) {
-    if (next.length === 0) {
-      upcomingEl.innerHTML = '<div class="activity-item"><span class="a-meta">Dates TBD.</span></div>';
-    } else {
-      upcomingEl.innerHTML = next.map(s => {
-        const dateStr = s.status === 'in-progress'
-          ? (s.targetEnd ? 'Target: ' + s.targetEnd : 'In progress')
-          : (s.targetStart ? 'Starts: ' + s.targetStart : '');
-        return `<div class="activity-item">
-          <span class="a-title">S${s.num}: ${s.title}</span>
-          <span class="a-meta">${dateStr} &middot; <span class="a-cap">${CAP_LABELS[s.capId] || s.capId}</span></span>
-        </div>`;
-      }).join('');
-    }
-  }
-}
-
-function toggleSummary() {
-  const panel = document.getElementById('summaryPanel');
-  const label = document.getElementById('summaryToggleLabel');
-  const icon = document.getElementById('summaryToggleIcon');
-  const hidden = panel.style.display === 'none';
-  panel.style.display = hidden ? '' : 'none';
-  label.textContent = hidden ? 'Hide summary' : 'Show summary';
-  icon.innerHTML = hidden ? '&#9650;' : '&#9660;';
-}
-
-function openSprintModal() {
-  const m = document.getElementById('sprintModal');
-  m.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeSprintModal() {
-  const m = document.getElementById('sprintModal');
-  m.classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function handleModalClick(e) {
-  if (e.target === document.getElementById('sprintModal')) closeSprintModal();
-}
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeSprintModal();
-});
 
 function renderAll() {
   renderWM();
   renderVI();
+  renderPD();
   renderPA();
   renderLS();
   renderWSB();
@@ -2541,7 +1702,7 @@ function switchTab(tabId) {
 
 // Equalize capability card heights
 function equalizeCapCards() {
-  const ids = ['capWM','capVI','capPA','capLS'];
+  const ids = ['capWM','capVI','capPD','capPA','capLS'];
   const cards = ids.map(id => document.getElementById(id)).filter(Boolean);
   if (!cards.length || !cards[0].offsetParent) return;
   cards.forEach(c => c.style.minHeight = '');
@@ -2560,104 +1721,6 @@ function equalizeBCCards() {
 
 window.addEventListener('resize', function () { equalizeCapCards(); equalizeBCCards(); });
 </script>
-
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- SPRINT DETAIL MODAL                                -->
-<!-- ═══════════════════════════════════════════════════ -->
-<div class="sprint-modal-overlay" id="sprintModal" onclick="handleModalClick(event)">
-  <div class="sprint-modal">
-    <div class="sprint-modal-header">
-      <div>
-        <h2>Sprint 2 &mdash; DMSi Operational Readiness</h2>
-        <div class="sprint-meta">Program: Operational Readiness &nbsp;&middot;&nbsp; Mar 1 &ndash; Mar 14, 2026</div>
-      </div>
-      <button class="sprint-modal-close" onclick="closeSprintModal()">&#x2715;</button>
-    </div>
-    <div class="sprint-modal-body">
-
-      <div class="sprint-section-label">Sprint Context</div>
-      <p class="sprint-narrative">
-        Sprint 2 builds on the discovery and documentation foundation from Sprint 1 and moves toward
-        <strong>active integration, decision-making, and the establishment of repeatable patterns.</strong>
-        All work aligns with the North Star: <em>efficiency and reliability to support DMSi's growth.</em>
-        The Dynatrace decision is the biggest blocker across capabilities. Work not dependent on that decision
-        is prioritized to keep momentum and show progress at each stage.
-      </p>
-
-      <div class="sprint-section-label" style="margin-bottom:10px;">This Sprint's Interactions</div>
-      <table class="sprint-table" style="margin-bottom:20px;">
-        <thead>
-          <tr>
-            <th>Area</th>
-            <th>Focus</th>
-            <th>Who</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>PagerDuty AIOps Integration</td><td>Focus on PagerDuty AIOps rollout and monitoring optimization to enhance incident management and reduce alert noise.</td><td>Dustin, Tom, Jack</td></tr>
-          <tr><td>NGINX Pipeline Discovery</td><td>Map existing NGINX pipeline automation and establish configuration management patterns for future workflows.</td><td>Rex</td></tr>
-          <tr><td>Tool Rationalization Prep</td><td>Executive decision package: cost analysis, tool rationalization, transition planning.</td><td>Brent</td></tr>
-          <tr><td>CheckMK Documentation</td><td>Script reduction and optimization to reduce alert noise during transition.</td><td>Rex, Dustin, Tom</td></tr>
-          <tr><td>Engineering Scorecard</td><td>Prioritize actionable metrics for a scorecard to assess operational effectiveness and cultural health. Conduct a gap analysis against current collection capability.</td><td>Andy, Bryan, Engineering team</td></tr>
-          <tr><td>Engineering Work Management</td><td>Establishing design principles and process wireframes for planned work prioritization, assignment, and tracking.</td><td>Andy</td></tr>
-        </tbody>
-      </table>
-
-      <div class="sprint-section-label" style="margin-bottom:10px;">Sprint 2 Focus by Capability</div>
-      <table class="sprint-table" style="margin-bottom:24px;">
-        <thead>
-          <tr>
-            <th>Capability</th>
-            <th>What We're Doing</th>
-            <th>Sprint Target</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>WSA: Visibility Infrastructure</td>
-            <td>PagerDuty integration setup, incident workflow design, training coordination with DMSi team.</td>
-            <td><span class="target-badge">Integration active with incident workflows documented and team engaged</span></td>
-          </tr>
-          <tr>
-            <td>WSA: Pipeline Automation</td>
-            <td>NGINX pipeline discovery and design phase: document requirements, constraints, and tooling options with Rex.</td>
-            <td><span class="target-badge">Pipeline design framework scoped and documented; GitHub Actions feasibility assessed</span></td>
-          </tr>
-          <tr>
-            <td>WSA: Visibility Infrastructure</td>
-            <td>Foundation and plan alignment; consolidate existing analysis into executive decision package with cost comparison and transition plan. CheckMK script cleanup to stabilize current monitoring baseline.</td>
-            <td><span class="target-badge">Decision package ready; continued reduction of script overhead and alert noise</span></td>
-          </tr>
-          <tr>
-            <td>WSD: Strategic Visibility</td>
-            <td>Define DORA metrics requirements, identify current collection gaps, propose initial scorecard framework.</td>
-            <td><span class="target-badge">Requirements defined, gap analysis complete, proposed scorecard for engineering review</span></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="sprint-section-label" style="margin-bottom:10px;">Value We're Driving Toward</div>
-      <div class="sprint-value-grid">
-        <div class="sprint-value-card">
-          <div class="vc-icon">&#128200;</div>
-          <div class="vc-title">Cost Avoidance &amp; Profitable Scaling</div>
-          <div class="vc-desc">Dynatrace decision and tool rationalization aim to reduce redundant tooling costs across CheckMK, Elastic, and New Relic. Engineering scorecard establishes the baseline for measuring capacity allocation.</div>
-        </div>
-        <div class="sprint-value-card">
-          <div class="vc-icon">&#128274;</div>
-          <div class="vc-title">Enhanced Reliability &amp; Stability</div>
-          <div class="vc-desc">PagerDuty integration and CheckMK cleanup directly reduce alert noise and improve incident response. NGINX pipeline discovery creates automation patterns that prevent configuration-related incidents.</div>
-        </div>
-        <div class="sprint-value-card">
-          <div class="vc-icon">&#128101;</div>
-          <div class="vc-title">Enhanced Customer Experience</div>
-          <div class="vc-desc">Faster incident detection and structured communication workflows address the core concern: DMSi should be aware of problems before customers do. Progress toward proactive monitoring moves closer to that goal.</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
