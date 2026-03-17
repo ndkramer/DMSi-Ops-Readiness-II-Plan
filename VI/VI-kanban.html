@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VI Kanban Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background-color: #2B2B2B;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        header a {
+            color: #76BE43;
+            text-decoration: none;
+            font-size: 24px;
+            margin-right: 20px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        header a:hover {
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: normal;
+            flex: 1;
+        }
+
+        .outcome-selector {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .outcome-selector h2 {
+            margin-bottom: 20px;
+            color: #2B2B2B;
+        }
+
+        .outcome-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .outcome-link {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+            border-left: 4px solid #76BE43;
+        }
+
+        .outcome-link:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .outcome-link .outcome-id {
+            font-weight: bold;
+            color: #76BE43;
+            font-size: 14px;
+        }
+
+        .outcome-link .outcome-name {
+            font-size: 16px;
+            margin-top: 8px;
+            color: #2B2B2B;
+        }
+
+        .kanban-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            background: #f9f9f9;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .column-header {
+            padding: 15px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .column-backlog .column-header {
+            background-color: #3498DB;
+        }
+
+        .column-advancing .column-header {
+            background-color: #76BE43;
+        }
+
+        .column-stalled .column-header {
+            background-color: #E67E22;
+        }
+
+        .column-blocked .column-header {
+            background-color: #E74C3C;
+        }
+
+        .column-done .column-header {
+            background-color: #999;
+        }
+
+        .cards-container {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            max-height: calc(100vh - 250px);
+        }
+
+        .card {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        }
+
+        .card-id {
+            font-weight: bold;
+            color: #76BE43;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .card-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2B2B2B;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .subtasks-toggle {
+            background: none;
+            border: none;
+            color: #76BE43;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0;
+            text-align: left;
+            transition: color 0.2s;
+        }
+
+        .subtasks-toggle:hover {
+            color: #5a9530;
+        }
+
+        .subtasks-toggle.expanded::before {
+            content: "▼ ";
+        }
+
+        .subtasks-toggle:not(.expanded)::before {
+            content: "▶ ";
+        }
+
+        .subtasks {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .subtasks.visible {
+            display: block;
+        }
+
+        .subtask-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        .subtask-item input[type="checkbox"] {
+            margin-right: 8px;
+            margin-top: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .subtask-text {
+            flex: 1;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            padding: 20px 10px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 1200px) {
+            .kanban-board {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kanban-board {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            header a {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="VI-WSB-Outcome-Map.html">← Back</a>
+        <h1 id="page-title">VI Kanban Board</h1>
+    </header>
+
+    <div id="outcome-selector" class="outcome-selector" style="display: none;">
+        <h2>Select an Outcome</h2>
+        <div class="outcome-list" id="outcomes-list"></div>
+    </div>
+
+    <div id="kanban-view" class="kanban-container" style="display: none;">
+        <div class="kanban-board">
+            <div class="column column-backlog">
+                <div class="column-header">Backlog</div>
+                <div class="cards-container" id="backlog-cards"></div>
+            </div>
+            <div class="column column-advancing">
+                <div class="column-header">Advancing</div>
+                <div class="cards-container" id="advancing-cards"></div>
+            </div>
+            <div class="column column-stalled">
+                <div class="column-header">Stalled</div>
+                <div class="cards-container" id="stalled-cards"></div>
+            </div>
+            <div class="column column-blocked">
+                <div class="column-header">Blocked</div>
+                <div class="cards-container" id="blocked-cards"></div>
+            </div>
+            <div class="column column-done">
+                <div class="column-header">Done</div>
+                <div class="cards-container" id="done-cards"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const outcomeData = {
+            "OC-16": {
+                "name": "PagerDuty AIOps Deployed and Validated",
+                "deliverables": [
+                    {"id": "OC-16.1", "name": "Phase 1 -- STL Service Deployment", "subtasks": ["Enable alert grouping on STL, STL-progress (lowest-risk services)", "Validate grouping behavior for 48+ hours", "Add auto-pause notifications after grouping is confirmed working", "Monitor for: P1-Critical integrity, alert flow, grouping accuracy, pause effectiveness"]},
+                    {"id": "OC-16.2", "name": "Phase 2 -- Medium/High Risk Service Expansion", "subtasks": ["Enable alert grouping on BCC-progress, ABC-progress, ABC", "72-hour validation for ABC services", "Add auto-pause after grouping confirmed", "Go/no-go decision made jointly"]},
+                    {"id": "OC-16.3", "name": "Phase 3 -- Full Service Deployment", "subtasks": ["Full deployment across all remaining services", "Voicemail services excluded from auto-pause", "Go/no-go decision made jointly before proceeding"]},
+                    {"id": "OC-16.4", "name": "30-Day Learning Period Monitoring", "subtasks": ["Weeks 1-2: Active daily monitoring by Dynamo", "Weeks 3-4: Every-other-day reviews, weekly summary reports", "Week 5+: Weekly summary reviews only, DMSi owns day-to-day"]},
+                    {"id": "OC-16.5", "name": "Tuning and Optimization", "subtasks": ["Holistic tuning across all services after 30-day learning period", "Adjust grouping sensitivity and pause windows based on data", "Target: <50 actionable alerts/week"]},
+                    {"id": "OC-16.6", "name": "DMSi Counterpart Handover", "subtasks": ["1-2 DMSi counterparts identified by Bryan", "Counterparts participate in monitoring reviews during rollout", "Gradual ownership transfer: observer -> participant -> owner", "Dynamo available for support as needed post-handover"]},
+                    {"id": "OC-16.7", "name": "Team Communication", "subtasks": ["Dynamo drafts team-wide communication before each phase", "Bryan distributes to full engineering team", "Content: what changed, what looks different, what has NOT changed, who to contact"]}
+                ]
+            },
+            "OC-01": {
+                "name": "Foundation Planning and Architecture Complete",
+                "deliverables": [
+                    {"id": "OC-01.1", "name": "Environment Inventory and Gap Assessment", "subtasks": ["Document all Windows and Linux hosts in scope", "Inventory all PASOE instances", "Map current CheckMK alert coverage to hosts", "Review Elastic index structure and log sources", "Document all current PagerDuty services and escalation policies", "Identify infrastructure NOT owned by DMSi", "Produce completed inventory spreadsheet"]},
+                    {"id": "OC-01.2", "name": "Dynatrace Architecture Design", "subtasks": ["Determine OneAgent deployment model", "Design ActiveGate topology", "Confirm network connectivity requirements", "Identify Progress OpenEdge monitoring constraints", "Define monitoring layers and owner for each", "Document the RDP delivery model limitation for RUM", "Produce an architecture diagram"]},
+                    {"id": "OC-01.3", "name": "Integration Architecture", "subtasks": ["Design PagerDuty integration", "Design status page automation", "Design CheckMK coexistence plan", "Define alert ownership model", "Document integration architecture"]},
+                    {"id": "OC-01.4", "name": "A2W Telemetry Strategy (M3 Deliverable)", "subtasks": ["Document current-state monitoring approach for RDP-delivered Agility", "Define target-state monitoring requirements for A2W", "Map Dynatrace capabilities to A2W target state", "Identify instrumentation work for dev team at A2W launch", "Produce telemetry strategy document"]},
+                    {"id": "OC-01.5", "name": "Custom Script Rationalization Planning", "subtasks": ["Inventory all custom monitoring scripts", "Centralize script inventory into GitHub", "Classify each script: replaced by OneAgent, replaceable via Extension Framework, or must be retained", "Document retained scripts and why OneAgent doesn't cover them", "Identify scripts that feed data into Elastic indices"]},
+                    {"id": "OC-01.6", "name": "Elastic Inventory and Log Source Mapping", "subtasks": ["Identify Elastic cluster owner and admin credentials", "Export inventory of all Elastic indices", "Map each index to a log source", "Identify Kibana dashboards in use", "Identify Elastic alerts or Watcher rules", "Estimate daily log ingest volume in GB/day", "Produce completed log source inventory"]}
+                ]
+            },
+            "OC-02": {
+                "name": "Telemetry Strategy and Licensing Resolved",
+                "deliverables": [
+                    {"id": "OC-02.1", "name": "ABL Telemetry Evaluation", "subtasks": ["Document ABL telemetry critical checkpoints", "Quality audit of existing ABL/OE telemetry", "Diagnostic coverage assessment", "Decision on Elastic migration path"]},
+                    {"id": "OC-02.2", "name": "OpenTelemetry Feasibility Assessment", "subtasks": ["Confirm Progress OpenEdge version supports OpenTelemetry SDK", "Evaluate feasibility of custom spans for ABL-level transaction context", "Document OpenTelemetry gap vs. native OneAgent JVM detection", "Produce feasibility report"]},
+                    {"id": "OC-02.3", "name": "Log Retention and Compliance Review", "subtasks": ["Confirm current Elastic log retention policy", "Leanne (GRC) confirms compliance requirements for log retention", "Measure daily log ingest volume from Elastic index sizes", "Document retention decision and DDU impact"]},
+                    {"id": "OC-02.4", "name": "Licensing and Procurement", "subtasks": ["Estimate host unit count for OneAgent licensing", "Evaluate DPS vs. classic host-based licensing", "Engage Dynatrace account team for POC tenant", "Confirm SaaS vs. Managed deployment decision", "Finalize POC scope and licensing decision", "Confirm budget authorization with Hilltop", "Route procurement through DMSi process", "Complete licensing procurement", "Document final licensing scope and cost"]},
+                    {"id": "OC-02.5", "name": "RBAC Design", "subtasks": ["Define Admin / Operator / Viewer role mapping", "Confirm whether customer-visible dashboards are shared externally"]},
+                    {"id": "OC-02.6", "name": "New Relic Scope Clarification", "subtasks": ["Confirm whether New Relic is actively used", "If active, map New Relic scope to Dynatrace capabilities", "Define coexistence plan or replacement timeline"]}
+                ]
+            },
+            "OC-03": {
+                "name": "Dynatrace Platform and Integrations Deployed",
+                "deliverables": [
+                    {"id": "OC-03.1", "name": "Dynatrace Tenant Setup", "subtasks": ["Provision Dynatrace SaaS tenant", "Configure network zones", "Set up user accounts with RBAC", "Configure tagging strategy", "Enable auto-tagging rules"]},
+                    {"id": "OC-03.2", "name": "ActiveGate Deployment", "subtasks": ["Deploy Environment ActiveGate(s)", "Validate outbound HTTPS connectivity", "Configure ActiveGate for OneAgent traffic routing", "Test failover if multiple ActiveGates", "Document host requirements and reserve capacity"]},
+                    {"id": "OC-03.3", "name": "PagerDuty Integration", "subtasks": ["Configure Dynatrace alerting profiles", "Create PagerDuty integration via portable webhook layer", "Map severity levels to PagerDuty priority", "Route alerts to appropriate services and escalation policies", "Test end-to-end alert flow", "Document deduplication logic for CheckMK parallel period"]},
+                    {"id": "OC-03.4", "name": "Status Page Integration", "subtasks": ["Map monitored entities to status page components", "Configure webhook for status page updates", "Define status page update logic", "Test automated status update flow", "Define manual override process"]}
+                ]
+            },
+            "OC-04": {
+                "name": "Host Fleet Instrumented",
+                "deliverables": [
+                    {"id": "OC-04.1", "name": "OneAgent Deployment -- Infrastructure Monitoring", "subtasks": ["Confirm RHEL 7 OneAgent compatibility", "Test OneAgent install on non-production host", "Document deployment procedure", "Deploy OneAgent to application hosts", "Deploy OneAgent to database hosts", "Deploy OneAgent to NGINX Hosts", "Validate process group detection", "Confirm infrastructure metrics flowing", "Create host groups matching environment topology", "Validate PASOE process detection", "Determine OpenEdge ABL process detectability", "Configure Extension Framework 2.0 if required", "Instrument NGINX with Dynatrace extension", "Define process availability monitoring for PASOE", "Document gap analysis"]},
+                    {"id": "OC-04.2", "name": "Progress OpenEdge and PASOE Monitoring", "subtasks": []}
+                ]
+            },
+            "OC-05": {
+                "name": "Infrastructure Visibility Validated",
+                "deliverables": [
+                    {"id": "OC-05.1", "name": "Initial Infrastructure Dashboards", "subtasks": ["Build infrastructure health overview dashboard", "Build PASOE/NGINX process dashboard", "Build capacity planning dashboard", "Review dashboards with Andy and Brent"]},
+                    {"id": "OC-05.2", "name": "Coverage Gap Analysis Report", "subtasks": ["Compare Dynatrace host list against OC-01.1 inventory", "Identify any hosts not reporting", "Document coverage percentage and remediation plan"]},
+                    {"id": "OC-05.3", "name": "30-Day Validation Report", "subtasks": ["Compile 30-day comparison: Dynatrace vs. CheckMK", "Document any incidents missed by either platform", "Produce sign-off document for Andy and Brent"]}
+                ]
+            },
+            "OC-06": {
+                "name": "Log Management Migrated",
+                "deliverables": [
+                    {"id": "OC-06.1", "name": "Dynatrace Log Management Activation", "subtasks": ["Enable Log Management in the tenant", "Configure log ingestion scope"]},
+                    {"id": "OC-06.2", "name": "Key Log Source Ingestion", "subtasks": ["Configure PASOE application logs", "Configure NGINX access and error logs", "Configure Windows Event Log forwarding", "Configure Linux syslog forwarding", "Configure OpenEdge database logs"]},
+                    {"id": "OC-06.3", "name": "Log Processing and Parsing", "subtasks": ["Define log processing rules", "Build custom parsing rules", "Validate log search and query capability vs. Kibana"]},
+                    {"id": "OC-06.4", "name": "Remaining Log Source Migration", "subtasks": ["Identify remaining log sources", "Recreate Kibana dashboards in Dynatrace", "Confirm all Elastic alert rules recreated or deprecated"]},
+                    {"id": "OC-06.5", "name": "Elastic Alert Migration", "subtasks": ["Identify Elastic-based alerts routing to PagerDuty", "Recreate highest-priority log-based alerts in Dynatrace", "Capture Elastic admin access and runbook documentation"]},
+                    {"id": "OC-06.6", "name": "Parallel Validation", "subtasks": ["Initiate 30-day parallel validation period", "Engineering team validation of Dynatrace logs", "Compare Elastic and Dynatrace log parity"]}
+                ]
+            },
+            "OC-07": {
+                "name": "External Availability Monitoring Operational",
+                "deliverables": [
+                    {"id": "OC-07.1", "name": "Customer Journey Discovery", "subtasks": ["Working session with Jared and Bryan to identify top 5 customer-impacting workflows"]},
+                    {"id": "OC-07.2", "name": "Synthetic Monitor Scripting", "subtasks": ["Login flow (mandatory first), then top 4 additional journeys"]},
+                    {"id": "OC-07.3", "name": "Private Synthetic Location Deployment", "subtasks": ["Deploy Private Synthetic Location for RDP-based access"]},
+                    {"id": "OC-07.4", "name": "External Synthetic Location Configuration", "subtasks": ["Deploy at minimum 2 external locations"]},
+                    {"id": "OC-07.5", "name": "Synthetic Alert Configuration", "subtasks": ["Integrate synthetic failures with PagerDuty P1 policy"]},
+                    {"id": "OC-07.6", "name": "MTTD Baseline Measurement", "subtasks": ["Begin tracking MTTD; establish 30-day baseline"]},
+                    {"id": "OC-07.7", "name": "A2W Synthetic Readiness", "subtasks": ["Document synthetic test specifications for A2W web interface"]},
+                    {"id": "OC-07.8", "name": "Network Path Monitoring", "subtasks": ["Evaluate Dynatrace Network Monitoring vs. ThousandEyes", "Deploy chosen network monitoring tool"]},
+                    {"id": "OC-07.9", "name": "NetApp ONTAP Extension", "subtasks": ["Configure NetApp ONTAP extension for storage IOPS and latency"]}
+                ]
+            },
+            "OC-08": {
+                "name": "Application Telemetry Operational",
+                "deliverables": [
+                    {"id": "OC-08.1", "name": "APM Scope Confirmation", "subtasks": ["Define what is instrumentable in PASOE/OpenEdge vs. requires custom extension vs. not feasible"]},
+                    {"id": "OC-08.2", "name": "PASOE Service Detection Configuration", "subtasks": ["Define service detection rules in Dynatrace for PASOE endpoints"]},
+                    {"id": "OC-08.3", "name": "Custom Metric Definition", "subtasks": ["Define business-level metrics (active user sessions, transaction success rate, report job queue depth)"]},
+                    {"id": "OC-08.4", "name": "OpenTelemetry Evaluation", "subtasks": ["Assess OpenTelemetry SDK for Progress OpenEdge ABL"]},
+                    {"id": "OC-08.5", "name": "Infrastructure and Service Dashboards", "subtasks": ["Build engineer-facing views: host health, PASOE instance status, storage IOPS, network latency"]},
+                    {"id": "OC-08.6", "name": "RUM Design (A2W Future State)", "subtasks": ["Finalize RUM implementation specification for A2W web interface"]}
+                ]
+            },
+            "OC-09": {
+                "name": "Baselines and Data Quality Validated",
+                "deliverables": [
+                    {"id": "OC-09.1", "name": "Infrastructure Baseline", "subtasks": ["Document normal ranges for CPU, memory, disk I/O, and network; identify seasonal patterns"]},
+                    {"id": "OC-09.2", "name": "Application Baseline", "subtasks": ["Define normal request throughput, error rates, and response time distributions"]},
+                    {"id": "OC-09.3", "name": "Synthetic Baseline", "subtasks": ["Establish normal synthetic response times and success rates"]},
+                    {"id": "OC-09.4", "name": "SLO Definition", "subtasks": ["Formally define SLOs for each monitoring layer; configure error budget burn rate alerts"]},
+                    {"id": "OC-09.5", "name": "PagerDuty AIOps Confirmation", "subtasks": ["Confirm PagerDuty AIOps event volume covers Dynatrace projected events", "Verify AIOps add-on cost in total budget"]},
+                    {"id": "OC-09.6", "name": "Baseline Review Session", "subtasks": ["Working session with Brent and Andy to validate baselines match engineering intuition"]},
+                    {"id": "OC-09.7", "name": "Data Quality Validation", "subtasks": ["Validate data against reality -- no competing shadow spreadsheets"]}
+                ]
+            },
+            "OC-10": {
+                "name": "Alerting Optimized and Persona Views Live",
+                "deliverables": [
+                    {"id": "OC-10.1", "name": "Alert Audit", "subtasks": ["Review all Dynatrace anomaly detection settings and custom alert rules"]},
+                    {"id": "OC-10.2", "name": "Threshold Tuning", "subtasks": ["Adjust thresholds to reduce false positives; target <50 actionable alerts/week"]},
+                    {"id": "OC-10.3", "name": "PagerDuty AIOps Configuration (M4 Deliverable)", "subtasks": ["Enable Dynatrace AI Causation; configure PagerDuty Event Intelligence"]},
+                    {"id": "OC-10.4", "name": "Alert Routing Refinement", "subtasks": ["Confirm final PagerDuty service routing logic"]},
+                    {"id": "OC-10.5", "name": "SDLC Event Ingestion", "subtasks": ["Connect CI/CD pipeline to Dynatrace SDLC API for CFR and DORA metrics"]},
+                    {"id": "OC-10.6", "name": "Status Page Templates", "subtasks": ["Setup and templates approved"]},
+                    {"id": "OC-10.7", "name": "Persona-Specific Dashboards", "subtasks": ["Deliver engineering dashboard", "Deliver support dashboard", "Deliver leadership dashboard", "Ensure dashboards are role-based"]},
+                    {"id": "OC-10.8", "name": "Engineering Trust Validation", "subtasks": ["Ask on-call engineers whether Dynatrace alerts are trustworthy"]}
+                ]
+            },
+            "OC-11": {
+                "name": "Proactive Operations Validated",
+                "deliverables": [
+                    {"id": "OC-11.1", "name": "MTTD Measurement and Tracking", "subtasks": ["Confirm MTTD within 10 minutes; track weekly for 4 consecutive weeks"]},
+                    {"id": "OC-11.2", "name": "Status Page Automation Validation", "subtasks": ["Confirm automated status page updates are accurate and timely"]},
+                    {"id": "OC-11.3", "name": "RUM Validation (A2W)", "subtasks": ["If A2W has launched, confirm Dynatrace RUM is operational"]},
+                    {"id": "OC-11.4", "name": "Incident Response Integration", "subtasks": ["Confirm Dynatrace problem links in PagerDuty incidents"]},
+                    {"id": "OC-11.5", "name": "Error Budget Policy", "subtasks": ["Error budget policy operational with automatic change freeze triggers"]},
+                    {"id": "OC-11.6", "name": "Operational Runbook", "subtasks": ["Document Dynatrace operating procedures"]},
+                    {"id": "OC-11.7", "name": "Knowledge Transfer", "subtasks": ["Conduct working sessions with DMSi engineering team"]},
+                    {"id": "OC-11.8", "name": "M5 Evidence Package", "subtasks": ["Assemble MTTD evidence; document alert volume reduction; present to Hilltop"]}
+                ]
+            },
+            "OC-12": {
+                "name": "Legacy Systems Decommissioned",
+                "deliverables": [
+                    {"id": "OC-12.1", "name": "Elastic Decommission Execution", "subtasks": ["Set Elastic to read-only", "Confirm no active alerts or dashboards", "Archive data for compliance", "Shut down Elastic cluster", "Document cost savings"]},
+                    {"id": "OC-12.2", "name": "CheckMK Decommission Evaluation", "subtasks": ["Present recommendation to decommission CheckMK if Dynatrace baseline is sufficient"]}
+                ]
+            },
+            "OC-13": {
+                "name": "A2W Monitoring Readiness",
+                "deliverables": [
+                    {"id": "OC-13.1", "name": "A2W Synthetic Tests Activated", "subtasks": ["Activate synthetic tests from OC-07.7 when A2W is available"]},
+                    {"id": "OC-13.2", "name": "RUM Deployment and Validation", "subtasks": ["Deploy Dynatrace RUM JavaScript tag on A2W", "Validate user session data flowing", "Configure RUM-based alerting"]}
+                ]
+            },
+            "OC-14": {
+                "name": "Predictive Operations and Advanced Capabilities",
+                "deliverables": [
+                    {"id": "OC-14.1", "name": "DORA Metrics Visibility (M7)", "subtasks": ["All five DORA metrics derivable from SDLC events"]},
+                    {"id": "OC-14.2", "name": "SLI-Driven Engineering Prioritization", "subtasks": ["SLI dashboards drive priority for engineering"]},
+                    {"id": "OC-14.3", "name": "Customer Experience Correlation", "subtasks": ["Synthetic and APM signals correlated with customer experience models"]},
+                    {"id": "OC-14.4", "name": "Advanced Platform Capabilities", "subtasks": ["Evaluate and deploy advanced capabilities where warranted"]}
+                ]
+            },
+            "OC-15": {
+                "name": "Legacy Fallback Activated",
+                "deliverables": [
+                    {"id": "OC-15.1", "name": "Validation Failure Root Cause Analysis", "subtasks": ["Analyze root cause of validation failure", "Document findings"]},
+                    {"id": "OC-15.2", "name": "Revised Implementation Plan", "subtasks": ["Produce revised plan for Hilltop review", "Maintain legacy systems during revision"]}
+                ]
+            }
+        };
+
+        function init() {
+            const hash = window.location.hash.substring(1);
+
+            if (hash && outcomeData[hash]) {
+                renderKanban(hash);
+            } else {
+                renderOutcomeSelector();
+            }
+        }
+
+        function renderOutcomeSelector() {
+            document.getElementById('outcome-selector').style.display = 'block';
+            document.getElementById('kanban-view').style.display = 'none';
+
+            const outcomesList = document.getElementById('outcomes-list');
+            outcomesList.innerHTML = '';
+
+            Object.keys(outcomeData).sort().forEach(outcomeId => {
+                const outcome = outcomeData[outcomeId];
+                const link = document.createElement('a');
+                link.href = '#' + outcomeId;
+                link.className = 'outcome-link';
+                link.innerHTML = `
+                    <div class="outcome-id">${outcomeId}</div>
+                    <div class="outcome-name">${outcome.name}</div>
+                `;
+                outcomesList.appendChild(link);
+            });
+        }
+
+        function renderKanban(outcomeId) {
+            document.getElementById('outcome-selector').style.display = 'none';
+            document.getElementById('kanban-view').style.display = 'block';
+
+            const outcome = outcomeData[outcomeId];
+            document.getElementById('page-title').textContent = `VI: ${outcome.name} -- Work Items`;
+
+            const columnIds = ['backlog', 'advancing', 'stalled', 'blocked', 'done'];
+            columnIds.forEach(columnId => {
+                document.getElementById(columnId + '-cards').innerHTML = '';
+            });
+
+            outcome.deliverables.forEach(deliverable => {
+                const card = createCard(deliverable);
+                document.getElementById('backlog-cards').appendChild(card);
+            });
+        }
+
+        function createCard(deliverable) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card';
+
+            const hasSubtasks = deliverable.subtasks && deliverable.subtasks.length > 0;
+
+            let cardHTML = `
+                <div class="card-id">${deliverable.id}</div>
+                <div class="card-name">${deliverable.name}</div>
+            `;
+
+            if (hasSubtasks) {
+                cardHTML += `<button class="subtasks-toggle" onclick="toggleSubtasks(this)">Show Subtasks</button>`;
+                cardHTML += '<div class="subtasks">';
+                deliverable.subtasks.forEach(subtask => {
+                    cardHTML += `
+                        <div class="subtask-item">
+                            <input type="checkbox">
+                            <span class="subtask-text">${subtask}</span>
+                        </div>
+                    `;
+                });
+                cardHTML += '</div>';
+            }
+
+            cardDiv.innerHTML = cardHTML;
+            return cardDiv;
+        }
+
+        function toggleSubtasks(button) {
+            const subtasksDiv = button.nextElementSibling;
+            subtasksDiv.classList.toggle('visible');
+            button.classList.toggle('expanded');
+            button.textContent = button.classList.contains('expanded') ? 'Hide Subtasks' : 'Show Subtasks';
+        }
+
+        window.addEventListener('hashchange', init);
+        init();
+    </script>
+</body>
+</html>

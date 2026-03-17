@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline Automation: Constraint Model vs Outcome Model</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: #fff; color: #000; line-height: 1.5; }
+
+  .header-bar { background: #2B2B2B; color: #fff; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .header-bar h1 { font-size: 18px; font-weight: bold; }
+  .header-bar .subtitle { font-size: 12px; color: #aaa; }
+  .brand-accent { color: #76BE43; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 32px; }
+
+  /* Summary cards */
+  .summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+  .summary-card { border: 1px solid #ddd; border-radius: 6px; padding: 16px; text-align: center; }
+  .summary-card .num { font-size: 32px; font-weight: bold; }
+  .summary-card .label { font-size: 12px; color: #666; margin-top: 4px; }
+  .card-green { border-left: 4px solid #76BE43; }
+  .card-blue { border-left: 4px solid #3498DB; }
+  .card-orange { border-left: 4px solid #E67E22; }
+  .card-red { border-left: 4px solid #DC2626; }
+
+  h2 { font-size: 16px; font-weight: bold; color: #000; border-bottom: 3px solid #76BE43; padding-bottom: 6px; margin: 32px 0 16px 0; }
+  h3 { font-size: 14px; font-weight: bold; color: #2E74B5; margin: 20px 0 10px 0; }
+
+  .intro { font-size: 13px; color: #333; margin-bottom: 24px; max-width: 900px; }
+
+  /* Mapping table */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 12px; }
+  th { background: #2B2B2B; color: #fff; padding: 10px 12px; text-align: left; font-weight: bold; }
+  td { padding: 10px 12px; border: 1px solid #ccc; vertical-align: top; }
+  tr:nth-child(even) td { background: #F7F7F7; }
+  tr:nth-child(odd) td { background: #fff; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; margin: 2px; }
+  .tag-1to1 { background: #d4edda; color: #155724; }
+  .tag-1toN { background: #cce5ff; color: #004085; }
+  .tag-split { background: #fff3cd; color: #856404; }
+  .tag-new { background: #f8d7da; color: #721c24; }
+  .tag-merged { background: #e2d5f1; color: #4a2d7a; }
+  .tag-none { background: #e2e3e5; color: #383d41; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; font-size: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+
+  /* Mapping visualization */
+  .map-container { position: relative; margin: 24px 0 40px 0; }
+  .map-svg { width: 100%; }
+
+  /* Coverage analysis */
+  .coverage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+  .coverage-box { border: 1px solid #ddd; border-radius: 6px; padding: 16px; }
+  .coverage-box h3 { margin-top: 0; }
+  .coverage-list { list-style: none; padding: 0; font-size: 12px; }
+  .coverage-list li { padding: 6px 0; border-bottom: 1px solid #eee; }
+  .coverage-list li:last-child { border-bottom: none; }
+  .check { color: #76BE43; font-weight: bold; }
+  .cross { color: #DC2626; font-weight: bold; }
+  .partial { color: #E67E22; font-weight: bold; }
+
+  /* Insight cards */
+  .insight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+  .insight-card { border: 1px solid #ddd; border-radius: 6px; padding: 16px; font-size: 12px; }
+  .insight-card .insight-title { font-weight: bold; font-size: 13px; margin-bottom: 8px; }
+  .insight-card.good { border-left: 4px solid #76BE43; }
+  .insight-card.warn { border-left: 4px solid #E67E22; }
+  .insight-card.info { border-left: 4px solid #3498DB; }
+
+  /* Callout */
+  .callout { padding: 14px 18px; border-radius: 6px; font-size: 12px; margin: 16px 0; }
+  .callout-info { background: #CCDDFF; border: 1px solid #2563EB; }
+  .callout-warn { background: #FFF3E0; border: 1px solid #E0A800; color: #5C4000; }
+
+  .footer { text-align: center; color: #999; font-size: 11px; padding: 24px 0; border-top: 1px solid #eee; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<div class="header-bar">
+  <div>
+    <h1><span class="brand-accent">DYNAMO</span> | Pipeline Automation: Model Comparison</h1>
+    <div class="subtitle">Constraint Model (Stage-Gate) vs. Outcome Model (PA-WSB) | March 2026</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <p class="intro">
+    This document maps the 6 in-scope stages (S0-S5) of the constraint model to the 11 outcomes (PA-OC-01 through PA-OC-11) of the outcome model. Stages S6-S8 (application code work) are out of scope for this engagement. The goal is to determine whether both models can coexist -- the team delivers on outcomes while the PM reports on constraint stages -- or whether the mapping is too complex to maintain.
+  </p>
+
+  <!-- Summary Cards -->
+  <div class="summary-row">
+    <div class="summary-card card-green">
+      <div class="num">5 of 6</div>
+      <div class="label">In-scope stages map cleanly to outcomes</div>
+    </div>
+    <div class="summary-card card-blue">
+      <div class="num">1</div>
+      <div class="label">Stage split across multiple outcomes (S4)</div>
+    </div>
+    <div class="summary-card card-orange">
+      <div class="num">2</div>
+      <div class="label">Outcomes with no constraint stage (PA-OC-10, PA-OC-11)</div>
+    </div>
+    <div class="summary-card card-red">
+      <div class="num">3</div>
+      <div class="label">Out of scope (S6, S7, S8 - app code work)</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <h2>Mapping Legend</h2>
+  <div class="legend">
+    <div class="legend-item"><span class="tag tag-1to1">1:1</span> Stage maps directly to one outcome</div>
+    <div class="legend-item"><span class="tag tag-split">SPLIT</span> Stage is split across multiple outcomes</div>
+    <div class="legend-item"><span class="tag tag-merged">MERGED</span> Multiple stages merge into one outcome (or vice versa)</div>
+    <div class="legend-item"><span class="tag tag-new">NEW</span> Outcome exists only in outcome model</div>
+  </div>
+
+  <!-- Primary Mapping Table -->
+  <h2>Stage-to-Outcome Mapping</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:12%">Constraint Stage</th>
+        <th style="width:18%">Stage Name</th>
+        <th style="width:6%">Map Type</th>
+        <th style="width:12%">Outcome(s)</th>
+        <th style="width:20%">Outcome Name</th>
+        <th style="width:32%">Mapping Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>S0</strong></td>
+        <td>Access and Process Knowledge</td>
+        <td><span class="tag tag-1to1">1:1</span></td>
+        <td>PA-OC-01</td>
+        <td>Foundation Access and Security Baseline</td>
+        <td>Clean 1:1 mapping. All 6 S0 work packages (WP 0.1-0.6) map directly to PA-OC-01 deliverables (PA-OC-01.1 through PA-OC-01.6). Same scope, same exit criteria, same decisions (PA-D-01, PA-D-02, PA-D-03, PA-D-11).</td>
+      </tr>
+      <tr>
+        <td><strong>S1</strong></td>
+        <td>Config Inventory Complete</td>
+        <td><span class="tag tag-1to1">1:1</span></td>
+        <td>PA-OC-02</td>
+        <td>Config Inventory and Credential Mapping</td>
+        <td>Clean 1:1 mapping. S1 WP 1.1-1.3 map to PA-OC-02.1-02.3. Outcome model adds credential management emphasis but covers identical scope. Same decisions (PA-D-04, PA-D-12).</td>
+      </tr>
+      <tr>
+        <td><strong>S2</strong></td>
+        <td>Migration Path Defined</td>
+        <td><span class="tag tag-1to1">1:1</span></td>
+        <td>PA-OC-03</td>
+        <td>Migration Path and Runner Infrastructure Defined</td>
+        <td>Clean 1:1 mapping. S2 WP 2.1-2.3 map to PA-OC-03.1-03.3. Same decisions (PA-D-05, PA-D-06, PA-D-07, PA-D-08). Runner strategy included in both.</td>
+      </tr>
+      <tr>
+        <td><strong>S3</strong></td>
+        <td>Configs in Version Control</td>
+        <td><span class="tag tag-1to1">1:1</span></td>
+        <td>PA-OC-04</td>
+        <td>Configurations in Version Control</td>
+        <td>Clean 1:1 mapping. S3 WP 3.1-3.2 map to PA-OC-04.1-04.2. Same exit criteria: all Engine X configs in GitHub, no secrets, CODEOWNERS set. Same decision (PA-D-13).</td>
+      </tr>
+      <tr>
+        <td><strong>S4</strong></td>
+        <td>Config Pipeline Operational</td>
+        <td><span class="tag tag-split">SPLIT</span></td>
+        <td>PA-OC-05<br>PA-OC-06<br>PA-OC-07<br>PA-OC-08</td>
+        <td>Build Pipeline<br>Deploy Pipeline<br>Drift Detection<br>Reliability Validated</td>
+        <td><strong>This is the key difference.</strong> S4 contains 4 work packages (WP 4.1-4.4) that serve different purposes. The outcome model splits them:
+          <br>- WP 4.1 &rarr; PA-OC-05 (Build)
+          <br>- WP 4.2 &rarr; PA-OC-06 (Deploy)
+          <br>- WP 4.3 &rarr; PA-OC-07 (Drift) -- can run parallel
+          <br>- WP 4.4 &rarr; PA-OC-08 (Reliability) -- iterative validation
+          <br><strong>Impact:</strong> Drift detection starts earlier (Week 7 vs Week 10). Reliability is explicitly iterative.</td>
+      </tr>
+      <tr>
+        <td><strong>S5</strong></td>
+        <td>Config-as-Code Operational</td>
+        <td><span class="tag tag-1to1">1:1</span></td>
+        <td>PA-OC-09</td>
+        <td>Config-as-Code Enforced</td>
+        <td>Clean 1:1 mapping. S5 WP 5.1-5.2 map to PA-OC-09 deliverables. Outcome model makes the iterative validation (enforcement &rarr; measure compliance &rarr; address gaps &rarr; re-measure) explicit with 4-week cycles.</td>
+      </tr>
+      <tr>
+        <td><strong>S6, S7, S8</strong></td>
+        <td>Application Code Work (VCS, CI/CD, Adoption)</td>
+        <td><span class="tag tag-none">OUT OF SCOPE</span></td>
+        <td>--</td>
+        <td>--</td>
+        <td>These stages are out of scope for this engagement. Application code migration and CI/CD pipeline work are not included in the current Pipeline Automation project. The constraint model includes them as future-state stages, but they are not relevant to the NGINX configuration pipeline framework being delivered.</td>
+      </tr>
+      <tr>
+        <td style="color: #999;">--</td>
+        <td style="color: #999;">No constraint stage equivalent</td>
+        <td><span class="tag tag-new">NEW</span></td>
+        <td>PA-OC-10</td>
+        <td>Pipeline Fallback (Conditional)</td>
+        <td><strong>New in outcome model only.</strong> Triggered if PA-OC-08 (reliability validation) fails after max iterations. Provides a safety net the constraint model does not explicitly address. In the constraint model, S4 exit gate simply says "90%+ success rate" -- but does not define what happens if that target is not met. This becomes relevant only if reliability targets are missed.</td>
+      </tr>
+      <tr>
+        <td style="color: #999;">--</td>
+        <td style="color: #999;">No constraint stage equivalent</td>
+        <td><span class="tag tag-new">NEW</span></td>
+        <td>PA-OC-11</td>
+        <td>Pipeline Pattern Replication (Conditional)</td>
+        <td><strong>New in outcome model only.</strong> Triggered when the NGINX POC proves the framework + leadership decides to extend to other config types. Applies the proven pipeline framework to additional configuration types (e.g., ProxySG, Firewalls). The constraint model has no equivalent because it assumed linear progression through all stages including app code, which is now out of scope. This is conditional on leadership decision and proof-of-concept success.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Visual Mapping Diagram -->
+  <h2>Visual Mapping</h2>
+
+  <svg class="map-svg" viewBox="0 0 1100 520" xmlns="http://www.w3.org/2000/svg">
+    <!-- Left column: Constraint Stages -->
+    <text x="120" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#2B2B2B">Constraint Stages</text>
+    <text x="120" y="38" text-anchor="middle" font-size="10" fill="#999">(Stage-Gate Model)</text>
+
+    <!-- Right column: Outcomes -->
+    <text x="900" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#2B2B2B">Outcomes</text>
+    <text x="900" y="38" text-anchor="middle" font-size="10" fill="#999">(PA-WSB Model)</text>
+
+    <!-- S0 -->
+    <rect x="20" y="55" width="200" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="120" y="77" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">S0: Access &amp; Process</text>
+
+    <!-- S1 -->
+    <rect x="20" y="100" width="200" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="120" y="122" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">S1: Config Inventory</text>
+
+    <!-- S2 -->
+    <rect x="20" y="145" width="200" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="120" y="167" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">S2: Migration Path</text>
+
+    <!-- S3 -->
+    <rect x="20" y="190" width="200" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="120" y="212" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">S3: Configs in VCS</text>
+
+    <!-- S4 (highlighted) -->
+    <rect x="20" y="240" width="200" height="50" rx="4" fill="#fff3cd" stroke="#E67E22" stroke-width="2"/>
+    <text x="120" y="260" text-anchor="middle" font-size="11" font-weight="bold" fill="#856404">S4: Config Pipeline</text>
+    <text x="120" y="278" text-anchor="middle" font-size="9" fill="#856404">SPLIT into 4 outcomes</text>
+
+    <!-- S5 -->
+    <rect x="20" y="300" width="200" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="120" y="322" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">S5: Config-as-Code</text>
+
+    <!-- S6, S7, S8 (OUT OF SCOPE) -->
+    <rect x="20" y="345" width="200" height="135" rx="4" fill="#e8e8e8" stroke="#999" stroke-width="1" stroke-dasharray="4,2" opacity="0.6"/>
+    <text x="120" y="375" text-anchor="middle" font-size="11" font-weight="bold" fill="#666">S6, S7, S8:</text>
+    <text x="120" y="390" text-anchor="middle" font-size="10" fill="#666">App Code Work</text>
+    <text x="120" y="408" text-anchor="middle" font-size="9" fill="#999">(OUT OF SCOPE)</text>
+    <text x="120" y="428" text-anchor="middle" font-size="9" fill="#999">Not included in</text>
+    <text x="120" y="442" text-anchor="middle" font-size="9" fill="#999">current engagement</text>
+
+    <!-- PA-OC-01 -->
+    <rect x="780" y="55" width="220" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="890" y="77" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">PA-OC-01: Foundation &amp; Security</text>
+
+    <!-- PA-OC-02 -->
+    <rect x="780" y="100" width="220" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="890" y="122" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">PA-OC-02: Config Inventory</text>
+
+    <!-- PA-OC-03 -->
+    <rect x="780" y="145" width="220" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="890" y="167" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">PA-OC-03: Migration Path</text>
+
+    <!-- PA-OC-04 -->
+    <rect x="780" y="190" width="220" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="890" y="212" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">PA-OC-04: Configs in VCS</text>
+
+    <!-- PA-OC-05 -->
+    <rect x="780" y="235" width="220" height="30" rx="4" fill="#cce5ff" stroke="#3498DB" stroke-width="1.5"/>
+    <text x="890" y="254" text-anchor="middle" font-size="10" font-weight="bold" fill="#004085">PA-OC-05: Build Pipeline</text>
+
+    <!-- PA-OC-06 -->
+    <rect x="780" y="270" width="220" height="30" rx="4" fill="#cce5ff" stroke="#3498DB" stroke-width="1.5"/>
+    <text x="890" y="289" text-anchor="middle" font-size="10" font-weight="bold" fill="#004085">PA-OC-06: Deploy Pipeline</text>
+
+    <!-- PA-OC-07 -->
+    <rect x="780" y="305" width="220" height="30" rx="4" fill="#cce5ff" stroke="#3498DB" stroke-width="1.5"/>
+    <text x="890" y="324" text-anchor="middle" font-size="10" font-weight="bold" fill="#004085">PA-OC-07: Drift Detection</text>
+
+    <!-- PA-OC-08 -->
+    <rect x="780" y="340" width="220" height="30" rx="4" fill="#cce5ff" stroke="#3498DB" stroke-width="1.5"/>
+    <text x="890" y="359" text-anchor="middle" font-size="10" font-weight="bold" fill="#004085">PA-OC-08: Reliability Validated</text>
+
+    <!-- PA-OC-09 -->
+    <rect x="780" y="380" width="220" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="890" y="402" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">PA-OC-09: Config-as-Code</text>
+
+    <!-- PA-OC-10 (Fallback) -->
+    <rect x="780" y="425" width="220" height="36" rx="4" fill="#f8d7da" stroke="#DC2626" stroke-width="1.5"/>
+    <text x="890" y="443" text-anchor="middle" font-size="10" font-weight="bold" fill="#721c24">PA-OC-10: Fallback (NEW)</text>
+    <text x="890" y="457" text-anchor="middle" font-size="9" fill="#721c24" font-style="italic">Conditional</text>
+
+    <!-- PA-OC-11 (Pattern Replication) -->
+    <rect x="780" y="470" width="220" height="36" rx="4" fill="#f8d7da" stroke="#DC2626" stroke-width="1.5"/>
+    <text x="890" y="488" text-anchor="middle" font-size="10" font-weight="bold" fill="#721c24">PA-OC-11: Pattern Replication</text>
+    <text x="890" y="502" text-anchor="middle" font-size="9" fill="#721c24" font-style="italic">Conditional (NEW)</text>
+
+    <!-- Connection lines -->
+    <!-- S0 -> PA-OC-01 (1:1) -->
+    <line x1="220" y1="73" x2="780" y2="73" stroke="#76BE43" stroke-width="2"/>
+
+    <!-- S1 -> PA-OC-02 (1:1) -->
+    <line x1="220" y1="118" x2="780" y2="118" stroke="#76BE43" stroke-width="2"/>
+
+    <!-- S2 -> PA-OC-03 (1:1) -->
+    <line x1="220" y1="163" x2="780" y2="163" stroke="#76BE43" stroke-width="2"/>
+
+    <!-- S3 -> PA-OC-04 (1:1) -->
+    <line x1="220" y1="208" x2="780" y2="208" stroke="#76BE43" stroke-width="2"/>
+
+    <!-- S4 -> PA-OC-05, PA-OC-06, PA-OC-07, PA-OC-08 (SPLIT) -->
+    <line x1="220" y1="258" x2="780" y2="250" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,3"/>
+    <line x1="220" y1="262" x2="780" y2="285" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,3"/>
+    <line x1="220" y1="266" x2="780" y2="320" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,3"/>
+    <line x1="220" y1="270" x2="780" y2="355" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,3"/>
+
+    <!-- S5 -> PA-OC-09 (1:1) -->
+    <line x1="220" y1="318" x2="780" y2="398" stroke="#76BE43" stroke-width="2"/>
+
+    <!-- PA-OC-10 has no source (conditional fallback) -->
+    <text x="720" y="444" text-anchor="end" font-size="9" fill="#DC2626" font-style="italic">No constraint stage</text>
+
+    <!-- PA-OC-11 has no source (conditional replication) -->
+    <text x="720" y="489" text-anchor="end" font-size="9" fill="#DC2626" font-style="italic">No constraint stage</text>
+
+    <!-- Center labels -->
+    <text x="500" y="72" text-anchor="middle" font-size="9" fill="#76BE43" font-weight="bold">1:1</text>
+    <text x="500" y="117" text-anchor="middle" font-size="9" fill="#76BE43" font-weight="bold">1:1</text>
+    <text x="500" y="162" text-anchor="middle" font-size="9" fill="#76BE43" font-weight="bold">1:1</text>
+    <text x="500" y="207" text-anchor="middle" font-size="9" fill="#76BE43" font-weight="bold">1:1</text>
+    <text x="500" y="280" text-anchor="middle" font-size="10" fill="#E67E22" font-weight="bold">1:4 SPLIT</text>
+    <text x="500" y="360" text-anchor="middle" font-size="9" fill="#76BE43" font-weight="bold">1:1</text>
+  </svg>
+
+  <!-- Key Findings -->
+  <h2>Key Findings</h2>
+
+  <div class="insight-grid">
+    <div class="insight-card good">
+      <div class="insight-title">Strong Alignment (5 of 6 in-scope stages)</div>
+      S0 through S3 and S5 all map cleanly to individual outcomes. The scope, work packages, decisions, and exit criteria are nearly identical. Reporting on one translates directly to the other.
+    </div>
+    <div class="insight-card warn">
+      <div class="insight-title">S4 is the Only In-Scope Complication</div>
+      S4 (Config Pipeline Operational) maps to 4 separate outcomes (PA-OC-05 through PA-OC-08). In the constraint model, S4 is "done" when all 4 work packages are done. In the outcome model, PA-OC-05/06/07 can complete independently, and PA-OC-08 (reliability) is iterative. Status rollup requires aggregation.
+    </div>
+    <div class="insight-card info">
+      <div class="insight-title">S6-S8 Out of Scope</div>
+      Stages S6 (App Code in VCS), S7 (App CI/CD), and S8 (Dev Adoption) are out of scope for this engagement. Application code work is not included in the current Pipeline Automation project. Two new outcomes (PA-OC-10 Fallback and PA-OC-11 Pattern Replication) address conditional scenarios the constraint model does not explicitly cover.
+    </div>
+  </div>
+
+  <!-- What the PM Needs to Know -->
+  <h2>Reporting Translation: How it Works in Practice</h2>
+
+  <div class="callout callout-info">
+    <strong>Bottom line:</strong> The mapping is clean enough that both models can coexist. The PM reports on constraint stages using status data from outcome deliverables. One complication exists (S4), and it is manageable.
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>When reporting on...</th>
+        <th>You use status from...</th>
+        <th>Translation complexity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>S0</strong> Access &amp; Process</td>
+        <td>PA-OC-01 status and deliverables</td>
+        <td><span class="tag tag-1to1">NONE</span> -- direct read</td>
+      </tr>
+      <tr>
+        <td><strong>S1</strong> Config Inventory</td>
+        <td>PA-OC-02 status and deliverables</td>
+        <td><span class="tag tag-1to1">NONE</span> -- direct read</td>
+      </tr>
+      <tr>
+        <td><strong>S2</strong> Migration Path</td>
+        <td>PA-OC-03 status and deliverables</td>
+        <td><span class="tag tag-1to1">NONE</span> -- direct read</td>
+      </tr>
+      <tr>
+        <td><strong>S3</strong> Configs in VCS</td>
+        <td>PA-OC-04 status and deliverables</td>
+        <td><span class="tag tag-1to1">NONE</span> -- direct read</td>
+      </tr>
+      <tr>
+        <td><strong>S4</strong> Config Pipeline</td>
+        <td>Aggregate PA-OC-05 + PA-OC-06 + PA-OC-07 + PA-OC-08</td>
+        <td><span class="tag tag-split">MODERATE</span> -- S4 is "done" when all 4 outcomes are complete. Report shows progress per pipeline. PA-OC-07 may finish before PA-OC-05/06.</td>
+      </tr>
+      <tr>
+        <td><strong>S5</strong> Config-as-Code</td>
+        <td>PA-OC-09 status and deliverables</td>
+        <td><span class="tag tag-1to1">NONE</span> -- direct read</td>
+      </tr>
+      <tr>
+        <td><strong>S6, S7, S8</strong> App Code Work</td>
+        <td>--</td>
+        <td><span class="tag tag-none">OUT OF SCOPE</span> -- not included in current engagement</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- S4 Deep Dive -->
+  <h2>Deep Dive: The S4 Split</h2>
+
+  <p class="intro">S4 is the only stage that requires translation effort. Here is exactly how the 4 outcomes roll up:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>S4 Work Package</th>
+        <th>Outcome</th>
+        <th>Can complete independently?</th>
+        <th>S4 reporting impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>WP 4.1: Build Pipeline</td>
+        <td>PA-OC-05</td>
+        <td><span class="check">YES</span></td>
+        <td>When PA-OC-05 is done, report S4 WP 4.1 as complete</td>
+      </tr>
+      <tr>
+        <td>WP 4.2: Deploy Pipeline</td>
+        <td>PA-OC-06</td>
+        <td><span class="check">YES</span> (after PA-OC-05)</td>
+        <td>When PA-OC-06 is done, report S4 WP 4.2 as complete</td>
+      </tr>
+      <tr>
+        <td>WP 4.3: Drift Detection</td>
+        <td>PA-OC-07</td>
+        <td><span class="check">YES</span> (parallel with PA-OC-05/06)</td>
+        <td>When PA-OC-07 is done, report S4 WP 4.3 as complete. <strong>This may complete weeks before WP 4.1/4.2.</strong></td>
+      </tr>
+      <tr>
+        <td>WP 4.4: Reliability</td>
+        <td>PA-OC-08</td>
+        <td><span class="cross">NO</span> (needs PA-OC-05+06+07)</td>
+        <td>When PA-OC-08 is done, report S4 WP 4.4 as complete. S4 stage = done.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warn">
+    <strong>The S4 reporting advantage:</strong> In the constraint model, S4 looks like one block from Week 10-14. In reality, drift detection (PA-OC-07) can start at Week 7 and complete by Week 11, while build/deploy work continues. The outcome model shows this progress; the constraint model hides it. When reporting S4 to leadership, you can show work-package-level progress that the outcome model makes visible.
+  </div>
+
+  <!-- Coverage Analysis -->
+  <h2>Coverage Analysis</h2>
+
+  <div class="coverage-grid">
+    <div class="coverage-box">
+      <h3>In-Scope Constraint Stages Fully Covered by Outcomes</h3>
+      <ul class="coverage-list">
+        <li><span class="check">&#10003;</span> S0: Access and Process Knowledge &rarr; PA-OC-01</li>
+        <li><span class="check">&#10003;</span> S1: Config Inventory Complete &rarr; PA-OC-02</li>
+        <li><span class="check">&#10003;</span> S2: Migration Path Defined &rarr; PA-OC-03</li>
+        <li><span class="check">&#10003;</span> S3: Configs in Version Control &rarr; PA-OC-04</li>
+        <li><span class="check">&#10003;</span> S4: Config Pipeline Operational &rarr; PA-OC-05+06+07+08</li>
+        <li><span class="check">&#10003;</span> S5: Config-as-Code Operational &rarr; PA-OC-09</li>
+      </ul>
+      <h3 style="margin-top: 16px;">Out of Scope</h3>
+      <ul class="coverage-list">
+        <li><span class="partial">-</span> S6: App Code in VCS -- Out of scope</li>
+        <li><span class="partial">-</span> S7: CI/CD for App Code -- Out of scope</li>
+        <li><span class="partial">-</span> S8: Dev Team Adoption -- Out of scope</li>
+      </ul>
+    </div>
+    <div class="coverage-box">
+      <h3>Outcomes Not in Constraint Model</h3>
+      <ul class="coverage-list">
+        <li><span class="cross">&#10007;</span> <strong>PA-OC-10: Pipeline Fallback (Conditional)</strong> -- Safety net for when reliability validation fails. Triggered only if PA-OC-08 fails after max iterations. The constraint model says "90%+ or the stage fails" but does not define a fallback path. The outcome model does.</li>
+        <li><span class="cross">&#10007;</span> <strong>PA-OC-11: Pipeline Pattern Replication (Conditional)</strong> -- Extends the proven NGINX pipeline framework to other config types (e.g., ProxySG, Firewalls). Triggered when POC proves framework success and leadership approves extension. The constraint model has no equivalent.</li>
+      </ul>
+      <h3 style="margin-top: 16px;">Constraint Stages Not in Outcome Model</h3>
+      <ul class="coverage-list">
+        <li><span class="check">&#10003;</span> None. Every in-scope constraint stage has outcome coverage.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Decisions and Risks Alignment -->
+  <h2>Decisions and Risks Alignment</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Element</th>
+        <th>Constraint Model</th>
+        <th>Outcome Model</th>
+        <th>Alignment</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Decisions (PA-D-01 to PA-D-13)</td>
+        <td>13 decisions, tied to stage exits</td>
+        <td>Same 13 decisions, tied to outcome exits</td>
+        <td><span class="check">IDENTICAL</span></td>
+      </tr>
+      <tr>
+        <td>Risks (PA-R-01 to PA-R-X8)</td>
+        <td>8 cross-cutting + stage-level risks</td>
+        <td>Same risks, attached to specific outcomes</td>
+        <td><span class="check">IDENTICAL</span></td>
+      </tr>
+      <tr>
+        <td>Open Questions (PA-Q-01 to PA-Q-11)</td>
+        <td>11 questions, tied to decisions</td>
+        <td>Same 11 questions, tied to decisions</td>
+        <td><span class="check">IDENTICAL</span></td>
+      </tr>
+      <tr>
+        <td>Cross-Workstream Dependencies</td>
+        <td>PA-CW-01 to PA-CW-05</td>
+        <td>Same PA-CW-01 to PA-CW-05</td>
+        <td><span class="check">IDENTICAL</span></td>
+      </tr>
+      <tr>
+        <td>Milestones</td>
+        <td>M3 through M7</td>
+        <td>Same M3 through M7</td>
+        <td><span class="check">IDENTICAL</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Key takeaway:</strong> The two models share the same decisions, risks, questions, dependencies, and milestones. The only difference is how work is organized and sequenced. This makes dual-model reporting practical -- the data is the same, only the view changes.
+  </div>
+
+  <div class="footer">
+    Dynamo Consulting | DMSi Phase 2 Operational Readiness | Pipeline Automation Model Comparison | March 2026
+  </div>
+</div>
+
+</body>
+</html>

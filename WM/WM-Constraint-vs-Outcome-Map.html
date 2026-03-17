@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Work Management: Constraint Model vs Outcome Model</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: #fff; color: #000; line-height: 1.5; }
+
+  .header-bar { background: #2B2B2B; color: #fff; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .header-bar h1 { font-size: 18px; font-weight: bold; }
+  .header-bar .subtitle { font-size: 12px; color: #aaa; }
+  .brand-accent { color: #76BE43; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 32px; }
+
+  /* Summary cards */
+  .summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+  .summary-card { border: 1px solid #ddd; border-radius: 6px; padding: 16px; text-align: center; }
+  .summary-card .num { font-size: 32px; font-weight: bold; }
+  .summary-card .label { font-size: 12px; color: #666; margin-top: 4px; }
+  .card-green { border-left: 4px solid #76BE43; }
+  .card-blue { border-left: 4px solid #3498DB; }
+  .card-orange { border-left: 4px solid #E67E22; }
+  .card-red { border-left: 4px solid #DC2626; }
+
+  h2 { font-size: 16px; font-weight: bold; color: #000; border-bottom: 3px solid #76BE43; padding-bottom: 6px; margin: 32px 0 16px 0; }
+  h3 { font-size: 14px; font-weight: bold; color: #2E74B5; margin: 20px 0 10px 0; }
+
+  .intro { font-size: 13px; color: #333; margin-bottom: 24px; max-width: 900px; }
+
+  /* Mapping table */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 12px; }
+  th { background: #2B2B2B; color: #fff; padding: 10px 12px; text-align: left; font-weight: bold; }
+  td { padding: 10px 12px; border: 1px solid #ccc; vertical-align: top; }
+  tr:nth-child(even) td { background: #F7F7F7; }
+  tr:nth-child(odd) td { background: #fff; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; margin: 2px; }
+  .tag-1to1 { background: #d4edda; color: #155724; }
+  .tag-split { background: #fff3cd; color: #856404; }
+  .tag-merged { background: #e2d5f1; color: #4a2d7a; }
+  .tag-new { background: #f8d7da; color: #721c24; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; font-size: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+
+  /* Coverage analysis */
+  .coverage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+  .coverage-box { border: 1px solid #ddd; border-radius: 6px; padding: 16px; }
+  .coverage-box h3 { margin-top: 0; }
+  .coverage-list { list-style: none; padding: 0; font-size: 12px; }
+  .coverage-list li { padding: 6px 0; border-bottom: 1px solid #eee; }
+  .coverage-list li:last-child { border-bottom: none; }
+  .check { color: #76BE43; font-weight: bold; }
+  .cross { color: #DC2626; font-weight: bold; }
+
+  /* Insight cards */
+  .insight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+  .insight-card { border: 1px solid #ddd; border-radius: 6px; padding: 16px; font-size: 12px; }
+  .insight-card .insight-title { font-weight: bold; font-size: 13px; margin-bottom: 8px; }
+  .insight-card.good { border-left: 4px solid #76BE43; }
+  .insight-card.warn { border-left: 4px solid #E67E22; }
+  .insight-card.info { border-left: 4px solid #3498DB; }
+
+  /* Callout */
+  .callout { padding: 14px 18px; border-radius: 6px; font-size: 12px; margin: 16px 0; }
+  .callout-info { background: #CCDDFF; border: 1px solid #2563EB; }
+  .callout-warn { background: #FFF3E0; border: 1px solid #E0A800; color: #5C4000; }
+
+  .footer { text-align: center; color: #999; font-size: 11px; padding: 24px 0; border-top: 1px solid #eee; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<div class="header-bar">
+  <div>
+    <h1><span class="brand-accent">DYNAMO</span> | Work Management: Model Comparison</h1>
+    <div class="subtitle">Constraint Model (WM-S0-WM-S6) vs. Outcome Model (WM-WSB WM-OC-01 to WM-OC-09) | 1 FTE Dynamo | March 2026</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <p class="intro">
+    This document maps the 7 stages (WM-S0-WM-S6) of the constraint model to the 9 outcomes (WM-OC-01 through WM-OC-09) of the outcome model. The goal is to determine whether both models can coexist -- the team delivers on outcomes while the PM reports on constraint stages -- or whether the mapping is too complex to maintain.
+  </p>
+
+  <!-- Summary Cards -->
+  <div class="summary-row">
+    <div class="summary-card card-green">
+      <div class="num">4 of 7</div>
+      <div class="label">Stages map 1:1 to outcomes</div>
+    </div>
+    <div class="summary-card card-blue">
+      <div class="num">1</div>
+      <div class="label">Stage split across multiple outcomes (WM-S3)</div>
+    </div>
+    <div class="summary-card card-orange">
+      <div class="num">2</div>
+      <div class="label">Outcomes with no constraint stage (WM-OC-06, WM-OC-08)</div>
+    </div>
+    <div class="summary-card card-red">
+      <div class="num">1</div>
+      <div class="label">Stages merged into one outcome (WM-S0+WM-S1)</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <h2>Mapping Legend</h2>
+  <div class="legend">
+    <div class="legend-item"><span class="tag tag-1to1">1:1</span> Stage maps directly to one outcome</div>
+    <div class="legend-item"><span class="tag tag-split">SPLIT</span> Stage is split across multiple outcomes</div>
+    <div class="legend-item"><span class="tag tag-merged">MERGED</span> Multiple stages merge into one outcome</div>
+    <div class="legend-item"><span class="tag tag-new">NEW</span> Outcome exists only in outcome model</div>
+  </div>
+
+  <!-- Primary Mapping Table -->
+  <h2>Stage-to-Outcome Mapping</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:12%">Constraint Stage</th>
+        <th style="width:18%">Stage Name</th>
+        <th style="width:6%">Map Type</th>
+        <th style="width:12%">Outcome(s)</th>
+        <th style="width:20%">Outcome Name</th>
+        <th style="width:32%">Mapping Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>WM-S0</strong></td>
+        <td>Access and Engagement</td>
+        <td><span class="tag tag-merged">MERGED</span></td>
+        <td>WM-OC-01</td>
+        <td>Current State Discovery Complete</td>
+        <td>Merged with WM-S1. Access/engagement and current state documentation serve one purpose: understand how work flows today. Engagement IS the mechanism for documentation.</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S1</strong></td>
+        <td>Current State Documented</td>
+        <td><span class="tag tag-merged">MERGED</span></td>
+        <td>WM-OC-01</td>
+        <td>Current State Discovery Complete</td>
+        <td>Merged with WM-S0 into WM-OC-01. Same dependency chain, same deliverable purpose. No work is lost.</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S2</strong></td>
+        <td>Work Taxonomy Defined</td>
+        <td><span class="tag tag-1to1">1:1</span></td>
+        <td>WM-OC-02</td>
+        <td>Operating Model &amp; Process Design</td>
+        <td>1:1 with prerequisite correction. WM-S2 had copy/pasted prereqs from WM-S4. WM-OC-02 contains the actual operating model work: workflow states, categories, triage, WIP limits, capacity allocation.</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S3</strong></td>
+        <td>System Configured and Ready</td>
+        <td><span class="tag tag-split">SPLIT</span></td>
+        <td>WM-OC-03<br>WM-OC-04</td>
+        <td>Tool Selected &amp; Configured<br>Existing Queue Dispositioned</td>
+        <td><strong>This is the key difference.</strong> WM-S3 bundles tool setup with queue disposition of 559 open 360 cases. The outcome model splits them:
+          <br>- Tool config &rarr; WM-OC-03
+          <br>- Queue disposition &rarr; WM-OC-04 (parallel with early WM-OC-05)
+          <br><strong>Impact:</strong> Queue cleanup runs in parallel with initial adoption instead of blocking it.</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S4</strong></td>
+        <td>Team Using the System</td>
+        <td><span class="tag tag-1to1">1:1</span></td>
+        <td>WM-OC-05</td>
+        <td>Initial Adoption Validated</td>
+        <td>Clean 1:1 mapping. Same scope. Key difference: WM-OC-05 adds explicit iteration policy (4-week validation, max 2 cycles, defined fallback).</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S5</strong></td>
+        <td>Work Visible and Current</td>
+        <td><span class="tag tag-1to1">1:1</span></td>
+        <td>WM-OC-07</td>
+        <td>Board Accuracy Validated</td>
+        <td>Clean 1:1 mapping. Same scope. Key difference: WM-OC-07 adds measurable freshness target (90%+ sustained 3 weeks) and iteration policy (max 3 cycles).</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S6</strong></td>
+        <td>Prioritization Drives Execution</td>
+        <td><span class="tag tag-1to1">1:1</span></td>
+        <td>WM-OC-09</td>
+        <td>Prioritization Drives Execution</td>
+        <td>Clean 1:1 mapping. Same scope. Capstone outcome.</td>
+      </tr>
+      <tr>
+        <td style="color: #999;">--</td>
+        <td style="color: #999;">No constraint stage equivalent</td>
+        <td><span class="tag tag-new">NEW</span></td>
+        <td>WM-OC-06</td>
+        <td>Full Category Coverage &amp; Reactive Visibility</td>
+        <td><strong>New in outcome model only.</strong> Fills the gap between WM-S4 (Team Using the System) and WM-S5 (Work Visible and Current). Covers: expanding from one work category to all, PagerDuty integration for reactive work, commitment tiers, triage cadence evaluation. Sourced from Implementation Plan Phase 4.1-4.3.</td>
+      </tr>
+      <tr>
+        <td style="color: #999;">--</td>
+        <td style="color: #999;">No constraint stage equivalent</td>
+        <td><span class="tag tag-new">NEW</span></td>
+        <td>WM-OC-08</td>
+        <td>Flow Metrics &amp; Scorecard Operational</td>
+        <td><strong>New in outcome model only.</strong> Captures flow metrics (cycle time, throughput, queue depth), reference estimates by work type, and Scorecard integration (Workstream D dependency). Sourced from Implementation Plan Phase 4.4 and 4.6. Has "should" dependencies on WM-OC-06 and WM-OC-07, allowing design to begin with partial data.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Visual Mapping Diagram -->
+  <h2>Visual Mapping</h2>
+
+  <svg class="map-svg" viewBox="0 0 1100 520" xmlns="http://www.w3.org/2000/svg">
+    <!-- Left column: Constraint Stages -->
+    <text x="120" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#2B2B2B">Constraint Stages</text>
+    <text x="120" y="38" text-anchor="middle" font-size="10" fill="#999">(Stage-Gate Model WM-S0-WM-S6)</text>
+
+    <!-- Right column: Outcomes -->
+    <text x="900" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#2B2B2B">Outcomes</text>
+    <text x="900" y="38" text-anchor="middle" font-size="10" fill="#999">(WM-WSB WM-OC-01 to WM-OC-09)</text>
+
+    <!-- WM-S0 (merged highlight) -->
+    <rect x="20" y="55" width="200" height="36" rx="4" fill="#f3eafc" stroke="#8E44AD" stroke-width="1.5"/>
+    <text x="120" y="73" text-anchor="middle" font-size="11" font-weight="bold" fill="#4a2d7a">WM-S0: Access &amp; Engagement</text>
+    <text x="120" y="85" text-anchor="middle" font-size="8" fill="#8E44AD">MERGED with WM-S1</text>
+
+    <!-- WM-S1 (merged highlight) -->
+    <rect x="20" y="100" width="200" height="36" rx="4" fill="#f3eafc" stroke="#8E44AD" stroke-width="1.5"/>
+    <text x="120" y="118" text-anchor="middle" font-size="11" font-weight="bold" fill="#4a2d7a">WM-S1: Current State Documented</text>
+    <text x="120" y="130" text-anchor="middle" font-size="8" fill="#8E44AD">MERGED with WM-S0</text>
+
+    <!-- WM-S2 -->
+    <rect x="20" y="150" width="200" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="120" y="172" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">WM-S2: Work Taxonomy Defined</text>
+
+    <!-- WM-S3 (split highlight) -->
+    <rect x="20" y="200" width="200" height="50" rx="4" fill="#fff3cd" stroke="#E67E22" stroke-width="2"/>
+    <text x="120" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#856404">WM-S3: System Configured</text>
+    <text x="120" y="238" text-anchor="middle" font-size="9" fill="#856404">SPLIT into 2 outcomes</text>
+
+    <!-- WM-S4 -->
+    <rect x="20" y="265" width="200" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="120" y="287" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">WM-S4: Team Using the System</text>
+
+    <!-- WM-S5 -->
+    <rect x="20" y="315" width="200" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="120" y="337" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">WM-S5: Work Visible &amp; Current</text>
+
+    <!-- WM-S6 -->
+    <rect x="20" y="365" width="200" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="120" y="387" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">WM-S6: Prioritization Drives</text>
+
+    <!-- WM-OC-01 -->
+    <rect x="780" y="75" width="220" height="36" rx="4" fill="#f3eafc" stroke="#8E44AD" stroke-width="1.5"/>
+    <text x="890" y="97" text-anchor="middle" font-size="11" font-weight="bold" fill="#4a2d7a">WM-OC-01: Current State Discovery</text>
+
+    <!-- WM-OC-02 -->
+    <rect x="780" y="125" width="220" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="890" y="147" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">WM-OC-02: Operating Model</text>
+
+    <!-- WM-OC-03 -->
+    <rect x="780" y="175" width="220" height="30" rx="4" fill="#cce5ff" stroke="#3498DB" stroke-width="1.5"/>
+    <text x="890" y="194" text-anchor="middle" font-size="10" font-weight="bold" fill="#004085">WM-OC-03: Tool Selected</text>
+
+    <!-- WM-OC-04 -->
+    <rect x="780" y="210" width="220" height="30" rx="4" fill="#cce5ff" stroke="#3498DB" stroke-width="1.5"/>
+    <text x="890" y="229" text-anchor="middle" font-size="10" font-weight="bold" fill="#004085">WM-OC-04: Queue Dispositioned</text>
+
+    <!-- WM-OC-05 -->
+    <rect x="780" y="255" width="220" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="890" y="277" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">WM-OC-05: Initial Adoption</text>
+
+    <!-- WM-OC-06 (NEW) -->
+    <rect x="780" y="305" width="220" height="36" rx="4" fill="#f8d7da" stroke="#DC2626" stroke-width="1.5"/>
+    <text x="890" y="323" text-anchor="middle" font-size="10" font-weight="bold" fill="#721c24">WM-OC-06: Full Coverage (NEW)</text>
+    <text x="890" y="337" text-anchor="middle" font-size="9" fill="#721c24" font-style="italic">Iterative</text>
+
+    <!-- WM-OC-07 -->
+    <rect x="780" y="355" width="220" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="890" y="377" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">WM-OC-07: Board Accuracy</text>
+
+    <!-- WM-OC-08 (NEW) -->
+    <rect x="780" y="405" width="220" height="36" rx="4" fill="#f8d7da" stroke="#DC2626" stroke-width="1.5"/>
+    <text x="890" y="423" text-anchor="middle" font-size="10" font-weight="bold" fill="#721c24">WM-OC-08: Scorecard (NEW)</text>
+    <text x="890" y="437" text-anchor="middle" font-size="9" fill="#721c24" font-style="italic">Baseline</text>
+
+    <!-- WM-OC-09 -->
+    <rect x="780" y="455" width="220" height="36" rx="4" fill="#f0f8e8" stroke="#76BE43" stroke-width="1.5"/>
+    <text x="890" y="477" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B2B2B">WM-OC-09: Prioritization Drives</text>
+
+    <!-- Connection lines -->
+    <!-- WM-S0 MERGED -> WM-OC-01 -->
+    <line x1="220" y1="73" x2="780" y2="88" stroke="#8E44AD" stroke-width="2"/>
+    <!-- WM-S1 MERGED -> WM-OC-01 -->
+    <line x1="220" y1="118" x2="780" y2="98" stroke="#8E44AD" stroke-width="2"/>
+
+    <!-- WM-S2 -> WM-OC-02 (1:1) -->
+    <line x1="220" y1="168" x2="780" y2="143" stroke="#76BE43" stroke-width="2"/>
+
+    <!-- WM-S3 -> WM-OC-03, WM-OC-04 (SPLIT) -->
+    <line x1="220" y1="218" x2="780" y2="190" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,3"/>
+    <line x1="220" y1="228" x2="780" y2="225" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,3"/>
+
+    <!-- WM-S4 -> WM-OC-05 (1:1) -->
+    <line x1="220" y1="283" x2="780" y2="273" stroke="#76BE43" stroke-width="2"/>
+
+    <!-- WM-S5 -> WM-OC-07 (1:1) -->
+    <line x1="220" y1="333" x2="780" y2="373" stroke="#76BE43" stroke-width="2"/>
+
+    <!-- WM-S6 -> WM-OC-09 (1:1) -->
+    <line x1="220" y1="383" x2="780" y2="473" stroke="#76BE43" stroke-width="2"/>
+
+    <!-- NEW labels -->
+    <text x="720" y="323" text-anchor="end" font-size="9" fill="#DC2626" font-style="italic">No constraint stage</text>
+    <text x="720" y="423" text-anchor="end" font-size="9" fill="#DC2626" font-style="italic">No constraint stage</text>
+
+    <!-- Center labels -->
+    <text x="500" y="82" text-anchor="middle" font-size="9" fill="#8E44AD" font-weight="bold">MERGED</text>
+    <text x="500" y="153" text-anchor="middle" font-size="9" fill="#76BE43" font-weight="bold">1:1</text>
+    <text x="500" y="212" text-anchor="middle" font-size="10" fill="#E67E22" font-weight="bold">1:2 SPLIT</text>
+    <text x="500" y="277" text-anchor="middle" font-size="9" fill="#76BE43" font-weight="bold">1:1</text>
+    <text x="500" y="350" text-anchor="middle" font-size="9" fill="#76BE43" font-weight="bold">1:1</text>
+    <text x="500" y="425" text-anchor="middle" font-size="9" fill="#76BE43" font-weight="bold">1:1</text>
+  </svg>
+
+  <!-- Key Findings -->
+  <h2>Key Findings</h2>
+
+  <div class="insight-grid">
+    <div class="insight-card good">
+      <div class="insight-title">Strong Alignment (4 of 7 stages = 57%)</div>
+      WM-S2, WM-S4, WM-S5, and WM-S6 all map cleanly to individual outcomes. The scope, deliverables, and exit criteria are nearly identical. Reporting on one translates directly to the other. WM-S2 required a prerequisite correction (copy/paste bug from WM-S4), but the scope is the same.
+    </div>
+    <div class="insight-card warn">
+      <div class="insight-title">WM-S3 is the Only Split</div>
+      WM-S3 (System Configured and Ready) maps to 2 outcomes: WM-OC-03 (tool setup) and WM-OC-04 (queue disposition). The constraint model bundles these together, but queue disposition of 559 open 360 cases is a distinct deliverable that can run in parallel with early adoption. Status rollup requires aggregation.
+    </div>
+    <div class="insight-card info">
+      <div class="insight-title">Two New Outcomes Fill Real Gaps</div>
+      WM-OC-06 (Full Category Coverage) fills the gap between "team using the system" and "board is accurate" with Phase 4.1-4.3 work. WM-OC-08 (Scorecard) captures flow metrics and Workstream D integration. Both are additive -- they don't change the constraint model, they surface work it doesn't represent.
+    </div>
+  </div>
+
+  <!-- Reporting Translation -->
+  <h2>Reporting Translation: How it Works in Practice</h2>
+
+  <div class="callout callout-info">
+    <strong>Bottom line:</strong> The mapping is clean enough that both models can coexist. The PM reports on constraint stages using status data from outcome deliverables. One complication exists (WM-S3 split), and it is manageable. The WM-S0+WM-S1 merge is cosmetic -- both stages come from the same outcome.
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>When reporting on...</th>
+        <th>You use status from...</th>
+        <th>Translation complexity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>WM-S0</strong> Access &amp; Engagement</td>
+        <td>WM-OC-01 status and deliverables</td>
+        <td><span class="tag tag-merged">LOW</span> -- WM-OC-01 covers both WM-S0 and WM-S1</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S1</strong> Current State Documented</td>
+        <td>WM-OC-01 status and deliverables</td>
+        <td><span class="tag tag-merged">LOW</span> -- same outcome as WM-S0</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S2</strong> Work Taxonomy Defined</td>
+        <td>WM-OC-02 status and deliverables</td>
+        <td><span class="tag tag-1to1">NONE</span> -- direct read</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S3</strong> System Configured &amp; Ready</td>
+        <td>Aggregate WM-OC-03 + WM-OC-04</td>
+        <td><span class="tag tag-split">MODERATE</span> -- WM-S3 is "done" when both WM-OC-03 and WM-OC-04 are complete. WM-OC-04 may extend slightly past WM-OC-03. Report the later of the two.</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S4</strong> Team Using the System</td>
+        <td>WM-OC-05 status and deliverables</td>
+        <td><span class="tag tag-1to1">NONE</span> -- direct read</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S5</strong> Work Visible &amp; Current</td>
+        <td>WM-OC-07 status and deliverables</td>
+        <td><span class="tag tag-1to1">NONE</span> -- direct read</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S6</strong> Prioritization Drives Execution</td>
+        <td>WM-OC-09 status and deliverables</td>
+        <td><span class="tag tag-1to1">NONE</span> -- direct read</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- WM-S3 Deep Dive -->
+  <h2>Deep Dive: The WM-S3 Split</h2>
+
+  <p class="intro">WM-S3 is the only stage that requires translation effort. Here is exactly how the 2 outcomes roll up:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>WM-S3 Scope Area</th>
+        <th>Outcome</th>
+        <th>Can complete independently?</th>
+        <th>WM-S3 reporting impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Tool evaluation, selection, and board configuration</td>
+        <td>WM-OC-03</td>
+        <td><span class="check">YES</span></td>
+        <td>When WM-OC-03 is done, report WM-S3 tool setup as complete</td>
+      </tr>
+      <tr>
+        <td>559 open 360 cases: review, categorize, migrate or close</td>
+        <td>WM-OC-04</td>
+        <td><span class="check">YES</span> (after WM-OC-03 exists)</td>
+        <td>When WM-OC-04 is done, report WM-S3 queue disposition as complete. WM-S3 stage = done.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warn">
+    <strong>The WM-S3 reporting advantage:</strong> In the constraint model, WM-S3 looks like one block. In reality, queue disposition (WM-OC-04) can begin as soon as the tool exists and run in parallel with initial adoption (WM-OC-05). The outcome model shows this overlap; the constraint model hides it. When reporting WM-S3 to leadership, you can show sub-deliverable progress that the outcome model makes visible.
+  </div>
+
+  <!-- Deep Dive: WM-S0+WM-S1 Merge -->
+  <h2>Deep Dive: The WM-S0+WM-S1 Merge</h2>
+
+  <p class="intro">WM-S0 and WM-S1 are the simplest mapping. Both serve one purpose -- "understand how work flows today" -- and both are fully covered by WM-OC-01.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Constraint Stage</th>
+        <th>What It Covered</th>
+        <th>Where It Lives in WM-OC-01</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>WM-S0:</strong> Access and Engagement</td>
+        <td>Engineering team access, stakeholder introductions, discovery session scheduling</td>
+        <td>WM-OC-01.1 (Discovery Sessions with Engineering Team)</td>
+      </tr>
+      <tr>
+        <td><strong>WM-S1:</strong> Current State Documented</td>
+        <td>Intake channel mapping, tracking mechanism inventory, pain point documentation, volume/mix analysis, 360 case evaluation</td>
+        <td>WM-OC-01.2 (Workflow Mapping), WM-OC-01.3 (360 Case Evaluation), WM-OC-01.4 (Current State Assessment)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Reporting impact:</strong> When leadership asks "Is WM-S0 done?" or "Is WM-S1 done?", the answer comes from WM-OC-01 status. Both are complete when WM-OC-01 is complete. No translation needed.
+  </div>
+
+  <!-- Coverage Analysis -->
+  <h2>Coverage Analysis</h2>
+
+  <div class="coverage-grid">
+    <div class="coverage-box">
+      <h3>Constraint Stages Fully Covered by Outcomes</h3>
+      <ul class="coverage-list">
+        <li><span class="check">&#10003;</span> WM-S0: Access and Engagement &rarr; WM-OC-01</li>
+        <li><span class="check">&#10003;</span> WM-S1: Current State Documented &rarr; WM-OC-01</li>
+        <li><span class="check">&#10003;</span> WM-S2: Work Taxonomy Defined &rarr; WM-OC-02</li>
+        <li><span class="check">&#10003;</span> WM-S3: System Configured and Ready &rarr; WM-OC-03 + WM-OC-04</li>
+        <li><span class="check">&#10003;</span> WM-S4: Team Using the System &rarr; WM-OC-05</li>
+        <li><span class="check">&#10003;</span> WM-S5: Work Visible and Current &rarr; WM-OC-07</li>
+        <li><span class="check">&#10003;</span> WM-S6: Prioritization Drives Execution &rarr; WM-OC-09</li>
+      </ul>
+      <h3 style="margin-top: 16px;">Constraint Stages Not in Outcome Model</h3>
+      <ul class="coverage-list">
+        <li><span class="check">&#10003;</span> None. Every constraint stage has outcome coverage.</li>
+      </ul>
+    </div>
+    <div class="coverage-box">
+      <h3>Outcomes Not in Constraint Model</h3>
+      <ul class="coverage-list">
+        <li><span class="cross">&#10007;</span> <strong>WM-OC-06: Full Category Coverage &amp; Reactive Visibility</strong> -- Fills the gap between WM-S4 and WM-S5. Implementation Plan Phase 4.1-4.3 work: remaining categories, PagerDuty integration, commitment tiers. The constraint model jumps from "team using the system" to "board is accurate" with no intermediate step.</li>
+        <li><span class="cross">&#10007;</span> <strong>WM-OC-08: Flow Metrics &amp; Scorecard Operational</strong> -- Implementation Plan Phase 4.4/4.6 work: cycle time, throughput, reference estimates, Scorecard integration (Workstream D). The constraint model does not represent metrics or Scorecard integration.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Decisions and Risks Alignment -->
+  <h2>Decisions and Risks Alignment</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Element</th>
+        <th>Constraint Model</th>
+        <th>Outcome Model</th>
+        <th>Alignment</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Decisions (D-xx)</td>
+        <td>5 decisions, tied to stage exits</td>
+        <td>7 decisions, tied to outcome exits</td>
+        <td><span class="check">OUTCOME +2</span> (WM-D-06 PagerDuty scope, WM-D-07 commitment tiers -- both Type 2, from WM-OC-06)</td>
+      </tr>
+      <tr>
+        <td>Cross-Cutting Risks</td>
+        <td>6 cross-cutting risks</td>
+        <td>Same 6 cross-cutting risks</td>
+        <td><span class="check">IDENTICAL</span></td>
+      </tr>
+      <tr>
+        <td>Outcome-Level Risks</td>
+        <td>8 stage-level risks</td>
+        <td>13 outcome-level risks</td>
+        <td><span class="check">OUTCOME +5</span> (new outcomes WM-OC-06, WM-OC-08 add risks the constraint model didn't cover)</td>
+      </tr>
+      <tr>
+        <td>Open Questions (Q-xx)</td>
+        <td>5 questions, tied to decisions</td>
+        <td>7 questions, tied to decisions</td>
+        <td><span class="check">OUTCOME +2</span> (WM-Q-06 weekly inflow, WM-Q-07 existing SLAs)</td>
+      </tr>
+      <tr>
+        <td>Cross-Workstream Dependencies</td>
+        <td>CW-01 to CW-03</td>
+        <td>CW-01 to CW-04</td>
+        <td><span class="check">OUTCOME +1</span> (CW-04: VI dashboards referencing WM data)</td>
+      </tr>
+      <tr>
+        <td>Milestones</td>
+        <td>WM-M-2</td>
+        <td>WM-M-2</td>
+        <td><span class="check">IDENTICAL</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Key takeaway:</strong> The two models share the same core decisions, risks, questions, dependencies, and milestones. The outcome model adds items from the Implementation Plan that the constraint model didn't capture (WM-D-06, WM-D-07, WM-Q-06, WM-Q-07, CW-04, and 5 additional risks). No constraint model elements are lost or changed. The data is the same; only the view changes.
+  </div>
+
+  <div class="footer">
+    Dynamo Consulting | DMSi Operational Readiness | Work Management Model Comparison | 1 FTE Dynamo | March 2026
+  </div>
+</div>
+
+</body>
+</html>

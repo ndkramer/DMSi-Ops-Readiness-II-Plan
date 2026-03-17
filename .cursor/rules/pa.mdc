@@ -1,0 +1,29 @@
+---
+description: Pipeline Automation (PA) folder — follow PA-WSB outcome structure and conventions
+globs: PA/**
+alwaysApply: false
+---
+
+# PA Folder Rules
+
+When editing or creating content under the PA folder, follow the Pipeline Automation outcome-based WBS structure and conventions (PA-WSB).
+
+## Structure to follow
+
+- **Outcome map**: Table with ID, Outcome, Category, Target Date, Calendar, Milestone Alignment.
+- **Dependencies**: Mermaid graph with `must` / `should` / `contingent`; document in Dependency Type Legend.
+- **Per-outcome sections**: Use `### PA-OC-XX: Outcome Title`; include **Category:**, **Target Date:**, **Owner:**, **Status:**; then **Success Criteria** (bullets), **Deliverables** (table), then **PA-OC-XX.Y: Deliverable Name** with bullet subtasks.
+
+## Conventions
+
+- Outcome IDs: PA-OC-01 through PA-OC-11 for PA. Categories: Baseline, Iterative, Conditional.
+- Deliverable IDs: PA-OC-XX.Y (e.g. PA-OC-01.1, PA-OC-01.2). Each deliverable has a short name and a bullet list of subtasks.
+- Risk IDs: PA-R-XX (outcome-level), PA-R-XN (cross-cutting), PA-R-SN (security).
+- Decision IDs: PA-D-XX. Classified as TYPE 1 (irreversible) or TYPE 2 (reversible).
+- Question IDs: PA-Q-XX. Each question feeds a specific decision.
+- Cross-workstream dependency IDs: PA-CW-XX.
+- Keep dependency types explicit: must (hard prerequisite), should (recommended sequence), contingent (trigger-activated).
+
+## Reference
+
+The canonical PA outcome structure is in the Pipeline Automation WBS (PA-WSB) document. When in doubt, match its format and level of detail.

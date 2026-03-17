@@ -1,0 +1,533 @@
+{
+  "lastUpdated": "Mar 16, 2026",
+  "summary": {
+    "headline": "Sprint 2 is active across all workstreams.",
+    "narrative": "Work Management and Visibility Infrastructure are on track. Proactive Detection and Pipeline Automation are in discovery. Workstreams B, C, and D planning is underway with timelines TBD pending tooling decisions."
+  },
+  "milestones": [
+    {
+      "id": "M2",
+      "label": "Establish the Structure",
+      "status": "in-progress"
+    },
+    {
+      "id": "M3",
+      "label": "Build the Foundation",
+      "status": "not-started"
+    },
+    {
+      "id": "M4",
+      "label": "Operationalize Intelligence",
+      "status": "not-started"
+    },
+    {
+      "id": "M5",
+      "label": "Support Excellence",
+      "status": "not-started"
+    },
+    {
+      "id": "M6",
+      "label": "Modernized Release Management",
+      "status": "not-started"
+    },
+    {
+      "id": "M7",
+      "label": "Completion",
+      "status": "not-started"
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "wm",
+      "confidence": "on-track"
+    },
+    {
+      "id": "vi",
+      "confidence": "on-track"
+    },
+    {
+      "id": "pd",
+      "confidence": "on-track"
+    },
+    {
+      "id": "pa",
+      "confidence": "on-track"
+    },
+    {
+      "id": "ls",
+      "confidence": "on-track"
+    },
+    {
+      "id": "wsb",
+      "confidence": "discovery"
+    },
+    {
+      "id": "wsc",
+      "confidence": "discovery"
+    },
+    {
+      "id": "wsd",
+      "confidence": "discovery"
+    }
+  ],
+  "stages": [
+    {
+      "capabilityId": "wm",
+      "num": 0,
+      "status": "done",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Feb 2026",
+      "targetEnd": "Feb 2026"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 1,
+      "status": "done",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Feb 2026",
+      "targetEnd": "Feb 2026"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 2,
+      "status": "in-progress",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Feb 2026",
+      "targetEnd": "Mar 2026"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "Mar 2026"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "Apr 2026"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "May 2026",
+      "targetEnd": "Jun 2026"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 6,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "May 2026",
+      "targetEnd": "Jun 2026"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 0,
+      "status": "in-progress",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Apr 2026",
+      "targetEnd": "May 2026"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 1,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Apr 2026",
+      "targetEnd": "May 2026"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "May 2026",
+      "targetEnd": "Aug 2026"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jun 2026",
+      "targetEnd": "Aug 2026"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jun 2026",
+      "targetEnd": "Jul 2026"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jul 2026",
+      "targetEnd": "Aug 2026"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 0,
+      "status": "in-progress",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Feb 2026",
+      "targetEnd": "Mar 2026"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 1,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "March 2026",
+      "targetEnd": "Apr 2026"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "Apr 2026"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pd",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pd",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pd",
+      "num": 6,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pd",
+      "num": 7,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Oct 2026",
+      "targetEnd": "Dec 2026"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 0,
+      "status": "done",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "Apr 2026"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 1,
+      "status": "in-progress",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Apr 2026",
+      "targetEnd": "May 2026"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "May 2026",
+      "targetEnd": "May 2026"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jun 2026",
+      "targetEnd": "Jul 2026"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jul 2026",
+      "targetEnd": "Sep 2026"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Sep 2026",
+      "targetEnd": "Oct 2026"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 6,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pa",
+      "num": 7,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pa",
+      "num": 8,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 0,
+      "status": "not-started",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 1,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 6,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 0,
+      "status": "not-started",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "Mar 2026"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 1,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "Apr 2026"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "Apr 2026"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "May 2026"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Apr 2026",
+      "targetEnd": "Jun 2026"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Apr 2026",
+      "targetEnd": "Jun 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 0,
+      "status": "not-started",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "Apr 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 1,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "Apr 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "May 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "May 2026",
+      "targetEnd": "Jun 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jun 2026",
+      "targetEnd": "Oct 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Apr 2026",
+      "targetEnd": "Jan 2027"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 0,
+      "status": "in-progress",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "March 2026",
+      "targetEnd": "March 2026"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 1,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "TBD",
+      "targetEnd": "TBD"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "TBD",
+      "targetEnd": "TBD"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "TBD",
+      "targetEnd": "TBD"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "TBD",
+      "targetEnd": "TBD"
+    }
+  ]
+}

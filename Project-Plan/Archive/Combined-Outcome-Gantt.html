@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMSi Operational Readiness -- Combined Outcome Timeline</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; color: #2B2B2B; }
+
+  .header {
+    background: #2B2B2B;
+    color: white;
+    padding: 20px 40px 0 40px;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.3px; }
+  .header .subtitle { font-size: 13px; color: #aaa; margin-top: 4px; line-height: 1.4; }
+  .header .brand { color: #76BE43; font-weight: 700; font-size: 16px; letter-spacing: 1px; }
+
+  .tab-bar {
+    display: flex;
+    gap: 0;
+  }
+  .tab-btn {
+    padding: 10px 28px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #888;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    letter-spacing: 0.3px;
+  }
+  .tab-btn:hover {
+    color: #ccc;
+    background: rgba(255,255,255,0.05);
+  }
+  .tab-btn.active {
+    color: #76BE43;
+    border-bottom-color: #76BE43;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .under-construction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #999;
+    text-align: center;
+    padding: 60px 40px;
+  }
+  .under-construction .uc-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+  .under-construction h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 8px;
+  }
+  .under-construction p {
+    font-size: 14px;
+    color: #999;
+    line-height: 1.5;
+    max-width: 400px;
+  }
+
+  .legend-bar {
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 14px 40px;
+    display: flex;
+    gap: 32px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #555;
+  }
+  .legend-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+  }
+
+  .container { padding: 30px 40px; max-width: 1200px; margin: 0 auto; }
+
+  /* Month grid header */
+  .timeline-wrapper {
+    position: relative;
+    margin-top: 10px;
+  }
+  .timeline-header {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+  }
+  .timeline-label {
+    font-size: 11px;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 0;
+  }
+  .month-markers {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    border-bottom: 2px solid #2B2B2B;
+    padding-bottom: 8px;
+  }
+  .month-marker {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    font-weight: 700;
+  }
+  .month-marker .month-range {
+    font-size: 9px;
+    font-weight: 400;
+    color: #aaa;
+    margin-top: 2px;
+  }
+
+  /* Swim lanes */
+  .swim-lane {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 80px;
+    border-bottom: 1px solid #e0e0e0;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .swim-lane:hover { background: #eef6e8; }
+  .swim-lane:hover .lane-label .cap-name { color: #76BE43; }
+
+  .lane-label {
+    padding: 12px 16px 12px 0;
+  }
+  .lane-label .cap-id {
+    font-size: 11px;
+    font-weight: 700;
+    color: #76BE43;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .lane-label .cap-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #2B2B2B;
+    margin-top: 2px;
+    transition: color 0.15s;
+  }
+  .lane-label .cap-meta {
+    font-size: 11px;
+    color: #999;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .lane-label .cap-click {
+    font-size: 10px;
+    color: #76BE43;
+    margin-top: 4px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .swim-lane:hover .cap-click { opacity: 1; }
+
+  .lane-track {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Bars */
+  .gantt-bar {
+    position: absolute;
+    height: 38px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.3px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    z-index: 2;
+  }
+  .gantt-bar:hover {
+    transform: scaleY(1.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    z-index: 10;
+  }
+
+  .bar-wm { background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%); }
+  .bar-vi { background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%); }
+  .bar-pp { background: linear-gradient(135deg, #E67E22 0%, #D35400 100%); }
+
+  /* Milestones */
+  .milestone-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 2px dashed #E74C3C;
+    z-index: 1;
+    opacity: 0.5;
+  }
+  .milestone-tag {
+    position: absolute;
+    top: -24px;
+    transform: translateX(-50%);
+    background: #E74C3C;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 3px;
+    white-space: nowrap;
+    z-index: 5;
+  }
+
+  /* Today marker */
+  .today-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 3px solid #76BE43;
+    z-index: 4;
+    opacity: 0.7;
+  }
+  .today-tag {
+    position: absolute;
+    top: -24px;
+    transform: translateX(-50%);
+    background: #76BE43;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 3px;
+    white-space: nowrap;
+    z-index: 5;
+    letter-spacing: 0.5px;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    display: none;
+    position: fixed;
+    background: #2B2B2B;
+    color: white;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    max-width: 360px;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    pointer-events: none;
+  }
+  .tooltip.show { display: block; }
+  .tooltip .tt-title { font-size: 14px; font-weight: 700; color: #76BE43; margin-bottom: 8px; }
+  .tooltip .tt-row { display: flex; gap: 8px; margin: 3px 0; }
+  .tooltip .tt-label { color: #aaa; min-width: 90px; }
+
+  /* Summary cards */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  .summary-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px 24px;
+    border-left: 4px solid #76BE43;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .summary-card .sc-title { font-size: 14px; font-weight: 700; color: #2B2B2B; }
+  .summary-card .sc-detail { font-size: 12px; color: #888; margin-top: 6px; line-height: 1.5; }
+  .summary-card.blue { border-left-color: #3498DB; }
+  .summary-card.purple { border-left-color: #9B59B6; }
+  .summary-card.orange { border-left-color: #E67E22; }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2B2B2B;
+    margin: 30px 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #76BE43;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    font-size: 11px;
+    color: #999;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 900px) {
+    .summary-row { grid-template-columns: 1fr; }
+    .container { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>DMSi Operational Readiness</h1>
+      <div class="subtitle">Outcome-Based Project Timeline | Feb 2026 - Oct 2026</div>
+    </div>
+    <div class="brand">DYNAMO</div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('a')">Workstream A</button>
+    <button class="tab-btn" onclick="switchTab('bc')">Workstream B &amp; C</button>
+    <button class="tab-btn" onclick="switchTab('d')">Workstream D</button>
+    <button class="tab-btn" onclick="switchTab('e')">Workstream E</button>
+  </div>
+</div>
+
+<!-- Workstream B & C -->
+<div class="tab-content" id="tab-bc">
+  <iframe id="iframe-bc" src="" style="width:100%;border:none;min-height:100vh;" onload="this.style.height=this.contentDocument.body.scrollHeight+'px'"></iframe>
+</div>
+
+<!-- Workstream D -->
+<div class="tab-content" id="tab-d">
+  <div class="under-construction">
+    <div class="uc-icon">&#9881;</div>
+    <h2>Workstream D</h2>
+    <p>Content for this workstream is under construction. Check back soon.</p>
+  </div>
+</div>
+
+<!-- Workstream E -->
+<div class="tab-content" id="tab-e">
+  <div class="under-construction">
+    <div class="uc-icon">&#9881;</div>
+    <h2>Workstream E</h2>
+    <p>Content for this workstream is under construction. Check back soon.</p>
+  </div>
+</div>
+
+<!-- Workstream A (current content) -->
+<div class="tab-content active" id="tab-a">
+
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg, #3498DB, #2980B9)"></div> Work Management (WM)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg, #9B59B6, #8E44AD)"></div> Visibility Infrastructure (VI)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg, #E67E22, #D35400)"></div> Pipeline Automation (PP)</div>
+  <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #E74C3C;opacity:0.6"></div> Milestone</div>
+  <div class="legend-item"><div style="width:0;height:14px;border-left:3px solid #76BE43;opacity:0.7"></div> Today</div>
+</div>
+
+<div class="container">
+
+  <!-- Summary Cards -->
+  <div class="summary-row">
+    <div class="summary-card blue">
+      <div class="sc-title">Work Management</div>
+      <div class="sc-detail">9 outcomes<br>Feb 15 - Jun 19, 2026</div>
+    </div>
+    <div class="summary-card purple">
+      <div class="sc-title">Visibility Infrastructure</div>
+      <div class="sc-detail">16 outcomes<br>Mar 1 - Oct 31, 2026</div>
+    </div>
+    <div class="summary-card orange">
+      <div class="sc-title">Pipeline Automation</div>
+      <div class="sc-detail">11 outcomes (+ POC)<br>Mar 16 - Oct 30, 2026</div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section-title">Implementation Timeline</div>
+  <div class="timeline-wrapper" id="timelineWrapper">
+    <div class="timeline-header">
+      <div class="timeline-label">Capability</div>
+      <div class="month-markers" id="monthMarkers"></div>
+    </div>
+    <div id="swimLanes"></div>
+  </div>
+
+</div>
+
+</div><!-- end tab-a -->
+
+<div class="footer">
+  Dynamo Consulting | DMSi Operational Readiness Combined Timeline | March 2026 | Confidential
+</div>
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// Timeline spans Feb 1 2026 to Nov 1 2026 = 9 months
+// Each month column = 1/9 of the track width
+const TIMELINE_START = new Date(2026, 1, 1);  // Feb 1
+const TIMELINE_END   = new Date(2026, 10, 1); // Nov 1
+const TOTAL_DAYS = (TIMELINE_END - TIMELINE_START) / 86400000; // ~273 days
+
+const months = [
+  { label: 'Feb', range: 'Feb 2026' },
+  { label: 'Mar', range: 'Mar 2026' },
+  { label: 'Apr', range: 'Apr 2026' },
+  { label: 'May', range: 'May 2026' },
+  { label: 'Jun', range: 'Jun 2026' },
+  { label: 'Jul', range: 'Jul 2026' },
+  { label: 'Aug', range: 'Aug 2026' },
+  { label: 'Sep', range: 'Sep 2026' },
+  { label: 'Oct', range: 'Oct 2026' },
+];
+
+// Build month header
+const monthMarkersEl = document.getElementById('monthMarkers');
+months.forEach(m => {
+  const d = document.createElement('div');
+  d.className = 'month-marker';
+  d.innerHTML = `${m.label}<div class="month-range">${m.range}</div>`;
+  monthMarkersEl.appendChild(d);
+});
+
+// Capability data
+const capabilities = [
+  {
+    id: 'WM',
+    name: 'Work Management',
+    meta: '9 outcomes | OC-01 & OC-02 complete',
+    barClass: 'bar-wm',
+    start: new Date(2026, 1, 15),  // Feb 15
+    end:   new Date(2026, 5, 19),  // Jun 19
+    link: 'WM-Outcome-Map.html',
+    outcomes: 9,
+    detail: 'Process design, tool selection, adoption, board accuracy, flow metrics, prioritization. OC-01 (Discovery) and OC-02 (Operating Model) already complete.'
+  },
+  {
+    id: 'VI',
+    name: 'Visibility Infrastructure',
+    meta: '16 outcomes | PD AIOps active since Mar 1',
+    barClass: 'bar-vi',
+    start: new Date(2026, 2, 1),   // Mar 1
+    end:   new Date(2026, 9, 31),  // Oct 31
+    link: 'VI-WSB-Outcome-Map.html',
+    outcomes: 16,
+    detail: 'Dynatrace rollout, PagerDuty AIOps, host instrumentation, log migration, synthetic monitoring, application telemetry, alerting, proactive operations.'
+  },
+  {
+    id: 'PP',
+    name: 'Pipeline Automation',
+    meta: '11 outcomes + POC | Starts with 2-week POC',
+    barClass: 'bar-pp',
+    start: new Date(2026, 2, 16),  // Mar 16
+    end:   new Date(2026, 9, 30),  // Oct 30
+    link: 'PP-Outcome-map.html',
+    outcomes: 11,
+    detail: 'NGINX config pipeline POC, foundation, config inventory, version control migration, build/deploy/drift pipelines, reliability validation, config-as-code enforcement.'
+  }
+];
+
+// Milestones
+const milestones = [
+  { id: 'M2', date: new Date(2026, 2, 28), label: 'M2: Mar 28' },
+  { id: 'M3', date: new Date(2026, 4, 28), label: 'M3: May 28' },
+  { id: 'M4', date: new Date(2026, 9, 27), label: 'M4: Oct 27' },
+];
+
+function dateToPct(d) {
+  const days = (d - TIMELINE_START) / 86400000;
+  return (days / TOTAL_DAYS) * 100;
+}
+
+// Build swim lanes
+const lanesEl = document.getElementById('swimLanes');
+
+capabilities.forEach(cap => {
+  const lane = document.createElement('div');
+  lane.className = 'swim-lane';
+  lane.onclick = () => { window.location.href = cap.link; };
+
+  // Label
+  const label = document.createElement('div');
+  label.className = 'lane-label';
+  label.innerHTML = `
+    <div class="cap-id">${cap.id}</div>
+    <div class="cap-name">${cap.name}</div>
+    <div class="cap-meta">${cap.meta}</div>
+    <div class="cap-click">Click to view detailed outcome map &rarr;</div>
+  `;
+  lane.appendChild(label);
+
+  // Track
+  const track = document.createElement('div');
+  track.className = 'lane-track';
+
+  const bar = document.createElement('div');
+  bar.className = `gantt-bar ${cap.barClass}`;
+  const leftPct = dateToPct(cap.start);
+  const rightPct = dateToPct(cap.end);
+  bar.style.left = leftPct + '%';
+  bar.style.width = (rightPct - leftPct) + '%';
+  bar.textContent = `${cap.id} -- ${cap.outcomes} outcomes`;
+
+  bar.addEventListener('mouseenter', (e) => showTooltip(e, cap));
+  bar.addEventListener('mousemove', (e) => moveTooltip(e));
+  bar.addEventListener('mouseleave', hideTooltip);
+
+  track.appendChild(bar);
+
+  // Milestone lines within this track
+  milestones.forEach(ms => {
+    const line = document.createElement('div');
+    line.className = 'milestone-line';
+    line.style.left = dateToPct(ms.date) + '%';
+    track.appendChild(line);
+  });
+
+  lane.appendChild(track);
+  lanesEl.appendChild(lane);
+});
+
+// Milestone tags (on top of the timeline, above the first lane)
+const wrapper = document.getElementById('timelineWrapper');
+milestones.forEach(ms => {
+  const pct = dateToPct(ms.date);
+
+  const line = document.createElement('div');
+  line.className = 'milestone-line';
+  line.style.left = `calc(240px + (100% - 240px) * ${pct / 100})`;
+  line.style.top = '0';
+  line.style.bottom = '0';
+  line.style.position = 'absolute';
+  wrapper.appendChild(line);
+
+  const tag = document.createElement('div');
+  tag.className = 'milestone-tag';
+  tag.style.left = `calc(240px + (100% - 240px) * ${pct / 100})`;
+  tag.style.position = 'absolute';
+  tag.textContent = ms.label;
+  wrapper.appendChild(tag);
+});
+
+// Today marker
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+if (today >= TIMELINE_START && today <= TIMELINE_END) {
+  const pct = dateToPct(today);
+
+  const line = document.createElement('div');
+  line.className = 'today-line';
+  line.style.left = `calc(240px + (100% - 240px) * ${pct / 100})`;
+  line.style.top = '0';
+  line.style.bottom = '0';
+  line.style.position = 'absolute';
+  wrapper.appendChild(line);
+
+  const tag = document.createElement('div');
+  tag.className = 'today-tag';
+  tag.style.left = `calc(240px + (100% - 240px) * ${pct / 100})`;
+  tag.style.position = 'absolute';
+  tag.textContent = 'TODAY';
+  wrapper.appendChild(tag);
+}
+
+// Fix bar positioning: bars use % of the track div, need to account for it
+document.querySelectorAll('.lane-track').forEach(track => {
+  track.style.position = 'relative';
+});
+
+// Tooltip
+const tooltipEl = document.getElementById('tooltip');
+
+function showTooltip(e, cap) {
+  const startStr = cap.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const endStr = cap.end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const weeks = Math.round((cap.end - cap.start) / (7 * 86400000));
+
+  let html = `<div class="tt-title">${cap.name}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Timeline:</span> ${startStr} - ${endStr}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Duration:</span> ~${weeks} weeks</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Outcomes:</span> ${cap.outcomes}</div>`;
+  html += `<div style="margin-top:10px;font-size:11px;color:#ccc;line-height:1.5;">${cap.detail}</div>`;
+  html += `<div style="margin-top:10px;font-size:10px;color:#76BE43;font-weight:600;">Click bar to view detailed outcome map</div>`;
+
+  tooltipEl.innerHTML = html;
+  tooltipEl.classList.add('show');
+  moveTooltip(e);
+}
+
+function moveTooltip(e) {
+  let x = e.clientX + 16;
+  let y = e.clientY + 16;
+  if (x + 360 > window.innerWidth) x = e.clientX - 376;
+  if (y + 250 > window.innerHeight) y = e.clientY - 200;
+  tooltipEl.style.left = x + 'px';
+  tooltipEl.style.top = y + 'px';
+}
+
+function hideTooltip() { tooltipEl.classList.remove('show'); }
+
+// Tab switching
+const iframeSources = {
+  'bc': 'WSB-WSC-Outcome-Map.html'
+};
+
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  event.target.classList.add('active');
+
+  // Lazy-load iframe content on first visit
+  if (iframeSources[tabId]) {
+    const iframe = document.getElementById('iframe-' + tabId);
+    if (iframe && !iframe.src.includes(iframeSources[tabId])) {
+      iframe.src = iframeSources[tabId];
+    }
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VI: Constraint vs Outcome Model Comparison</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; background:#f7f7f7; color:#2B2B2B; line-height:1.5; }
+
+  .header { background:#2B2B2B; color:white; padding:24px 40px; display:flex; align-items:center; justify-content:space-between; }
+  .header h1 { font-size:20px; font-weight:600; }
+  .header .subtitle { font-size:12px; color:#aaa; margin-top:4px; }
+  .header .brand { color:#76BE43; font-weight:700; font-size:14px; }
+
+  .container { max-width:1300px; margin:0 auto; padding:30px 40px; }
+
+  .section-title { font-size:16px; font-weight:700; color:#2B2B2B; margin:30px 0 14px; padding-bottom:8px; border-bottom:2px solid #76BE43; }
+
+  /* Summary Cards */
+  .summary-row { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-bottom:30px; }
+  .sc { background:white; border-radius:8px; padding:18px; box-shadow:0 1px 3px rgba(0,0,0,0.08); text-align:center; }
+  .sc .num { font-size:28px; font-weight:700; }
+  .sc .lab { font-size:11px; color:#888; margin-top:4px; }
+  .sc.green { border-top:4px solid #27AE60; }
+  .sc.orange { border-top:4px solid #E67E22; }
+  .sc.purple { border-top:4px solid #8E44AD; }
+  .sc.red { border-top:4px solid #E74C3C; }
+  .sc.gray { border-top:4px solid #95A5A6; }
+  .sc.blue { border-top:4px solid #3498DB; }
+
+  /* Tags */
+  .tag { display:inline-block; font-size:10px; font-weight:700; padding:3px 8px; border-radius:3px; text-transform:uppercase; letter-spacing:0.5px; }
+  .tag-11 { background:#D5F5E3; color:#1E8449; }
+  .tag-split { background:#FFF3E0; color:#E67E22; }
+  .tag-merged { background:#F4ECF7; color:#8E44AD; }
+  .tag-new { background:#FDEAEA; color:#E74C3C; }
+  .tag-orphan { background:#EAECEE; color:#7F8C8D; }
+
+  /* Tables */
+  table { width:100%; border-collapse:collapse; margin:14px 0 20px; background:white; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+  th { background:#2B2B2B; color:white; font-size:11px; font-weight:600; text-align:left; padding:10px 14px; text-transform:uppercase; letter-spacing:0.5px; }
+  td { padding:10px 14px; font-size:12px; border-bottom:1px solid #eee; }
+  tr:nth-child(even) td { background:#F7F7F7; }
+  tr:hover td { background:#EBF5FB; }
+
+  /* Insight Cards */
+  .insight-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:16px 0 30px; }
+  .insight { background:white; border-radius:8px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+  .insight h3 { font-size:13px; font-weight:700; margin-bottom:8px; }
+  .insight h3.green { color:#27AE60; }
+  .insight h3.orange { color:#E67E22; }
+  .insight h3.blue { color:#3498DB; }
+  .insight p { font-size:12px; color:#555; line-height:1.5; }
+
+  /* SVG Diagram */
+  .diagram-wrap { background:white; border-radius:8px; padding:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08); overflow-x:auto; margin:16px 0 30px; }
+
+  /* Deep dive cards */
+  .deep-dive { background:white; border-radius:8px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.08); margin:12px 0; border-left:4px solid #E67E22; }
+  .deep-dive.merge { border-left-color:#8E44AD; }
+  .deep-dive.new-oc { border-left-color:#E74C3C; }
+  .deep-dive h4 { font-size:13px; font-weight:700; margin-bottom:8px; }
+  .deep-dive .wp-list { font-size:11px; color:#555; margin:6px 0; line-height:1.6; }
+  .deep-dive .note { font-size:11px; color:#888; font-style:italic; margin-top:8px; }
+
+  /* Coverage */
+  .coverage-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+  .cov-col { background:white; border-radius:8px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+  .cov-col h4 { font-size:13px; font-weight:700; margin-bottom:10px; }
+  .cov-item { font-size:12px; padding:6px 0; border-bottom:1px solid #f0f0f0; display:flex; justify-content:space-between; }
+  .cov-check { color:#27AE60; font-weight:700; }
+
+  /* Callout */
+  .callout { border-radius:8px; padding:16px 20px; margin:16px 0; font-size:12px; line-height:1.5; }
+  .callout.info { background:#CCDDFF; border-left:4px solid #3498DB; }
+  .callout.warning { background:#FFF3E0; border-left:4px solid #E67E22; }
+  .callout strong { font-weight:700; }
+
+  .footer { text-align:center; padding:30px; font-size:11px; color:#999; border-top:1px solid #e0e0e0; margin-top:40px; }
+
+  @media (max-width:900px) {
+    .summary-row { grid-template-columns:repeat(3,1fr); }
+    .insight-grid { grid-template-columns:1fr; }
+    .coverage-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Visibility Infrastructure: Constraint vs Outcome Model Comparison</h1>
+    <div class="subtitle">Dynatrace Implementation -- DMSi Software | Stage-Gate (S0-S9) vs Outcome-Based (VI-OC-01 to VI-OC-16)</div>
+  </div>
+  <div class="brand">DYNAMO</div>
+</div>
+
+<div class="container">
+
+  <!-- Summary Cards -->
+  <div class="summary-row">
+    <div class="sc green"><div class="num">6</div><div class="lab">1:1 Mappings</div></div>
+    <div class="sc orange"><div class="num">3</div><div class="lab">SPLIT Stages</div></div>
+    <div class="sc purple"><div class="num">1</div><div class="lab">MERGED Stage</div></div>
+    <div class="sc red"><div class="num">3</div><div class="lab">NEW Outcomes</div></div>
+    <div class="sc gray"><div class="num">0</div><div class="lab">ORPHAN Stages</div></div>
+    <div class="sc blue"><div class="num">60%</div><div class="lab">1:1 Rate</div></div>
+  </div>
+
+  <div class="callout warning">
+    <strong>Viability Assessment:</strong> The 60% 1:1 mapping rate is in the "maybe" zone (50-70%). The three SPLITs are justified by genuine structural differences (parallel execution, different dependency chains), and the 1 MERGE is cosmetic. Three NEW outcomes (VI-OC-13, VI-OC-15, VI-OC-16) add coverage the constraint model lacks. The hybrid approach is viable but requires active PM translation for S0, S2, and S6 status roll-ups.
+  </div>
+
+  <!-- Mapping Table -->
+  <div class="section-title">Stage-to-Outcome Mapping</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Stage</th>
+        <th>Stage Name</th>
+        <th>Type</th>
+        <th>Outcome(s)</th>
+        <th>Outcome Name(s)</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>S0</strong></td>
+        <td>Foundation and Plan Alignment</td>
+        <td><span class="tag tag-split">SPLIT</span></td>
+        <td>VI-OC-01, VI-OC-02</td>
+        <td>Foundation Planning; Telemetry & Licensing</td>
+        <td>S0 WP 0.1-0.2, 0.4-0.7 -> VI-OC-01. S0 WP 0.3 (licensing) merged with S1 into VI-OC-02 because licensing and telemetry strategy share a dependency chain.</td>
+      </tr>
+      <tr>
+        <td><strong>S1</strong></td>
+        <td>Telemetry Strategy Validated</td>
+        <td><span class="tag tag-merged">MERGED</span></td>
+        <td>VI-OC-02</td>
+        <td>Telemetry Strategy & Licensing Resolved</td>
+        <td>S1 merged with S0.3 into VI-OC-02. Both are "resolve before deploying" activities with no deployment dependency.</td>
+      </tr>
+      <tr>
+        <td><strong>S2</strong></td>
+        <td>Infrastructure Monitoring Modernized</td>
+        <td><span class="tag tag-split">SPLIT</span></td>
+        <td>VI-OC-03, VI-OC-04, VI-OC-05</td>
+        <td>Platform Deployed; Host Fleet Instrumented; Infra Visibility Validated</td>
+        <td>S2 contains 4 different dependency chains: tenant setup (2.1,2.2) + integrations (2.5,2.6) -> VI-OC-03; host deployment (2.3,2.4) -> VI-OC-04; dashboards (2.7) + 30-day gate -> VI-OC-05. This is the most complex split.</td>
+      </tr>
+      <tr>
+        <td><strong>S3</strong></td>
+        <td>Data Flowing from All Sources</td>
+        <td><span class="tag tag-11">1:1</span></td>
+        <td>VI-OC-06</td>
+        <td>Log Management Migrated</td>
+        <td>Clean mapping. Same scope, same deliverables. Key difference: VI-OC-06 can start parallel with VI-OC-04/VI-OC-05 instead of waiting for S2 to complete.</td>
+      </tr>
+      <tr>
+        <td><strong>S4</strong></td>
+        <td>External Availability Monitoring Operational</td>
+        <td><span class="tag tag-11">1:1</span></td>
+        <td>VI-OC-07</td>
+        <td>External Availability Monitoring Operational</td>
+        <td>Clean mapping. Same scope. Key difference: VI-OC-07 can start parallel with VI-OC-04 instead of waiting for S3.</td>
+      </tr>
+      <tr>
+        <td><strong>S5</strong></td>
+        <td>Application Telemetry Operational</td>
+        <td><span class="tag tag-11">1:1</span></td>
+        <td>VI-OC-08</td>
+        <td>Application Telemetry Operational</td>
+        <td>Clean mapping. Same scope, same dev team dependency risks.</td>
+      </tr>
+      <tr>
+        <td><strong>S6</strong></td>
+        <td>Baselines Established and Data Quality Validated</td>
+        <td><span class="tag tag-split">SPLIT</span></td>
+        <td>VI-OC-09, VI-OC-12</td>
+        <td>Baselines Validated; Legacy Systems Decommissioned</td>
+        <td>S6 WP 6.1-6.4, 6.7-6.9 -> VI-OC-09 (baselines). S6 WP 6.5-6.6 -> VI-OC-12 (decommission). Decommission serves a different purpose and gates on different outcomes than baselines.</td>
+      </tr>
+      <tr>
+        <td><strong>S7</strong></td>
+        <td>Alerting Tuned, Persona Views Live, and Trusted</td>
+        <td><span class="tag tag-11">1:1</span></td>
+        <td>VI-OC-10</td>
+        <td>Alerting Optimized and Persona Views Live</td>
+        <td>Clean mapping. Same scope.</td>
+      </tr>
+      <tr>
+        <td><strong>S8</strong></td>
+        <td>Proactive Operations Capability</td>
+        <td><span class="tag tag-11">1:1</span></td>
+        <td>VI-OC-11</td>
+        <td>Proactive Operations Validated</td>
+        <td>Clean mapping. Same scope. M5 evidence package included.</td>
+      </tr>
+      <tr>
+        <td><strong>S9</strong></td>
+        <td>Predictive Operations and Advanced Capabilities</td>
+        <td><span class="tag tag-11">1:1</span></td>
+        <td>VI-OC-14</td>
+        <td>Predictive Operations and Advanced Capabilities</td>
+        <td>Clean mapping. Becomes Conditional in outcome model (triggers after VI-OC-11).</td>
+      </tr>
+      <tr>
+        <td>--</td>
+        <td>--</td>
+        <td><span class="tag tag-new">NEW</span></td>
+        <td>VI-OC-13</td>
+        <td>A2W Monitoring Readiness</td>
+        <td>Consolidates A2W tasks scattered across S0.5, S4.7, S5.7, S8.3 into one Conditional outcome. No stage equivalent.</td>
+      </tr>
+      <tr>
+        <td>--</td>
+        <td>--</td>
+        <td><span class="tag tag-new">NEW</span></td>
+        <td>VI-OC-15</td>
+        <td>Legacy Fallback Activated</td>
+        <td>Explicit fallback path if validation fails. Constraint model mentions fallbacks in narrative but has no dedicated stage.</td>
+      </tr>
+      <tr>
+        <td>--</td>
+        <td>--</td>
+        <td><span class="tag tag-new">NEW</span></td>
+        <td>VI-OC-16</td>
+        <td>PagerDuty AIOps Deployed &amp; Validated</td>
+        <td>PagerDuty AIOps rollout (alert grouping + auto-pause). Already underway, runs parallel with Dynatrace deployment. No stage equivalent -- WP 6.7 referenced PD AIOps confirmation but not the full deployment lifecycle.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Visual Mapping Diagram -->
+  <div class="section-title">Visual Mapping</div>
+  <div class="diagram-wrap">
+    <svg width="1100" height="730" viewBox="0 0 1100 730">
+      <!-- Defs -->
+      <defs>
+        <marker id="arrowGreen" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#27AE60"/></marker>
+        <marker id="arrowOrange" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#E67E22"/></marker>
+        <marker id="arrowPurple" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8E44AD"/></marker>
+      </defs>
+
+      <!-- Column headers -->
+      <text x="140" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#2B2B2B">CONSTRAINT MODEL</text>
+      <text x="140" y="46" text-anchor="middle" font-size="10" fill="#888">(Stages S0-S9)</text>
+      <text x="900" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#2B2B2B">OUTCOME MODEL</text>
+      <text x="900" y="46" text-anchor="middle" font-size="10" fill="#888">(Outcomes VI-OC-01 to VI-OC-15)</text>
+
+      <!-- Stage boxes (left) -->
+      <rect x="20" y="65" width="240" height="36" rx="4" fill="#3498DB"/><text x="140" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="white">S0: Foundation &amp; Plan Alignment</text>
+      <rect x="20" y="110" width="240" height="36" rx="4" fill="#3498DB"/><text x="140" y="133" text-anchor="middle" font-size="11" font-weight="600" fill="white">S1: Telemetry Strategy Validated</text>
+      <rect x="20" y="155" width="240" height="36" rx="4" fill="#3498DB"/><text x="140" y="178" text-anchor="middle" font-size="11" font-weight="600" fill="white">S2: Infra Monitoring Modernized</text>
+      <rect x="20" y="200" width="240" height="36" rx="4" fill="#3498DB"/><text x="140" y="223" text-anchor="middle" font-size="11" font-weight="600" fill="white">S3: Data Flowing All Sources</text>
+      <rect x="20" y="245" width="240" height="36" rx="4" fill="#3498DB"/><text x="140" y="268" text-anchor="middle" font-size="11" font-weight="600" fill="white">S4: External Availability</text>
+      <rect x="20" y="290" width="240" height="36" rx="4" fill="#3498DB"/><text x="140" y="313" text-anchor="middle" font-size="11" font-weight="600" fill="white">S5: Application Telemetry</text>
+      <rect x="20" y="335" width="240" height="36" rx="4" fill="#3498DB"/><text x="140" y="358" text-anchor="middle" font-size="11" font-weight="600" fill="white">S6: Baselines &amp; Data Quality</text>
+      <rect x="20" y="380" width="240" height="36" rx="4" fill="#3498DB"/><text x="140" y="403" text-anchor="middle" font-size="11" font-weight="600" fill="white">S7: Alerting &amp; Persona Views</text>
+      <rect x="20" y="425" width="240" height="36" rx="4" fill="#3498DB"/><text x="140" y="448" text-anchor="middle" font-size="11" font-weight="600" fill="white">S8: Proactive Operations</text>
+      <rect x="20" y="470" width="240" height="36" rx="4" fill="#3498DB"/><text x="140" y="493" text-anchor="middle" font-size="11" font-weight="600" fill="white">S9: Predictive Operations</text>
+
+      <!-- Outcome boxes (right) -->
+      <rect x="740" y="65" width="280" height="32" rx="4" fill="#27AE60"/><text x="880" y="86" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-01: Foundation Planning</text>
+      <rect x="740" y="105" width="280" height="32" rx="4" fill="#27AE60"/><text x="880" y="126" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-02: Telemetry &amp; Licensing</text>
+      <rect x="740" y="145" width="280" height="32" rx="4" fill="#27AE60"/><text x="880" y="166" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-03: Platform Deployed</text>
+      <rect x="740" y="185" width="280" height="32" rx="4" fill="#27AE60"/><text x="880" y="206" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-04: Host Fleet Instrumented</text>
+      <rect x="740" y="225" width="280" height="32" rx="4" fill="#76BE43"/><text x="880" y="246" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-05: Infra Visibility Validated</text>
+      <rect x="740" y="265" width="280" height="32" rx="4" fill="#76BE43"/><text x="880" y="286" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-06: Log Management Migrated</text>
+      <rect x="740" y="305" width="280" height="32" rx="4" fill="#27AE60"/><text x="880" y="326" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-07: External Availability</text>
+      <rect x="740" y="345" width="280" height="32" rx="4" fill="#76BE43"/><text x="880" y="366" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-08: Application Telemetry</text>
+      <rect x="740" y="385" width="280" height="32" rx="4" fill="#76BE43"/><text x="880" y="406" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-09: Baselines Validated</text>
+      <rect x="740" y="425" width="280" height="32" rx="4" fill="#76BE43"/><text x="880" y="446" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-10: Alerting &amp; Dashboards</text>
+      <rect x="740" y="465" width="280" height="32" rx="4" fill="#76BE43"/><text x="880" y="486" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-11: Proactive Ops Validated</text>
+      <rect x="740" y="505" width="280" height="32" rx="4" fill="#27AE60"/><text x="880" y="526" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-12: Legacy Decommissioned</text>
+      <rect x="740" y="555" width="280" height="32" rx="4" fill="#E67E22" stroke="#D35400" stroke-dasharray="4,3"/><text x="880" y="576" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-13: A2W Readiness (NEW)</text>
+      <rect x="740" y="595" width="280" height="32" rx="4" fill="#E67E22" stroke="#D35400" stroke-dasharray="4,3"/><text x="880" y="616" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-14: Predictive Ops (Conditional)</text>
+      <rect x="740" y="635" width="280" height="32" rx="4" fill="#E74C3C" stroke="#C0392B" stroke-dasharray="4,3"/><text x="880" y="656" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-15: Legacy Fallback (NEW)</text>
+
+      <rect x="740" y="675" width="280" height="32" rx="4" fill="#76BE43"/><text x="880" y="696" text-anchor="middle" font-size="10" font-weight="600" fill="white">VI-OC-16: PagerDuty AIOps (NEW)</text>
+
+      <!-- Mapping lines -->
+      <!-- S0 SPLIT -> VI-OC-01, VI-OC-02 -->
+      <line x1="260" y1="78" x2="740" y2="81" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowOrange)"/>
+      <line x1="260" y1="88" x2="740" y2="121" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowOrange)"/>
+
+      <!-- S1 MERGED -> VI-OC-02 -->
+      <line x1="260" y1="128" x2="740" y2="121" stroke="#8E44AD" stroke-width="2" marker-end="url(#arrowPurple)"/>
+
+      <!-- S2 SPLIT -> VI-OC-03, VI-OC-04, VI-OC-05 -->
+      <line x1="260" y1="168" x2="740" y2="161" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowOrange)"/>
+      <line x1="260" y1="173" x2="740" y2="201" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowOrange)"/>
+      <line x1="260" y1="178" x2="740" y2="241" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowOrange)"/>
+
+      <!-- S3 1:1 -> VI-OC-06 -->
+      <line x1="260" y1="218" x2="740" y2="281" stroke="#27AE60" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+      <!-- S4 1:1 -> VI-OC-07 -->
+      <line x1="260" y1="263" x2="740" y2="321" stroke="#27AE60" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+      <!-- S5 1:1 -> VI-OC-08 -->
+      <line x1="260" y1="308" x2="740" y2="361" stroke="#27AE60" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+      <!-- S6 SPLIT -> VI-OC-09, VI-OC-12 -->
+      <line x1="260" y1="348" x2="740" y2="401" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowOrange)"/>
+      <line x1="260" y1="358" x2="740" y2="521" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowOrange)"/>
+
+      <!-- S7 1:1 -> VI-OC-10 -->
+      <line x1="260" y1="398" x2="740" y2="441" stroke="#27AE60" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+      <!-- S8 1:1 -> VI-OC-11 -->
+      <line x1="260" y1="443" x2="740" y2="481" stroke="#27AE60" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+      <!-- S9 1:1 -> VI-OC-14 -->
+      <line x1="260" y1="488" x2="740" y2="611" stroke="#27AE60" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+      <!-- NEW labels -->
+      <text x="720" y="571" text-anchor="end" font-size="9" font-weight="700" fill="#E74C3C">NEW</text>
+      <text x="720" y="651" text-anchor="end" font-size="9" font-weight="700" fill="#E74C3C">NEW</text>
+      <text x="720" y="691" text-anchor="end" font-size="9" font-weight="700" fill="#E74C3C">NEW</text>
+
+      <!-- Legend -->
+      <rect x="340" y="545" width="280" height="120" rx="6" fill="white" stroke="#ddd"/>
+      <text x="480" y="565" text-anchor="middle" font-size="11" font-weight="700" fill="#2B2B2B">Legend</text>
+      <line x1="360" y1="580" x2="400" y2="580" stroke="#27AE60" stroke-width="2"/><text x="410" y="584" font-size="10" fill="#555">1:1 Mapping (6)</text>
+      <line x1="360" y1="600" x2="400" y2="600" stroke="#E67E22" stroke-width="2" stroke-dasharray="6,4"/><text x="410" y="604" font-size="10" fill="#555">SPLIT (3 stages)</text>
+      <line x1="360" y1="620" x2="400" y2="620" stroke="#8E44AD" stroke-width="2"/><text x="410" y="624" font-size="10" fill="#555">MERGED (1 stage)</text>
+      <rect x="360" y="634" width="14" height="14" rx="2" fill="#E74C3C"/><text x="410" y="646" font-size="10" fill="#555">NEW Outcome (3)</text>
+    </svg>
+  </div>
+
+  <!-- Key Findings -->
+  <div class="section-title">Key Findings</div>
+  <div class="insight-grid">
+    <div class="insight">
+      <h3 class="green">Clean Mappings (60%)</h3>
+      <p>S3, S4, S5, S7, S8, and S9 all map 1:1 to outcomes. Same scope, same deliverables, same risks. Status reporting for these stages can be read directly from the corresponding outcome with zero translation. This is the majority of the work.</p>
+    </div>
+    <div class="insight">
+      <h3 class="orange">Structural Splits (S0, S2, S6)</h3>
+      <p>Three stages split into multiple outcomes. S2 is the most complex (3 outcomes). These splits are justified: they unlock parallel execution (log migration, synthetic monitoring) and separate concerns (baselines vs. decommission). The PM must aggregate outcome status when reporting stage progress.</p>
+    </div>
+    <div class="insight">
+      <h3 class="blue">New Outcomes (VI-OC-13, VI-OC-15, VI-OC-16)</h3>
+      <p>Three outcomes have no stage equivalent. VI-OC-13 (A2W Readiness) consolidates scattered A2W tasks. VI-OC-15 (Legacy Fallback) makes the "what if validation fails" path explicit. VI-OC-16 (PagerDuty AIOps) captures a full deployment lifecycle that the constraint model only referenced as a single work package (WP 6.7). All are additive -- they don't change the constraint model.</p>
+    </div>
+  </div>
+
+  <!-- Reporting Translation Table -->
+  <div class="section-title">Reporting Translation: Stage Status from Outcomes</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Stage</th>
+        <th>Read Status From</th>
+        <th>Translation Complexity</th>
+        <th>PM Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>S0</strong></td><td>VI-OC-01 + VI-OC-02 (licensing portion)</td><td><span class="tag tag-split">MODERATE</span></td><td>S0 is "done" when VI-OC-01 is complete AND VI-OC-02.4 (procurement) is complete. Report the later of the two.</td></tr>
+      <tr><td><strong>S1</strong></td><td>VI-OC-02</td><td><span class="tag tag-11">LOW</span></td><td>S1 is "done" when VI-OC-02 is complete. Direct read.</td></tr>
+      <tr><td><strong>S2</strong></td><td>VI-OC-03 + VI-OC-04 + VI-OC-05</td><td><span class="tag tag-split">HIGH</span></td><td>S2 is "done" when all three outcomes are complete. VI-OC-05 (30-day validation) is the long pole. Report VI-OC-03 and VI-OC-04 as sub-milestones within S2.</td></tr>
+      <tr><td><strong>S3</strong></td><td>VI-OC-06</td><td><span class="tag tag-11">NONE</span></td><td>Direct read. 1:1.</td></tr>
+      <tr><td><strong>S4</strong></td><td>VI-OC-07</td><td><span class="tag tag-11">NONE</span></td><td>Direct read. 1:1.</td></tr>
+      <tr><td><strong>S5</strong></td><td>VI-OC-08</td><td><span class="tag tag-11">NONE</span></td><td>Direct read. 1:1.</td></tr>
+      <tr><td><strong>S6</strong></td><td>VI-OC-09 + VI-OC-12</td><td><span class="tag tag-split">MODERATE</span></td><td>S6 is "done" when VI-OC-09 (baselines) is complete. VI-OC-12 (decommission) tracks separately but can be reported as S6 sub-milestone.</td></tr>
+      <tr><td><strong>S7</strong></td><td>VI-OC-10</td><td><span class="tag tag-11">NONE</span></td><td>Direct read. 1:1.</td></tr>
+      <tr><td><strong>S8</strong></td><td>VI-OC-11</td><td><span class="tag tag-11">NONE</span></td><td>Direct read. 1:1.</td></tr>
+      <tr><td><strong>S9</strong></td><td>VI-OC-14</td><td><span class="tag tag-11">NONE</span></td><td>Direct read. 1:1.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Deep Dives on Complications -->
+  <div class="section-title">Deep Dive: Non-1:1 Mappings</div>
+
+  <div class="deep-dive">
+    <h4><span class="tag tag-split">SPLIT</span> S0: Foundation and Plan Alignment -> VI-OC-01 + VI-OC-02</h4>
+    <div class="wp-list">
+      <strong>To VI-OC-01 (Foundation Planning):</strong> WP 0.1 (Inventory), WP 0.2 (Architecture Design), WP 0.4 (Integration Architecture), WP 0.5 (A2W Telemetry Strategy), WP 0.6 (Script Rationalization), WP 0.7 (Elastic Inventory)<br>
+      <strong>To VI-OC-02 (Telemetry & Licensing):</strong> WP 0.3 (Licensing and Procurement) -- merged with all S1 work packages
+    </div>
+    <div class="note">Why split: Licensing (WP 0.3) shares a dependency chain with S1 telemetry work -- both must resolve before deployment. Keeping them together in VI-OC-02 reflects the real sequence. The other S0 work packages are purely planning with no procurement dependency.</div>
+    <div class="note">Parallel opportunity: VI-OC-01 planning work and VI-OC-02 telemetry evaluation can overlap. In the stage-gate model, S1 waits for all of S0.</div>
+  </div>
+
+  <div class="deep-dive merge">
+    <h4><span class="tag tag-merged">MERGED</span> S1: Telemetry Strategy Validated -> VI-OC-02</h4>
+    <div class="wp-list">
+      <strong>All S1 work packages absorbed into VI-OC-02:</strong> WP 1.1 (ABL Telemetry Eval), WP 1.2 (OTel Feasibility), WP 1.3 (Log Retention), WP 1.4 (Licensing Procurement), WP 1.5 (RBAC), WP 1.6 (New Relic Scope)
+    </div>
+    <div class="note">Why merge: S1 and S0.3 serve the same purpose -- "resolve all strategy and procurement questions before deploying anything." The stage-gate model separates them by timing; the outcome model groups them by purpose. No work is lost.</div>
+    <div class="note">Reporting: When leadership asks "Is S1 done?", the answer comes from VI-OC-02 status. When they ask "Is S0 done?", the answer is: VI-OC-01 complete AND VI-OC-02 licensing deliverables complete.</div>
+  </div>
+
+  <div class="deep-dive">
+    <h4><span class="tag tag-split">SPLIT</span> S2: Infrastructure Monitoring Modernized -> VI-OC-03 + VI-OC-04 + VI-OC-05</h4>
+    <div class="wp-list">
+      <strong>To VI-OC-03 (Platform Deployed):</strong> WP 2.1 (Tenant Setup), WP 2.2 (ActiveGate), WP 2.5 (PagerDuty Integration), WP 2.6 (Status Page)<br>
+      <strong>To VI-OC-04 (Host Fleet Instrumented):</strong> WP 2.3 (OneAgent Deployment), WP 2.4 (OpenEdge/PASOE Monitoring)<br>
+      <strong>To VI-OC-05 (Infra Visibility Validated):</strong> WP 2.7 (Initial Dashboards) + 30-Day Validation Gate
+    </div>
+    <div class="note">Why split: This is the most impactful split. In the stage-gate model, S3 (log migration) and S4 (synthetic monitoring) wait for all of S2 to finish. In the outcome model, VI-OC-06 and VI-OC-07 only wait for VI-OC-03 (platform deployed), not for VI-OC-04 or VI-OC-05. This unlocks 2-4 weeks of parallel execution.</div>
+    <div class="note">Reporting: S2 is "done" when VI-OC-05 (30-day validation) passes. VI-OC-03 and VI-OC-04 completion can be reported as S2 sub-milestones. The 30-day validation gate remains the S2 exit criterion.</div>
+  </div>
+
+  <div class="deep-dive">
+    <h4><span class="tag tag-split">SPLIT</span> S6: Baselines and Data Quality -> VI-OC-09 + VI-OC-12</h4>
+    <div class="wp-list">
+      <strong>To VI-OC-09 (Baselines Validated):</strong> WP 6.1 (Infra Baseline), WP 6.2 (App Baseline), WP 6.3 (Synthetic Baseline), WP 6.4 (SLO Definition), WP 6.7 (PagerDuty AIOps), WP 6.8 (Baseline Review), WP 6.9 (Data Quality)<br>
+      <strong>To VI-OC-12 (Legacy Decommissioned):</strong> WP 6.5 (Elastic Decommission), WP 6.6 (CheckMK Decommission Eval)
+    </div>
+    <div class="note">Why split: Decommission gates on BOTH VI-OC-05 (infrastructure validated) AND VI-OC-06 (log migration validated). Baselines gate on VI-OC-05, VI-OC-07, and VI-OC-08. Different dependency chains, different purposes. Keeping them in one stage obscures the fact that decommission can proceed even if advanced baselines are delayed.</div>
+  </div>
+
+  <div class="deep-dive new-oc">
+    <h4><span class="tag tag-new">NEW</span> VI-OC-13: A2W Monitoring Readiness</h4>
+    <div class="wp-list">
+      <strong>Consolidates from:</strong> S0 WP 0.5 (A2W Telemetry Strategy), S4 WP 4.7 (A2W Synthetic Readiness), S5 WP 5.7 (RUM Design), S8 WP 8.3 (RUM Validation)
+    </div>
+    <div class="note">Why new: A2W work is scattered across 4 stages because of timing. But it serves one purpose: "Be ready to monitor A2W when it launches." A Conditional outcome makes this trackable without creating phantom blockers. The constraint model can continue to reference A2W tasks in their respective stages.</div>
+  </div>
+
+  <div class="deep-dive new-oc">
+    <h4><span class="tag tag-new">NEW</span> VI-OC-15: Legacy Fallback Activated</h4>
+    <div class="wp-list">
+      <strong>No stage equivalent.</strong> The constraint model mentions fallbacks in narrative text (e.g., "If the answer is no, the team pauses, addresses gaps") but has no dedicated stage for what happens when validation fails after max iterations.
+    </div>
+    <div class="note">Why new: Without this, the plan for "what if Dynatrace doesn't exceed CheckMK after 2 validation cycles" is implicit. VI-OC-15 makes it explicit: trigger condition, deliverables (root cause analysis, revised plan), and escalation path. Low-risk addition -- it doesn't change the constraint model, it fills a gap.</div>
+  </div>
+
+  <div class="deep-dive new-oc">
+    <h4><span class="tag tag-new">NEW</span> VI-OC-16: PagerDuty AIOps Deployed &amp; Validated</h4>
+    <div class="wp-list">
+      <strong>Partial reference in constraint model:</strong> S6 WP 6.7 (PagerDuty AIOps Confirmation) was a single verification task. VI-OC-16 captures the full lifecycle: phased deployment (alert grouping, auto-pause, expansion to all services), 30-day ML learning period, tuning, handover to DMSi, and team communication.
+    </div>
+    <div class="note">Why new: The PagerDuty AIOps rollout is already underway (started Week 1) and runs parallel with the Dynatrace deployment. It has its own phased plan (4 phases), validation cycles, ground rules, and handover process. A single WP cannot capture this scope. VI-OC-16 makes it a first-class trackable outcome with explicit dependencies on VI-OC-03 (PagerDuty integration) and feeding into VI-OC-10 (alerting optimization).</div>
+  </div>
+
+  <!-- Coverage Analysis -->
+  <div class="section-title">Coverage Analysis</div>
+  <div class="coverage-grid">
+    <div class="cov-col">
+      <h4>Stages Fully Covered by Outcomes</h4>
+      <div class="cov-item"><span>S0: Foundation and Plan Alignment</span><span class="cov-check">VI-OC-01, VI-OC-02</span></div>
+      <div class="cov-item"><span>S1: Telemetry Strategy Validated</span><span class="cov-check">VI-OC-02</span></div>
+      <div class="cov-item"><span>S2: Infrastructure Monitoring Modernized</span><span class="cov-check">VI-OC-03, VI-OC-04, VI-OC-05</span></div>
+      <div class="cov-item"><span>S3: Data Flowing from All Sources</span><span class="cov-check">VI-OC-06</span></div>
+      <div class="cov-item"><span>S4: External Availability Monitoring</span><span class="cov-check">VI-OC-07</span></div>
+      <div class="cov-item"><span>S5: Application Telemetry Operational</span><span class="cov-check">VI-OC-08</span></div>
+      <div class="cov-item"><span>S6: Baselines and Data Quality</span><span class="cov-check">VI-OC-09, VI-OC-12</span></div>
+      <div class="cov-item"><span>S7: Alerting and Persona Views</span><span class="cov-check">VI-OC-10</span></div>
+      <div class="cov-item"><span>S8: Proactive Operations</span><span class="cov-check">VI-OC-11</span></div>
+      <div class="cov-item"><span>S9: Predictive Operations</span><span class="cov-check">VI-OC-14</span></div>
+    </div>
+    <div class="cov-col">
+      <h4>Outcomes with No Stage Equivalent</h4>
+      <div class="cov-item"><span>VI-OC-13: A2W Monitoring Readiness</span><span style="color:#E67E22;font-weight:700">Conditional</span></div>
+      <div class="cov-item"><span>VI-OC-15: Legacy Fallback Activated</span><span style="color:#E74C3C;font-weight:700">Conditional</span></div>
+      <div class="cov-item"><span>VI-OC-16: PagerDuty AIOps Deployed &amp; Validated</span><span style="color:#76BE43;font-weight:700">Iterative</span></div>
+      <div style="margin-top:16px;font-size:12px;color:#555;line-height:1.5;">
+        Three NEW outcomes have no stage equivalent. VI-OC-13 and VI-OC-15 are Conditional (trigger-activated). VI-OC-16 is Iterative (already underway, parallel with Dynatrace). All add coverage the constraint model lacks without disrupting constraint model reporting. Zero ORPHAN stages -- all constraint model content is fully covered.
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Element Verification -->
+  <div class="section-title">Shared Element Verification</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Element Type</th>
+        <th>Count (Constraint)</th>
+        <th>Count (Outcome)</th>
+        <th>Match</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Decisions (D-xx)</td><td>20</td><td>23</td><td style="color:#E67E22;font-weight:700">OUTCOME +3</td><td>VI-OC-16 adds VI-D-PD1 (AIOps counterpart designation), VI-D-PD2 (auto-pause scope), VI-D-PD3 (handover timing). All PD-specific; no constraint model gap.</td></tr>
+      <tr><td>Cross-Cutting Risks (VI-R-Xx)</td><td>7</td><td>7</td><td style="color:#27AE60;font-weight:700">IDENTICAL</td><td>Same IDs, same severity, same mitigation.</td></tr>
+      <tr><td>Stage-Level Risks (R-xx)</td><td>13</td><td>17</td><td style="color:#E67E22;font-weight:700">OUTCOME +4</td><td>VI-OC-16 adds VI-R-PD1 through VI-R-PD4 (AIOps learning period, P1 alert integrity, unrelated grouping, rollback complexity). All PD-specific.</td></tr>
+      <tr><td>Open Questions (Q-xx)</td><td>25</td><td>25</td><td style="color:#27AE60;font-weight:700">IDENTICAL</td><td>Same IDs, same decision linkages.</td></tr>
+      <tr><td>Cross-Workstream Deps (CW-xx)</td><td>7</td><td>7</td><td style="color:#27AE60;font-weight:700">IDENTICAL</td><td>Same CW items. Attached to outcomes instead of stages.</td></tr>
+      <tr><td>Milestones</td><td>M2-M7</td><td>M2-M7</td><td style="color:#27AE60;font-weight:700">IDENTICAL</td><td>Same milestone alignment.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <strong>Core shared elements are identical.</strong> The two models differ in how work is organized (stages vs. outcomes) and how dependencies are expressed (sequential gates vs. typed DAG). The outcome model adds 3 PagerDuty-specific decisions (VI-D-PD1-3) and 4 PagerDuty-specific risks (VI-R-PD1-4) for VI-OC-16, which has no stage equivalent. All original decisions, risks, questions, dependencies, and milestones from the constraint model are fully preserved.
+  </div>
+
+</div>
+
+<div class="footer">
+  Dynamo Consulting | VI Constraint vs Outcome Comparison | March 2026 | Confidential
+</div>
+
+</body>
+</html>

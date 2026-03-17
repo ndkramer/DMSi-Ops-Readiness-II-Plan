@@ -1,0 +1,32 @@
+---
+description: Visibility Infrastructure (VI) folder — follow VI-WSB outcome structure and conventions
+globs: VI/**
+alwaysApply: false
+---
+
+# VI Folder Rules
+
+When editing or creating content under the Visibility Infrastructure folder, follow the VI outcome-based WBS structure and conventions (VI-WSB).
+
+## Structure to follow
+
+- **Outcome map**: Table with ID, Outcome, Category, Target Date, Dependencies, Milestone Alignment.
+- **Dependencies**: Mermaid graph with `must` / `should`; document in Dependency Type Legend.
+- **Per-outcome sections**: Use `### VI-OC-XX: Outcome Title`; include **Category:**, **Target Date:**, **Owner:**, **Status:**; then **Success Criteria** (bullets), **Deliverables** (table), then **VI-OC-XX.Y: Deliverable Name** with bullet subtasks.
+- **Risk Register**: Table with ID, Severity, Description, Mitigation. IDs use `VI-R-XX` for outcome-specific, `VI-R-X#` for cross-cutting, `VI-R-PD#` for PagerDuty-specific.
+- **Decision Register**: Table with ID, Type (1 or 2), Decision, Owner, Deadline. IDs use `VI-D-XX` for outcome-specific, `VI-D-PD#` for PagerDuty-specific.
+- **Open Questions**: Numbered list with `VI-Q-XX` IDs, each with Owner and expected answer timeline.
+
+## Conventions
+
+- Outcome IDs: VI-OC-01 through VI-OC-16. Categories: Baseline, Iterative, Conditional.
+- Deliverable IDs: VI-OC-XX.Y (e.g. VI-OC-01.1, VI-OC-01.2). Each deliverable has a short name and a bullet list of subtasks.
+- Risk IDs: VI-R-XX (outcome-level), VI-R-X# (cross-cutting), VI-R-PD# (PagerDuty-specific).
+- Decision IDs: VI-D-XX (outcome-level), VI-D-PD# (PagerDuty-specific).
+- Question IDs: VI-Q-XX.
+- All reference keys use the `VI-` prefix to namespace them within the Visibility Infrastructure capability.
+- Keep dependency types explicit: must (hard prerequisite), should (recommended sequence).
+
+## Reference
+
+The canonical VI outcome structure is in the Visibility Infrastructure WBS (VI-WSB) document. When in doubt, match its format and level of detail.

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Management - Kanban Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background-color: #2B2B2B;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(118, 190, 67, 0.2);
+            color: #76BE43;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 24px;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+        .back-link:hover {
+            background-color: rgba(118, 190, 67, 0.3);
+        }
+
+        .header-content h1 {
+            font-size: 28px;
+            font-weight: normal;
+            color: #76BE43;
+        }
+
+        .header-content p {
+            font-size: 14px;
+            color: #bbb;
+            margin-top: 4px;
+        }
+
+        .outcome-selector {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .outcome-selector h2 {
+            color: #2B2B2B;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .outcome-list {
+            list-style: none;
+        }
+
+        .outcome-list li {
+            margin-bottom: 12px;
+        }
+
+        .outcome-link {
+            display: block;
+            padding: 16px 20px;
+            background-color: white;
+            border-left: 4px solid #76BE43;
+            text-decoration: none;
+            color: #333;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        .outcome-link:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-left-color: #2B2B2B;
+        }
+
+        .outcome-link .id {
+            font-weight: bold;
+            color: #76BE43;
+            margin-right: 8px;
+        }
+
+        .outcome-link .name {
+            color: #333;
+        }
+
+        .kanban-container {
+            display: none;
+            padding: 30px 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .kanban-container.active {
+            display: block;
+        }
+
+        .columns-wrapper {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            min-height: calc(100vh - 200px);
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .column-header {
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .column-backlog .column-header {
+            background-color: #3498DB;
+        }
+
+        .column-advancing .column-header {
+            background-color: #76BE43;
+        }
+
+        .column-stalled .column-header {
+            background-color: #E67E22;
+        }
+
+        .column-blocked .column-header {
+            background-color: #E74C3C;
+        }
+
+        .column-done .column-header {
+            background-color: #999;
+        }
+
+        .column-content {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 6px;
+            padding: 14px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            transition: box-shadow 0.2s, transform 0.2s;
+            cursor: default;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-id {
+            font-weight: bold;
+            color: #2B2B2B;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .card-name {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .toggle-subtasks {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #76BE43;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            border: none;
+            background: none;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .toggle-subtasks:hover {
+            color: #2B2B2B;
+        }
+
+        .toggle-icon {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .subtasks-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .subtasks-container.visible {
+            max-height: 500px;
+        }
+
+        .subtasks-list {
+            list-style: none;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .subtask-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.3;
+        }
+
+        .subtask-item input[type="checkbox"] {
+            margin-top: 3px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .subtask-text {
+            flex: 1;
+        }
+
+        @media (max-width: 1400px) {
+            .columns-wrapper {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .columns-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-content h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="back-link" href="WM-Outcome-Map.html" title="Back to Outcome Map">←</a>
+        <div class="header-content">
+            <h1 id="header-title">WM: [Outcome Name] -- Work Items</h1>
+            <p id="header-subtitle">Kanban Board</p>
+        </div>
+    </header>
+
+    <div class="outcome-selector" id="outcomeSelector">
+        <h2>Select an Outcome</h2>
+        <ul class="outcome-list" id="outcomeList"></ul>
+    </div>
+
+    <div class="kanban-container" id="kanbanContainer">
+        <div class="columns-wrapper">
+            <div class="column column-backlog">
+                <div class="column-header">Backlog</div>
+                <div class="column-content" id="col-backlog"></div>
+            </div>
+            <div class="column column-advancing">
+                <div class="column-header">Advancing</div>
+                <div class="column-content" id="col-advancing"></div>
+            </div>
+            <div class="column column-stalled">
+                <div class="column-header">Stalled</div>
+                <div class="column-content" id="col-stalled"></div>
+            </div>
+            <div class="column column-blocked">
+                <div class="column-header">Blocked</div>
+                <div class="column-content" id="col-blocked"></div>
+            </div>
+            <div class="column column-done">
+                <div class="column-header">Done</div>
+                <div class="column-content" id="col-done"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const outcomeData = {
+  "OC-01": {
+    "name": "Current State Discovery Complete",
+    "deliverables": [
+      {"id": "OC-01.1", "name": "Discovery Sessions with Engineering Team", "subtasks": ["Conduct interviews and shadowing sessions with engineering team members", "Frame engagement as 'fix the system' not 'evaluate the people'", "Establish trust that the work is about helping, not judging", "Document how work actually enters, flows through, and exits (or stalls in) the team", "Identify the routing function owner (Casora) and document the current single-point-of-failure pattern"]},
+      {"id": "OC-01.2", "name": "Workflow Mapping and Documentation", "subtasks": ["Map all work intake channels: 360 cases, email, Teams messages, hallway conversations, incident follow-up", "Document which channels produce visible work vs. invisible work", "Quantify the approximate split between planned and reactive work based on team interviews", "Identify the five structural gaps: no formal triage, push-based assignment, no WIP discipline, meaningless priority, no feedback loop to staffing"]},
+      {"id": "OC-01.3", "name": "360 Case Evaluation", "subtasks": ["Export and analyze the 559 open cases in 360", "Categorize by age, status, work type, and apparent relevance", "Identify patterns: how many are stale, how many are duplicates, how many represent real outstanding work", "Produce a disposition recommendation (feeds OC-04)"]},
+      {"id": "OC-01.4", "name": "Current State Assessment Document", "subtasks": ["Consolidate findings into a single assessment document", "Document the five structural gaps with evidence from discovery", "Include the design criteria that the implementation must satisfy", "This document becomes the foundation for OC-02 operating model design"]}
+    ]
+  },
+  "OC-02": {
+    "name": "Operating Model and Process Design Complete",
+    "deliverables": [
+      {"id": "OC-02.1", "name": "Workflow State Design", "subtasks": ["Define mutually exclusive, collectively exhaustive status transitions", "Starting point from discovery: Submitted, Triaged, Queued, In Progress, Blocked, Complete, Deferred", "Critical distinction: Queued vs. In Progress (this is what makes WIP limits possible)", "Validate with Bryan and Andy that states reflect how work actually moves through the team", "Document transition rules (who can move items between states, what triggers each transition)"]},
+      {"id": "OC-02.2", "name": "Work Category Taxonomy and Product Attribution", "subtasks": ["Define initial work categories: customer environment configuration, infrastructure/platform maintenance, tooling improvements, escalation follow-up, internal requests, improvement/automation projects", "Include break-fix as a category for counting purposes even though it follows a fast-track path", "Define product field (Agility, Framework, etc.) as a separate dimension from work type", "Product list drawn from existing 360 taxonomy, cleaned up if needed", "Sub-product granularity deferred until top-level data proves useful", "Define priority criteria that replace the current '71% Normal' meaningless priority model"]},
+      {"id": "OC-02.3", "name": "Mixed Pipeline and Side-Door Policy", "subtasks": ["Design two-track triage path: planned/plannable work follows full triage flow; break-fix gets tagged and fast-tracked", "Break-fix standing agenda item at triage: 'What came in as break-fix since last session?' -- tag, count, move on (target: 5 minutes)", "Design lightweight 'capture after the fact' mechanism for side-door work", "Standing triage question: 'What did you work on this week that isn't on the board?'", "Define the metric: planned vs. unplanned work ratio"]},
+      {"id": "OC-02.4", "name": "Triage Ceremony Design", "subtasks": ["Define attendees: Bryan, Andy, and routing function owner (Casora)", "Initial cadence: twice weekly during adoption, moving to weekly once habit is formed", "Agenda: new submissions, break-fix fast-track, blocked items, aging items, side-door check", "Decision framework: accept into queue, defer with reason, or reject", "Key question at triage: 'What does this displace, and is that the right trade?'", "Target: 30 minutes, hard stop", "Define how decisions get communicated back to requesters"]},
+      {"id": "OC-02.5", "name": "WIP Limits and Capacity Allocation Model", "subtasks": ["Set initial per-engineer WIP limits: 3-5 items in 'In Progress' simultaneously", "Set team-level WIP visibility on the board", "Define capacity allocation starting point based on discovery data: reactive/unplanned 60-70%, planned work 20-30%, improvement work 10-15%", "Document that these are honest starting points, not aspirational targets", "Define pull model: engineers pull from prioritized queue when below WIP limit", "Within a priority band, engineers can influence sequencing for efficiency"]},
+      {"id": "OC-02.6", "name": "Operating Agreement Document", "subtasks": ["One-page operating agreement consolidating all Phase 1 deliverables", "Reviewed and committed to by Bryan, Andy, and the engineering team", "This document is the configuration specification for OC-03 (tool setup)"]}
+    ]
+  },
+  "OC-03": {
+    "name": "Tool Selected and System Configured",
+    "deliverables": [
+      {"id": "OC-03.1", "name": "Tool Evaluation Against Requirements", "subtasks": ["Evaluate candidate tools against non-negotiable requirements from OC-02", "Evaluate nice-to-haves: intake forms, workload view, PagerDuty integration, API access", "Candidate tools: Jira Service Management, GitHub Projects, Teamwork, monday.com, Shortcut", "Resolve the relationship between the work management system and 360 (D-04)"]},
+      {"id": "OC-03.2", "name": "Tool Selection Decision", "subtasks": ["Document the decision with rationale tied to operating agreement fit", "Include Brent in the decision for budget and strategic alignment", "This resolves the 'GitHub vs. Jira' blocker from the constraint model"]},
+      {"id": "OC-03.3", "name": "System Configuration", "subtasks": ["Board columns matching the agreed workflow states from OC-02.1", "Work category field with categories from OC-02.2", "Product field (Agility, Framework, etc.) from OC-02.2", "Owner field (populated when an engineer pulls the item, not at triage)", "Submission date (automatic)", "Priority field with defined criteria from OC-02.2", "Do NOT configure: custom fields beyond the above, complex automation rules, integrations beyond basic SSO, advanced reporting dashboards"]}
+    ]
+  },
+  "OC-04": {
+    "name": "Existing Queue Dispositioned",
+    "deliverables": [
+      {"id": "OC-04.1", "name": "Queue Review and Categorization", "subtasks": ["Review all 559 open cases with Bryan, Andy, and Casora", "Categorize each case: still relevant (migrate), can be closed (close in 360), needs investigation (flag for triage)", "Use the analysis from OC-01.3 as the starting point"]},
+      {"id": "OC-04.2", "name": "Migration of Relevant Items", "subtasks": ["Migrate 'still relevant' items into the new system with minimal cleanup", "Apply work category and product tags from OC-02 taxonomy", "Do not enrich beyond minimum fields"]},
+      {"id": "OC-04.3", "name": "Stale Item Closure", "subtasks": ["Close stale and resolved items in 360 with brief documented rationale", "Use the first 2-3 triage ceremonies to work through 'needs investigation' items"]}
+    ]
+  },
+  "OC-05": {
+    "name": "Initial Adoption Validated",
+    "deliverables": [
+      {"id": "OC-05.1", "name": "Team Orientation", "subtasks": ["Walk the engineering team through the system", "Frame as 'making your work visible' rather than 'tracking your work'", "Dynamo co-facilitates the first 4-6 weeks of triage sessions"]},
+      {"id": "OC-05.2", "name": "Break-Fix and Side-Door Capture Established", "subtasks": ["Break-fix cases arriving through 360 get tagged at triage and counted", "Engineers capture side-door work after the fact", "Framed as 'help us understand the real demand picture'", "These two practices produce the data that makes the capacity allocation model honest"]},
+      {"id": "OC-05.3", "name": "First Category Adoption (Customer Environment Configuration)", "subtasks": ["Start with highest-volume category: customer environment configuration", "Run the first 2-3 triage ceremonies focused on this category", "Let the team build the habit on contained scope before expanding"]},
+      {"id": "OC-05.4", "name": "First Triage Ceremonies", "subtasks": ["Bryan (or Andy) facilitates; Dynamo co-facilitates first 4-6 weeks", "Walk through every new submission; make explicit accept/defer/reject decisions", "Check WIP limits against what engineers currently have in progress", "Review blocked items; keep to 30 minutes", "Even if only three new items, hold the meeting"]},
+      {"id": "OC-05.5", "name": "Adoption Measurement Report", "subtasks": ["Measure adoption indicators, NOT performance indicators", "Metrics: % of actual work captured, average time from submission to triage, WIP limit adherence, board freshness, side-door capture rate, planned vs. reactive ratio", "Do NOT measure cycle time or throughput yet"]}
+    ]
+  },
+  "OC-06": {
+    "name": "Full Category Coverage and Reactive Visibility",
+    "deliverables": [
+      {"id": "OC-06.1", "name": "Remaining Work Category Adoption", "subtasks": ["Extend beyond customer environment configuration to all categories", "By this point the team has muscle memory for intake, triage, and status updates"]},
+      {"id": "OC-06.2", "name": "PagerDuty Integration for Reactive Work", "subtasks": ["Connect PagerDuty incidents to the work management system", "PagerDuty still owns the incident lifecycle", "This replaces manual break-fix tagging from OC-05.2", "With several weeks of data, engineering leadership now has a real capacity ratio view"]},
+      {"id": "OC-06.3", "name": "Commitment Tier Implementation", "subtasks": ["Introduce three commitment tiers: committed this cycle, targeted next, backlog", "Gives stakeholders a clear answer to 'where does my request stand?'", "Configure in the tool as board swimlanes, labels, or custom field"]},
+      {"id": "OC-06.4", "name": "Triage Cadence Evaluation", "subtasks": ["Evaluate whether twice-weekly can move to weekly", "Signals: queue inflow predictable, mid-session expedites rare, team pulling consistently, triage under 30 minutes", "If conditions aren't met, stay at twice weekly"]}
+    ]
+  },
+  "OC-07": {
+    "name": "Board Accuracy Validated",
+    "deliverables": [
+      {"id": "OC-07.1", "name": "Board Freshness Monitoring", "subtasks": ["Implement automated or manual board freshness tracking", "Surface stale items at each triage ceremony", "Track freshness trend over time"]},
+      {"id": "OC-07.2", "name": "Staleness Detection and Correction Process", "subtasks": ["Define what 'stale' means (>5 business days without update)", "Establish lightweight correction process", "If staleness persists, investigate root cause"]},
+      {"id": "OC-07.3", "name": "Board Trust Validation", "subtasks": ["Informal validation: Bryan and Andy confirm the board reflects reality", "Check for shadow systems", "If shadow systems exist, determine why and address root cause"]}
+    ]
+  },
+  "OC-08": {
+    "name": "Flow Metrics and Scorecard Operational",
+    "deliverables": [
+      {"id": "OC-08.1", "name": "Flow Metrics Configuration", "subtasks": ["Configure cycle time, throughput, aging, and queue depth reporting", "Build views that show planned vs. reactive ratio by week, by engineer, by category", "Ensure metrics are accessible without requiring manual compilation"]},
+      {"id": "OC-08.2", "name": "Reference Estimates by Work Type", "subtasks": ["Pull cycle time data by category after several months of categorized work", "Identify clusters and document as reference ranges", "These baselines feed the capacity model"]},
+      {"id": "OC-08.3", "name": "Scorecard Integration", "subtasks": ["Connect flow metrics to the Engineering Scorecard (Workstream D)", "Ensure Brent has access to capacity ratio view", "Metrics feed staffing conversations with numbers"]}
+    ]
+  },
+  "OC-09": {
+    "name": "Prioritization Drives Execution",
+    "deliverables": [
+      {"id": "OC-09.1", "name": "Prioritization Compliance Validation", "subtasks": ["Observe patterns over 2-3 weeks: when priorities change, does the team's actual work change?", "Measure side-door ratio trend", "Validate that competing requests flow through triage, not around it", "Document any persistent bypasses and determine root cause"]},
+      {"id": "OC-09.2", "name": "Flow Retrospective Process", "subtasks": ["Introduce biweekly or monthly retrospectives focused on flow", "Key question: 'Where did work get stuck and why?'", "Document the retrospective format for ongoing use after Dynamo engagement"]}
+    ]
+  }
+        };
+
+        function getOutcomeIdFromHash() {
+            const hash = window.location.hash.slice(1);
+            return hash || null;
+        }
+
+        function createOutcomeList() {
+            const list = document.getElementById('outcomeList');
+            list.innerHTML = '';
+            Object.keys(outcomeData).sort().forEach(id => {
+                const outcome = outcomeData[id];
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = `#${id}`;
+                a.className = 'outcome-link';
+                a.innerHTML = `<span class="id">${id}</span><span class="name">${outcome.name}</span>`;
+                li.appendChild(a);
+                list.appendChild(li);
+            });
+        }
+
+        function createCard(deliverable) {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const id = document.createElement('div');
+            id.className = 'card-id';
+            id.textContent = deliverable.id;
+
+            const name = document.createElement('div');
+            name.className = 'card-name';
+            name.textContent = deliverable.name;
+
+            const hasSubtasks = deliverable.subtasks && deliverable.subtasks.length > 0;
+
+            card.appendChild(id);
+            card.appendChild(name);
+
+            if (hasSubtasks) {
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'toggle-subtasks';
+
+                const icon = document.createElement('span');
+                icon.className = 'toggle-icon';
+                icon.textContent = '▶';
+
+                const label = document.createElement('span');
+                label.textContent = 'Show subtasks';
+
+                toggleBtn.appendChild(icon);
+                toggleBtn.appendChild(label);
+
+                const subtasksContainer = document.createElement('div');
+                subtasksContainer.className = 'subtasks-container';
+
+                const subtasksList = document.createElement('ul');
+                subtasksList.className = 'subtasks-list';
+
+                deliverable.subtasks.forEach(subtask => {
+                    const item = document.createElement('li');
+                    item.className = 'subtask-item';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+
+                    const text = document.createElement('span');
+                    text.className = 'subtask-text';
+                    text.textContent = subtask;
+
+                    item.appendChild(checkbox);
+                    item.appendChild(text);
+                    subtasksList.appendChild(item);
+                });
+
+                subtasksContainer.appendChild(subtasksList);
+
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const isVisible = subtasksContainer.classList.toggle('visible');
+                    icon.classList.toggle('expanded');
+                    label.textContent = isVisible ? 'Hide subtasks' : 'Show subtasks';
+                });
+
+                card.appendChild(toggleBtn);
+                card.appendChild(subtasksContainer);
+            }
+
+            return card;
+        }
+
+        function loadOutcome(outcomeId) {
+            const outcome = outcomeData[outcomeId];
+            if (!outcome) return;
+
+            // Update header
+            document.getElementById('header-title').textContent = `WM: ${outcomeId} -- ${outcome.name}`;
+            document.getElementById('header-subtitle').textContent = `${outcome.deliverables.length} deliverables`;
+
+            // Clear columns
+            document.getElementById('col-backlog').innerHTML = '';
+            document.getElementById('col-advancing').innerHTML = '';
+            document.getElementById('col-stalled').innerHTML = '';
+            document.getElementById('col-blocked').innerHTML = '';
+            document.getElementById('col-done').innerHTML = '';
+
+            // Add all deliverables to Backlog
+            outcome.deliverables.forEach(deliverable => {
+                const card = createCard(deliverable);
+                document.getElementById('col-backlog').appendChild(card);
+            });
+
+            // Show kanban, hide selector
+            document.getElementById('outcomeSelector').style.display = 'none';
+            document.getElementById('kanbanContainer').classList.add('active');
+        }
+
+        function handleHashChange() {
+            const outcomeId = getOutcomeIdFromHash();
+            if (outcomeId && outcomeData[outcomeId]) {
+                loadOutcome(outcomeId);
+            } else {
+                document.getElementById('outcomeSelector').style.display = 'block';
+                document.getElementById('kanbanContainer').classList.remove('active');
+            }
+        }
+
+        // Initialize
+        createOutcomeList();
+        window.addEventListener('hashchange', handleHashChange);
+        handleHashChange();
+    </script>
+</body>
+</html>

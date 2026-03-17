@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WM-WSB: Outcome Map - Work Management</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; color: #2B2B2B; }
+
+  .header {
+    background: #2B2B2B;
+    color: white;
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header h1 { font-size: 22px; font-weight: 600; }
+  .header .subtitle { font-size: 13px; color: #aaa; margin-top: 4px; }
+  .header .brand { color: #76BE43; font-weight: 700; font-size: 14px; }
+
+  .legend-bar {
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 14px 40px;
+    display: flex;
+    gap: 28px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #555;
+  }
+  .legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+  }
+  .legend-line {
+    width: 30px;
+    height: 0;
+    border-top: 2px solid #555;
+  }
+  .legend-line.must { border-color: #2B2B2B; border-width: 2px; }
+  .legend-line.should { border-color: #76BE43; border-width: 2px; }
+
+  .container { padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
+
+  /* Timeline header */
+  .timeline-header {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    margin-bottom: 0;
+  }
+  .timeline-label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 8px 0; }
+  .week-markers {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    border-bottom: 2px solid #2B2B2B;
+    padding-bottom: 6px;
+  }
+  .week-marker {
+    font-size: 10px;
+    color: #888;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  /* Swim lanes */
+  .swim-lane {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: 56px;
+    border-bottom: 1px solid #e8e8e8;
+    align-items: center;
+    position: relative;
+  }
+  .swim-lane:hover { background: #f0f0f0; }
+  .lane-label {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 10px 8px 0;
+    line-height: 1.3;
+  }
+  .lane-label .oc-id { color: #76BE43; font-weight: 700; display: block; font-size: 11px; }
+  .lane-label .oc-cat { font-size: 10px; color: #999; font-weight: 400; margin-top: 2px; }
+
+  .lane-track {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    height: 100%;
+    position: relative;
+    align-items: center;
+  }
+
+  /* Outcome bars */
+  .outcome-bar {
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 6px;
+  }
+  .outcome-bar:hover {
+    transform: scaleY(1.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 10;
+  }
+
+  .bar-baseline { background: #3498DB; }
+  .bar-iterative { background: #76BE43; }
+  .bar-complete { position: relative; }
+  .bar-complete::after { content: '\2713'; position: absolute; top: 2px; right: 22px; font-size: 9px; color: white; font-weight: 700; }
+
+  .plus-btn {
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 1.5px solid rgba(255,255,255,0.6);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 17px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 20;
+    transition: background 0.15s, transform 0.15s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .plus-btn:hover {
+    background: rgba(255,255,255,0.5);
+    transform: translateY(-50%) scale(1.2);
+  }
+
+  /* Milestone markers */
+  .milestone-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #E74C3C;
+    z-index: 1;
+    opacity: 0.4;
+  }
+  .milestone-tag {
+    position: absolute;
+    top: -22px;
+    transform: translateX(-50%);
+    background: #E74C3C;
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 2px;
+    white-space: nowrap;
+    z-index: 5;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    display: none;
+    position: fixed;
+    background: #2B2B2B;
+    color: white;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    max-width: 380px;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    pointer-events: none;
+  }
+  .tooltip.show { display: block; }
+  .tooltip .tt-title { font-size: 14px; font-weight: 700; color: #76BE43; margin-bottom: 8px; }
+  .tooltip .tt-row { display: flex; gap: 8px; margin: 3px 0; }
+  .tooltip .tt-label { color: #aaa; min-width: 80px; }
+  .tooltip .tt-deps { margin-top: 8px; border-top: 1px solid #444; padding-top: 8px; }
+  .tooltip .tt-risk { color: #E74C3C; font-weight: 600; }
+
+  /* Summary cards */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  .summary-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    border-left: 4px solid #76BE43;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .summary-card .sc-number { font-size: 32px; font-weight: 700; color: #2B2B2B; }
+  .summary-card .sc-label { font-size: 12px; color: #888; margin-top: 4px; }
+  .summary-card.blue { border-left-color: #3498DB; }
+  .summary-card.green { border-left-color: #76BE43; }
+  .summary-card.orange { border-left-color: #E67E22; }
+  .summary-card.red { border-left-color: #E74C3C; }
+
+  /* Section headers */
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2B2B2B;
+    margin: 30px 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #76BE43;
+  }
+
+  /* Key insights */
+  .insight-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .insight-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .insight-card h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #76BE43;
+    margin-bottom: 8px;
+  }
+  .insight-card p {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #555;
+  }
+
+  /* Decision snapshot */
+  .decision-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .decision-card {
+    background: white;
+    border-radius: 6px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .decision-card .d-type {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .d-type.type1 { background: #FDEAEA; color: #E74C3C; }
+  .d-type.type2 { background: #EAF7EA; color: #27AE60; }
+  .decision-card .d-text { font-size: 12px; line-height: 1.4; }
+  .decision-card .d-id { font-weight: 700; color: #2B2B2B; }
+  .decision-card .d-owner { font-size: 11px; color: #999; margin-top: 2px; }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    font-size: 11px;
+    color: #999;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 1000px) {
+    .summary-row { grid-template-columns: repeat(2, 1fr); }
+    .insight-grid { grid-template-columns: 1fr; }
+    .decision-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>WM-WSB: Work Management Outcome Map</h1>
+    <div class="subtitle">DMSi Software -- Workstream A | 1 FTE Dynamo | Start: Feb 15 | Deadline: End of May | ~18 Weeks (~3 wks past deadline)</div>
+  </div>
+  <div class="brand">DYNAMO</div>
+</div>
+
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-dot" style="background:#3498DB"></div> Baseline (single-pass)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#76BE43"></div> Iterative (validation cycles)</div>
+  <div class="legend-item"><div class="legend-line must"></div> must dependency</div>
+  <div class="legend-item"><div class="legend-line should" style="border-color:#76BE43"></div> should dependency</div>
+  <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #2B2B2B;opacity:0.5"></div> Today</div>
+  <div class="legend-item"><div style="width:2px;height:14px;background:#E74C3C;opacity:0.5"></div> Deadline</div>
+</div>
+
+<div class="container">
+
+  <!-- Constraint Callout -->
+  <div style="background:#FFF3E0;border-left:4px solid #E67E22;border-radius:8px;padding:16px 20px;margin-bottom:20px;font-size:12px;line-height:1.5;">
+    <strong style="color:#E67E22;">Timeline vs. Deadline:</strong> 1 FTE Dynamo with DMSi part-time participation. Project started Feb 15. WM-OC-01 and WM-OC-02 are complete. The realistic 18-week plan extends to ~Jun 19, approximately 3 weeks past the end-of-May deadline. WM-OC-03 through WM-OC-06 and WM-OC-08 complete within May. WM-OC-07 (Board Accuracy) extends ~1 week and WM-OC-09 (Prioritization) extends ~3 weeks past deadline.
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-row">
+    <div class="summary-card blue">
+      <div class="sc-number">6</div>
+      <div class="sc-label">Baseline Outcomes</div>
+    </div>
+    <div class="summary-card green">
+      <div class="sc-number">3</div>
+      <div class="sc-label">Iterative Outcomes</div>
+    </div>
+    <div class="summary-card orange">
+      <div class="sc-number">0</div>
+      <div class="sc-label">Conditional Outcomes</div>
+    </div>
+    <div class="summary-card red">
+      <div class="sc-number">1</div>
+      <div class="sc-label">Type 1 Decisions (Irreversible)</div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section-title">Implementation Timeline</div>
+
+  <div id="timeline" style="position:relative;">
+    <div class="timeline-header">
+      <div class="timeline-label">Outcome</div>
+      <div class="week-markers" id="weekMarkers"></div>
+    </div>
+    <div id="swimLanes"></div>
+  </div>
+
+  <!-- Key Insights -->
+  <div class="section-title">What Changes from the Stage-Gate Model</div>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <h3>Process Before Tool</h3>
+      <p>WM-OC-01 and WM-OC-02 establish the operating model before any tool is selected. WM-OC-03 treats tool selection as a fit-to-process exercise -- the operating agreement defines the requirements, and the tool is evaluated against them. The tool serves the workflow, not the other way around.</p>
+    </div>
+    <div class="insight-card">
+      <h3>Parallel Execution Unlocked</h3>
+      <p>WM-OC-04 (Queue Disposition) runs alongside WM-OC-05 (Initial Adoption) instead of waiting. WM-OC-08 (Scorecard) can begin design during WM-OC-06 with partial data, using a "should" dependency on WM-OC-07 instead of a hard gate. This recovers 2-4 weeks of serial delay.</p>
+    </div>
+    <div class="insight-card">
+      <h3>Iterative Validation Made Explicit</h3>
+      <p>WM-OC-05, WM-OC-06, and WM-OC-07 each have defined validation periods (3-4 weeks), max iteration cycles (2-3), and explicit fallback actions. Instead of repeating a failed stage, the team loops within the outcome with a clear policy for when to escalate.</p>
+    </div>
+  </div>
+
+  <!-- Critical Decisions -->
+  <div class="section-title">Critical Decisions</div>
+  <div class="decision-grid">
+    <div class="decision-card">
+      <div class="d-type type1">TYPE 1</div>
+      <div>
+        <div class="d-text"><span class="d-id">WM-D-04:</span> Relationship between work management system and 360 -- replace vs. promote from 360</div>
+        <div class="d-owner">Owner: Bryan + Andy + Brent | Required by: WM-OC-03.1</div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="d-type type2">TYPE 2</div>
+      <div>
+        <div class="d-text"><span class="d-id">WM-D-01:</span> Does routing function formalize into triage, or does Casora continue pre-screening?</div>
+        <div class="d-owner">Owner: Bryan + Andy | Required by: WM-OC-02.4</div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="d-type type2">TYPE 2</div>
+      <div>
+        <div class="d-text"><span class="d-id">WM-D-05:</span> Tool selection -- Jira, GitHub Projects, Teamwork, monday.com, Shortcut, or other</div>
+        <div class="d-owner">Owner: Bryan + Andy + Brent | Required by: WM-OC-03.2</div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="d-type type2">TYPE 2</div>
+      <div>
+        <div class="d-text"><span class="d-id">WM-D-03:</span> Progress Engineering (Bob Dixon) included in initial rollout or phased in later?</div>
+        <div class="d-owner">Owner: Bryan + Brent | Required by: WM-OC-02.6</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dependency Map -->
+  <div class="section-title">Dependency Flow</div>
+  <div style="background:white;border-radius:8px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);overflow-x:auto;">
+    <svg id="depGraph" width="1100" height="380" viewBox="0 0 1100 380"></svg>
+  </div>
+
+</div>
+
+<div class="footer">
+  Dynamo Consulting | WM-WSB Outcome Map | March 2026 | 1 FTE Dynamo | Start: Feb 15 | Deadline: End of May | ~18 Weeks | Confidential
+</div>
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// Outcome data
+// Grid: 18 columns = Weeks 1-18 (Week 1 = Feb 16, 2026)
+// 1 FTE Dynamo. DMSi part-time participation.
+// Deadline: End of May (Week 15). WM-OC-07 and WM-OC-09 extend past deadline.
+const outcomes = [
+  { id:'WM-OC-01', name:'Current State Discovery Complete', cat:'Baseline', start:1, end:2, deps:[], risk:'WM-R-01, WM-R-02', deliverables:4, milestone:'', status:'complete',
+    dateRange:'Wk 1-2 (Feb 16 - Feb 27)',
+    detail:'COMPLETE. Discovery sessions, workflow mapping, 360 case evaluation (559 open cases), current state assessment. Foundation for everything that follows.' },
+  { id:'WM-OC-02', name:'Operating Model & Process Design', cat:'Baseline', start:2, end:3, deps:['WM-OC-01'], risk:'WM-R-03, WM-R-04', deliverables:6, milestone:'WM-M-2 (designed)', status:'complete',
+    dateRange:'Wk 2-3 (Feb 23 - Mar 6)',
+    detail:'COMPLETE. Highest-leverage outcome. Workflow states, work categories, mixed pipeline handling, side-door capture, triage ceremony, WIP limits, capacity allocation, operating agreement.' },
+  { id:'WM-OC-03', name:'Tool Selected & System Configured', cat:'Baseline', start:3, end:5, deps:['WM-OC-02'], risk:'WM-R-05, WM-R-06, WM-R-07', deliverables:3, milestone:'',
+    dateRange:'Wk 3-5 (Mar 2 - Mar 20)',
+    detail:'Fit-to-process tool evaluation against operating agreement requirements. Board configured to match agreed workflow. No over-configuration.' },
+  { id:'WM-OC-04', name:'Existing Queue Dispositioned', cat:'Baseline', start:4, end:6, deps:['WM-OC-03'], risk:'WM-R-08', deliverables:3, milestone:'',
+    dateRange:'Wk 4-6 (Mar 9 - Mar 27)',
+    detail:'559 open 360 cases reviewed: still relevant (migrate), closeable (close), needs investigation (triage). Curated backlog, not bulk migration.' },
+  { id:'WM-OC-05', name:'Initial Adoption Validated', cat:'Iterative', start:5, end:9, deps:['WM-OC-03','WM-OC-04'], risk:'WM-R-09, WM-R-10, WM-R-11', deliverables:5, milestone:'WM-M-2 (implemented)',
+    dateRange:'Wk 5-9 (Mar 16 - Apr 17)',
+    detail:'Training wheels phase. One category (customer env config). Break-fix tagging + side-door capture from day one. Triage twice weekly. 4-week validation, max 2 cycles.' },
+  { id:'WM-OC-06', name:'Full Category Coverage & Reactive Visibility', cat:'Iterative', start:9, end:14, deps:['WM-OC-05'], risk:'WM-R-12, WM-R-13', deliverables:4, milestone:'WM-M-2 (Scorecard input)',
+    dateRange:'Wk 9-14 (Apr 13 - May 22)',
+    detail:'Expand to all work categories. PagerDuty integration for reactive work. Commitment tiers. Triage cadence evaluation. 4-week validation, max 2 cycles.' },
+  { id:'WM-OC-07', name:'Board Accuracy Validated', cat:'Iterative', start:12, end:16, deps:['WM-OC-06'], risk:'WM-R-14, WM-R-15', deliverables:3, milestone:'',
+    dateRange:'Wk 12-16 (May 4 - Jun 5) PAST DEADLINE',
+    detail:'Trust gate. Board freshness 90%+ sustained 3 consecutive weeks. No shadow spreadsheets. Stale item detection. Max 3 validation cycles. Extends ~1 week past end-of-May.' },
+  { id:'WM-OC-08', name:'Flow Metrics & Scorecard Operational', cat:'Baseline', start:10, end:14, deps:['WM-OC-06','WM-OC-07'], risk:'WM-R-16, WM-R-17', deliverables:3, milestone:'WM-M-2 (Scorecard operational)',
+    dateRange:'Wk 10-14 (Apr 20 - May 22)',
+    detail:'Can begin design during WM-OC-06 (should dep on WM-OC-07). Cycle time, throughput, queue depth. Reference estimates. Scorecard integration (Workstream D).' },
+  { id:'WM-OC-09', name:'Prioritization Drives Execution', cat:'Baseline', start:14, end:18, deps:['WM-OC-07','WM-OC-08'], risk:'WM-R-18, WM-R-19', deliverables:2, milestone:'',
+    dateRange:'Wk 14-18 (May 18 - Jun 19) PAST DEADLINE',
+    detail:'Capstone. System governs, not just informs. Priority changes reflected in team behavior. Side-door ratio declining. Flow retrospective process established. Extends ~3 weeks past end-of-May.' },
+];
+
+// Build week markers with calendar dates
+const weekMarkersEl = document.getElementById('weekMarkers');
+const weekDates = [
+  'Feb 16','Feb 23','Mar 2','Mar 9','Mar 16','Mar 23','Mar 30',
+  'Apr 6','Apr 13','Apr 20','Apr 27','May 4','May 11','May 18','May 25',
+  'Jun 1','Jun 8','Jun 15'
+];
+for (let i = 0; i < 18; i++) {
+  const d = document.createElement('div');
+  d.className = 'week-marker';
+  d.textContent = weekDates[i];
+  if (i >= 15) d.style.color = '#E74C3C'; // past deadline
+  weekMarkersEl.appendChild(d);
+}
+
+// Build swim lanes
+const lanesEl = document.getElementById('swimLanes');
+const barClass = { 'Baseline': 'bar-baseline', 'Iterative': 'bar-iterative' };
+
+outcomes.forEach((oc, idx) => {
+  const lane = document.createElement('div');
+  lane.className = 'swim-lane';
+
+  const label = document.createElement('div');
+  label.className = 'lane-label';
+  label.innerHTML = `<span class="oc-id">${oc.id}</span>${oc.name}<div class="oc-cat">${oc.cat}${oc.cat === 'Iterative' ? ' (validation cycles)' : ''}</div>`;
+  lane.appendChild(label);
+
+  const track = document.createElement('div');
+  track.className = 'lane-track';
+
+  const bar = document.createElement('div');
+  bar.className = `outcome-bar ${barClass[oc.cat]}${oc.status === 'complete' ? ' bar-complete' : ''}`;
+  bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
+  bar.style.position = 'relative';
+  bar.dataset.idx = idx;
+
+  const barText = document.createElement('span');
+  barText.textContent = oc.id;
+  bar.appendChild(barText);
+
+  const plusBtn = document.createElement('a');
+  plusBtn.className = 'plus-btn';
+  plusBtn.href = `WM-kanban.html#${oc.id}`;
+  plusBtn.textContent = '+';
+  plusBtn.title = `View ${oc.id} work items`;
+  plusBtn.addEventListener('click', (e) => e.stopPropagation());
+  bar.appendChild(plusBtn);
+
+  bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
+  bar.addEventListener('mousemove', (e) => moveTooltip(e));
+  bar.addEventListener('mouseleave', hideTooltip);
+
+  track.appendChild(bar);
+  lane.appendChild(track);
+  lanesEl.appendChild(lane);
+});
+
+// Add "Today" marker line (end of Week 4 = column position 4/18 through the grid)
+const timelineEl = document.getElementById('timeline');
+const todayLine = document.createElement('div');
+todayLine.style.cssText = 'position:absolute;top:0;bottom:0;width:2px;border-left:2px dashed #2B2B2B;z-index:3;opacity:0.5;left:calc(200px + ((4 / 18) * (100% - 200px)))';
+timelineEl.appendChild(todayLine);
+const todayTag = document.createElement('div');
+todayTag.style.cssText = 'position:absolute;top:-22px;background:rgba(43,43,43,0.5);color:white;font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px;white-space:nowrap;z-index:5;left:calc(200px + ((4 / 18) * (100% - 200px)));transform:translateX(-50%)';
+todayTag.textContent = 'TODAY';
+timelineEl.appendChild(todayTag);
+
+// Add end-of-May deadline line (Week 15 = column 15, which is ~83.3% through the 18-col grid)
+// The deadline falls at the end of Week 15 (May 29)
+const deadlineLine = document.createElement('div');
+deadlineLine.style.cssText = 'position:absolute;top:0;bottom:0;width:2px;background:#E74C3C;z-index:3;opacity:0.6;left:calc(200px + ((15 / 18) * (100% - 200px)))';
+timelineEl.appendChild(deadlineLine);
+const deadlineTag = document.createElement('div');
+deadlineTag.style.cssText = 'position:absolute;top:-22px;background:#E74C3C;color:white;font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px;white-space:nowrap;z-index:5;left:calc(200px + ((15 / 18) * (100% - 200px)));transform:translateX(-50%)';
+deadlineTag.textContent = 'END OF MAY DEADLINE';
+timelineEl.appendChild(deadlineTag);
+
+// Tooltip
+const tooltipEl = document.getElementById('tooltip');
+
+function showTooltip(e, oc) {
+  let html = `<div class="tt-title">${oc.id}: ${oc.name}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Category:</span> ${oc.cat}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Timeline:</span> ${oc.dateRange}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Deliverables:</span> ${oc.deliverables}</div>`;
+  if (oc.milestone) html += `<div class="tt-row"><span class="tt-label">Milestone:</span> <strong>${oc.milestone}</strong></div>`;
+  if (oc.risk) html += `<div class="tt-row"><span class="tt-label tt-risk">Key Risks:</span> ${oc.risk}</div>`;
+  if (oc.deps.length) {
+    html += `<div class="tt-deps"><span class="tt-label">Depends on:</span> ${oc.deps.join(', ')}</div>`;
+  }
+  html += `<div style="margin-top:8px;font-size:11px;color:#ccc;line-height:1.4">${oc.detail}</div>`;
+  tooltipEl.innerHTML = html;
+  tooltipEl.classList.add('show');
+  moveTooltip(e);
+}
+
+function moveTooltip(e) {
+  let x = e.clientX + 16;
+  let y = e.clientY + 16;
+  if (x + 380 > window.innerWidth) x = e.clientX - 396;
+  if (y + 300 > window.innerHeight) y = e.clientY - 200;
+  tooltipEl.style.left = x + 'px';
+  tooltipEl.style.top = y + 'px';
+}
+
+function hideTooltip() { tooltipEl.classList.remove('show'); }
+
+// Dependency graph (SVG)
+const svg = document.getElementById('depGraph');
+const nodes = {
+  'WM-OC-01': { x: 80,  y: 80,  color: '#3498DB' },
+  'WM-OC-02': { x: 220, y: 80,  color: '#3498DB' },
+  'WM-OC-03': { x: 380, y: 80,  color: '#3498DB' },
+  'WM-OC-04': { x: 380, y: 200, color: '#3498DB' },
+  'WM-OC-05': { x: 540, y: 140, color: '#76BE43' },
+  'WM-OC-06': { x: 680, y: 140, color: '#76BE43' },
+  'WM-OC-07': { x: 820, y: 140, color: '#76BE43' },
+  'WM-OC-08': { x: 820, y: 260, color: '#3498DB' },
+  'WM-OC-09': { x: 980, y: 200, color: '#3498DB' },
+};
+
+const edges = [
+  { from: 'WM-OC-01', to: 'WM-OC-02', type: 'must' },
+  { from: 'WM-OC-02', to: 'WM-OC-03', type: 'must' },
+  { from: 'WM-OC-03', to: 'WM-OC-04', type: 'must' },
+  { from: 'WM-OC-03', to: 'WM-OC-05', type: 'must' },
+  { from: 'WM-OC-04', to: 'WM-OC-05', type: 'should' },
+  { from: 'WM-OC-05', to: 'WM-OC-06', type: 'must' },
+  { from: 'WM-OC-06', to: 'WM-OC-07', type: 'must' },
+  { from: 'WM-OC-06', to: 'WM-OC-08', type: 'should' },
+  { from: 'WM-OC-07', to: 'WM-OC-08', type: 'should' },
+  { from: 'WM-OC-07', to: 'WM-OC-09', type: 'must' },
+  { from: 'WM-OC-08', to: 'WM-OC-09', type: 'should' },
+];
+
+const edgeColors = { must: '#2B2B2B', should: '#76BE43' };
+
+// Arrowhead defs
+const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+['must','should'].forEach(type => {
+  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+  marker.setAttribute('id', `arrow-${type}`);
+  marker.setAttribute('viewBox', '0 0 10 10');
+  marker.setAttribute('refX', '28'); marker.setAttribute('refY', '5');
+  marker.setAttribute('markerWidth', '6'); marker.setAttribute('markerHeight', '6');
+  marker.setAttribute('orient', 'auto-start-reverse');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
+  path.setAttribute('fill', edgeColors[type]);
+  marker.appendChild(path);
+  defs.appendChild(marker);
+});
+svg.appendChild(defs);
+
+// Draw edges
+edges.forEach(e => {
+  const f = nodes[e.from], t = nodes[e.to];
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', f.x); line.setAttribute('y1', f.y);
+  line.setAttribute('x2', t.x); line.setAttribute('y2', t.y);
+  line.setAttribute('stroke', edgeColors[e.type]);
+  line.setAttribute('stroke-width', e.type === 'must' ? '2' : '1.5');
+  line.setAttribute('opacity', '0.5');
+  line.setAttribute('marker-end', `url(#arrow-${e.type})`);
+  svg.appendChild(line);
+});
+
+// Draw nodes
+const shortNames = {
+  'WM-OC-01':'Discovery','WM-OC-02':'Operating Model','WM-OC-03':'Tool Config',
+  'WM-OC-04':'Queue Disposition','WM-OC-05':'Initial Adoption','WM-OC-06':'Full Coverage',
+  'WM-OC-07':'Board Accuracy','WM-OC-08':'Scorecard','WM-OC-09':'Prioritization'
+};
+
+Object.entries(nodes).forEach(([id, n]) => {
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y);
+  circle.setAttribute('r', '22');
+  circle.setAttribute('fill', n.color);
+  circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '2');
+  g.appendChild(circle);
+
+  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  text.setAttribute('x', n.x); text.setAttribute('y', n.y + 4);
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('fill', 'white');
+  text.setAttribute('font-size', '9');
+  text.setAttribute('font-weight', '700');
+  text.setAttribute('font-family', 'Arial');
+  text.textContent = id.replace('WM-OC-0','WM-OC-');
+  g.appendChild(text);
+
+  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  label.setAttribute('x', n.x); label.setAttribute('y', n.y + 38);
+  label.setAttribute('text-anchor', 'middle');
+  label.setAttribute('fill', '#555');
+  label.setAttribute('font-size', '8');
+  label.setAttribute('font-family', 'Arial');
+  label.textContent = shortNames[id] || id;
+  g.appendChild(label);
+
+  svg.appendChild(g);
+});
+</script>
+</body>
+</html>

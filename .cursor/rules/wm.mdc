@@ -1,0 +1,25 @@
+---
+description: Work Management (WM) folder — follow WM-WSB outcome structure and conventions
+globs: WM/**
+alwaysApply: false
+---
+
+# WM Folder Rules
+
+When editing or creating content under the WM folder, follow the Work Management outcome-based WBS structure and conventions (WM-WSB).
+
+## Structure to follow
+
+- **Outcome map**: Table with ID, Outcome, Category, Target Date, Calendar, Milestone Alignment.
+- **Dependencies**: Mermaid graph with `must` / `should`; document in Dependency Type Legend.
+- **Per-outcome sections**: Use `### OC-XX: Outcome Title`; include **Category:**, **Target Date:**, **Owner:**, **Status:**; then **Success Criteria** (bullets), **Deliverables** (table), then **OC-XX.Y: Deliverable Name** with bullet subtasks.
+
+## Conventions
+
+- Outcome IDs: OC-01 through OC-09 for WM. Categories: Baseline, Iterative, Conditional.
+- Deliverable IDs: OC-XX.Y (e.g. OC-01.1, OC-01.2). Each deliverable has a short name and a bullet list of subtasks.
+- Keep dependency types explicit: must (hard prerequisite), should (recommended sequence).
+
+## Reference
+
+The canonical WM outcome structure is in the Work Management WBS (WM-WSB) document. When in doubt, match its format and level of detail.

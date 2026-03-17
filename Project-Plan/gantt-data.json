@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-03-17T01:41:24.434Z",
+  "timeline": {
+    "start": "2026-02-01",
+    "end": "2026-11-01"
+  },
+  "milestones": [
+    {
+      "id": "M2",
+      "date": "2026-03-28",
+      "label": "M2: Mar 28"
+    },
+    {
+      "id": "M3",
+      "date": "2026-05-28",
+      "label": "M3: May 28"
+    },
+    {
+      "id": "M4",
+      "date": "2026-10-27",
+      "label": "M4: Oct 27"
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "WM",
+      "name": "Work Management",
+      "meta": "9 outcomes | OC-01, OC-02 complete",
+      "barClass": "bar-wm",
+      "start": "2026-02-16",
+      "end": "2026-06-19",
+      "link": "../WM/WM-Outcome-Map.html",
+      "outcomes": 9,
+      "detail": "Process design, tool selection, adoption, board accuracy, flow metrics, prioritization. OC-01 (Discovery) and OC-02 (Operating Model) already complete."
+    },
+    {
+      "id": "VI",
+      "name": "Visibility Infrastructure",
+      "meta": "16 outcomes",
+      "barClass": "bar-vi",
+      "start": "2026-03-01",
+      "end": "2026-06-11",
+      "link": "../VI/VI-WSB-Outcome-Map.html",
+      "outcomes": 16,
+      "detail": "Dynatrace rollout, PagerDuty AIOps, host instrumentation, log migration, synthetic monitoring, application telemetry, alerting, proactive operations."
+    },
+    {
+      "id": "PP",
+      "name": "Pipeline Automation",
+      "meta": "11 outcomes + POC | Starts with 2-week POC",
+      "barClass": "bar-pp",
+      "start": "2026-03-16",
+      "end": "2026-08-21",
+      "link": "../PA/PA-Outcome-map.html",
+      "outcomes": 11,
+      "detail": "NGINX config pipeline POC, foundation, config inventory, version control migration, build/deploy/drift pipelines, reliability validation, config-as-code enforcement."
+    }
+  ],
+  "summaryCards": {
+    "WM": {
+      "title": "Work Management",
+      "detail": "9 outcomes\n2026-02-16 - 2026-06-19"
+    },
+    "VI": {
+      "title": "Visibility Infrastructure",
+      "detail": "16 outcomes\n2026-03-01 - 2026-06-11"
+    },
+    "PP": {
+      "title": "Pipeline Automation",
+      "detail": "11 outcomes (+ POC)\n2026-03-16 - 2026-08-21"
+    }
+  }
+}

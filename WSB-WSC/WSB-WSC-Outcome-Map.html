@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WSB-WSC: Outcome Map - Customer Support & Tooling</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; color: #2B2B2B; }
+
+  .header {
+    background: #2B2B2B;
+    color: white;
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header h1 { font-size: 22px; font-weight: 600; }
+  .header .subtitle { font-size: 13px; color: #aaa; margin-top: 4px; }
+  .header .brand { color: #76BE43; font-weight: 700; font-size: 14px; }
+
+  .legend-bar {
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 14px 40px;
+    display: flex;
+    gap: 28px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #555;
+  }
+  .legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+  }
+  .legend-line {
+    width: 30px;
+    height: 0;
+    border-top: 2px solid #555;
+  }
+  .legend-line.must { border-color: #2B2B2B; border-width: 2px; }
+  .legend-line.should { border-color: #76BE43; border-width: 2px; }
+  .legend-line.contingent { border-color: #E67E22; border-width: 2px; border-top-style: dashed; }
+
+  .container { padding: 30px 40px; max-width: 1500px; margin: 0 auto; }
+
+  /* Summary cards */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  .summary-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    border-left: 4px solid #76BE43;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .summary-card .sc-number { font-size: 32px; font-weight: 700; color: #2B2B2B; }
+  .summary-card .sc-label { font-size: 12px; color: #888; margin-top: 4px; }
+  .summary-card.orange { border-left-color: #E65100; }
+  .summary-card.violet { border-left-color: #5c6bc0; }
+  .summary-card.green { border-left-color: #76BE43; }
+  .summary-card.red { border-left-color: #E74C3C; }
+
+  /* Section headers */
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2B2B2B;
+    margin: 30px 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #76BE43;
+  }
+  .section-title.orange-border { border-bottom-color: #E65100; }
+  .section-title.violet-border { border-bottom-color: #5c6bc0; }
+
+  /* Timeline header */
+  .timeline-header {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    margin-bottom: 0;
+  }
+  .timeline-label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 8px 0; }
+  .sprint-markers {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    border-bottom: 2px solid #2B2B2B;
+    padding-bottom: 6px;
+  }
+  .sprint-marker {
+    font-size: 9px;
+    color: #888;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  /* Group header */
+  .group-header {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 38px;
+    align-items: center;
+    border-bottom: 1px solid #d0d0d0;
+    background: #f0f0f0;
+  }
+  .group-header .group-label {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .group-header.operational .group-label { color: #E65100; }
+  .group-header.environmental .group-label { color: #5c6bc0; }
+  .group-header.technological .group-label { color: #2e7d32; }
+
+  /* Swim lanes */
+  .swim-lane {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 56px;
+    border-bottom: 1px solid #e8e8e8;
+    align-items: center;
+    position: relative;
+  }
+  .swim-lane:hover { background: #f0f0f0; }
+  .lane-label {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 10px 8px 20px;
+    line-height: 1.3;
+  }
+  .lane-label .oc-id { font-weight: 700; display: block; font-size: 11px; }
+  .lane-label .oc-id.op { color: #E65100; }
+  .lane-label .oc-id.env { color: #5c6bc0; }
+  .lane-label .oc-id.tech { color: #2e7d32; }
+  .lane-label .oc-cat { font-size: 10px; color: #999; font-weight: 400; margin-top: 2px; }
+
+  .lane-track {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    height: 100%;
+    position: relative;
+    align-items: center;
+  }
+
+  /* Outcome bars */
+  .outcome-bar {
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 6px;
+  }
+  .outcome-bar:hover {
+    transform: scaleY(1.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 10;
+  }
+
+  .bar-operational { background: #E65100; }
+  .bar-environmental { background: #5c6bc0; }
+  .bar-technological { background: #2e7d32; }
+  .bar-tbd {
+    background: repeating-linear-gradient(45deg, #bbb, #bbb 4px, #ccc 4px, #ccc 8px);
+    color: #666;
+  }
+
+  .tbd-label {
+    grid-column: 1 / 25;
+    text-align: center;
+    font-size: 11px;
+    color: #999;
+    font-style: italic;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    display: none;
+    position: fixed;
+    background: #2B2B2B;
+    color: white;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    max-width: 400px;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    pointer-events: none;
+  }
+  .tooltip.show { display: block; }
+  .tooltip .tt-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .tooltip .tt-title.op { color: #E65100; }
+  .tooltip .tt-title.env { color: #7986cb; }
+  .tooltip .tt-title.tech { color: #66bb6a; }
+  .tooltip .tt-row { display: flex; gap: 8px; margin: 3px 0; }
+  .tooltip .tt-label { color: #aaa; min-width: 100px; }
+  .tooltip .tt-deps { margin-top: 8px; border-top: 1px solid #444; padding-top: 8px; }
+  .tooltip .tt-blocker { color: #E74C3C; font-weight: 600; }
+  .tooltip .tt-prereqs { margin-top: 8px; border-top: 1px solid #444; padding-top: 8px; font-size: 11px; color: #ccc; }
+
+  /* Key insights */
+  .insight-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .insight-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .insight-card h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #76BE43;
+    margin-bottom: 8px;
+  }
+  .insight-card p {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #555;
+  }
+
+  /* Decision cards */
+  .decision-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .decision-card {
+    background: white;
+    border-radius: 6px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .decision-card .d-type {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .d-type.blocker { background: #FDEAEA; color: #E74C3C; }
+  .d-type.decision { background: #FFF3E0; color: #E65100; }
+  .d-type.dependency { background: #E8EAF6; color: #3949ab; }
+  .decision-card .d-text { font-size: 12px; line-height: 1.4; }
+  .decision-card .d-id { font-weight: 700; color: #2B2B2B; }
+  .decision-card .d-owner { font-size: 11px; color: #999; margin-top: 2px; }
+
+  /* Dependency graph */
+  .dep-container {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow-x: auto;
+  }
+
+  /* Constraint model reference */
+  .constraint-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 16px;
+  }
+  .constraint-col {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .constraint-col h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid;
+  }
+  .constraint-col.wsb h3 { color: #E65100; border-color: #E65100; }
+  .constraint-col.wsc h3 { color: #5c6bc0; border-color: #5c6bc0; }
+  .stage-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+  }
+  .stage-row:last-child { border-bottom: none; }
+  .stage-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .stage-num.wsb { background: #E65100; }
+  .stage-num.wsc { background: #5c6bc0; }
+  .stage-num.not-started { background: #bbb; }
+  .stage-title { flex: 1; font-weight: 600; }
+  .stage-status {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+  }
+  .stage-status.tbd { background: #f5f5f5; color: #999; }
+  .stage-status.blocked { background: #FDEAEA; color: #E74C3C; }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    font-size: 11px;
+    color: #999;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 1000px) {
+    .summary-row { grid-template-columns: repeat(2, 1fr); }
+    .insight-grid { grid-template-columns: 1fr; }
+    .decision-grid { grid-template-columns: 1fr; }
+    .constraint-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>WSB-WSC: Customer Support &amp; Tooling Outcome Map</h1>
+    <div class="subtitle">Workstreams B &amp; C -- DMSi Software | 24 Sprints (S = 2 weeks) | Calendar dates pending scheduling</div>
+  </div>
+  <div class="brand">DYNAMO</div>
+</div>
+
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-dot" style="background:#E65100"></div> Operational Setup (B)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#5c6bc0"></div> Environmental Setup (B/C)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2e7d32"></div> Technological Setup (C)</div>
+  <div class="legend-item"><div class="legend-line must"></div> must dependency</div>
+  <div class="legend-item"><div class="legend-line should"></div> should dependency</div>
+  <div class="legend-item"><div class="legend-line contingent"></div> contingent</div>
+</div>
+
+<div class="container">
+
+  <!-- Summary Cards -->
+  <div class="summary-row">
+    <div class="summary-card orange">
+      <div class="sc-number">4</div>
+      <div class="sc-label">Operational Setup Activities</div>
+    </div>
+    <div class="summary-card violet">
+      <div class="sc-number">3</div>
+      <div class="sc-label">Environmental Setup Activities</div>
+    </div>
+    <div class="summary-card green">
+      <div class="sc-number">6</div>
+      <div class="sc-label">Technological Setup Activities</div>
+    </div>
+    <div class="summary-card red">
+      <div class="sc-number">2</div>
+      <div class="sc-label">Active Blockers</div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section-title">Implementation Timeline</div>
+
+  <div id="timeline" style="position:relative;">
+    <div class="timeline-header">
+      <div class="timeline-label">Activity</div>
+      <div class="sprint-markers" id="sprintMarkers"></div>
+    </div>
+    <div id="swimLanes"></div>
+  </div>
+
+  <!-- Key Insights -->
+  <div class="section-title">Key Structural Insights</div>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <h3>Three Parallel Tracks</h3>
+      <p>Operational (process redesign), Environmental (people and alignment), and Technological (tooling) run as interlocking but distinct tracks. Environmental setup (E1-E3) bridges both WSB and WSC, creating the cross-functional alignment both workstreams depend on.</p>
+    </div>
+    <div class="insight-card">
+      <h3>Iterative by Design</h3>
+      <p>O2, O4, E3, and T6 are explicitly iterative. The operating model and tooling both expect multiple socialization and refinement cycles before institutionalization. This is built into the plan, not a sign of rework.</p>
+    </div>
+    <div class="insight-card">
+      <h3>Technology Follows Process</h3>
+      <p>T1 (capability audit) cannot produce meaningful requirements until O1 (data/segmentation) and E1 (role definitions) establish what the operating model needs. The RFP process (T2) depends on both operational and environmental clarity.</p>
+    </div>
+  </div>
+
+  <!-- Critical Decisions / Blockers -->
+  <div class="section-title">Critical Decisions &amp; Blockers</div>
+  <div class="decision-grid">
+    <div class="decision-card">
+      <div class="d-type blocker">BLOCKER</div>
+      <div>
+        <div class="d-text"><span class="d-id">B-01:</span> Incident vs. Case vs. Ticket taxonomy not yet resolved</div>
+        <div class="d-owner">Impact: WSB Stage 1 (Foundation Complete) | Must resolve before service level definitions</div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="d-type blocker">BLOCKER</div>
+      <div>
+        <div class="d-text"><span class="d-id">B-02:</span> WSC Requirements must incorporate all stakeholder/persona priorities</div>
+        <div class="d-owner">Impact: WSC Stage 1 (Requirements) | Must resolve before evaluation begins</div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="d-type decision">DECISION</div>
+      <div>
+        <div class="d-text"><span class="d-id">D-01:</span> Enhance 360, adopt new platform (Zendesk/Freshdesk/JSM class), or hybrid approach</div>
+        <div class="d-owner">Owner: DMSi Leadership | Required by: WSC Stage 3 (Implementation Plan)</div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="d-type decision">DECISION</div>
+      <div>
+        <div class="d-text"><span class="d-id">D-02:</span> Enterprise vs. Commercial segmentation model and entitlement rules</div>
+        <div class="d-owner">Owner: Senior Leadership + Customer Experience | Required by: WSB Stage 2</div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="d-type dependency">CROSS-DEP</div>
+      <div>
+        <div class="d-text"><span class="d-id">X-01:</span> WSC Stage 0 requires WSB Stage 1 outputs (incident management requirements)</div>
+        <div class="d-owner">WSC tooling requirements are grounded in WSB's operating model design</div>
+      </div>
+    </div>
+    <div class="decision-card">
+      <div class="d-type dependency">CROSS-DEP</div>
+      <div>
+        <div class="d-text"><span class="d-id">X-02:</span> WSB routing and SLA configuration blocked until WSC tooling path decided</div>
+        <div class="d-owner">WSB Stage 3 needs WSC Stage 3 decision to finalize system configuration</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dependency Graph -->
+  <div class="section-title">Dependency Flow</div>
+  <div class="dep-container">
+    <svg id="depGraph" width="1200" height="480" viewBox="0 0 1200 480"></svg>
+  </div>
+
+  <!-- Constraint Model Reference -->
+  <div class="section-title">Stage-Gate Reference</div>
+  <div class="constraint-grid">
+    <div class="constraint-col wsb">
+      <h3>B: Customer Support Operating Model</h3>
+      <div id="wsbStages"></div>
+    </div>
+    <div class="constraint-col wsc">
+      <h3>C: Support &amp; Engineering Tooling Strategy</h3>
+      <div id="wscStages"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Dynamo Consulting | WSB-WSC Outcome Map | March 2026 | All timelines pending scheduling | Confidential
+</div>
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// Activity data mapped from Excel + constraint model
+const activities = [
+  // Operational Setup
+  { id:'O1', name:'Data Pull, Segmentation & Entitlements', group:'Operational', groupShort:'op',
+    start:1, end:2,
+    wsb:'S0-S1', wsc:'S0',
+    detail:'Customer data extraction, segmentation model (Enterprise vs. Commercial), entitlement rules definition. Feeds both the operating model design and tooling requirements.',
+    prereqs:['360 access with case export capability','Customer segmentation criteria agreed','Key account list from Senior Leadership/CX'],
+    deps:[], blockers:[] },
+  { id:'O2', name:'Operating Model Socialization & Iterations', group:'Operational', groupShort:'op',
+    start:2, end:3,
+    wsb:'S1-S3', wsc:'',
+    detail:'Iterative socialization of the redesigned operating model with Support, Engineering, and Product leadership. Multiple feedback cycles expected.',
+    prereqs:['O1 outputs (segmentation, entitlements)','E1 outputs (roles, labels defined)','Stakeholder availability for review sessions'],
+    deps:['O1','E1'], blockers:[] },
+  { id:'O3', name:'Operating Model Testing', group:'Operational', groupShort:'op',
+    start:4, end:5,
+    wsb:'S3-S4', wsc:'',
+    detail:'Controlled testing of tiered service framework, pod routing, SLA enforcement, and incident management discipline before full rollout.',
+    prereqs:['O2 socialization complete','Tooling configured for testing (WSC dependency)','Pilot group identified'],
+    deps:['O2','T4'], blockers:[] },
+  { id:'O4', name:'Institutionalization & Iterations', group:'Operational', groupShort:'op',
+    start:6, end:8,
+    wsb:'S4-S5', wsc:'',
+    detail:'Full rollout of operating model. Ongoing iteration based on metrics. Triad coordination operational. Incident management discipline embedded.',
+    prereqs:['O3 testing validated','All pods staffed and trained','Metrics baseline established'],
+    deps:['O3'], blockers:[] },
+
+  // Environmental Setup
+  { id:'E1', name:'Internal Definitions: Roles & Labels', group:'Environmental', groupShort:'env',
+    start:2, end:3,
+    wsb:'S1', wsc:'S1',
+    detail:'Shared taxonomy for incidents vs. cases, severity definitions (P1/P2/P3), role definitions (MIM, pod lead, triad members), and communication accountability.',
+    prereqs:['Stakeholder interviews complete','Current escalation patterns documented','Leadership buy-in on definitions'],
+    deps:['O1'], blockers:['Incident vs. Case vs. Ticket taxonomy not yet resolved'] },
+  { id:'E2', name:'Tiger Team & Cross-Functional Alignment', group:'Environmental', groupShort:'env',
+    start:3, end:4,
+    wsb:'S2-S3', wsc:'S2',
+    detail:'Establishing the cross-functional tiger team (Support/Engineering/Product triads). Aligning all stakeholders on the redesign direction, incident discipline, and tooling requirements.',
+    prereqs:['E1 definitions ratified','Named triad members identified','Recurring meeting rhythm established'],
+    deps:['E1'], blockers:[] },
+  { id:'E3', name:'Institutionalizing & Data Read on Results', group:'Environmental', groupShort:'env',
+    start:4, end:8,
+    wsb:'S4-S5', wsc:'S4-S5',
+    detail:'Iterative refinement based on real data. Pod metrics, incident response times, RCA completion rates, and triad effectiveness reviewed and adjusted.',
+    prereqs:['Operating model live (O4)','Tooling deployed (T4/T5)','Metrics dashboards operational','Sufficient data volume for meaningful analysis'],
+    deps:['O4','T5'], blockers:[] },
+
+  // Technological Setup
+  { id:'T1', name:'Audit of Current & Needed Capabilities', group:'Technological', groupShort:'tech',
+    start:2, end:3,
+    wsb:'', wsc:'S0-S1',
+    detail:'Current state of 360 documented. Capability gap analysis against WSB operating model requirements. Must-have vs. nice-to-have prioritized.',
+    prereqs:['360 access granted','O1 outputs (what the model needs from tooling)','E1 outputs (role requirements)','WSB Stage 1 incident management requirements'],
+    deps:['O1','E1'], blockers:['Must incorporate all stakeholder/persona priorities'] },
+  { id:'T2', name:'RFP Process', group:'Technological', groupShort:'tech',
+    start:4, end:6,
+    wsb:'', wsc:'S2',
+    detail:'Options analysis (360 enhancement vs. Zendesk/Freshdesk/JSM class). POC testing for viable candidates. TCO comparison. Incident management capabilities evaluated.',
+    prereqs:['T1 requirements documented','Evaluation criteria defined','DMSi RFP/vendor contracting process understood'],
+    deps:['T1'], blockers:[] },
+  { id:'T3', name:'OpSec, Compliance & Contracting', group:'Technological', groupShort:'tech',
+    start:6, end:8,
+    wsb:'', wsc:'S3',
+    detail:'Security review, compliance validation, vendor contracting, and budget approval for selected tooling path.',
+    prereqs:['T2 evaluation complete with recommendation','Leadership decision on path','Budget sign-off'],
+    deps:['T2'], blockers:[] },
+  { id:'T4', name:'Deployment & Development', group:'Technological', groupShort:'tech',
+    start:9, end:12,
+    wsb:'', wsc:'S4',
+    detail:'Phased rollout of selected platform. Data migration (if platform change). 360 integration (if hybrid). Training for all agents and supervisors.',
+    prereqs:['T3 contracting complete','Rollout plan by pod/team','Data migration plan (if applicable)','Rollback plan ready'],
+    deps:['T3','E2'], blockers:[] },
+  { id:'T5', name:'Operationalizing', group:'Technological', groupShort:'tech',
+    start:13, end:17,
+    wsb:'', wsc:'S4-S5',
+    detail:'Tooling is live and supporting the full case lifecycle, pod routing, incident tracking. Old workflows sunset or integrated.',
+    prereqs:['T4 deployment complete','All agents trained','Incident workflows tested in production','Go-live support in place'],
+    deps:['T4'], blockers:[] },
+  { id:'T6', name:'Enhancements & Iterations', group:'Technological', groupShort:'tech',
+    start:18, end:24,
+    wsb:'', wsc:'S5',
+    detail:'Workflow automation, AI layer (auto-triage, suggested replies), reporting dashboards, continuous improvement based on usage data.',
+    prereqs:['T5 operational','Automation rules deployed and tuned','Feedback loop established','Solve-with-article tracking active'],
+    deps:['T5','E3'], blockers:[] },
+];
+
+// Build sprint markers
+const sprintMarkersEl = document.getElementById('sprintMarkers');
+for (let i = 1; i <= 24; i++) {
+  const d = document.createElement('div');
+  d.className = 'sprint-marker';
+  d.textContent = 'S' + i;
+  sprintMarkersEl.appendChild(d);
+}
+
+// Build swim lanes
+const lanesEl = document.getElementById('swimLanes');
+const barClass = { 'Operational': 'bar-operational', 'Environmental': 'bar-environmental', 'Technological': 'bar-technological' };
+const groups = ['Operational', 'Environmental', 'Technological'];
+const groupLabels = { 'Operational': 'Operational Setup', 'Environmental': 'Environmental Setup', 'Technological': 'Technological Setup' };
+const groupClasses = { 'Operational': 'operational', 'Environmental': 'environmental', 'Technological': 'technological' };
+
+groups.forEach(group => {
+  // Group header
+  const gh = document.createElement('div');
+  gh.className = `group-header ${groupClasses[group]}`;
+  gh.innerHTML = `<div class="group-label">${groupLabels[group]}</div><div></div>`;
+  lanesEl.appendChild(gh);
+
+  // Activities in this group
+  const groupActivities = activities.filter(a => a.group === group);
+  groupActivities.forEach((act, idx) => {
+    const lane = document.createElement('div');
+    lane.className = 'swim-lane';
+
+    const label = document.createElement('div');
+    label.className = 'lane-label';
+    const blockerIcon = act.blockers.length > 0 ? ' &#9888;' : '';
+    label.innerHTML = `<span class="oc-id ${act.groupShort}">${act.id}${blockerIcon}</span>${act.name}<div class="oc-cat">${act.wsb ? 'WSB ' + act.wsb : ''}${act.wsb && act.wsc ? ' | ' : ''}${act.wsc ? 'WSC ' + act.wsc : ''}</div>`;
+    lane.appendChild(label);
+
+    const track = document.createElement('div');
+    track.className = 'lane-track';
+
+    if (act.start > 0 && act.end > 0) {
+      const bar = document.createElement('div');
+      bar.className = `outcome-bar ${barClass[act.group]}`;
+      bar.style.gridColumn = `${act.start} / ${act.end + 1}`;
+      bar.style.position = 'relative';
+      const spanText = act.start === act.end ? `S${act.start}` : `S${act.start}-S${act.end}`;
+      bar.innerHTML = `<span>${act.id} (${spanText})</span>`;
+      bar.addEventListener('mouseenter', (e) => showTooltip(e, act));
+      bar.addEventListener('mousemove', (e) => moveTooltip(e));
+      bar.addEventListener('mouseleave', hideTooltip);
+      track.appendChild(bar);
+    } else {
+      const tbd = document.createElement('div');
+      tbd.className = 'tbd-label';
+      tbd.textContent = 'Not scheduled';
+      track.appendChild(tbd);
+    }
+
+    lane.appendChild(track);
+    lanesEl.appendChild(lane);
+  });
+});
+
+// Tooltip
+const tooltipEl = document.getElementById('tooltip');
+
+function showTooltip(e, act) {
+  const titleClass = act.groupShort;
+  let html = `<div class="tt-title ${titleClass}">${act.id}: ${act.name}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Track:</span> ${act.group} Setup</div>`;
+  if (act.wsb) html += `<div class="tt-row"><span class="tt-label">WSB Stages:</span> ${act.wsb}</div>`;
+  if (act.wsc) html += `<div class="tt-row"><span class="tt-label">WSC Stages:</span> ${act.wsc}</div>`;
+  const tlText = (act.start > 0 && act.end > 0) ? `S${act.start}-S${act.end} (${act.end - act.start + 1} sprint${act.end - act.start + 1 > 1 ? 's' : ''} = ${(act.end - act.start + 1) * 2} weeks)` : 'Not scheduled';
+  html += `<div class="tt-row"><span class="tt-label">Timeline:</span> ${tlText}</div>`;
+  if (act.deps.length) {
+    html += `<div class="tt-deps"><span class="tt-label">Depends on:</span> ${act.deps.join(', ')}</div>`;
+  }
+  if (act.blockers.length) {
+    html += `<div style="margin-top:6px"><span class="tt-label tt-blocker">Blockers:</span> ${act.blockers.join('; ')}</div>`;
+  }
+  html += `<div style="margin-top:8px;font-size:11px;color:#ccc;line-height:1.4">${act.detail}</div>`;
+  if (act.prereqs.length) {
+    html += `<div class="tt-prereqs"><strong style="color:#aaa">Prerequisites:</strong><br>${act.prereqs.map(p => '&bull; ' + p).join('<br>')}</div>`;
+  }
+  tooltipEl.innerHTML = html;
+  tooltipEl.classList.add('show');
+  moveTooltip(e);
+}
+
+function moveTooltip(e) {
+  let x = e.clientX + 16;
+  let y = e.clientY + 16;
+  if (x + 400 > window.innerWidth) x = e.clientX - 416;
+  if (y + 300 > window.innerHeight) y = e.clientY - 200;
+  tooltipEl.style.left = x + 'px';
+  tooltipEl.style.top = y + 'px';
+}
+
+function hideTooltip() { tooltipEl.classList.remove('show'); }
+
+// Dependency Graph (SVG)
+const svg = document.getElementById('depGraph');
+
+const nodes = {
+  'O1': { x: 100, y: 60, color: '#E65100' },
+  'O2': { x: 280, y: 60, color: '#E65100' },
+  'O3': { x: 460, y: 60, color: '#E65100' },
+  'O4': { x: 640, y: 60, color: '#E65100' },
+  'E1': { x: 190, y: 200, color: '#5c6bc0' },
+  'E2': { x: 370, y: 200, color: '#5c6bc0' },
+  'E3': { x: 730, y: 200, color: '#5c6bc0' },
+  'T1': { x: 280, y: 340, color: '#2e7d32' },
+  'T2': { x: 440, y: 340, color: '#2e7d32' },
+  'T3': { x: 600, y: 340, color: '#2e7d32' },
+  'T4': { x: 760, y: 340, color: '#2e7d32' },
+  'T5': { x: 920, y: 340, color: '#2e7d32' },
+  'T6': { x: 1080, y: 340, color: '#2e7d32' },
+};
+
+const edges = [
+  // Operational chain
+  { from: 'O1', to: 'O2', type: 'must' },
+  { from: 'O2', to: 'O3', type: 'must' },
+  { from: 'O3', to: 'O4', type: 'must' },
+  // Environmental chain
+  { from: 'E1', to: 'E2', type: 'must' },
+  // Tech chain
+  { from: 'T1', to: 'T2', type: 'must' },
+  { from: 'T2', to: 'T3', type: 'must' },
+  { from: 'T3', to: 'T4', type: 'must' },
+  { from: 'T4', to: 'T5', type: 'must' },
+  { from: 'T5', to: 'T6', type: 'must' },
+  // Cross-track dependencies
+  { from: 'O1', to: 'E1', type: 'must' },
+  { from: 'E1', to: 'O2', type: 'should' },
+  { from: 'O1', to: 'T1', type: 'must' },
+  { from: 'E1', to: 'T1', type: 'must' },
+  { from: 'E2', to: 'T4', type: 'should' },
+  { from: 'O4', to: 'E3', type: 'must' },
+  { from: 'T5', to: 'E3', type: 'must' },
+  { from: 'E3', to: 'T6', type: 'should' },
+  { from: 'T4', to: 'O3', type: 'contingent' },
+];
+
+const edgeColors = { must: '#2B2B2B', should: '#76BE43', contingent: '#E67E22' };
+const edgeDash = { must: '', should: '', contingent: '6,4' };
+
+// Arrowhead defs
+const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+['must','should','contingent'].forEach(type => {
+  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+  marker.setAttribute('id', `arrow-${type}`);
+  marker.setAttribute('viewBox', '0 0 10 10');
+  marker.setAttribute('refX', '28'); marker.setAttribute('refY', '5');
+  marker.setAttribute('markerWidth', '6'); marker.setAttribute('markerHeight', '6');
+  marker.setAttribute('orient', 'auto-start-reverse');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
+  path.setAttribute('fill', edgeColors[type]);
+  marker.appendChild(path);
+  defs.appendChild(marker);
+});
+svg.insertBefore(defs, svg.firstChild);
+
+// Track labels on graph
+const trackLabels = [
+  { text: 'OPERATIONAL', x: 20, y: 65, color: '#E65100' },
+  { text: 'ENVIRONMENTAL', x: 20, y: 205, color: '#5c6bc0' },
+  { text: 'TECHNOLOGICAL', x: 20, y: 345, color: '#2e7d32' },
+];
+trackLabels.forEach(tl => {
+  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  label.setAttribute('x', tl.x); label.setAttribute('y', tl.y);
+  label.setAttribute('fill', tl.color);
+  label.setAttribute('font-size', '8');
+  label.setAttribute('font-weight', '700');
+  label.setAttribute('font-family', 'Arial');
+  label.setAttribute('letter-spacing', '1');
+  label.textContent = tl.text;
+  svg.appendChild(label);
+});
+
+// Track separator lines
+[130, 270].forEach(yy => {
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', '10'); line.setAttribute('y1', yy);
+  line.setAttribute('x2', '1190'); line.setAttribute('y2', yy);
+  line.setAttribute('stroke', '#e0e0e0');
+  line.setAttribute('stroke-width', '1');
+  line.setAttribute('stroke-dasharray', '4,4');
+  svg.appendChild(line);
+});
+
+// Draw edges
+edges.forEach(e => {
+  const f = nodes[e.from], t = nodes[e.to];
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', f.x); line.setAttribute('y1', f.y);
+  line.setAttribute('x2', t.x); line.setAttribute('y2', t.y);
+  line.setAttribute('stroke', edgeColors[e.type]);
+  line.setAttribute('stroke-width', e.type === 'must' ? '2' : '1.5');
+  if (edgeDash[e.type]) line.setAttribute('stroke-dasharray', edgeDash[e.type]);
+  line.setAttribute('opacity', '0.5');
+  line.setAttribute('marker-end', `url(#arrow-${e.type})`);
+  svg.appendChild(line);
+});
+
+// Draw nodes
+Object.entries(nodes).forEach(([id, n]) => {
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y);
+  circle.setAttribute('r', '22');
+  circle.setAttribute('fill', n.color);
+  circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '2');
+  g.appendChild(circle);
+
+  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  text.setAttribute('x', n.x); text.setAttribute('y', n.y + 4);
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('fill', 'white');
+  text.setAttribute('font-size', '10');
+  text.setAttribute('font-weight', '700');
+  text.setAttribute('font-family', 'Arial');
+  text.textContent = id;
+  g.appendChild(text);
+
+  // Short name label below node
+  const shortNames = {
+    'O1':'Data & Segmentation','O2':'Model Socialization','O3':'Model Testing','O4':'Institutionalization',
+    'E1':'Roles & Definitions','E2':'Tiger Team Alignment','E3':'Data Read / Refine',
+    'T1':'Capability Audit','T2':'RFP Process','T3':'OpSec & Contracting',
+    'T4':'Deploy & Dev','T5':'Operationalizing','T6':'Enhancements'
+  };
+  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  label.setAttribute('x', n.x); label.setAttribute('y', n.y + 38);
+  label.setAttribute('text-anchor', 'middle');
+  label.setAttribute('fill', '#555');
+  label.setAttribute('font-size', '8');
+  label.setAttribute('font-family', 'Arial');
+  label.textContent = shortNames[id] || id;
+  g.appendChild(label);
+
+  svg.appendChild(g);
+});
+
+// Stage-Gate Reference
+const wsbStageData = [
+  { num: 0, title: 'System Access & Discovery', status: 'tbd' },
+  { num: 1, title: 'Foundation Complete', status: 'blocked', note: 'Taxonomy blocker' },
+  { num: 2, title: 'Service Level Definitions Complete', status: 'tbd' },
+  { num: 3, title: 'Tiered Service Framework Active', status: 'tbd' },
+  { num: 4, title: 'Product Pods Active', status: 'tbd' },
+  { num: 5, title: 'Triad Coordination Operational', status: 'tbd' },
+];
+
+const wscStageData = [
+  { num: 0, title: 'System Access & B Alignment', status: 'tbd' },
+  { num: 1, title: 'Requirements Documented', status: 'blocked', note: 'Stakeholder input needed' },
+  { num: 2, title: 'Evaluation Complete', status: 'tbd' },
+  { num: 3, title: 'Implementation Plan Approved', status: 'tbd' },
+  { num: 4, title: 'Deployment Complete', status: 'tbd' },
+  { num: 5, title: 'Optimization Active', status: 'tbd' },
+];
+
+function renderStages(containerId, stages, colorClass) {
+  const container = document.getElementById(containerId);
+  stages.forEach(s => {
+    const row = document.createElement('div');
+    row.className = 'stage-row';
+    const statusClass = s.status === 'blocked' ? 'blocked' : 'tbd';
+    const statusLabel = s.status === 'blocked' ? s.note || 'Blocked' : 'Not Scheduled';
+    row.innerHTML = `
+      <div class="stage-num ${s.status === 'blocked' ? 'not-started' : colorClass}">S${s.num}</div>
+      <div class="stage-title">${s.title}</div>
+      <div class="stage-status ${statusClass}">${statusLabel}</div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+renderStages('wsbStages', wsbStageData, 'wsb');
+renderStages('wscStages', wscStageData, 'wsc');
+</script>
+</body>
+</html>
