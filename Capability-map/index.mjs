@@ -12,21 +12,31 @@ const CONTENT_TYPES = {
 };
 
 /**
- * Allowed Confluence base URL for iframe access.
- * Set env ALLOWED_REFERER_PREFIX in Lambda (e.g. https://yoursite.atlassian.net/)
- * Requests without this Referer get 403 (e.g. direct link to Lambda URL).
+ * Access control: allow only Confluence iframe (or same-origin subrequests).
+ *
+ * Set in Lambda env:
+ *   CONFLUENCE_TOKEN     - Secret; use in iframe URL: ?token=<this-value>
+ *   ALLOWED_REFERER_PREFIX - Optional; Confluence base URL (e.g. https://yoursite.atlassian.net/)
+ *   LAMBDA_URL_PREFIX    - This Lambda's URL with trailing slash (for in-iframe fetches)
  */
+const CONFLUENCE_TOKEN = process.env.CONFLUENCE_TOKEN || '';
 const ALLOWED_REFERER_PREFIX = process.env.ALLOWED_REFERER_PREFIX || '';
+const LAMBDA_URL_PREFIX = process.env.LAMBDA_URL_PREFIX || '';
 
-function isAllowedReferer(event) {
-  if (!ALLOWED_REFERER_PREFIX) return true; // no restriction if not set
+function isAllowed(event) {
   const referer = event.headers?.referer || event.headers?.Referer || '';
-  return referer.startsWith(ALLOWED_REFERER_PREFIX);
+  const token = event.queryStringParameters?.token;
+
+  if (CONFLUENCE_TOKEN && token === CONFLUENCE_TOKEN) return true;
+  if (ALLOWED_REFERER_PREFIX && referer.startsWith(ALLOWED_REFERER_PREFIX)) return true;
+  if (LAMBDA_URL_PREFIX && referer.startsWith(LAMBDA_URL_PREFIX)) return true;
+
+  if (!CONFLUENCE_TOKEN && !ALLOWED_REFERER_PREFIX && !LAMBDA_URL_PREFIX) return true;
+  return false;
 }
 
 export const handler = async (event) => {
-  // Restrict access to Confluence iframe only (block direct visits to Lambda URL)
-  if (!isAllowedReferer(event)) {
+  if (!isAllowed(event)) {
     return {
       statusCode: 403,
       headers: { 'Content-Type': 'text/html; charset=utf-8' },
