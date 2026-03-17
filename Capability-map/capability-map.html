@@ -730,12 +730,15 @@
   .artifacts-link:hover { background: #dbeafe; border-color: #93c5fd; }
   .artifacts-link svg { flex-shrink: 0; }
 
-  /* Artifact icon on collapsed card header */
+  /* Artifact icon on collapsed card header (click goes directly to link) */
   .artifact-indicator {
     display: inline-flex; align-items: center; justify-content: center;
     width: 18px; height: 18px; flex-shrink: 0;
     color: #2563eb; opacity: 0.75;
+    text-decoration: none;
+    cursor: pointer;
   }
+  .artifact-indicator:hover { opacity: 1; }
   .stage-card.expanded .artifact-indicator { display: none; }
 
   /* Sprint detail button */
@@ -1659,9 +1662,9 @@ function makeStageCard(stage, capId, idx, theme) {
           <span class="stage-status-badge">${getStatusLabel(stage.status)}</span>
         </div>
       </div>
-      ${stage.artifactsUrl && stage.artifactsUrl !== '#' ? `<span class="artifact-indicator" title="Artifacts available">
+      ${stage.artifactsUrl && stage.artifactsUrl !== '#' ? `<a class="artifact-indicator" href="${stage.artifactsUrl}" target="_blank" rel="noopener" title="Open stage artifacts" onclick="event.stopPropagation()">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h5.586a1 1 0 01.707.293l3.414 3.414A1 1 0 0113 6.414V13a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" stroke="#2563eb" stroke-width="1.5"/><path d="M8 2v4h4" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </span>` : ''}
+      </a>` : ''}
       <span class="stage-expand-icon">&#9662;</span>
     </div>
     <div class="stage-body">
