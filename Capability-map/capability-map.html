@@ -1150,7 +1150,7 @@ const viStages = [
   { num: 1, title: "Telemetry Strategy Validated", status: "in-progress",
     targetStart: "Feb 2026", targetEnd: "Mar 2026",
     desc: "Telemetry approach is defined, licensing is procured, and the team knows exactly what will be instrumented, ingested, and retained.",
-    prereqs: ["S0 exit gate satisfied (D-01, D-02 resolved)","ABL telemetry strategy evaluated against monitoring requirements -- what are the critical checkpoints?","Quality audit of ABL/OE telemetry reviewed against industry standards","Diagnostic coverage assessment completed (log analytics platform, existing instrumentation, metrics, SLIs)","Decision on Elastic migration path, Prometheus, and any additional telemetry needs"],
+    prereqs: ["S0 exit gate satisfied (D-01, D-02 resolved)","ABL telemetry strategy evaluated against monitoring requirements -- what are the critical checkpoints?","Quality audit of ABL/OE telemetry reviewed against industry standards","Diagnostic coverage assessment completed (log analytics platform, existing instrumentation, metrics, SLIs)","Decision on Dynatrace migration path, Prometheus, and any additional telemetry needs"],
     without: "Without this, we deploy agents and ingest logs without knowing what \"good\" looks like. Garbage in, garbage out. Licensing surprises hit mid-implementation."},
   { num: 0, title: "Foundation and Plan Alignment", status: "in-progress",
     targetStart: "Feb 2026", targetEnd: "Mar 2026",
@@ -1942,11 +1942,11 @@ var EMBEDDED_STATE = {
     {
       "capabilityId": "vi",
       "num": 0,
-      "status": "done",
+      "status": "in-progress",
       "artifactsUrl": "sharepoint-wm-s0.html",
       "blockers": [],
       "targetStart": "Feb 16, 2026",
-      "targetEnd": "Feb 27, 2026"
+      "targetEnd": "Apr 17, 2026"
     },
     {
       "capabilityId": "vi",

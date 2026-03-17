@@ -137,11 +137,11 @@
     {
       "capabilityId": "vi",
       "num": 0,
-      "status": "done",
+      "status": "in-progress",
       "artifactsUrl": "sharepoint-wm-s0.html",
       "blockers": [],
       "targetStart": "Feb 16, 2026",
-      "targetEnd": "Feb 27, 2026"
+      "targetEnd": "Apr 17, 2026"
     },
     {
       "capabilityId": "vi",
