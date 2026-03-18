@@ -1604,6 +1604,39 @@ function getSprintStatus(sprintNum) {
   return 'future';
 }
 
+/** Return the 1-based sprint number that is currently active (green), or null. */
+function getCurrentSprintNum() {
+  for (let i = 0; i < sprintCalendar.length; i++) {
+    if (getSprintStatus(i + 1) === 'current') return i + 1;
+  }
+  return null;
+}
+
+/** 90-day window around current sprint start. Only sprint labels within this window are shown. */
+const SPRINT_DISPLAY_WINDOW_DAYS = 90;
+
+/** Return { windowStart, windowEnd } (Date) for filtering sprint labels, or null to show all. */
+function getSprintDisplayWindow() {
+  const num = getCurrentSprintNum();
+  if (!num) return null;
+  const s = sprintCalendar[num - 1];
+  const start = parseSprintMDY(s.start);
+  const windowStart = new Date(start);
+  windowStart.setDate(windowStart.getDate() - SPRINT_DISPLAY_WINDOW_DAYS);
+  const windowEnd = new Date(start);
+  windowEnd.setDate(windowEnd.getDate() + SPRINT_DISPLAY_WINDOW_DAYS);
+  return { windowStart, windowEnd };
+}
+
+/** True if the sprint's full date range lies entirely within the 90-day display window. */
+function isSprintInDisplayWindow(sprintInfo) {
+  const window = getSprintDisplayWindow();
+  if (!window) return true;
+  const sprintStart = parseSprintMDY(sprintInfo.start);
+  const sprintEnd = parseSprintMDY(sprintInfo.end);
+  return sprintStart >= window.windowStart && sprintEnd <= window.windowEnd;
+}
+
 /* ═══════════════════════════════ */
 /* RENDERING                       */
 /* ═══════════════════════════════ */
@@ -1628,8 +1661,9 @@ function makeStageCard(stage, capId, idx, theme) {
     ? (stage.targetStart === stage.targetEnd ? stage.targetStart : `${stage.targetStart || '?'} &ndash; ${stage.targetEnd || '?'}`)
     : 'Not scheduled';
   const sprintInfos = getSprintsForDateRange(stage.targetStart, stage.targetEnd);
-  const sprintHtml = sprintInfos.length
-    ? `<div class="sprint-indicators-wrap">` + sprintInfos.map(function (sprintInfo) {
+  const sprintInfosInWindow = sprintInfos.filter(isSprintInDisplayWindow);
+  const sprintHtml = sprintInfosInWindow.length
+    ? `<div class="sprint-indicators-wrap">` + sprintInfosInWindow.map(function (sprintInfo) {
         const status = getSprintStatus(sprintInfo.num);
         return `<span class="sprint-indicator sprint-${status}" title="Sprint ${sprintInfo.num}: ${sprintInfo.start} – ${sprintInfo.end}">
           S${sprintInfo.num}
