@@ -459,6 +459,16 @@
 <div class="tooltip" id="tooltip"></div>
 
 <script>
+function withToken(url) {
+  var p = new URLSearchParams(window.location.search);
+  var t = p.get('token');
+  if (!t) return url;
+  var i = url.indexOf('#');
+  var base = i >= 0 ? url.slice(0, i) : url;
+  var hash = i >= 0 ? url.slice(i) : '';
+  var sep = base.indexOf('?') >= 0 ? '&' : '?';
+  return base + sep + 'token=' + encodeURIComponent(t) + hash;
+}
 // Outcome data
 // Grid columns = half-month periods: Mar1, Mar15, Apr1, Apr15, May1, May15, Jun1, Jun15, Jul1, Jul15, Aug1, Aug15, Sep1, Sep15, Oct1, Oct15
 // Assumptions: Dynatrace starts Apr 1. PD AIOps started Mar 1 (install complete). 1.5 FTE. Conservative estimates.
@@ -566,7 +576,7 @@ outcomes.forEach((oc, idx) => {
 
     const plusBtn = document.createElement('a');
     plusBtn.className = 'plus-btn';
-    plusBtn.href = `VI-kanban.html#${oc.id}`;
+    plusBtn.href = withToken(`VI-kanban.html#${oc.id}`);
     plusBtn.textContent = '+';
     plusBtn.title = `View ${oc.id} work items`;
     plusBtn.addEventListener('click', (e) => e.stopPropagation());

@@ -18,6 +18,10 @@ on:
       - 'Capability-map/index.mjs'
       - 'Project-Plan/Combined-Outcome-Gantt.html'
       - 'Project-Plan/gantt-data.json'
+      - 'WM/'
+      - 'VI/'
+      - 'PA/'
+      - 'WSB-WSC/'
       - '.github/workflows/deploy-capability-map.yml'
   workflow_dispatch:
 
@@ -38,6 +42,8 @@ jobs:
           cd ../Project-Plan
           zip -g ../deploy.zip Combined-Outcome-Gantt.html gantt-data.json
           cd ..
+          zip -r deploy.zip WM VI PA
+          zip -j -g deploy.zip WSB-WSC/WSB-WSC-Outcome-Map.html
           echo "Package size: $(du -h deploy.zip | cut -f1)"
 
       - name: Configure AWS credentials

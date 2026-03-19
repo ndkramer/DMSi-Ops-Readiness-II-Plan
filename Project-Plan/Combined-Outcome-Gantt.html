@@ -481,11 +481,20 @@ function renderTimeline(capabilities, milestones) {
   const wrapper = document.getElementById('timelineWrapper');
   if (!lanesEl || !wrapper) return;
 
+  const token = new URLSearchParams(window.location.search).get('token');
+  function linkWithToken(url) {
+    if (!token) return url;
+    const i = url.indexOf('#');
+    const base = i >= 0 ? url.slice(0, i) : url;
+    const hash = i >= 0 ? url.slice(i) : '';
+    const sep = base.indexOf('?') >= 0 ? '&' : '?';
+    return base + sep + 'token=' + encodeURIComponent(token) + hash;
+  }
   lanesEl.innerHTML = '';
   caps.forEach(cap => {
     const lane = document.createElement('div');
     lane.className = 'swim-lane';
-    lane.onclick = () => { window.location.href = cap.link; };
+    lane.onclick = () => { window.location.href = linkWithToken(cap.link); };
     const label = document.createElement('div');
     label.className = 'lane-label';
     label.innerHTML = '<div class="cap-id">' + cap.id + '</div><div class="cap-name">' + cap.name + '</div><div class="cap-meta">' + cap.meta + '</div><div class="cap-click">Click to view detailed outcome map &rarr;</div>';
@@ -608,11 +617,13 @@ function switchTab(tabId) {
   document.getElementById('tab-' + tabId).classList.add('active');
   event.target.classList.add('active');
 
-  // Lazy-load iframe content on first visit
+  // Lazy-load iframe content on first visit (include token for Lambda auth)
   if (iframeSources[tabId]) {
     const iframe = document.getElementById('iframe-' + tabId);
     if (iframe && !iframe.src.includes(iframeSources[tabId])) {
-      iframe.src = iframeSources[tabId];
+      const token = new URLSearchParams(window.location.search).get('token');
+      const src = iframeSources[tabId] + (token ? '?token=' + encodeURIComponent(token) : '');
+      iframe.src = src;
     }
   }
 }

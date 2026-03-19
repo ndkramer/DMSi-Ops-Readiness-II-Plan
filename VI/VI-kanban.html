@@ -268,9 +268,15 @@
 </head>
 <body>
     <header>
-        <a href="VI-WSB-Outcome-Map.html">← Back</a>
+        <a id="back-link" href="VI-WSB-Outcome-Map.html">← Back</a>
         <h1 id="page-title">VI Kanban Board</h1>
     </header>
+    <script>
+      (function(){
+        var t = new URLSearchParams(window.location.search).get('token');
+        if (t) document.getElementById('back-link').setAttribute('href', 'VI-WSB-Outcome-Map.html?token=' + encodeURIComponent(t));
+      })();
+    </script>
 
     <div id="outcome-selector" class="outcome-selector" style="display: none;">
         <h2>Select an Outcome</h2>

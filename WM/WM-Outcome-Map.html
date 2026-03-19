@@ -462,6 +462,17 @@ const outcomes = [
     detail:'Capstone. System governs, not just informs. Priority changes reflected in team behavior. Side-door ratio declining. Flow retrospective process established. Extends ~3 weeks past end-of-May.' },
 ];
 
+function withToken(url) {
+  var p = new URLSearchParams(window.location.search);
+  var t = p.get('token');
+  if (!t) return url;
+  var i = url.indexOf('#');
+  var base = i >= 0 ? url.slice(0, i) : url;
+  var hash = i >= 0 ? url.slice(i) : '';
+  var sep = base.indexOf('?') >= 0 ? '&' : '?';
+  return base + sep + 'token=' + encodeURIComponent(t) + hash;
+}
+
 // Build week markers with calendar dates
 const weekMarkersEl = document.getElementById('weekMarkers');
 const weekDates = [
@@ -505,7 +516,7 @@ outcomes.forEach((oc, idx) => {
 
   const plusBtn = document.createElement('a');
   plusBtn.className = 'plus-btn';
-  plusBtn.href = `WM-kanban.html#${oc.id}`;
+  plusBtn.href = withToken(`WM-kanban.html#${oc.id}`);
   plusBtn.textContent = '+';
   plusBtn.title = `View ${oc.id} work items`;
   plusBtn.addEventListener('click', (e) => e.stopPropagation());

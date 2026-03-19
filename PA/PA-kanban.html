@@ -304,9 +304,22 @@
 </head>
 <body>
     <header>
-        <a href="PP-Outcome-map.html" title="Back to Outcome Map">←</a>
+        <a id="back-link-header" href="PA-Outcome-map.html" title="Back to Outcome Map">←</a>
         <h1 id="header-title">PP: Select an Outcome</h1>
     </header>
+    <script>
+      (function(){
+        function applyToken() {
+          var t = new URLSearchParams(window.location.search).get('token');
+          if (!t) return;
+          var q = '?token=' + encodeURIComponent(t);
+          var target = 'PA-Outcome-map.html' + q;
+          document.querySelectorAll('a[href*="Outcome-map"], a[href*="Outcome-map.html"]').forEach(function(a) { a.setAttribute('href', target); });
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyToken);
+        else applyToken();
+      })();
+    </script>
 
     <div id="selector" class="outcome-selector">
         <h2>Pipeline Automation Outcomes</h2>
@@ -314,7 +327,7 @@
     </div>
 
     <div id="kanban" class="kanban-container">
-        <a href="PP-Outcome-map.html" class="back-link">
+        <a href="PA-Outcome-map.html" class="back-link">
             <span class="back-arrow"></span>
             Back to Outcome Map
         </a>
