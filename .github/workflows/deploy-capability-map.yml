@@ -16,6 +16,8 @@ on:
       - 'Capability-map/capability-map.html'
       - 'Capability-map/capability-map-state.json'
       - 'Capability-map/index.mjs'
+      - 'Project-Plan/Combined-Outcome-Gantt.html'
+      - 'Project-Plan/gantt-data.json'
       - '.github/workflows/deploy-capability-map.yml'
   workflow_dispatch:
 
@@ -33,6 +35,8 @@ jobs:
         run: |
           cd Capability-map
           zip -r ../deploy.zip index.mjs capability-map.html capability-map-state.json
+          cd ../Project-Plan
+          zip -g ../deploy.zip Combined-Outcome-Gantt.html gantt-data.json
           cd ..
           echo "Package size: $(du -h deploy.zip | cut -f1)"
 
