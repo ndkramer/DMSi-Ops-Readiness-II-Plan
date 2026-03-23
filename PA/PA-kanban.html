@@ -584,8 +584,8 @@
          */
         function buildKanbanRowPlan(outcomeId, outcome, jiraData) {
             if (outcomeId === 'POC') {
-                var ordered = [];
-                var pocStory = findPocPipelineStoryRow(jiraData);
+                const ordered = [];
+                const pocStory = findPocPipelineStoryRow(jiraData);
                 if (pocStory) {
                     ordered.push({
                         kind: 'jira_extra',
