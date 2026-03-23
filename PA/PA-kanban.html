@@ -182,6 +182,66 @@
             border-left: 4px solid #9b59b6;
         }
 
+        /* Sub-task progress (Jira snapshot): count + segments + % — matches leadership “X / N” view */
+        .card-progress-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: #444;
+        }
+        .card-progress-count {
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: 2.5em;
+        }
+        .card-progress-mid {
+            flex: 1;
+            min-width: 0;
+        }
+        .card-progress-segments {
+            display: flex;
+            gap: 3px;
+            width: 100%;
+        }
+        .card-progress-seg {
+            flex: 1;
+            height: 10px;
+            border-radius: 3px;
+            background: #e8dff5;
+            min-width: 2px;
+        }
+        .card-progress-seg.done {
+            background: #76BE43;
+        }
+        .card-progress-bar-single {
+            height: 10px;
+            border-radius: 3px;
+            background: #e8dff5;
+            overflow: hidden;
+        }
+        .card-progress-bar-fill {
+            height: 100%;
+            background: #76BE43;
+            border-radius: 3px;
+            transition: width 0.2s ease;
+        }
+        .card-progress-pct {
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: 2.2em;
+            text-align: right;
+        }
+        .subtasks-heading {
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            margin: 8px 0 6px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
         .card-id {
             font-weight: bold;
             color: #2B2B2B;
@@ -372,7 +432,7 @@
 
     <div id="selector" class="outcome-selector">
         <h2>Pipeline Automation Outcomes</h2>
-        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>POC</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is <strong>active engineering</strong> to prove <strong>infrastructure and architecture</strong>; it is not a separate <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-OC-XX</code> outcome—see <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WSB.md</code> (v1.3). <strong>Jira</strong> is the authoritative backlog: capability <strong>WSA-2656</strong>; outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong>; action-item Epic <strong>WSA-2657</strong>. The internal NGINX pipeline POC is Story <strong>WSA-3719</strong> with summary prefix <strong>[POC]</strong> (same bracket convention as <strong>[PA-OC-XX]</strong> on outcome stories). Runner/tooling POC work also rolls into <strong>PA-OC-03</strong> (e.g. OC-03.3). Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>. This view is for leadership alignment.</p>
+        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>POC</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is <strong>active engineering</strong> to prove <strong>infrastructure and architecture</strong>; it is not a separate <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-OC-XX</code> outcome—see <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WSB.md</code> (v1.3). <strong>Jira</strong> is the authoritative backlog: capability <strong>WSA-2656</strong>; outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong>; action-item Epic <strong>WSA-2657</strong>. Pipeline POC execution is <strong>WSA-3719</strong> (<strong>[POC]</strong>); Sub-tasks and progress on cards come from the Jira export. Runner/tooling POC work also maps to <strong>PA-OC-03</strong> (e.g. OC-03.3). Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>. This view is for leadership alignment.</p>
         <div class="outcome-list" id="outcomeList"></div>
     </div>
 
@@ -413,14 +473,10 @@
     <script src="Jira/pa-kanban-jira-status.js"></script>
     <script>
         const outcomeData = {
+            /* POC: no WBS deliverable rows — execution is Jira Story WSA-3719 only (see PA-WSB change log 2026-03-24). */
             "POC": {
                 "name": "Infrastructure & Architecture POC (weeks 1–2; leadership view)",
-                "deliverables": [
-                    {"id": "POC-1", "name": "Approach and scope validation (NGINX target)", "subtasks": ["Confirm NGINX as POC config target and boundaries vs. future config types", "Align success criteria with team and stakeholders", "Document what “done” means before PA-OC-01 execution"]},
-                    {"id": "POC-2", "name": "Tooling and pipeline approach", "subtasks": ["Exercise candidate tooling (GitHub, automation hooks) at small scale", "Identify gaps that would block PA-OC-01", "Capture findings for PA-OC-03 runner / export decisions"]},
-                    {"id": "POC-3", "name": "Access patterns and environment readiness", "subtasks": ["Validate connectivity and access assumptions (read-only, network paths)", "Surface blockers that require DMSi or TierPoint follow-up", "Confirm realistic velocity for 1.5 FTE plan"]},
-                    {"id": "POC-4", "name": "POC exit and handoff to PA-OC-01", "subtasks": ["Short readout: go / adjust / no-go to full PA-OC-01 scope", "Update timeline assumptions if POC reveals slippage", "Hand off open risks to PA-OC-01 work packages"]}
-                ]
+                "deliverables": []
             },
             "OC-01": {
                 "name": "[PA-OC-01] Foundation Access and Security Baseline Complete",
@@ -640,13 +696,6 @@
         }
 
         function resolveDeliverableColumn(deliverableId, jiraById) {
-            if (/^POC-/i.test(deliverableId)) {
-                return {
-                    column: 'backlog',
-                    jira: null,
-                    note: 'WBS planning rows only—pipeline POC execution is Story WSA-3719 ([POC] in Jira); runner strategy POC maps to OC-03.3. Reconcile in Jira / PA-WSB.',
-                };
-            }
             const row = jiraById[deliverableId];
             if (!row) {
                 return {
@@ -689,10 +738,88 @@
             return jiraKanbanStatusPromise;
         }
 
+        /** Build checklist rows: Jira export subtasks first, else WBS string list (local-only checkboxes). */
+        function buildSubtaskDisplayList(jiraInfo, deliverable) {
+            if (jiraInfo && jiraInfo.subtasks && jiraInfo.subtasks.length > 0) {
+                return jiraInfo.subtasks.map(function (s) {
+                    return {
+                        fromJira: true,
+                        summary: s.summary || '',
+                        done: !!s.done,
+                        browse_url: s.browse_url || '',
+                        issue_key: s.issue_key || '',
+                    };
+                });
+            }
+            if (deliverable.subtasks && deliverable.subtasks.length > 0) {
+                return deliverable.subtasks.map(function (text) {
+                    return { fromJira: false, summary: String(text), done: false, browse_url: '', issue_key: '' };
+                });
+            }
+            return [];
+        }
+
+        function countDoneSubtasks(items) {
+            var n = 0;
+            items.forEach(function (x) {
+                if (x.done) n++;
+            });
+            return n;
+        }
+
+        function createProgressRowEl(done, total) {
+            var row = document.createElement('div');
+            row.className = 'card-progress-row';
+            var pct = total === 0 ? 0 : Math.round((100 * done) / total);
+            row.setAttribute('aria-label', done + ' of ' + total + ' subtasks complete');
+
+            var countEl = document.createElement('span');
+            countEl.className = 'card-progress-count';
+            countEl.textContent = done + ' / ' + total;
+
+            var mid = document.createElement('div');
+            mid.className = 'card-progress-mid';
+            if (total > 24) {
+                var bar = document.createElement('div');
+                bar.className = 'card-progress-bar-single';
+                var fill = document.createElement('div');
+                fill.className = 'card-progress-bar-fill';
+                fill.style.width = pct + '%';
+                bar.appendChild(fill);
+                mid.appendChild(bar);
+            } else {
+                var segWrap = document.createElement('div');
+                segWrap.className = 'card-progress-segments';
+                for (var i = 0; i < total; i++) {
+                    var seg = document.createElement('div');
+                    seg.className = 'card-progress-seg' + (i < done ? ' done' : '');
+                    segWrap.appendChild(seg);
+                }
+                mid.appendChild(segWrap);
+            }
+
+            var pctEl = document.createElement('span');
+            pctEl.className = 'card-progress-pct';
+            pctEl.textContent = pct + '%';
+
+            row.appendChild(countEl);
+            row.appendChild(mid);
+            row.appendChild(pctEl);
+            return row;
+        }
+
         function createCard(deliverable, jiraInfo, localNote, options) {
             options = options || {};
             const card = document.createElement('div');
             card.className = 'card' + (options.cardClass ? ' ' + options.cardClass : '');
+
+            const subtaskItems = buildSubtaskDisplayList(jiraInfo, deliverable);
+            const doneCt = countDoneSubtasks(subtaskItems);
+            const totalCt = subtaskItems.length;
+
+            if (totalCt > 0) {
+                card.appendChild(createProgressRowEl(doneCt, totalCt));
+            }
 
             const cardId = document.createElement('div');
             cardId.className = 'card-id';
@@ -736,33 +863,52 @@
                 card.appendChild(meta);
             }
 
-            if (deliverable.subtasks && deliverable.subtasks.length > 0) {
-                const toggle = document.createElement('div');
-                toggle.className = 'subtasks-toggle';
-                toggle.innerHTML = `
-                    <span class="subtasks-toggle-icon"></span>
-                    <span>Show subtasks (${deliverable.subtasks.length})</span>
-                `;
-
+            if (subtaskItems.length > 0) {
                 const subtasksDiv = document.createElement('div');
-                subtasksDiv.className = 'subtasks';
+                subtasksDiv.className = 'subtasks visible';
 
-                deliverable.subtasks.forEach(subtask => {
+                const h = document.createElement('div');
+                h.className = 'subtasks-heading';
+                h.textContent = subtaskItems[0].fromJira ? 'Subtasks (from Jira export)' : 'Subtasks (WBS)';
+                subtasksDiv.appendChild(h);
+
+                subtaskItems.forEach(function (item) {
                     const subtaskItem = document.createElement('div');
                     subtaskItem.className = 'subtask-item';
-                    subtaskItem.innerHTML = `
-                        <input type="checkbox">
-                        <span>${subtask}</span>
-                    `;
+
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.checked = item.done;
+                    if (item.fromJira) {
+                        cb.disabled = true;
+                        cb.title = 'Read-only: status from last Jira export';
+                    }
+
+                    const labelWrap = document.createElement('span');
+                    if (item.fromJira && item.browse_url) {
+                        const la = document.createElement('a');
+                        la.href = item.browse_url;
+                        la.target = '_blank';
+                        la.rel = 'noopener';
+                        la.textContent = item.summary;
+                        labelWrap.appendChild(la);
+                        if (item.issue_key) {
+                            labelWrap.appendChild(document.createTextNode(' '));
+                            const sk = document.createElement('span');
+                            sk.style.color = '#999';
+                            sk.style.fontSize = '10px';
+                            sk.textContent = '(' + item.issue_key + ')';
+                            labelWrap.appendChild(sk);
+                        }
+                    } else {
+                        labelWrap.textContent = item.summary;
+                    }
+
+                    subtaskItem.appendChild(cb);
+                    subtaskItem.appendChild(labelWrap);
                     subtasksDiv.appendChild(subtaskItem);
                 });
 
-                toggle.addEventListener('click', () => {
-                    toggle.classList.toggle('expanded');
-                    subtasksDiv.classList.toggle('visible');
-                });
-
-                card.appendChild(toggle);
                 card.appendChild(subtasksDiv);
             }
 
@@ -819,7 +965,7 @@
                         extra =
                             ' Pipeline POC Story ' +
                             POC_PIPELINE_STORY_KEY +
-                            ' ([POC]) is listed first when present in the export; POC-1…POC-4 are WBS planning rows.';
+                            ' ([POC]) with Sub-tasks from Jira when present in the export.';
                     } else if (result.data.by_epic_key && outcomeIdToEpicKey(outcomeId)) {
                         extra = ' Includes all Jira Stories under this outcome Epic (WSB rows + extra team stories).';
                     }

@@ -45,7 +45,7 @@ function main() {
   const latest = files[files.length - 1];
   const data = JSON.parse(fs.readFileSync(path.join(JIRA_DIR, latest), 'utf8'));
   const baseUrl = (process.env.JIRA_URL || 'https://godynamo.atlassian.net').replace(/\/$/, '');
-  const payload = buildKanbanJiraStatusJson(data.stories || [], baseUrl);
+  const payload = buildKanbanJiraStatusJson(data.stories || [], baseUrl, data.subtasks || []);
   payload.export_note = `Rebuilt from ${latest} (no live Jira call). For live data run: node Scripts/jira-export-pa.js`;
   writeKanbanStatusArtifacts(JIRA_DIR, payload);
   console.log('Wrote', path.join(JIRA_DIR, 'pa-kanban-jira-status.json'), 'and', path.join(JIRA_DIR, 'pa-kanban-jira-status.js'));
