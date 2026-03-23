@@ -553,6 +553,21 @@
             return 'WSA-' + (3267 + n);
         }
 
+        /** Jira Story for the internal NGINX pipeline POC ([POC] summary); also listed under PA-OC-03 Epic in exports. */
+        var POC_PIPELINE_STORY_KEY = 'WSA-3719';
+
+        function findPocPipelineStoryRow(jiraData) {
+            if (!jiraData || !jiraData.by_epic_key) return null;
+            var keys = Object.keys(jiraData.by_epic_key);
+            for (var i = 0; i < keys.length; i++) {
+                var list = jiraData.by_epic_key[keys[i]] || [];
+                for (var j = 0; j < list.length; j++) {
+                    if (list[j].issue_key === POC_PIPELINE_STORY_KEY) return list[j];
+                }
+            }
+            return null;
+        }
+
         function resolveJiraRowToColumn(row) {
             if (!row || !row.issue_key) {
                 return { column: 'backlog', jira: null, note: 'No Jira row.' };
@@ -569,9 +584,24 @@
          */
         function buildKanbanRowPlan(outcomeId, outcome, jiraData) {
             if (outcomeId === 'POC') {
-                return outcome.deliverables.map(function (d) {
-                    return { kind: 'poc', deliverable: d };
+                var ordered = [];
+                var pocStory = findPocPipelineStoryRow(jiraData);
+                if (pocStory) {
+                    ordered.push({
+                        kind: 'jira_extra',
+                        pocPipeline: true,
+                        deliverable: {
+                            id: pocStory.issue_key,
+                            name: pocStory.summary,
+                            subtasks: [],
+                        },
+                        jira: pocStory,
+                    });
+                }
+                outcome.deliverables.forEach(function (d) {
+                    ordered.push({ kind: 'poc', deliverable: d });
                 });
+                return ordered;
             }
 
             const epicKey = outcomeIdToEpicKey(outcomeId);
@@ -784,10 +814,15 @@
                             : result.source === 'fetch'
                               ? 'Loaded Jira snapshot over HTTP. '
                               : '';
-                    const extra =
-                        result.data.by_epic_key && outcomeIdToEpicKey(outcomeId)
-                            ? ' Includes all Jira Stories under this outcome Epic (WSB rows + extra team stories).'
-                            : '';
+                    var extra = '';
+                    if (outcomeId === 'POC' && result.data.by_epic_key) {
+                        extra =
+                            ' Pipeline POC Story ' +
+                            POC_PIPELINE_STORY_KEY +
+                            ' ([POC]) is listed first when present in the export; POC-1…POC-4 are WBS planning rows.';
+                    } else if (result.data.by_epic_key && outcomeIdToEpicKey(outcomeId)) {
+                        extra = ' Includes all Jira Stories under this outcome Epic (WSB rows + extra team stories).';
+                    }
                     jiraLineEl.textContent =
                         prefix +
                         (gen
@@ -804,8 +839,9 @@
                     } else if (row.kind === 'jira_extra') {
                         resolved = resolveJiraRowToColumn(row.jira);
                         opts.cardClass = 'card-jira-extra';
-                        opts.extraMeta =
-                            'Additional Jira story (no [PA-OC-x.y] id); map to WSB or absorb in planning.';
+                        opts.extraMeta = row.pocPipeline
+                            ? 'Authoritative pipeline POC in Jira ([POC]); column = Story status. Subtasks tracked in Jira.'
+                            : 'Additional Jira story (no [PA-OC-x.y] id); map to WSB or absorb in planning.';
                     } else if (row.kind === 'wbs_only') {
                         resolved = resolveDeliverableColumn(row.deliverable.id, jiraById);
                     } else {
