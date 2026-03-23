@@ -26,7 +26,7 @@ When editing or creating content under the PA folder, follow the Pipeline Automa
 
 ## Jira alignment
 
-- **Capability root:** WSA-2656 (labels: `Pipeline-Automation`, `PA-capability-of-record`). **Action-item Epic:** WSA-2657 (`Pipeline-Automation`, `PA-action-items`). **Outcome Epics:** WSA-3268–WSA-3278 — each has `Pipeline-Automation` + `oc-01`…`oc-11`, **Outcome Category** custom field, and **Pipeline Automation** component where set. No automatic sync from GitHub Projects—backlog of record is Jira unless otherwise agreed.
+- **Capability root:** WSA-2656 (labels: `Pipeline-Automation`, `PA-capability-of-record`). **Action-item Epic:** WSA-2657 (`Pipeline-Automation`, `PA-action-items`). **Outcome Epics:** WSA-3268–WSA-3278 — each has `Pipeline-Automation` + `oc-01`…`oc-11`, **Outcome Category** custom field, and **Pipeline Automation** component where set. **POC pipeline story:** WSA-3719 uses summary prefix **`[POC]`** (same bracket convention as **`[PA-OC-XX]`** on stories under outcome epics); it is not a numbered PA-OC outcome. No automatic sync from GitHub Projects—backlog of record is Jira unless otherwise agreed.
 
 ## Reference
 

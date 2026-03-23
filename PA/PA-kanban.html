@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PA-WSB: Pipeline Automation Kanban</title>
+    <title>PA-WSB v1.3: Pipeline Automation Kanban</title>
     <style>
         * {
             margin: 0;
@@ -372,7 +372,7 @@
 
     <div id="selector" class="outcome-selector">
         <h2>Pipeline Automation Outcomes</h2>
-        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>POC</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is <strong>active engineering</strong> to prove <strong>infrastructure and architecture</strong>; it is not a separate <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-OC-XX</code> outcome—see <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WSB.md</code>. Execution detail lives in <strong>Jira</strong> (e.g. under <strong>PA-OC-03</strong>); this view is for leadership alignment. Capability <strong>WSA-2656</strong>; Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong>. Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>.</p>
+        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>POC</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is <strong>active engineering</strong> to prove <strong>infrastructure and architecture</strong>; it is not a separate <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-OC-XX</code> outcome—see <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WSB.md</code> (v1.3). <strong>Jira</strong> is the authoritative backlog: capability <strong>WSA-2656</strong>; outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong>; action-item Epic <strong>WSA-2657</strong>. The internal NGINX pipeline POC is Story <strong>WSA-3719</strong> with summary prefix <strong>[POC]</strong> (same bracket convention as <strong>[PA-OC-XX]</strong> on outcome stories). Runner/tooling POC work also rolls into <strong>PA-OC-03</strong> (e.g. OC-03.3). Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>. This view is for leadership alignment.</p>
         <div class="outcome-list" id="outcomeList"></div>
     </div>
 
@@ -614,7 +614,7 @@
                 return {
                     column: 'backlog',
                     jira: null,
-                    note: 'Not linked to a POC Epic in Jira—track pipeline/infra POC work under OC-03 (and Jira); this list is the WBS planning view.',
+                    note: 'WBS planning rows only—pipeline POC execution is Story WSA-3719 ([POC] in Jira); runner strategy POC maps to OC-03.3. Reconcile in Jira / PA-WSB.',
                 };
             }
             const row = jiraById[deliverableId];

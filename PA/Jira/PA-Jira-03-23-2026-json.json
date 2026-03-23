@@ -21371,7 +21371,7 @@
           "timeZone": "America/Chicago",
           "accountType": "atlassian"
         },
-        "updated": "2026-03-23T14:34:38.358-0500",
+        "updated": "2026-03-23T16:54:02.563-0500",
         "status": {
           "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
           "description": "",
@@ -21423,7 +21423,7 @@
         "attachment": [],
         "customfield_10009": null,
         "customfield_10329": null,
-        "summary": "Internal Dynamo Pipeline POC (GP#28)",
+        "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
         "creator": {
           "self": "https://godynamo.atlassian.net/rest/api/3/user?accountId=712020%3A62276719-5248-4a52-858a-41d40fb1614c",
           "accountId": "712020:62276719-5248-4a52-858a-41d40fb1614c",
@@ -45903,7 +45903,7 @@
           "key": "WSA-3719",
           "self": "https://godynamo.atlassian.net/rest/api/3/issue/20823",
           "fields": {
-            "summary": "Internal Dynamo Pipeline POC (GP#28)",
+            "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
             "status": {
               "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
               "description": "",
@@ -46162,7 +46162,7 @@
           "key": "WSA-3719",
           "self": "https://godynamo.atlassian.net/rest/api/3/issue/20823",
           "fields": {
-            "summary": "Internal Dynamo Pipeline POC (GP#28)",
+            "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
             "status": {
               "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
               "description": "",
@@ -46421,7 +46421,7 @@
           "key": "WSA-3719",
           "self": "https://godynamo.atlassian.net/rest/api/3/issue/20823",
           "fields": {
-            "summary": "Internal Dynamo Pipeline POC (GP#28)",
+            "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
             "status": {
               "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
               "description": "",
@@ -46680,7 +46680,7 @@
           "key": "WSA-3719",
           "self": "https://godynamo.atlassian.net/rest/api/3/issue/20823",
           "fields": {
-            "summary": "Internal Dynamo Pipeline POC (GP#28)",
+            "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
             "status": {
               "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
               "description": "",
@@ -46954,7 +46954,7 @@
           "key": "WSA-3719",
           "self": "https://godynamo.atlassian.net/rest/api/3/issue/20823",
           "fields": {
-            "summary": "Internal Dynamo Pipeline POC (GP#28)",
+            "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
             "status": {
               "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
               "description": "",
@@ -47228,7 +47228,7 @@
           "key": "WSA-3719",
           "self": "https://godynamo.atlassian.net/rest/api/3/issue/20823",
           "fields": {
-            "summary": "Internal Dynamo Pipeline POC (GP#28)",
+            "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
             "status": {
               "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
               "description": "",
@@ -47554,7 +47554,7 @@
           "key": "WSA-3719",
           "self": "https://godynamo.atlassian.net/rest/api/3/issue/20823",
           "fields": {
-            "summary": "Internal Dynamo Pipeline POC (GP#28)",
+            "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
             "status": {
               "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
               "description": "",
@@ -47827,7 +47827,7 @@
           "key": "WSA-3719",
           "self": "https://godynamo.atlassian.net/rest/api/3/issue/20823",
           "fields": {
-            "summary": "Internal Dynamo Pipeline POC (GP#28)",
+            "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
             "status": {
               "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
               "description": "",
@@ -48100,7 +48100,7 @@
           "key": "WSA-3719",
           "self": "https://godynamo.atlassian.net/rest/api/3/issue/20823",
           "fields": {
-            "summary": "Internal Dynamo Pipeline POC (GP#28)",
+            "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
             "status": {
               "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
               "description": "",
@@ -48373,7 +48373,7 @@
           "key": "WSA-3719",
           "self": "https://godynamo.atlassian.net/rest/api/3/issue/20823",
           "fields": {
-            "summary": "Internal Dynamo Pipeline POC (GP#28)",
+            "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
             "status": {
               "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
               "description": "",
@@ -48699,7 +48699,7 @@
           "key": "WSA-3719",
           "self": "https://godynamo.atlassian.net/rest/api/3/issue/20823",
           "fields": {
-            "summary": "Internal Dynamo Pipeline POC (GP#28)",
+            "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
             "status": {
               "self": "https://godynamo.atlassian.net/rest/api/3/status/10000",
               "description": "",
@@ -57628,7 +57628,7 @@
     {
       "key": "WSA-3719",
       "issue_type": "Story",
-      "summary": "Internal Dynamo Pipeline POC (GP#28)",
+      "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "description": "### Overview\nThe work associated with this ticket will complete a working CI/CD pipeline.  This project can be use by Dynamo to demonstrate a fully operation CI/CD process from start to finish to clients.  It will also be usable as a template for implementing a CI/CD pipelines in Dynamo client environments.   \nIncluded will be a working example of: \n- Use of Terraform/Ansible to check the validity of the deployment\n- Use of a pipeline for deployment\n- hydration of configuration files\n- successful deployment of an application to Dynamo's AWS account\n\n**Goal:** Build as nginx reference pipeline end to end. One runner deploys one nginx config change to the Dynamo AWS environment.\n\n| Task | Owner | Deliverable |\n|---|---|---|\n| Deploy AWS VPC with subnets | Dynamo Engineering Team | VPC live, subnets created via IaC | \n| Build Linux runner AMI | Dynamo Engineering Team | AMI with runner agent and basic tools |\n| Register one self-hosted runner | Dynamo Engineering Team | Runner appears in GitHub org settings |\n| Create nginx configuration repository | Dynamo Engineering Team | Repo with current nginx configs and branch protection |\n| Create nginx syntax validation workflow | Dynamo Engineering Team | PR triggers nginx -t check on runner |\n| Create nginx deployment workflow | Dynamo Engineering Team | Merge triggers deploy with approval gate |\n| Test full cycle: PR, validate, approve, deploy | Dynamo Engineering Team | Nginx config change deployed to AWS  via a pipeline |\n\n**Exit Criteria:** A nginx configuration change flows from pull request through validation, approval, and deployment to a Dynamo AWS server. This is the proven reference pipeline.\n\n**Proof of Concept Success Metric:** End-to-end nginx deployment verified within 30 days.",
       "parent": "[PA-OC-03] Migration Path and Runner Infrastructure Defined",
       "labels": "",
@@ -58950,7 +58950,7 @@
       "issue_type": "Sub-task",
       "summary": "Daniel Carnes Time Entry",
       "description": "",
-      "parent": "Internal Dynamo Pipeline POC (GP#28)",
+      "parent": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "labels": "",
       "owner": "Daniel Carnes",
       "priority": "Medium",
@@ -58965,7 +58965,7 @@
       "issue_type": "Sub-task",
       "summary": "Matthew Faltys Time Entry",
       "description": "",
-      "parent": "Internal Dynamo Pipeline POC (GP#28)",
+      "parent": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "labels": "",
       "owner": "Matthew Faltys",
       "priority": "Medium",
@@ -58980,7 +58980,7 @@
       "issue_type": "Sub-task",
       "summary": "Matthew Czaplewski Time Entry",
       "description": "",
-      "parent": "Internal Dynamo Pipeline POC (GP#28)",
+      "parent": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "labels": "",
       "owner": "Matthew Czaplewski",
       "priority": "Medium",
@@ -58995,7 +58995,7 @@
       "issue_type": "Sub-task",
       "summary": "Define GitHub Actions (GP#7)",
       "description": "Begin to define the GitHub actions\n- Define GH action runner in AWS",
-      "parent": "Internal Dynamo Pipeline POC (GP#28)",
+      "parent": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "labels": "",
       "owner": "Nick Kramer",
       "priority": "Medium",
@@ -59010,7 +59010,7 @@
       "issue_type": "Sub-task",
       "summary": "Define playbook for Ansible use (GP#8)",
       "description": "Define the playbook for using Ansible to deploy NGinX",
-      "parent": "Internal Dynamo Pipeline POC (GP#28)",
+      "parent": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "labels": "",
       "owner": "Nick Kramer",
       "priority": "Medium",
@@ -59025,7 +59025,7 @@
       "issue_type": "Sub-task",
       "summary": "Figure out SSM/PS convention for secrets (GP#3)",
       "description": "Define the SSM/PS convention for secrets",
-      "parent": "Internal Dynamo Pipeline POC (GP#28)",
+      "parent": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "labels": "",
       "owner": "Daniel Carnes",
       "priority": "Medium",
@@ -59040,7 +59040,7 @@
       "issue_type": "Sub-task",
       "summary": "Create Terraform to setup AWS for the project (GP#10)",
       "description": "Create terraform to set up the needed infrastructure to run GitHub actions and deploy artifacts into AWS\n\n**Additional context**\n> This will be an example of creating infrastructure as code as an example.  It will be used to setup/show as an example to Dynamo Clients on how the initial build of AWS infrastructure can be automated for GitHub actions.\n> - The scope of this ticket is to build the AWS environment to support GitHub Actions.",
-      "parent": "Internal Dynamo Pipeline POC (GP#28)",
+      "parent": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "labels": "",
       "owner": "Matthew Czaplewski",
       "priority": "High",
@@ -59055,7 +59055,7 @@
       "issue_type": "Sub-task",
       "summary": "stand up a tiny test server to deploy to (GP#6)",
       "description": "stand up a tiny test server to deploy to and test",
-      "parent": "Internal Dynamo Pipeline POC (GP#28)",
+      "parent": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "labels": "",
       "owner": "Matthew Czaplewski",
       "priority": "Medium",
@@ -59070,7 +59070,7 @@
       "issue_type": "Sub-task",
       "summary": "setup project structure (GP#2)",
       "description": "Set up the project structure to accommodate the development.",
-      "parent": "Internal Dynamo Pipeline POC (GP#28)",
+      "parent": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "labels": "",
       "owner": "Matthew Faltys",
       "priority": "High",
@@ -59085,7 +59085,7 @@
       "issue_type": "Sub-task",
       "summary": "Create ansible jinja templates (GP#5)",
       "description": "Create ansible jinja templates for nginx and get that substitution pipeline working in github actions",
-      "parent": "Internal Dynamo Pipeline POC (GP#28)",
+      "parent": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "labels": "",
       "owner": "Matthew Faltys",
       "priority": "Medium",
@@ -59100,7 +59100,7 @@
       "issue_type": "Sub-task",
       "summary": "Create AWS creds for actions user (GP#4)",
       "description": "Define a new user for GHA to use for building artifact automation in AWS.",
-      "parent": "Internal Dynamo Pipeline POC (GP#28)",
+      "parent": "[POC] Internal Dynamo Pipeline POC (GP#28)",
       "labels": "",
       "owner": "Matthew Czaplewski",
       "priority": "Medium",

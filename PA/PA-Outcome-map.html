@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PA-WSB: Outcome Map - Pipeline Automation</title>
+<title>PA-WSB v1.3: Outcome Map — Pipeline Automation</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; color: #2B2B2B; }
@@ -320,8 +320,8 @@
 
 <div class="header">
   <div>
-    <h1>PA-WSB: Pipeline Automation Outcome Map</h1>
-    <div class="subtitle">NGINX Config Pipeline -- DMSi Software | POC + 11 Outcomes | Jira capability <strong style="color:#ccc">WSA-2656</strong> | 1.5 FTEs Conservative Estimate | 3/16/2026 - 10/30/2026</div>
+    <h1>PA-WSB v1.3: Pipeline Automation Outcome Map</h1>
+    <div class="subtitle">PA-WSB v1.3 | NGINX Config Pipeline — DMSi Software | POC band + 11 outcomes | Jira: capability <strong style="color:#ccc">WSA-2656</strong>, Epics <strong style="color:#ccc">WSA-3268</strong>–<strong style="color:#ccc">WSA-3278</strong>, Action items <strong style="color:#ccc">WSA-2657</strong>, POC story <strong style="color:#ccc">WSA-3719</strong> (<strong>[POC]</strong>) | 1.5 FTEs | 3/16/2026 – 10/30/2026</div>
   </div>
   <div class="brand">DYNAMO</div>
 </div>
@@ -367,10 +367,10 @@
   <div class="section-title">Planning Assumptions</div>
   <div class="assumptions-card">
     <strong>Staffing:</strong> 1.5 FTEs dedicated to Pipeline Automation capability.<br>
-    <strong>Jira (authoritative backlog):</strong> <strong>WSA-2656</strong> is the <strong>capability of record</strong> (<em>v2: Pipeline Automation</em>). Outcome Epics are <strong>WSA-3268</strong>–<strong>WSA-3278</strong> (PA-OC-01 = <strong>WSA-3268</strong>). Legacy Epic <strong>WSA-36</strong> is closed; work is superseded by <strong>WSA-3268</strong>.<br>
+    <strong>Jira (authoritative backlog):</strong> <strong>WSA-2656</strong> is the <strong>capability of record</strong> (<em>v2: Pipeline Automation</em>). Outcome Epics are <strong>WSA-3268</strong>–<strong>WSA-3278</strong> (PA-OC-01 = <strong>WSA-3268</strong>). Action items roll up under Epic <strong>WSA-2657</strong>. The internal NGINX pipeline POC is <strong>WSA-3719</strong> with Jira summary prefix <strong>[POC]</strong> (not a PA-OC-XX row). Legacy Epic <strong>WSA-36</strong> is closed; work is superseded by <strong>WSA-3268</strong>.<br>
     <strong>Estimation approach:</strong> Very conservative -- durations scaled ~1.5x from original estimates to account for reduced staffing, decision wait times, and DMSi availability constraints.<br>
     <strong>Parallel work:</strong> Limited by 1.5 FTE capacity. PA-OC-05 (Build) and PA-OC-07 (Drift Detection) run in parallel after PA-OC-04, with PA-OC-05 at ~1 FTE and PA-OC-07 at ~0.5 FTE. PA-OC-06 (Deploy) starts once PA-OC-05 frees up capacity.<br>
-    <strong>POC band:</strong> First two weeks (from 3/16/2026) are <strong>active engineering</strong>—the team builds a POC that <strong>proves infrastructure and architecture</strong> (and validates approach, tooling, and access). This is real delivery work for leadership visibility, not schedule padding; detailed execution is in <strong>Jira</strong> (capability <strong>WSA-2656</strong>).<br>
+    <strong>POC band:</strong> First two weeks (from 3/16/2026) are <strong>active engineering</strong>—the team builds a POC that <strong>proves infrastructure and architecture</strong> (and validates approach, tooling, and access). This is real delivery work for leadership visibility, not schedule padding; execution detail is in <strong>Jira</strong> (see <strong>WSA-3719 [POC]</strong> and PA-OC-03 runner work). Aligns with <strong>PA-WSB.md</strong> v1.3.<br>
     <strong>Start date:</strong> Monday, March 16, 2026 &nbsp;|&nbsp; <strong>Projected completion (PA-OC-09):</strong> Friday, October 30, 2026
   </div>
 
@@ -451,7 +451,7 @@
 </div>
 
 <div class="footer">
-  Dynamo Consulting | PA-WSB Outcome Map | March 2026 | 1.5 FTEs Conservative Estimate | Confidential
+  Dynamo Consulting | PA-WSB v1.3 Outcome Map | March 2026 | 1.5 FTEs Conservative Estimate | Confidential
 </div>
 
 <!-- Tooltip -->
@@ -481,7 +481,7 @@ function dateRange(startWk, endWk) {
 const outcomes = [
   { id:'POC', name:'Infrastructure & Architecture POC', cat:'POC', start:1, end:2, deps:[], risk:'', deliverables:0, milestone:'',
     dates: dateRange(1, 2),
-    detail:'Active engineering (weeks 1–2): build and exercise a POC that proves infrastructure and architecture—how the pipeline will run, connect, and be operated—plus approach, tooling, access, and velocity signals. Tracked in Jira; not a PA-OC-XX row. Use for leadership progress; reconcile with PA-WSB.' },
+    detail:'Active engineering (weeks 1–2): build and exercise a POC that proves infrastructure and architecture—how the pipeline will run, connect, and be operated—plus approach, tooling, access, and velocity signals. Jira: Story WSA-3719 uses summary prefix [POC]; not a PA-OC-XX row. Reconcile with PA-WSB v1.3.' },
   { id:'PA-OC-01', name:'Foundation Access and Security Baseline Complete', cat:'Baseline', start:3, end:5, deps:['POC'], risk:'PA-R-01', deliverables:6, milestone:'M3',
     dates: dateRange(3, 5),
     detail:'Environment access, deployment process documentation, security baseline, data classification, access governance, network security. Jira Epic WSA-3268 ([PA-OC-01] Foundation Access and Security Baseline Complete). Legacy WSA-36 superseded.' },

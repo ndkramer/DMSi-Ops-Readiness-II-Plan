@@ -8,6 +8,7 @@ You can say **"Export PA WSA-2656 from Jira"** (or "Export PA from Jira"). The a
 
 ## Export file
 
+- **Summary prefixes in Jira:** Outcome-linked stories often use `[PA-OC-XX]` in the summary. The internal NGINX pipeline POC story **WSA-3719** uses **`[POC]`** so it is classified consistently and is not mistaken for schedule buffer work.
 - **Naming:** `PA-Jira-mm-dd-yyyy-json.json` (e.g. `PA-Jira-03-17-2026-json.json`).
 - **Contents:** Single JSON with:
   - `metadata`: export date, root keys (WSA-2656, WSA-2657), counts (epics, stories, subtasks, action_items).
