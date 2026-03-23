@@ -347,10 +347,10 @@ The Pipeline Automation capability (previously structured as S0-S8) was mapped i
 
 Capabilities using this model:
 
-| Capability | Initiative | WSB Document | Outcome Map | Outcomes | Status |
+| Capability | Jira root | WSB Document | Outcome Map | Outcomes | Status |
 |-----------|-----------|-------------|-------------|----------|--------|
 | Visibility Infrastructure | WSA-120 | VI-WSB.md | VI-WSB-Outcome-Map.html | 15 | Active |
-| Pipeline Automation | WSA-121 | PP-WSB.md | PP-Outcome-map.html | 12 | Active |
+| Pipeline Automation | WSA-2656 (Capability) | PA-WSB.md | PA-Outcome-map.html | 11 | Active |
 
 ---
 

@@ -139,6 +139,10 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     z-index: 10;
   }
+  #swimLanes [role="link"]:focus-visible {
+    outline: 2px solid #2B2B2B;
+    outline-offset: 2px;
+  }
 
   .bar-baseline { background: #3498DB; }
   .bar-iterative { background: #76BE43; }
@@ -317,7 +321,7 @@
 <div class="header">
   <div>
     <h1>PA-WSB: Pipeline Automation Outcome Map</h1>
-    <div class="subtitle">NGINX Config Pipeline -- DMSi Software | POC + 11 Outcomes | 1.5 FTEs Conservative Estimate | 3/16/2026 - 10/30/2026</div>
+    <div class="subtitle">NGINX Config Pipeline -- DMSi Software | POC + 11 Outcomes | Jira capability <strong style="color:#ccc">WSA-2656</strong> | 1.5 FTEs Conservative Estimate | 3/16/2026 - 10/30/2026</div>
   </div>
   <div class="brand">DYNAMO</div>
 </div>
@@ -339,7 +343,7 @@
   <div class="summary-row">
     <div class="summary-card purple">
       <div class="sc-number">1</div>
-      <div class="sc-label">POC Phase (2 weeks)</div>
+      <div class="sc-label">POC band (2 wks) — infra &amp; arch proof</div>
     </div>
     <div class="summary-card blue">
       <div class="sc-number">7</div>
@@ -363,9 +367,10 @@
   <div class="section-title">Planning Assumptions</div>
   <div class="assumptions-card">
     <strong>Staffing:</strong> 1.5 FTEs dedicated to Pipeline Automation capability.<br>
+    <strong>Jira (authoritative backlog):</strong> <strong>WSA-2656</strong> is the <strong>capability of record</strong> (<em>v2: Pipeline Automation</em>). Outcome Epics are <strong>WSA-3268</strong>–<strong>WSA-3278</strong> (PA-OC-01 = <strong>WSA-3268</strong>). Legacy Epic <strong>WSA-36</strong> is closed; work is superseded by <strong>WSA-3268</strong>.<br>
     <strong>Estimation approach:</strong> Very conservative -- durations scaled ~1.5x from original estimates to account for reduced staffing, decision wait times, and DMSi availability constraints.<br>
     <strong>Parallel work:</strong> Limited by 1.5 FTE capacity. PA-OC-05 (Build) and PA-OC-07 (Drift Detection) run in parallel after PA-OC-04, with PA-OC-05 at ~1 FTE and PA-OC-07 at ~0.5 FTE. PA-OC-06 (Deploy) starts once PA-OC-05 frees up capacity.<br>
-    <strong>POC phase:</strong> 2-week proof-of-concept starting 3/16/2026 to validate approach, tooling, and access before committing to full implementation.<br>
+    <strong>POC band:</strong> First two weeks (from 3/16/2026) are <strong>active engineering</strong>—the team builds a POC that <strong>proves infrastructure and architecture</strong> (and validates approach, tooling, and access). This is real delivery work for leadership visibility, not schedule padding; detailed execution is in <strong>Jira</strong> (capability <strong>WSA-2656</strong>).<br>
     <strong>Start date:</strong> Monday, March 16, 2026 &nbsp;|&nbsp; <strong>Projected completion (PA-OC-09):</strong> Friday, October 30, 2026
   </div>
 
@@ -474,12 +479,12 @@ function dateRange(startWk, endWk) {
 
 // Outcome data with actual dates
 const outcomes = [
-  { id:'POC', name:'Proof of Concept', cat:'POC', start:1, end:2, deps:[], risk:'', deliverables:0, milestone:'',
+  { id:'POC', name:'Infrastructure & Architecture POC', cat:'POC', start:1, end:2, deps:[], risk:'', deliverables:0, milestone:'',
     dates: dateRange(1, 2),
-    detail:'2-week proof-of-concept to validate approach, tooling, access patterns, and team velocity before committing to full implementation.' },
-  { id:'PA-OC-01', name:'Foundation & Security Baseline', cat:'Baseline', start:3, end:5, deps:['POC'], risk:'PA-R-01', deliverables:6, milestone:'M3',
+    detail:'Active engineering (weeks 1–2): build and exercise a POC that proves infrastructure and architecture—how the pipeline will run, connect, and be operated—plus approach, tooling, access, and velocity signals. Tracked in Jira; not a PA-OC-XX row. Use for leadership progress; reconcile with PA-WSB.' },
+  { id:'PA-OC-01', name:'Foundation Access and Security Baseline Complete', cat:'Baseline', start:3, end:5, deps:['POC'], risk:'PA-R-01', deliverables:6, milestone:'M3',
     dates: dateRange(3, 5),
-    detail:'Environment access, deployment process documentation, security baseline, data classification, access governance, network security.' },
+    detail:'Environment access, deployment process documentation, security baseline, data classification, access governance, network security. Jira Epic WSA-3268 ([PA-OC-01] Foundation Access and Security Baseline Complete). Legacy WSA-36 superseded.' },
   { id:'PA-OC-02', name:'Config Inventory & Credentials', cat:'Baseline', start:6, end:8, deps:['PA-OC-01'], risk:'PA-R-S1, PA-R-S2', deliverables:3, milestone:'M3',
     dates: dateRange(6, 8),
     detail:'NGINX config inventory, broader landscape assessment, credential and secret management plan.' },
@@ -500,10 +505,10 @@ const outcomes = [
     detail:'PARALLEL with PA-OC-05. Scheduled drift comparison, alerting, severity thresholds. Runs at ~0.5 FTE while PA-OC-05 uses ~1 FTE.' },
   { id:'PA-OC-08', name:'Pipeline Reliability Validated', cat:'Iterative', start:24, end:28, deps:['PA-OC-05','PA-OC-06','PA-OC-07'], risk:'PA-R-06, PA-R-X1', deliverables:4, milestone:'M4',
     dates: dateRange(24, 28),
-    detail:'5-week validation: 90%+ success rate for all 3 pipelines. Max 3 cycles. Fallback: trigger PA-OC-10.' },
+    detail:'2-week measurement window (rolling): 90%+ success rate for all 3 pipelines. Max 3 cycles. Fallback: trigger PA-OC-10. Timeline allows time for fixes between cycles.' },
   { id:'PA-OC-09', name:'Config-as-Code Enforced', cat:'Iterative', start:29, end:33, deps:['PA-OC-08'], risk:'PA-R-08', deliverables:4, milestone:'M5',
     dates: dateRange(29, 33),
-    detail:'5-week enforcement period. No manual changes allowed. Team training, runbooks, IRP update. Max 2 cycles.' },
+    detail:'4-week enforcement period per PA-WSB. No manual changes allowed. Team training, runbooks, IRP update. Max 2 cycles.' },
   { id:'PA-OC-10', name:'Pipeline Fallback', cat:'Conditional', start:0, end:0, deps:[], risk:'', deliverables:2, milestone:'',
     dates: 'Trigger-activated',
     detail:'CONDITIONAL: Triggers if PA-OC-08 reliability fails after 3 cycles. Manual processes maintained; revised plan to Hilltop.' },
@@ -529,6 +534,40 @@ for (let w = 1; w <= TOTAL_WEEKS; w++) {
 const lanesEl = document.getElementById('swimLanes');
 const barClass = { 'Baseline': 'bar-baseline', 'Iterative': 'bar-iterative', 'Conditional': 'bar-conditional', 'POC': 'bar-poc' };
 
+/** Maps timeline row id (POC, PA-OC-01, …) to PA-kanban.html hash (POC, OC-01, …). */
+function timelineIdToKanbanHash(timelineId) {
+  if (timelineId === 'POC') return 'POC';
+  const m = /^PA-OC-(\d{2})$/.exec(timelineId);
+  return m ? 'OC-' + m[1] : null;
+}
+
+/** Opens PA-kanban.html for the given timeline row; preserves optional ?token= on this page. */
+function navigateToKanban(timelineId) {
+  const hash = timelineIdToKanbanHash(timelineId);
+  if (!hash) return;
+  const token = new URLSearchParams(window.location.search).get('token');
+  let url = 'PA-kanban.html';
+  if (token) url += '?token=' + encodeURIComponent(token);
+  url += '#' + encodeURIComponent(hash);
+  window.location.href = url;
+}
+
+function bindKanbanOpen(el, timelineId) {
+  el.setAttribute('title', 'Open kanban board for this outcome');
+  el.setAttribute('role', 'link');
+  el.setAttribute('tabindex', '0');
+  el.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateToKanban(timelineId);
+  });
+  el.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      navigateToKanban(timelineId);
+    }
+  });
+}
+
 outcomes.forEach((oc, idx) => {
   const lane = document.createElement('div');
   lane.className = 'swim-lane';
@@ -552,6 +591,7 @@ outcomes.forEach((oc, idx) => {
     bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
     bar.addEventListener('mousemove', (e) => moveTooltip(e));
     bar.addEventListener('mouseleave', hideTooltip);
+    bindKanbanOpen(bar, oc.id);
 
     track.appendChild(bar);
   } else {
@@ -561,13 +601,14 @@ outcomes.forEach((oc, idx) => {
     placeholder.style.fontSize = '11px';
     placeholder.style.color = '#E67E22';
     placeholder.style.fontStyle = 'italic';
-    placeholder.style.cursor = 'help';
+    placeholder.style.cursor = 'pointer';
     placeholder.style.textDecoration = 'underline dotted #E67E22';
     placeholder.textContent = oc.id === 'PA-OC-10' ? 'Trigger: reliability failure after max iterations' : 'Trigger: NGINX POC validates framework + leadership decision';
 
     placeholder.addEventListener('mouseenter', (e) => showTriggerTooltip(e, oc));
     placeholder.addEventListener('mousemove', (e) => moveTooltip(e));
     placeholder.addEventListener('mouseleave', hideTooltip);
+    bindKanbanOpen(placeholder, oc.id);
 
     track.appendChild(placeholder);
   }
@@ -740,7 +781,7 @@ edges.forEach(e => {
 // Draw nodes
 const shortNames = {
   'POC':'POC',
-  'PA-OC-01':'Foundation','PA-OC-02':'Config Inventory','PA-OC-03':'Migration Path',
+  'PA-OC-01':'Access & Security','PA-OC-02':'Config Inventory','PA-OC-03':'Migration Path',
   'PA-OC-04':'Configs in VCS','PA-OC-05':'Build Pipeline','PA-OC-06':'Deploy Pipeline',
   'PA-OC-07':'Drift Detection','PA-OC-08':'Reliability','PA-OC-09':'Enforcement',
   'PA-OC-10':'Fallback','PA-OC-11':'Pattern Replication'

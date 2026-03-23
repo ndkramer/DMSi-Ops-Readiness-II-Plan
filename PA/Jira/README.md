@@ -36,6 +36,8 @@ Output is written to `PA/Jira/PA-Jira-<mm-dd-yyyy>-json.json`.
 
 Output is written to `PA/Jira/PA-Jira-<mm-dd-yyyy>-json.json` using the current date.
 
+The same run also writes **`pa-kanban-jira-status.json`** and **`pa-kanban-jira-status.js`** for `PA-kanban.html` (per-deliverable status plus **all Stories per outcome Epic**, including team-added work). Offline rebuild: `node Scripts/jira-kanban-status-from-export.js`.
+
 ## See also
 
 - [Documentation/Jira-Json-Import.md](../Documentation/Jira-Json-Import.md) — full JSON structure, flat lists, and import workflow

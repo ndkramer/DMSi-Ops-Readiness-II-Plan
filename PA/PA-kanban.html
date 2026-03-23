@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PP Kanban Board</title>
+    <title>PA-WSB: Pipeline Automation Kanban</title>
     <style>
         * {
             margin: 0;
@@ -79,6 +79,14 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             transform: translateY(-2px);
             border-color: #76BE43;
+        }
+
+        .outcome-card.poc-phase {
+            border-left: 4px solid #9B59B6;
+        }
+
+        .outcome-card.poc-phase .outcome-id {
+            color: #9B59B6;
         }
 
         .outcome-card .outcome-id {
@@ -163,11 +171,15 @@
             margin-bottom: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
             transition: all 0.2s;
-            cursor: move;
+            cursor: default;
         }
 
         .card:hover {
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .card.card-jira-extra {
+            border-left: 4px solid #9b59b6;
         }
 
         .card-id {
@@ -184,6 +196,43 @@
             font-weight: 500;
             margin-bottom: 10px;
             line-height: 1.4;
+        }
+
+        .card-meta {
+            font-size: 11px;
+            color: #666;
+            margin-top: -6px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .card-meta a {
+            color: #3498DB;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .card-meta a:hover {
+            text-decoration: underline;
+        }
+
+        .kanban-jira-line {
+            font-size: 12px;
+            margin: -8px 0 18px 0;
+            line-height: 1.45;
+        }
+
+        .kanban-jira-line.ok {
+            color: #555;
+        }
+
+        .kanban-jira-line.warn {
+            display: block;
+            color: #7f4f00;
+            background: #fff8e6;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border-left: 4px solid #e67e22;
         }
 
         .subtasks-toggle {
@@ -305,7 +354,7 @@
 <body>
     <header>
         <a id="back-link-header" href="PA-Outcome-map.html" title="Back to Outcome Map">←</a>
-        <h1 id="header-title">PP: Select an Outcome</h1>
+        <h1 id="header-title">PA: Select an Outcome</h1>
     </header>
     <script>
       (function(){
@@ -323,6 +372,7 @@
 
     <div id="selector" class="outcome-selector">
         <h2>Pipeline Automation Outcomes</h2>
+        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>POC</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is <strong>active engineering</strong> to prove <strong>infrastructure and architecture</strong>; it is not a separate <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-OC-XX</code> outcome—see <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WSB.md</code>. Execution detail lives in <strong>Jira</strong> (e.g. under <strong>PA-OC-03</strong>); this view is for leadership alignment. Capability <strong>WSA-2656</strong>; Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong>. Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>.</p>
         <div class="outcome-list" id="outcomeList"></div>
     </div>
 
@@ -332,7 +382,8 @@
             Back to Outcome Map
         </a>
 
-        <h2 id="outcome-title" style="color: #2B2B2B; margin-bottom: 20px;"></h2>
+        <h2 id="outcome-title" style="color: #2B2B2B; margin-bottom: 8px;"></h2>
+        <p id="kanban-jira-line" class="kanban-jira-line" style="display: none;" aria-live="polite"></p>
 
         <div class="columns-wrapper">
             <div class="column">
@@ -358,10 +409,21 @@
         </div>
     </div>
 
+    <!-- Sets window.__PA_KANBAN_JIRA_STATUS__ so Jira columns work when opening this file via file:// (fetch() cannot load local JSON). -->
+    <script src="Jira/pa-kanban-jira-status.js"></script>
     <script>
         const outcomeData = {
+            "POC": {
+                "name": "Infrastructure & Architecture POC (weeks 1–2; leadership view)",
+                "deliverables": [
+                    {"id": "POC-1", "name": "Approach and scope validation (NGINX target)", "subtasks": ["Confirm NGINX as POC config target and boundaries vs. future config types", "Align success criteria with team and stakeholders", "Document what “done” means before PA-OC-01 execution"]},
+                    {"id": "POC-2", "name": "Tooling and pipeline approach", "subtasks": ["Exercise candidate tooling (GitHub, automation hooks) at small scale", "Identify gaps that would block PA-OC-01", "Capture findings for PA-OC-03 runner / export decisions"]},
+                    {"id": "POC-3", "name": "Access patterns and environment readiness", "subtasks": ["Validate connectivity and access assumptions (read-only, network paths)", "Surface blockers that require DMSi or TierPoint follow-up", "Confirm realistic velocity for 1.5 FTE plan"]},
+                    {"id": "POC-4", "name": "POC exit and handoff to PA-OC-01", "subtasks": ["Short readout: go / adjust / no-go to full PA-OC-01 scope", "Update timeline assumptions if POC reveals slippage", "Hand off open risks to PA-OC-01 work packages"]}
+                ]
+            },
             "OC-01": {
-                "name": "Foundation Access and Security Baseline Complete",
+                "name": "[PA-OC-01] Foundation Access and Security Baseline Complete",
                 "deliverables": [
                     {"id": "OC-01.1", "name": "Environment Access and Network Discovery", "subtasks": ["Obtain SSH/RDP read-only access to NGINX target servers", "Document AWS account structure and VPC topology", "Map network connectivity paths between GitHub runners and target environments", "Identify firewall rules and security groups", "Document current DNS and load balancer configuration"]},
                     {"id": "OC-01.2", "name": "Deployment Process Documentation", "subtasks": ["Conduct deployment walkthrough with Rex", "Document all scripts, files, and playbooks Ansible pulls", "Map the share drive file locations", "Document manual steps, sequencing, and validation checks", "Identify MFA or human-interaction requirements"]},
@@ -456,7 +518,7 @@
 
             Object.entries(outcomeData).forEach(([id, outcome]) => {
                 const card = document.createElement('div');
-                card.className = 'outcome-card';
+                card.className = 'outcome-card' + (id === 'POC' ? ' poc-phase' : '');
                 card.innerHTML = `
                     <div class="outcome-id">${id}</div>
                     <div class="outcome-name">${outcome.name}</div>
@@ -468,9 +530,139 @@
             });
         }
 
-        function createCard(deliverable) {
+        /**
+         * Map Jira status to kanban columns. Uses status name heuristics + Jira statusCategory (new / indeterminate / done).
+         */
+        function mapJiraStatusToColumn(statusName, statusCategoryKey) {
+            const s = (statusName || '').toLowerCase();
+            const cat = statusCategoryKey || '';
+            if (cat === 'done') return 'done';
+            if (/blocked|impediment|escalat/.test(s)) return 'blocked';
+            if (/stall|stalled|waiting|on hold|pause|deferred/.test(s)) return 'stalled';
+            if (cat === 'new') return 'backlog';
+            if (cat === 'indeterminate') return 'advancing';
+            return 'backlog';
+        }
+
+        /** OC-01 → WSA-3268 … OC-11 → WSA-3278 (same convention as PA-WSB §10). */
+        function outcomeIdToEpicKey(outcomeId) {
+            const m = /^OC-(\d{1,2})$/.exec(outcomeId);
+            if (!m) return null;
+            const n = parseInt(m[1], 10);
+            if (n < 1 || n > 11) return null;
+            return 'WSA-' + (3267 + n);
+        }
+
+        function resolveJiraRowToColumn(row) {
+            if (!row || !row.issue_key) {
+                return { column: 'backlog', jira: null, note: 'No Jira row.' };
+            }
+            return {
+                column: mapJiraStatusToColumn(row.status, row.status_category_key),
+                jira: row,
+                note: null,
+            };
+        }
+
+        /**
+         * Merge WBS deliverables with all Jira Stories under the outcome Epic (GP# and other extras appear as additional cards).
+         */
+        function buildKanbanRowPlan(outcomeId, outcome, jiraData) {
+            if (outcomeId === 'POC') {
+                return outcome.deliverables.map(function (d) {
+                    return { kind: 'poc', deliverable: d };
+                });
+            }
+
+            const epicKey = outcomeIdToEpicKey(outcomeId);
+            const byEpic = (jiraData && jiraData.by_epic_key) || {};
+            const epicStories = epicKey ? byEpic[epicKey] || [] : [];
+            const jiraById = (jiraData && jiraData.by_deliverable_id) || {};
+            const wbsDeliverables = outcome.deliverables || [];
+            const wbsById = {};
+            wbsDeliverables.forEach(function (d) {
+                wbsById[d.id] = d;
+            });
+
+            const coveredWbs = new Set();
+            const ordered = [];
+
+            epicStories.forEach(function (row) {
+                if (row.deliverable_id && wbsById[row.deliverable_id]) {
+                    ordered.push({ kind: 'merged', deliverable: wbsById[row.deliverable_id], jira: row });
+                    coveredWbs.add(row.deliverable_id);
+                } else {
+                    ordered.push({
+                        kind: 'jira_extra',
+                        deliverable: { id: row.issue_key, name: row.summary, subtasks: [] },
+                        jira: row,
+                    });
+                }
+            });
+
+            wbsDeliverables.forEach(function (d) {
+                if (!coveredWbs.has(d.id)) {
+                    ordered.push({ kind: 'wbs_only', deliverable: d, jira: jiraById[d.id] || null });
+                }
+            });
+
+            return ordered;
+        }
+
+        function resolveDeliverableColumn(deliverableId, jiraById) {
+            if (/^POC-/i.test(deliverableId)) {
+                return {
+                    column: 'backlog',
+                    jira: null,
+                    note: 'Not linked to a POC Epic in Jira—track pipeline/infra POC work under OC-03 (and Jira); this list is the WBS planning view.',
+                };
+            }
+            const row = jiraById[deliverableId];
+            if (!row) {
+                return {
+                    column: 'backlog',
+                    jira: null,
+                    note: 'No Story in Jira export for this deliverable — run export or check summary prefix [PA-OC-xx.y].',
+                };
+            }
+            return {
+                column: mapJiraStatusToColumn(row.status, row.status_category_key),
+                jira: row,
+                note: null,
+            };
+        }
+
+        let jiraKanbanStatusPromise = null;
+
+        function loadJiraKanbanStatusOnce() {
+            if (!jiraKanbanStatusPromise) {
+                jiraKanbanStatusPromise = Promise.resolve().then(function () {
+                    var emb = typeof window.__PA_KANBAN_JIRA_STATUS__ !== 'undefined' && window.__PA_KANBAN_JIRA_STATUS__ !== null
+                        ? window.__PA_KANBAN_JIRA_STATUS__
+                        : null;
+                    if (emb && typeof emb.by_deliverable_id === 'object') {
+                        return { ok: true, data: emb, source: 'embed' };
+                    }
+                    return fetch('Jira/pa-kanban-jira-status.json', { cache: 'no-cache' })
+                        .then(function (r) {
+                            if (!r.ok) throw new Error('HTTP ' + r.status);
+                            return r.json();
+                        })
+                        .then(function (data) {
+                            return { ok: true, data: data, source: 'fetch' };
+                        })
+                        .catch(function (err) {
+                            return { ok: false, error: err.message || String(err) };
+                        });
+                });
+            }
+            return jiraKanbanStatusPromise;
+        }
+
+        function createCard(deliverable, jiraInfo, localNote, options) {
+            options = options || {};
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = 'card' + (options.cardClass ? ' ' + options.cardClass : '');
 
             const cardId = document.createElement('div');
             cardId.className = 'card-id';
@@ -482,6 +674,37 @@
 
             card.appendChild(cardId);
             card.appendChild(cardName);
+
+            if (options.extraMeta) {
+                const hint = document.createElement('div');
+                hint.className = 'card-meta';
+                hint.style.fontStyle = 'italic';
+                hint.style.color = '#888';
+                hint.textContent = options.extraMeta;
+                card.appendChild(hint);
+            }
+
+            if (jiraInfo && jiraInfo.issue_key) {
+                const meta = document.createElement('div');
+                meta.className = 'card-meta';
+                if (jiraInfo.browse_url) {
+                    const a = document.createElement('a');
+                    a.href = jiraInfo.browse_url;
+                    a.target = '_blank';
+                    a.rel = 'noopener';
+                    a.textContent = jiraInfo.issue_key;
+                    meta.appendChild(a);
+                    meta.appendChild(document.createTextNode(' · ' + jiraInfo.status));
+                } else {
+                    meta.textContent = jiraInfo.issue_key + ' · ' + jiraInfo.status;
+                }
+                card.appendChild(meta);
+            } else if (localNote) {
+                const meta = document.createElement('div');
+                meta.className = 'card-meta';
+                meta.textContent = localNote;
+                card.appendChild(meta);
+            }
 
             if (deliverable.subtasks && deliverable.subtasks.length > 0) {
                 const toggle = document.createElement('div');
@@ -520,14 +743,19 @@
             const outcome = outcomeData[outcomeId];
             if (!outcome) {
                 window.location.hash = '';
-                return;
+                return Promise.resolve();
             }
 
             document.getElementById('selector').style.display = 'none';
             document.getElementById('kanban').classList.add('active');
 
-            document.getElementById('header-title').textContent = `PP: ${outcomeId}`;
+            document.getElementById('header-title').textContent = `PA: ${outcomeId}`;
             document.getElementById('outcome-title').textContent = `${outcomeId}: ${outcome.name}`;
+
+            const jiraLineEl = document.getElementById('kanban-jira-line');
+            jiraLineEl.style.display = 'none';
+            jiraLineEl.textContent = '';
+            jiraLineEl.className = 'kanban-jira-line';
 
             // Clear all columns
             document.getElementById('backlog').innerHTML = '';
@@ -536,21 +764,74 @@
             document.getElementById('blocked').innerHTML = '';
             document.getElementById('done').innerHTML = '';
 
-            // Add all deliverables to Backlog column
-            outcome.deliverables.forEach(deliverable => {
-                const card = createCard(deliverable);
-                document.getElementById('backlog').appendChild(card);
+            return loadJiraKanbanStatusOnce().then(function (result) {
+                const jiraById = result.ok && result.data.by_deliverable_id ? result.data.by_deliverable_id : {};
+
+                if (!result.ok) {
+                    jiraLineEl.style.display = 'block';
+                    jiraLineEl.classList.add('warn');
+                    jiraLineEl.innerHTML =
+                        '<strong>Jira status unavailable.</strong> (' +
+                        String(result.error) +
+                        ') Ensure <code>Jira/pa-kanban-jira-status.js</code> exists next to this HTML (run <code>node Scripts/jira-kanban-status-from-export.js</code> or <code>node Scripts/jira-export-pa.js</code> and commit). If you only have the JSON file, serve the folder over HTTP so <code>fetch</code> can load it. Cards fall back to Backlog.';
+                } else {
+                    jiraLineEl.style.display = 'block';
+                    jiraLineEl.classList.add('ok');
+                    const gen = result.data.generated ? new Date(result.data.generated) : null;
+                    const prefix =
+                        result.source === 'embed'
+                            ? 'Embedded Jira snapshot (file:// OK). '
+                            : result.source === 'fetch'
+                              ? 'Loaded Jira snapshot over HTTP. '
+                              : '';
+                    const extra =
+                        result.data.by_epic_key && outcomeIdToEpicKey(outcomeId)
+                            ? ' Includes all Jira Stories under this outcome Epic (WSB rows + extra team stories).'
+                            : '';
+                    jiraLineEl.textContent =
+                        prefix +
+                        (gen
+                            ? 'Column placement from Jira (snapshot ' + gen.toLocaleString() + ').' + extra + ' Open a Story from the link on each card.'
+                            : 'Column placement from Jira export snapshot.' + extra);
+                }
+
+                const rows = buildKanbanRowPlan(outcomeId, outcome, result.ok ? result.data : {});
+                rows.forEach(function (row) {
+                    let resolved;
+                    let opts = {};
+                    if (row.kind === 'merged') {
+                        resolved = resolveDeliverableColumn(row.deliverable.id, jiraById);
+                    } else if (row.kind === 'jira_extra') {
+                        resolved = resolveJiraRowToColumn(row.jira);
+                        opts.cardClass = 'card-jira-extra';
+                        opts.extraMeta =
+                            'Additional Jira story (no [PA-OC-x.y] id); map to WSB or absorb in planning.';
+                    } else if (row.kind === 'wbs_only') {
+                        resolved = resolveDeliverableColumn(row.deliverable.id, jiraById);
+                    } else {
+                        resolved = resolveDeliverableColumn(row.deliverable.id, jiraById);
+                    }
+                    const card = createCard(row.deliverable, resolved.jira, resolved.note, opts);
+                    document.getElementById(resolved.column).appendChild(card);
+                });
             });
         }
 
         function handleHashChange() {
             const hash = window.location.hash.substring(1);
             if (hash && outcomeData[hash]) {
-                loadOutcome(hash);
+                loadOutcome(hash).catch(function (err) {
+                    console.error(err);
+                });
             } else {
                 document.getElementById('selector').style.display = 'block';
                 document.getElementById('kanban').classList.remove('active');
-                document.getElementById('header-title').textContent = 'PP: Select an Outcome';
+                document.getElementById('header-title').textContent = 'PA: Select an Outcome';
+                const jiraLineEl = document.getElementById('kanban-jira-line');
+                if (jiraLineEl) {
+                    jiraLineEl.style.display = 'none';
+                    jiraLineEl.textContent = '';
+                }
                 initializeOutcomeSelector();
             }
         }

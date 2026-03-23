@@ -11,7 +11,10 @@
  *   node Scripts/jira-delete-under-root.js VI WSA-508      # explicit root
  *   node Scripts/jira-delete-under-root.js VI WSA-508 WSA-509
  *   node Scripts/jira-delete-under-root.js VI --dry-run     # list only, no deletions
+ *   node Scripts/jira-delete-under-root.js WSA-121 [actionItemRoot] [--delete-root]
+ *   node Scripts/jira-delete-under-root.js WSA-121 --delete-root   # delete root and entire tree
  *
+ * With --delete-root: after deleting all children, the root issue itself is deleted.
  * Requires: JIRA_URL, JIRA_USERNAME, JIRA_API_TOKEN (e.g. in .cursor/.env).
  */
 
@@ -28,21 +31,35 @@ const CAPABILITY_CONFIG = {
   WM: { prefix: 'WM', rootKey: 'WSA-2881', actionItemRoot: 'WSA-2882' },
 };
 
+/** Match Jira issue key (e.g. WSA-121, PROJ-1234). */
+const ISSUE_KEY_REGEX = /^[A-Z][A-Z0-9]+-\d+$/i;
+
 function parseArgs() {
   const argv = process.argv.slice(2);
   const dryRun = argv.includes('--dry-run');
-  const rest = argv.filter((a) => a !== '--dry-run');
-  const capability = (rest[0] || 'PA').toUpperCase();
+  const deleteRoot = argv.includes('--delete-root');
+  const rest = argv.filter((a) => a !== '--dry-run' && a !== '--delete-root');
+  const first = rest[0];
+  // Arbitrary root: first arg is an issue key (e.g. WSA-121)
+  if (first && ISSUE_KEY_REGEX.test(first)) {
+    return {
+      rootKey: first,
+      actionItemRoot: rest[1] && ISSUE_KEY_REGEX.test(rest[1]) ? rest[1] : null,
+      dryRun,
+      deleteRoot,
+    };
+  }
+  const capability = (first || 'PA').toUpperCase();
   const config = CAPABILITY_CONFIG[capability];
   if (!config) {
-    console.error('Unknown capability:', capability, '- known:', Object.keys(CAPABILITY_CONFIG).join(', '));
+    console.error('Unknown capability:', capability, '- known:', Object.keys(CAPABILITY_CONFIG).join(', '), 'or pass an issue key (e.g. WSA-121)');
     process.exit(1);
   }
   return {
-    capability,
     rootKey: rest[1] || config.rootKey,
     actionItemRoot: rest[2] || config.actionItemRoot,
     dryRun,
+    deleteRoot,
   };
 }
 
@@ -139,10 +156,10 @@ async function run() {
     process.exit(1);
   }
 
-  const { rootKey, actionItemRoot, dryRun } = parseArgs();
+  const { rootKey, actionItemRoot, dryRun, deleteRoot } = parseArgs();
   const baseUrl = process.env.JIRA_URL.replace(/\/$/, '');
 
-  console.log('Delete under root:', rootKey, '| action-item root:', actionItemRoot, dryRun ? '(DRY RUN)' : '');
+  console.log('Delete under root:', rootKey, actionItemRoot ? '| action-item root: ' + actionItemRoot : '', deleteRoot ? '| then delete root' : '', dryRun ? '(DRY RUN)' : '');
 
   // Collect all keys (same hierarchy as jira-export-pa.js)
   console.log('Fetching epics (parent =', rootKey + ')');
@@ -164,13 +181,15 @@ async function run() {
     subtasks.push(...list);
   }
 
-  console.log('Fetching action items (parent =', actionItemRoot + ')');
   let actionItems = [];
-  try {
-    actionItems = await searchJqlAll(`parent = ${actionItemRoot}`);
-  } catch (e) {
-    if (!e.message || (!e.message.includes('404') && !e.message.includes('400'))) throw e;
-    console.log('Action-item root not found or no access; skipping action items.');
+  if (actionItemRoot) {
+    console.log('Fetching action items (parent =', actionItemRoot + ')');
+    try {
+      actionItems = await searchJqlAll(`parent = ${actionItemRoot}`);
+    } catch (e) {
+      if (!e.message || (!e.message.includes('404') && !e.message.includes('400'))) throw e;
+      console.log('Action-item root not found or no access; skipping action items.');
+    }
   }
 
   const subtaskKeys = subtasks.map((i) => i.key || i.id).filter(Boolean);
@@ -186,13 +205,15 @@ async function run() {
   const total = toDelete.reduce((n, g) => n + g.keys.length, 0);
 
   console.log('Counts: Epics', epicKeys.length, '| Stories', storyKeysList.length, '| Sub-tasks', subtaskKeys.length, '| Action items', actionItemKeys.length, '| Total', total);
-  if (total === 0) {
+  if (total === 0 && !deleteRoot) {
     console.log('Nothing to delete.');
     return;
   }
 
   if (dryRun) {
-    console.log('DRY RUN: would delete the above. Run without --dry-run to delete.');
+    console.log('DRY RUN: would delete the above.');
+    if (deleteRoot) console.log('DRY RUN: would then delete root', rootKey);
+    console.log('Run without --dry-run to delete.');
     return;
   }
 
@@ -205,6 +226,15 @@ async function run() {
       } catch (e) {
         console.error('Failed to delete', key, e.message);
       }
+    }
+  }
+
+  if (deleteRoot) {
+    try {
+      await deleteIssue(baseUrl, rootKey);
+      console.log('Deleted root', rootKey);
+    } catch (e) {
+      console.error('Failed to delete root', rootKey, e.message);
     }
   }
   console.log('Done.');

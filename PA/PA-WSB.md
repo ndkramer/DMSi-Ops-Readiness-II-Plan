@@ -1,7 +1,7 @@
 # PA-WSB: Pipeline Automation -- Outcome-Based Work Breakdown Structure
 
 **Dynamo Consulting | DMSi Software**
-**March 2026 | v1.0 | R0**
+**March 2026 | v1.3 | R0**
 **Classification: Dynamo Confidential**
 
 ---
@@ -55,13 +55,19 @@ Pipeline Automation covers the end-to-end automation of configuration and code d
 
 Outcomes are **complete as complete as we can for now**: we deliver the outcome and its deliverables to the best of our current knowledge, with the understanding that we may loop back (e.g. discovery, reliability validation) as we learn more. This allows the team to satisfy milestone reporting while acknowledging non-linear work.
 
+### Systems of record and planning views
+
+- **Jira (authoritative backlog):** **WSA-2656** is the **capability of record** for Pipeline Automation (*v2: Pipeline Automation*)—the single Jira root for this WSB. Outcome Epics (**WSA-3268**–**WSA-3278**), Stories, and Sub-tasks are the default source of truth for status, ownership, and sprint-level execution. Action items roll up under Epic **WSA-2657** (*PA Level: Action Items*). There is **no automatic sync** from GitHub Projects; items may exist in GitHub for discovery or stakeholder views—**reconcile into Jira** for commitment and reporting.
+- **This document (PA-WSB):** Normative outcome definitions, success criteria, deliverable IDs, dependencies, risks, and decisions.
+- **Visual timeline:** `PA/PA-Outcome-map.html` shows the **POC band** (weeks 1–2 on the timeline, before PA-OC-01) as **active engineering work**—building a proof-of-concept that **proves infrastructure and architecture** (how the pipeline will run, connect, and be operated) for leadership visibility. It is **not** idle schedule padding. POC is still **not** a separate **PA-OC-XX** row in the outcome table below (it does not add a twelfth numbered outcome); execution detail is tracked in **Jira** and reconciled here. The same page reflects **1.5 FTE** assumptions and calendar bands.
+
 ---
 
 ## 2. Outcome Map
 
 | ID | Outcome | Category | Target Date | Milestone Alignment |
 |----|---------|----------|-------------|---------------------|
-| PA-OC-01 | Foundation Access and Security Baseline Complete | Baseline | [TBD -- Weeks 1-2] | M3: Foundation Complete |
+| PA-OC-01 | [PA-OC-01] Foundation Access and Security Baseline Complete | Baseline | [TBD -- Weeks 1-2] | M3: Foundation Complete |
 | PA-OC-02 | Configuration Inventory and Credential Mapping Complete | Baseline | [TBD -- Weeks 2-4] | M3: Foundation Complete |
 | PA-OC-03 | Migration Path and Runner Infrastructure Defined | Baseline | [TBD -- Weeks 4-6] | M3: Foundation Complete |
 | PA-OC-04 | Configurations in Version Control | Baseline | [TBD -- Weeks 6-10] | M4: Config Pipeline Active |
@@ -81,6 +87,8 @@ The following outcomes can run concurrently once their dependencies are met:
 - **PA-OC-05** (Build Pipeline) and **PA-OC-07** (Drift Detection) can run concurrently after PA-OC-04.
 - **PA-OC-02** (Config Inventory) can begin specific work packages in parallel with PA-OC-01 completion -- Matthew is already building the config inventory from Ansible playbook analysis.
 - **PA-OC-06** (Deploy Pipeline) has a `should` dependency on PA-OC-05 (Build Pipeline) -- deployment can begin development in parallel, but full validation requires build artifacts.
+
+The **POC band** (see `PA-Outcome-map.html`) is a **two-week period of real delivery** before PA-OC-01 on the visual timeline: the team **builds and exercises a POC** to **prove infrastructure and architecture** (and related approach, tooling, and access). It does not add a twelfth numbered **PA-OC-XX** outcome; progress is reported via **Jira** and these planning views for leadership.
 
 ---
 
@@ -115,12 +123,12 @@ graph TD
 
 ---
 
-### PA-OC-01: Foundation Access and Security Baseline Complete
+### [PA-OC-01] Foundation Access and Security Baseline Complete
 
 **Category:** Baseline
 **Target Date:** [TBD -- Weeks 1-2]
 **Owner:** Dynamo + Andy Meyers
-**Status:** Not Started
+**Status:** Complete — see Jira Epic **WSA-3268**; reconcile success criteria below with evidence in Jira.
 **Source:** S0 (WP 0.1, 0.2, 0.3, 0.4, 0.5, 0.6)
 
 #### Success Criteria
@@ -927,13 +935,13 @@ Each decision is classified using the Bezos / Amazon Type 1 / Type 2 framework. 
 | PA-D-07 | TYPE 1 | GitHub runner deployment model (AWS account, VPC) | Andy + Dynamo | PA-OC-03 exit | OPEN |
 | PA-D-08 | TYPE 1 | Ansible automation feasibility | Dynamo + Rex | PA-OC-03 exit | OPEN |
 | PA-D-13 | TYPE 1 | CAB change request process for pipeline deployments | Andy + Ryan | PA-OC-04 entry | OPEN |
+| PA-D-10 | TYPE 1 | Config-as-code enforcement policy | Andy + leadership | PA-OC-08 exit | OPEN |
 | PA-D-14 | TYPE 1 | Application deployment automation (Caley's domain) in or out of scope? | Cameron | Immediately | **RESOLVED** — Out of scope. Documented 12 Mar 2026. |
 | PA-D-01 | TYPE 2 | GitHub runner deployment model (tools VPC vs. per-region vs. hosted) | Dynamo + Andy | PA-OC-01 exit | OPEN |
 | PA-D-04 | TYPE 2 | Priority ordering for config types beyond NGINX | Andy + Dynamo | PA-OC-02 exit | OPEN |
 | PA-D-05 | TYPE 2 | Repository structure pattern | Dynamo | PA-OC-03 exit | OPEN |
 | PA-D-06 | TYPE 2 | Canonical config format per type | Dynamo | PA-OC-03 exit | OPEN |
 | PA-D-09 | TYPE 2 | Drift detection alerting channel (PagerDuty vs. Slack) | Andy | PA-OC-05 entry | OPEN |
-| PA-D-10 | TYPE 2 | Config-as-code enforcement policy | Andy + leadership | PA-OC-08 exit | OPEN |
 | PA-D-11 | TYPE 2 | Data classification standard for pipeline artifacts | GRC + Dynamo | PA-OC-01 exit | OPEN |
 | PA-D-12 | TYPE 2 | Credential rotation and management tooling | Dynamo + Andy | PA-OC-02 exit | OPEN |
 
@@ -954,10 +962,10 @@ These questions, once answered and acted upon, lock in irreversible choices.
 - **PA-Q-06** [feeds PA-D-02]: Does DMSi have an existing secret management tool, or should Dynamo recommend one? Owner: Andy. Required: PA-OC-01. Status: **ELEVATED TO TYPE 1** (12 Mar 2026) — Matt F indicated secret management is needed while building the first pipeline. Matt C confirmed: "I don't need to ask to know they don't have" existing secret management tooling.
 - **PA-Q-08** [feeds PA-D-14]: Is application deployment automation (Caley's work) in or out of scope? Owner: Cameron. Required: Immediately. **RESOLVED (12 Mar 2026):** Out of scope. Logged in Decision Register.
 - **PA-Q-11** [feeds PA-D-13]: What is the CAB (Change Advisory Board) process and lead time for infrastructure changes at DMSi? Owner: Andy. Required: before PA-OC-04 entry. Note: DMSi has a CAB; meets weekly; ~3–4 days notice with documents for internal review; run loosely. Process detail needed for PA-OC-09.
+- **PA-Q-04** [feeds PA-D-10]: Who has authority to approve config-as-code enforcement policy? Is it Andy or does it require executive approval? Owner: Cameron. Required: before PA-OC-08 exit. **PA-D-10 is classified TYPE 1** (irreversible organizational commitment to enforcement). Team discussion (12 Mar 2026) noted policy detail may emerge late; authority and sign-off path must still be explicit before PA-OC-09.
 
 ### Feeding Type 2 Decisions -- Answer Quickly, Correct If Wrong
 
-- **PA-Q-04** [feeds PA-D-10]: Who has authority to approve config-as-code enforcement policy? Is it Andy or does it require executive approval? Owner: Cameron. Required: before PA-OC-08 exit. Status: **MOVED TO TYPE 2** (12 Mar 2026) — Matt C: "depending on what we find... we might be able to make enforcement just part of it". Late-stage policy expected by PA-OC-09.
 - **PA-Q-07** [feeds PA-D-05]: Repo structure preference: by config type, by client, by environment, or hybrid? Owner: Dynamo (to recommend). Required: PA-OC-03. Note: DMSi currently uses single repo for configs; Dynamo will drive recommendation; iterate as more configs are added.
 - **PA-Q-09** [feeds PA-D-11]: Does DMSi have a formal data classification policy? If not, what sensitivity levels should we define for pipeline artifacts? Owner: GRC / Leanne. Required: before PA-OC-01 exit.
 
@@ -990,22 +998,26 @@ These questions, once answered and acted upon, lock in irreversible choices.
 
 ## 10. Jira Mapping
 
-| Outcome Model Element | Jira Issue Type | Relationship |
-|-----------------------|-----------------|--------------|
-| Capability (Pipeline Automation) | Initiative | WSA-121 |
-| Outcome (OC-XX) | Epic | Parent = WSA-121 |
-| Deliverable (OC-XX.Y) | Story | Epic Link = parent Outcome |
-| Task | Sub-task | Parent = parent Deliverable |
+| Outcome Model Element | Jira Issue Type | Key / relationship |
+|-----------------------|-----------------|----------------------|
+| Capability (Pipeline Automation) | Capability | **WSA-2656** (*v2: Pipeline Automation*) — **capability of record**; root of the PA hierarchy |
+| Outcome (PA-OC-01 … PA-OC-11) | Epic | **Parent = WSA-2656** (Epic keys **WSA-3268**–**WSA-3278**). Epic **Summary** (and Jira **Epic Name** where used) match `[PA-OC-XX] …` titles in this WSB. |
+| Action items (cross-cutting risks, decisions, follow-ups) | Story / Action Item | Children of Epic **WSA-2657** (*PA Level: Action Items*), also under **WSA-2656** |
+| Deliverable (PA-OC-XX.Y) | Story | Under the Epic for that outcome (Epic Link / parent Epic) |
+| Task-level work | Sub-task | Parent = Story (Deliverable) |
 
-**Labels:** `pipeline-automation` + `oc-XX`
-**Component:** Pipeline Automation
+**Legacy (closed in Jira):** Epic **WSA-36** (*Stage 0: Tool Access and Process Knowledge*) was **cancelled / resolved**; work is **superseded by** Epic **WSA-3268** — **[PA-OC-01] Foundation Access and Security Baseline Complete**. Do not use **WSA-36** for new work.
 
-**Custom fields (recommended):**
+**Labels (Jira):** `Pipeline-Automation` plus per-outcome `oc-01` … `oc-11` on Epics **WSA-3268**–**WSA-3278**; capability **WSA-2656** also uses `PA-capability-of-record`. *Use the spelling and casing above so filters match.*
 
-- `Outcome Category`: Baseline / Iterative / Conditional
-- `Target Date`: Outcome target completion date
-- `Dependency Type`: must / should / contingent (on Story links)
-- `Validation Status`: Not Started / In Validation / Passed / Failed
+**Component:** `Pipeline Automation` (id **10016** in WSA) — set on outcome Epics for reporting.
+
+**Custom fields in Jira (WSA Epics):**
+
+- **Outcome Category** (`customfield_10428`): Baseline / Iterative / Conditional — **set per Epic** to match PA-OC-01…11 categories in this WSB.
+- **Due date** (system): optional **target completion** for an outcome Epic (closest match to “Target Date” in the outcome map).
+- **Dependency Type** (must / should / contingent): use **issue links** or documentation in Story/Sub-task descriptions until a dedicated field exists.
+- **Validation Status**: not yet a Jira field — track in description or labels if needed.
 
 ---
 
@@ -1013,7 +1025,7 @@ These questions, once answered and acted upon, lock in irreversible choices.
 
 | ID | Outcome | Category | Owner | Target Date | Status | % Complete | Risk Flag | Notes |
 |----|---------|----------|-------|-------------|--------|------------|-----------|-------|
-| PA-OC-01 | Foundation & Security | Baseline | Dynamo + Andy | [TBD] | Not Started | 0% | -- | -- |
+| PA-OC-01 | [PA-OC-01] Foundation Access and Security Baseline Complete | Baseline | Dynamo + Andy | [TBD] | Complete | 100% | -- | Jira **WSA-3268** (replaces legacy **WSA-36**) |
 | PA-OC-02 | Config Inventory | Baseline | Dynamo + Andy | [TBD] | Not Started | 0% | -- | -- |
 | PA-OC-03 | Migration Path Defined | Baseline | Dynamo + Andy | [TBD] | Not Started | 0% | -- | -- |
 | PA-OC-04 | Configs in VCS | Baseline | Dynamo + Andy | [TBD] | Not Started | 0% | -- | -- |
