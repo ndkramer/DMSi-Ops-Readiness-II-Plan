@@ -344,7 +344,7 @@
 <div class="header">
   <div>
     <h1>VI-WSB: Visibility Infrastructure Outcome Map</h1>
-    <div class="subtitle">Dynatrace Implementation -- DMSi Software | 1.5 FTE Conservative Estimate | Dynatrace Start: Apr 1, 2026 | PD AIOps Active Since Mar 1</div>
+    <div class="subtitle">Dynatrace Implementation -- DMSi Software | 1.5 FTE Conservative Estimate | Dynatrace: vendor POC in progress | Full rollout calendar from Apr 1, 2026 (revisit after POC) | PD AIOps active since Mar 1</div>
   </div>
   <div class="brand">DYNAMO</div>
 </div>
@@ -399,7 +399,7 @@
   <div class="insight-grid">
     <div class="insight-card">
       <h3>Parallel Execution Unlocked</h3>
-      <p>VI-OC-06 (Log Migration), VI-OC-07 (Synthetic Monitoring), VI-OC-04 (Host Instrumentation), and VI-OC-16 (PagerDuty AIOps) all start after VI-OC-03 and run concurrently. PagerDuty AIOps is already underway in parallel with the Dynatrace rollout.</p>
+      <p>VI-OC-06 (Log Migration), VI-OC-07 (Synthetic Monitoring), VI-OC-04 (Host Instrumentation), and VI-OC-16 (PagerDuty AIOps) all start after VI-OC-03 and run concurrently. PagerDuty AIOps is already underway in parallel. Dynatrace is currently in a <strong>vendor POC phase</strong> (before the dated full rollout on the timeline).</p>
     </div>
     <div class="insight-card">
       <h3>Iterative Loops Made Explicit</h3>
@@ -472,14 +472,14 @@ function withToken(url) {
 }
 // Outcome data
 // Grid columns = half-month periods: Mar1, Mar15, Apr1, Apr15, May1, May15, Jun1, Jun15, Jul1, Jul15, Aug1, Aug15, Sep1, Sep15, Oct1, Oct15
-// Assumptions: Dynatrace starts Apr 1. PD AIOps started Mar 1 (install complete). 1.5 FTE. Conservative estimates.
+// Assumptions: Dynatrace vendor POC in progress; timeline below still anchors full rollout from Apr 1 (adjust after POC). PD AIOps started Mar 1 (install complete). 1.5 FTE. Conservative estimates.
 const outcomes = [
   { id:'VI-OC-16', name:'PagerDuty AIOps Deployed & Validated', cat:'Iterative', start:1, end:5, deps:[], risk:'VI-R-PD1, VI-R-PD2', deliverables:7, milestone:'',
     dateRange:'Mar 1 - May 8 (Active)',
     detail:'ALREADY UNDERWAY. Phase 1-2 complete (initial install configured). Phase 3 + 30-day ML learning + tuning + DMSi handover. Independent of Dynatrace Apr 1 start.' },
   { id:'VI-OC-01', name:'Foundation Planning & Architecture', cat:'Baseline', start:3, end:4, deps:[], risk:'', deliverables:6, milestone:'',
-    dateRange:'Apr 1 - Apr 25',
-    detail:'Environment inventory, architecture design, integration architecture, A2W telemetry strategy, script rationalization, Elastic log mapping. 1.5 FTE conservative: 4 weeks.' },
+    dateRange:'Vendor POC active; plan Apr 1 - Apr 25',
+    detail:'CURRENT: POC with Dynatrace (tenant/scope). THEN: environment inventory, architecture design, integration architecture, A2W telemetry strategy, script rationalization, Elastic log mapping. 1.5 FTE conservative: 4 weeks on plan.' },
   { id:'VI-OC-02', name:'Telemetry Strategy & Licensing', cat:'Baseline', start:5, end:6, deps:['VI-OC-01'], risk:'VI-R-X6', deliverables:6, milestone:'',
     dateRange:'Apr 28 - May 23',
     detail:'ABL telemetry eval, OpenTelemetry feasibility, log retention review, licensing procurement (long pole), RBAC design. 1.5 FTE conservative: 4 weeks.' },

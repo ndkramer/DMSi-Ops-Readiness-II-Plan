@@ -432,7 +432,7 @@
 
     <div id="selector" class="outcome-selector">
         <h2>Pipeline Automation Outcomes</h2>
-        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>PA-OC-00</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is the <strong>first outcome</strong>—Infrastructure &amp; Architecture POC—before <strong>PA-OC-01</strong>. See <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WSB.md</code> (v1.4). <strong>Jira:</strong> capability <strong>WSA-2656</strong>; Epic <strong>WSA-3267</strong> = PA-OC-00; outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong> = PA-OC-01–11; action-item Epic <strong>WSA-2657</strong>. All Stories with <strong>[POC]</strong> in the summary belong under Epic <strong>WSA-3267</strong>. Cards and columns use the Jira export. Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>. Hash <code>#POC</code> redirects to <code>#OC-00</code>.</p>
+        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>PA-OC-00</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is the <strong>first outcome</strong>—Infrastructure &amp; Architecture POC—before <strong>PA-OC-01</strong>. See <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WSB.md</code> (v1.5). <strong>Jira:</strong> capability <strong>WSA-2656</strong>; Epic <strong>WSA-3758</strong> = PA-OC-00; outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong> = PA-OC-01–11; action-item Epic <strong>WSA-2657</strong>. All Stories with <strong>[POC]</strong> in the summary belong under Epic <strong>WSA-3758</strong>. Cards and columns use the Jira export. Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>. Hash <code>#POC</code> redirects to <code>#OC-00</code>.</p>
         <div class="outcome-list" id="outcomeList"></div>
     </div>
 
@@ -476,7 +476,7 @@
             "OC-00": {
                 "name": "[PA-OC-00] Infrastructure & Architecture POC",
                 "deliverables": [
-                    {"id": "PA-OC-00.1", "name": "NGINX pipeline POC — infrastructure & architecture proof", "subtasks": ["Exercise end-to-end path consistent with target NGINX pipeline design", "Document approach, tooling, access, and open risks for PA-OC-01", "Align evidence under Jira Epic WSA-3267 ([POC] Stories)"]}
+                    {"id": "PA-OC-00.1", "name": "NGINX pipeline POC — infrastructure & architecture proof", "subtasks": ["Exercise end-to-end path consistent with target NGINX pipeline design", "Document approach, tooling, access, and open risks for PA-OC-01", "Align evidence under Jira Epic WSA-3758 ([POC] Stories)"]}
                 ]
             },
             "OC-01": {
@@ -601,12 +601,13 @@
             return 'backlog';
         }
 
-        /** OC-00 → WSA-3267; OC-01 → WSA-3268 … OC-11 → WSA-3278 (PA-WSB §10). */
+        /** PA-OC-00 Epic WSA-3758; OC-01 → WSA-3268 … OC-11 → WSA-3278 (PA-WSB §10). */
         function outcomeIdToEpicKey(outcomeId) {
             const m = /^OC-(\d{1,2})$/.exec(outcomeId);
             if (!m) return null;
             const n = parseInt(m[1], 10);
             if (n < 0 || n > 11) return null;
+            if (n === 0) return 'WSA-3758';
             return 'WSA-' + (3267 + n);
         }
 
@@ -929,7 +930,7 @@
                     if (result.data.by_epic_key && outcomeIdToEpicKey(outcomeId)) {
                         extra =
                             outcomeId === 'OC-00'
-                                ? ' PA-OC-00 Epic WSA-3267 — all [POC] Stories and Sub-tasks from the export.'
+                                ? ' PA-OC-00 Epic WSA-3758 — all [POC] Stories and Sub-tasks from the export.'
                                 : ' Includes all Jira Stories under this outcome Epic (WSB rows + extra team stories).';
                     }
                     jiraLineEl.textContent =
@@ -950,7 +951,7 @@
                         opts.cardClass = 'card-jira-extra';
                         opts.extraMeta =
                             outcomeId === 'OC-00'
-                                ? 'Story under PA-OC-00 / Epic WSA-3267 ([POC] backlog).'
+                                ? 'Story under PA-OC-00 / Epic WSA-3758 ([POC] backlog).'
                                 : 'Additional Jira story (no [PA-OC-x.y] id); map to WSB or absorb in planning.';
                     } else if (row.kind === 'wbs_only') {
                         resolved = resolveDeliverableColumn(row.deliverable.id, jiraById);

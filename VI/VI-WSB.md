@@ -41,7 +41,7 @@ Each outcome follows a standard template:
 
 | ID | Outcome | Category | Target Date | Milestone Alignment |
 |----|---------|----------|-------------|---------------------|
-| VI-OC-01 | Foundation Planning and Architecture Complete | Baseline | [TBD -- Weeks 1-2] | -- |
+| VI-OC-01 | Foundation Planning and Architecture Complete | Baseline | [TBD -- Weeks 1-2]; **Dynatrace vendor POC in progress** | -- |
 | VI-OC-02 | Telemetry Strategy and Licensing Resolved | Baseline | [TBD -- Weeks 2-3] | -- |
 | VI-OC-03 | Dynatrace Platform and Integrations Deployed | Baseline | [TBD -- Weeks 3-4] | -- |
 | VI-OC-04 | Host Fleet Instrumented | Baseline | [TBD -- Weeks 4-5] | -- |
@@ -115,7 +115,7 @@ graph TD
 **Category:** Baseline
 **Target Date:** [TBD -- Weeks 1-2]
 **Owner:** Dynamo + Andy Meyers
-**Status:** Not Started
+**Status:** In Progress — **Dynatrace vendor POC**: working with Dynatrace to stand up and scope a proof-of-concept / trial environment; supports early validation for licensing, deployment model (VI-D-01), and architecture before full VI-OC-03 rollout.
 **Source:** S0 (WP 0.1, 0.2, 0.4, 0.5, 0.6, 0.7)
 
 #### Success Criteria

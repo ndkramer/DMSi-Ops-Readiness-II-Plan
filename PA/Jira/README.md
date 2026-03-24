@@ -8,7 +8,7 @@ You can say **"Export PA WSA-2656 from Jira"** (or "Export PA from Jira"). The a
 
 ## Export file
 
-- **Summary prefixes in Jira:** Outcome-linked stories often use `[PA-OC-XX]` in the summary. **PA-OC-00** is Epic **WSA-3267**; all **`[POC]`**-prefixed Stories roll up under that Epic (parent **WSA-2656**). Historical Story **WSA-3719** should live under **WSA-3267** once the Epic exists in Jira.
+- **Summary prefixes in Jira:** Outcome-linked stories often use `[PA-OC-XX]` in the summary. **PA-OC-00** is Epic **WSA-3758**; all **`[POC]`**-prefixed Stories roll up under that Epic (parent **WSA-2656**). Historical Story **WSA-3719** should live under **WSA-3758**.
 - **Naming:** `PA-Jira-mm-dd-yyyy-json.json` (e.g. `PA-Jira-03-17-2026-json.json`).
 - **Contents:** Single JSON with:
   - `metadata`: export date, root keys (WSA-2656, WSA-2657), counts (epics, stories, subtasks, action_items).

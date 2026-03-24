@@ -26,7 +26,7 @@ When editing or creating content under the PA folder, follow the Pipeline Automa
 
 ## Jira alignment
 
-- **Capability root:** WSA-2656 (labels: `Pipeline-Automation`, `PA-capability-of-record`). **Action-item Epic:** WSA-2657 (`Pipeline-Automation`, `PA-action-items`). **Outcome Epics:** **WSA-3267** = **PA-OC-00** (*[PA-OC-00] Infrastructure & Architecture POC*); **WSA-3268**–**WSA-3278** = **PA-OC-01**…**PA-OC-11** — each has `Pipeline-Automation` + `oc-00`…`oc-11`, **Outcome Category** custom field, and **Pipeline Automation** component where set. **All Stories** whose summary starts with **`[POC]`** belong under Epic **WSA-3267** (including legacy **WSA-3719** until/unless folded into a single Story). Kanban hash **`#OC-00`**. No automatic sync from GitHub Projects—backlog of record is Jira unless otherwise agreed.
+- **Capability root:** WSA-2656 (labels: `Pipeline-Automation`, `PA-capability-of-record`). **Action-item Epic:** WSA-2657 (`Pipeline-Automation`, `PA-action-items`). **Outcome Epics:** **WSA-3758** = **PA-OC-00** (*[PA-OC-00] Infrastructure & Architecture POC*); **WSA-3268**–**WSA-3278** = **PA-OC-01**…**PA-OC-11** — each has `Pipeline-Automation` + `oc-00`…`oc-11`, **Outcome Category** custom field, and **Pipeline Automation** component where set. **All Stories** whose summary starts with **`[POC]`** belong under Epic **WSA-3758** (including legacy **WSA-3719** until/unless folded into a single Story). Kanban hash **`#OC-00`**. No automatic sync from GitHub Projects—backlog of record is Jira unless otherwise agreed.
 
 ## Reference
 

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-03-23T22:12:52.941Z",
+  "generated": "2026-03-24T18:42:46.455Z",
   "jira_base_url": "https://godynamo.atlassian.net",
   "by_deliverable_id": {
     "OC-11.3": {
@@ -769,7 +769,7 @@
     },
     "OC-03.3": {
       "issue_key": "WSA-3290",
-      "summary": "[PA-OC-03.3] GitHub Runner Strategy and POC",
+      "summary": "[PA-OC-03.3] GitHub Runner Strategy ",
       "status": "To Do",
       "status_category_key": "new",
       "browse_url": "https://godynamo.atlassian.net/browse/WSA-3290",
@@ -1079,6 +1079,199 @@
     }
   },
   "by_epic_key": {
+    "WSA-3758": [
+      {
+        "issue_key": "WSA-3719",
+        "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
+        "status": "To Do",
+        "status_category_key": "new",
+        "browse_url": "https://godynamo.atlassian.net/browse/WSA-3719",
+        "subtasks": [
+          {
+            "issue_key": "WSA-3724",
+            "summary": "Create AWS creds for actions user (GP#4)",
+            "status": "Advancing",
+            "status_category_key": "indeterminate",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3724"
+          },
+          {
+            "issue_key": "WSA-3725",
+            "summary": "Create ansible jinja templates (GP#5)",
+            "status": "Advancing",
+            "status_category_key": "indeterminate",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3725"
+          },
+          {
+            "issue_key": "WSA-3726",
+            "summary": "setup project structure (GP#2)",
+            "status": "Done",
+            "status_category_key": "done",
+            "done": true,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3726"
+          },
+          {
+            "issue_key": "WSA-3727",
+            "summary": "stand up a tiny test server to deploy to (GP#6)",
+            "status": "Advancing",
+            "status_category_key": "indeterminate",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3727"
+          },
+          {
+            "issue_key": "WSA-3728",
+            "summary": "Create Terraform to setup AWS for the project (GP#10)",
+            "status": "Advancing",
+            "status_category_key": "indeterminate",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3728"
+          },
+          {
+            "issue_key": "WSA-3729",
+            "summary": "Figure out SSM/PS convention for secrets (GP#3)",
+            "status": "To Do",
+            "status_category_key": "new",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3729"
+          },
+          {
+            "issue_key": "WSA-3730",
+            "summary": "Define playbook for Ansible use (GP#8)",
+            "status": "To Do",
+            "status_category_key": "new",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3730"
+          },
+          {
+            "issue_key": "WSA-3731",
+            "summary": "Define GitHub Actions (GP#7)",
+            "status": "To Do",
+            "status_category_key": "new",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3731"
+          },
+          {
+            "issue_key": "WSA-3741",
+            "summary": "Matthew Czaplewski Time Entry",
+            "status": "Advancing",
+            "status_category_key": "indeterminate",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3741"
+          },
+          {
+            "issue_key": "WSA-3742",
+            "summary": "Matthew Faltys Time Entry",
+            "status": "Advancing",
+            "status_category_key": "indeterminate",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3742"
+          },
+          {
+            "issue_key": "WSA-3743",
+            "summary": "Daniel Carnes Time Entry",
+            "status": "Advancing",
+            "status_category_key": "indeterminate",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3743"
+          }
+        ],
+        "deliverable_id": null
+      },
+      {
+        "issue_key": "WSA-3722",
+        "summary": "Phase 0: Discovery and Prerequisites (GP#12)",
+        "status": "To Do",
+        "status_category_key": "new",
+        "browse_url": "https://godynamo.atlassian.net/browse/WSA-3722",
+        "subtasks": [
+          {
+            "issue_key": "WSA-3732",
+            "summary": "Confirm Tierpoint network details (GP#13)",
+            "status": "To Do",
+            "status_category_key": "new",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3732"
+          },
+          {
+            "issue_key": "WSA-3733",
+            "summary": "Confirm Tierpoint contract allows VPN to AWS (GP#20)",
+            "status": "To Do",
+            "status_category_key": "new",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3733"
+          },
+          {
+            "issue_key": "WSA-3734",
+            "summary": "Verify AWS account access and permissions (GP#18)",
+            "status": "To Do",
+            "status_category_key": "new",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3734"
+          },
+          {
+            "issue_key": "WSA-3735",
+            "summary": "Confirm GitHub Enterprise org admin access (GP#19)",
+            "status": "To Do",
+            "status_category_key": "new",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3735"
+          },
+          {
+            "issue_key": "WSA-3736",
+            "summary": "Select Terraform or CloudFormation for IaC (GP#21)",
+            "status": "To Do",
+            "status_category_key": "new",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3736"
+          },
+          {
+            "issue_key": "WSA-3737",
+            "summary": "Establish IaC repository in GitHub (GP#22)",
+            "status": "To Do",
+            "status_category_key": "new",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3737"
+          },
+          {
+            "issue_key": "WSA-3738",
+            "summary": "Cameron Ludwig Time Entry",
+            "status": "Advancing",
+            "status_category_key": "indeterminate",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3738"
+          }
+        ],
+        "deliverable_id": null
+      },
+      {
+        "issue_key": "WSA-3721",
+        "summary": "Provide the team access to AWS (GP#1)",
+        "status": "Done",
+        "status_category_key": "done",
+        "browse_url": "https://godynamo.atlassian.net/browse/WSA-3721",
+        "subtasks": [
+          {
+            "issue_key": "WSA-3739",
+            "summary": "Brent Time Entry",
+            "status": "Advancing",
+            "status_category_key": "indeterminate",
+            "done": false,
+            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3739"
+          }
+        ],
+        "deliverable_id": null
+      },
+      {
+        "issue_key": "WSA-3720",
+        "summary": "The Tierpoint IP ranges (GP#11)",
+        "status": "Done",
+        "status_category_key": "done",
+        "browse_url": "https://godynamo.atlassian.net/browse/WSA-3720",
+        "subtasks": [],
+        "deliverable_id": null
+      }
+    ],
     "WSA-3278": [
       {
         "issue_key": "WSA-3309",
@@ -1968,7 +2161,7 @@
       },
       {
         "issue_key": "WSA-3290",
-        "summary": "[PA-OC-03.3] GitHub Runner Strategy and POC",
+        "summary": "[PA-OC-03.3] GitHub Runner Strategy ",
         "status": "To Do",
         "status_category_key": "new",
         "browse_url": "https://godynamo.atlassian.net/browse/WSA-3290",
@@ -2015,197 +2208,6 @@
           }
         ],
         "deliverable_id": "OC-03.3"
-      },
-      {
-        "issue_key": "WSA-3719",
-        "summary": "[POC] Internal Dynamo Pipeline POC (GP#28)",
-        "status": "To Do",
-        "status_category_key": "new",
-        "browse_url": "https://godynamo.atlassian.net/browse/WSA-3719",
-        "subtasks": [
-          {
-            "issue_key": "WSA-3724",
-            "summary": "Create AWS creds for actions user (GP#4)",
-            "status": "Advancing",
-            "status_category_key": "indeterminate",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3724"
-          },
-          {
-            "issue_key": "WSA-3725",
-            "summary": "Create ansible jinja templates (GP#5)",
-            "status": "Advancing",
-            "status_category_key": "indeterminate",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3725"
-          },
-          {
-            "issue_key": "WSA-3726",
-            "summary": "setup project structure (GP#2)",
-            "status": "Advancing",
-            "status_category_key": "indeterminate",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3726"
-          },
-          {
-            "issue_key": "WSA-3727",
-            "summary": "stand up a tiny test server to deploy to (GP#6)",
-            "status": "To Do",
-            "status_category_key": "new",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3727"
-          },
-          {
-            "issue_key": "WSA-3728",
-            "summary": "Create Terraform to setup AWS for the project (GP#10)",
-            "status": "Advancing",
-            "status_category_key": "indeterminate",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3728"
-          },
-          {
-            "issue_key": "WSA-3729",
-            "summary": "Figure out SSM/PS convention for secrets (GP#3)",
-            "status": "To Do",
-            "status_category_key": "new",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3729"
-          },
-          {
-            "issue_key": "WSA-3730",
-            "summary": "Define playbook for Ansible use (GP#8)",
-            "status": "To Do",
-            "status_category_key": "new",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3730"
-          },
-          {
-            "issue_key": "WSA-3731",
-            "summary": "Define GitHub Actions (GP#7)",
-            "status": "To Do",
-            "status_category_key": "new",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3731"
-          },
-          {
-            "issue_key": "WSA-3741",
-            "summary": "Matthew Czaplewski Time Entry",
-            "status": "Advancing",
-            "status_category_key": "indeterminate",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3741"
-          },
-          {
-            "issue_key": "WSA-3742",
-            "summary": "Matthew Faltys Time Entry",
-            "status": "Advancing",
-            "status_category_key": "indeterminate",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3742"
-          },
-          {
-            "issue_key": "WSA-3743",
-            "summary": "Daniel Carnes Time Entry",
-            "status": "Advancing",
-            "status_category_key": "indeterminate",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3743"
-          }
-        ],
-        "deliverable_id": null
-      },
-      {
-        "issue_key": "WSA-3722",
-        "summary": "Phase 0: Discovery and Prerequisites (GP#12)",
-        "status": "To Do",
-        "status_category_key": "new",
-        "browse_url": "https://godynamo.atlassian.net/browse/WSA-3722",
-        "subtasks": [
-          {
-            "issue_key": "WSA-3732",
-            "summary": "Confirm Tierpoint network details (GP#13)",
-            "status": "To Do",
-            "status_category_key": "new",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3732"
-          },
-          {
-            "issue_key": "WSA-3733",
-            "summary": "Confirm Tierpoint contract allows VPN to AWS (GP#20)",
-            "status": "To Do",
-            "status_category_key": "new",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3733"
-          },
-          {
-            "issue_key": "WSA-3734",
-            "summary": "Verify AWS account access and permissions (GP#18)",
-            "status": "To Do",
-            "status_category_key": "new",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3734"
-          },
-          {
-            "issue_key": "WSA-3735",
-            "summary": "Confirm GitHub Enterprise org admin access (GP#19)",
-            "status": "To Do",
-            "status_category_key": "new",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3735"
-          },
-          {
-            "issue_key": "WSA-3736",
-            "summary": "Select Terraform or CloudFormation for IaC (GP#21)",
-            "status": "To Do",
-            "status_category_key": "new",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3736"
-          },
-          {
-            "issue_key": "WSA-3737",
-            "summary": "Establish IaC repository in GitHub (GP#22)",
-            "status": "To Do",
-            "status_category_key": "new",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3737"
-          },
-          {
-            "issue_key": "WSA-3738",
-            "summary": "Cameron Ludwig Time Entry",
-            "status": "Advancing",
-            "status_category_key": "indeterminate",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3738"
-          }
-        ],
-        "deliverable_id": null
-      },
-      {
-        "issue_key": "WSA-3721",
-        "summary": "Provide the team access to AWS (GP#1)",
-        "status": "Done",
-        "status_category_key": "done",
-        "browse_url": "https://godynamo.atlassian.net/browse/WSA-3721",
-        "subtasks": [
-          {
-            "issue_key": "WSA-3739",
-            "summary": "Brent Time Entry",
-            "status": "Advancing",
-            "status_category_key": "indeterminate",
-            "done": false,
-            "browse_url": "https://godynamo.atlassian.net/browse/WSA-3739"
-          }
-        ],
-        "deliverable_id": null
-      },
-      {
-        "issue_key": "WSA-3720",
-        "summary": "The Tierpoint IP ranges (GP#11)",
-        "status": "Done",
-        "status_category_key": "done",
-        "browse_url": "https://godynamo.atlassian.net/browse/WSA-3720",
-        "subtasks": [],
-        "deliverable_id": null
       }
     ],
     "WSA-3269": [
@@ -2392,7 +2394,7 @@
         "deliverable_id": "OC-02.3"
       }
     ],
-    "WSA-3268": [
+    "WSA-36": [
       {
         "issue_key": "WSA-107",
         "summary": "Terraform documentation and recommendation",
@@ -2404,5 +2406,5 @@
       }
     ]
   },
-  "export_note": "Rebuilt from PA-Jira-03-23-2026-json.json (no live Jira call). For live data run: node Scripts/jira-export-pa.js"
+  "export_note": "Generated by Scripts/jira-export-pa.js. Re-run that script to refresh statuses from Jira, or run Scripts/jira-kanban-status-from-export.js from an existing export."
 }
