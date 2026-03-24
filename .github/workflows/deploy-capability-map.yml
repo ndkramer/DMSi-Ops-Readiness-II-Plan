@@ -14,7 +14,9 @@ on:
     branches: [main]
     paths:
       - 'Capability-map/capability-map.html'
+      - 'Capability-map/capability-map-dmsi.html'
       - 'Capability-map/capability-map-state.json'
+      - 'Capability-map/capability-map-artifacts-dmsi.json'
       - 'Capability-map/index.mjs'
       - 'Project-Plan/Combined-Outcome-Gantt.html'
       - 'Project-Plan/gantt-data.json'
@@ -38,7 +40,7 @@ jobs:
       - name: Create deployment package
         run: |
           cd Capability-map
-          zip -r ../deploy.zip index.mjs capability-map.html capability-map-state.json
+          zip -r ../deploy.zip index.mjs capability-map.html capability-map-dmsi.html capability-map-state.json capability-map-artifacts-dmsi.json
           cd ../Project-Plan
           zip -g ../deploy.zip Combined-Outcome-Gantt.html gantt-data.json
           cd ..

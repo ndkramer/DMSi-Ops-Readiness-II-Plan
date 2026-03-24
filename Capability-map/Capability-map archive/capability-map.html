@@ -1653,6 +1653,15 @@ function getStatusLabel(s) {
   return s === 'done' ? 'Complete' : s === 'in-progress' ? 'In Progress' : 'Not Started';
 }
 
+/** True when artifact icon/link should show: real URL present (not #, blank, or PASTE_DMSI_URL). */
+function hasStageArtifactUrl(url) {
+  if (url == null || url === '') return false;
+  var s = String(url).trim();
+  if (s === '' || s === '#') return false;
+  if (/^PASTE_DMSI_URL$/i.test(s)) return false;
+  return true;
+}
+
 function makeStageCard(stage, capId, idx, theme) {
   const card = document.createElement('div');
   card.className = `stage-card status-${stage.status}`;
@@ -1716,7 +1725,7 @@ function makeStageCard(stage, capId, idx, theme) {
           <span class="stage-status-badge">${getStatusLabel(stage.status)}</span>
         </div>
       </div>
-      ${stage.artifactsUrl && stage.artifactsUrl !== '#' ? `<span class="artifact-indicator" title="Artifacts available">
+      ${hasStageArtifactUrl(stage.artifactsUrl) ? `<span class="artifact-indicator" title="Artifacts available">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h5.586a1 1 0 01.707.293l3.414 3.414A1 1 0 0113 6.414V13a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" stroke="#2563eb" stroke-width="1.5"/><path d="M8 2v4h4" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </span>` : ''}
       <span class="stage-expand-icon">&#9662;</span>
@@ -1734,7 +1743,7 @@ function makeStageCard(stage, capId, idx, theme) {
         }).join('')}</ul>
         <div class="without-this">${stage.without}</div>
         ${bubbleHtml}
-        ${stage.artifactsUrl && stage.artifactsUrl !== '#' ? `<a class="artifacts-link" href="${stage.artifactsUrl}" target="_blank" rel="noopener">
+        ${hasStageArtifactUrl(stage.artifactsUrl) ? `<a class="artifacts-link" href="${stage.artifactsUrl}" target="_blank" rel="noopener">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h5.586a1 1 0 01.707.293l3.414 3.414A1 1 0 0113 6.414V13a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" stroke="#2563eb" stroke-width="1.5"/><path d="M8 2v4h4" stroke="#2563eb" stroke-width="1.5"/></svg>
           Stage Artifacts Folder
         </a>` : ''}
@@ -1930,7 +1939,8 @@ function toggleEl(id) {
 
 /* ═══════════════════════════════ */
 /* STATE FROM JSON / EMBEDDED      */
-/* Loads capability-map-state.json when present; otherwise uses EMBEDDED_STATE below (for single-file sharing). */
+/* Loads capability-map-state.json when present; otherwise uses EMBEDDED_STATE below (for single-file sharing).
+   On capability-map-dmsi.html or ?artifacts=dmsi, merges capability-map-artifacts-dmsi.json overrides onto artifactsUrl only. */
 /* ═══════════════════════════════ */
 
 var EMBEDDED_STATE = {
@@ -2649,13 +2659,55 @@ function renderAll() {
   equalizeBCCards();
 }
 
+/** True when DMSi-specific artifact folder URLs should load from capability-map-artifacts-dmsi.json. */
+function isDmsiArtifactsVariant() {
+  try {
+    var p = window.location.pathname || '';
+    if (/capability-map-dmsi\.html$/i.test(p)) return true;
+    var q = new URLSearchParams(window.location.search || '');
+    return q.get('artifacts') === 'dmsi';
+  } catch (e) {
+    return false;
+  }
+}
+
+/** Apply sparse { capabilityId, num, artifactsUrl } overrides after applyState (DMSi only). */
+function applyArtifactUrlOverrides(list) {
+  if (!list || !Array.isArray(list)) return;
+  list.forEach(function (s) {
+    if (!s || typeof s.capabilityId !== 'string' || typeof s.num !== 'number') return;
+    if (!('artifactsUrl' in s)) return;
+    var arrays = getStageArrays(s.capabilityId);
+    for (var i = 0; i < arrays.length; i++) {
+      var found = arrays[i].find(function (stage) { return stage.num === s.num; });
+      if (found) {
+        found.artifactsUrl = s.artifactsUrl;
+        break;
+      }
+    }
+  });
+}
+
 function loadState() {
   fetch('capability-map-state.json')
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (data) {
       if (data) applyState(data);
       else applyState(EMBEDDED_STATE);
-      renderAll();
+      if (!isDmsiArtifactsVariant()) {
+        renderAll();
+        return;
+      }
+      return fetch('capability-map-artifacts-dmsi.json')
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (artifactData) {
+          var list = artifactData && (artifactData.overrides || (Array.isArray(artifactData) ? artifactData : null));
+          if (Array.isArray(list)) applyArtifactUrlOverrides(list);
+          renderAll();
+        })
+        .catch(function () {
+          renderAll();
+        });
     })
     .catch(function () {
       applyState(EMBEDDED_STATE);

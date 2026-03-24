@@ -1,0 +1,275 @@
+{
+  "_comment": "Replace PASTE_DMSI_URL on each line with your DMSi folder URL, or use # to hide the Stage Artifacts link for that stage.",
+  "overrides": [
+    {
+      "capabilityId": "wm",
+      "num": 0,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 1,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 2,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 3,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 4,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 5,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 6,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 0,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 1,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 2,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 3,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 4,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 5,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 0,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 1,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 2,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 3,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 4,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 5,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 6,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 7,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 0,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 1,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 2,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 3,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 4,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 5,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 6,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 7,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 8,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "ls",
+      "num": 0,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "ls",
+      "num": 1,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "ls",
+      "num": 2,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "ls",
+      "num": 3,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "ls",
+      "num": 4,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "ls",
+      "num": 5,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "ls",
+      "num": 6,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 0,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 1,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 2,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 3,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 4,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 5,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 0,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 1,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 2,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 3,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 4,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 5,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 0,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 1,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 2,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 3,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 4,
+      "artifactsUrl": "PASTE_DMSI_URL"
+    }
+  ]
+}

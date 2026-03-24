@@ -5,6 +5,8 @@ This folder contains the **Capability Map** HTML and the Lambda handler that ser
 ## How it works
 
 - **`capability-map.html`** – Single-page capability map (no local script/CSS dependencies).
+- **`capability-map-dmsi.html`** – Same app; loads DMSi artifact URL overrides from `capability-map-artifacts-dmsi.json` (or use `capability-map.html?artifacts=dmsi`).
+- **`capability-map-artifacts-dmsi.json`** – Sparse list of `{ "capabilityId", "num", "artifactsUrl" }` under `overrides`; shared state remains in `capability-map-state.json`.
 - **`index.mjs`** – Node.js Lambda handler (ESM). Serves the HTML at `/` and supports Lambda Function URL `rawPath`-style routing.
 
 Deployments are done by the GitHub Actions workflow [Deploy Capability Map to Lambda](../.github/workflows/deploy-capability-map.yml).
@@ -31,7 +33,7 @@ The IAM user/role must have at least: `lambda:UpdateFunctionCode`, `lambda:GetFu
 
 ## When deployments run
 
-- **Automatic:** Push to `main` that changes `Capability-map/capability-map.html`, `Capability-map/index.mjs`, or the workflow file.
+- **Automatic:** Push to `main` that changes files under `Capability-map/` included in the deploy zip (see workflow) or the workflow file itself.
 - **Manual:** Actions tab → “Deploy Capability Map to Lambda” → “Run workflow”.
 
 ## Lambda configuration
