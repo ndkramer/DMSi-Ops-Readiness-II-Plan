@@ -1880,7 +1880,7 @@ function toggleEl(id) {
 /* ═══════════════════════════════ */
 /* STATE FROM JSON / EMBEDDED      */
 /* Loads capability-map-state.json when present; otherwise uses EMBEDDED_STATE below (for single-file sharing).
-   Repeat ?token= on fetches when present (Lambda). On capability-map-dmsi.html or ?artifacts=dmsi, merge capability-map-artifacts-dmsi.json onto artifactsUrl only. */
+   Repeat ?token= on fetches when present (Lambda; query or hash). capability-map-dmsi.html includes meta capability-map-artifacts-variant=dmsi; or use ?artifacts=dmsi. Merge capability-map-artifacts-dmsi.json onto artifactsUrl only. */
 /* ═══════════════════════════════ */
 
 var EMBEDDED_STATE = {
@@ -2624,6 +2624,8 @@ function renderAll() {
 /** True when DMSi-specific artifact folder URLs should load from capability-map-artifacts-dmsi.json. */
 function isDmsiArtifactsVariant() {
   try {
+    var meta = document.querySelector('meta[name="capability-map-artifacts-variant"]');
+    if (meta && meta.getAttribute('content') === 'dmsi') return true;
     var href = (window.location && window.location.href) || '';
     var p = (window.location && window.location.pathname) || '';
     if (/capability-map-dmsi\.html/i.test(href) || /capability-map-dmsi\.html/i.test(p)) return true;
@@ -2653,10 +2655,25 @@ function applyArtifactUrlOverrides(list) {
   });
 }
 
+/** Lambda auth token from the page URL (query ?token= or hash #token=). */
+function getPageToken() {
+  try {
+    var q = new URLSearchParams(window.location.search || '');
+    var t = q.get('token');
+    if (t) return t;
+    var hash = window.location.hash || '';
+    if (hash.startsWith('#')) hash = hash.slice(1);
+    if (!hash) return null;
+    return new URLSearchParams(hash).get('token');
+  } catch (e) {
+    return null;
+  }
+}
+
 /** Same-origin JSON fetches must repeat ?token= so Lambda auth (CONFLUENCE_TOKEN) allows the request. */
 function fetchUrlWithPageToken(resourcePath) {
   try {
-    var token = new URLSearchParams(window.location.search || '').get('token');
+    var token = getPageToken();
     if (!token) return resourcePath;
     var sep = resourcePath.indexOf('?') >= 0 ? '&' : '?';
     return resourcePath + sep + 'token=' + encodeURIComponent(token);
