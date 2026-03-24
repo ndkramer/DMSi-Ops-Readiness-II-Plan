@@ -1,7 +1,7 @@
 # PA-WSB: Pipeline Automation -- Outcome-Based Work Breakdown Structure
 
 **Dynamo Consulting | DMSi Software**
-**March 2026 | v1.3 | R0**
+**March 2026 | v1.4 | R0**
 **Classification: Dynamo Confidential**
 
 ---
@@ -49,7 +49,7 @@ Pipeline Automation covers the end-to-end automation of configuration and code d
 
 > **NOTE:** The team has estimated approximately 12+ pipelines will eventually be needed across environment configs, application configs, and customer configs. This WSB covers only the NGINX proof-of-concept (3 pipelines). Additional pipelines will be scoped after the proof-of-concept validates the pattern.
 
-**Outcomes 1–9** deliver the pipeline *framework* (pattern) using NGINX as the proof-of-concept. **Outcome 10** (Pipeline Fallback) is the contingent recovery path if reliability validation fails. **Outcome 11** (Pipeline Pattern Replication) replicates the proven framework to other config types (PASOE configs, customer runtime configs, infrastructure configs, etc.)—not application code. Application deployment (Caley's domain) is out of scope (see Decision Register PA-D-14).
+**Outcome 0 (PA-OC-00)** delivers the NGINX **infrastructure & architecture POC** before foundation work. **Outcomes 1–9** (**PA-OC-01** … **PA-OC-09**) deliver the pipeline *framework* (pattern) using NGINX as the proof-of-concept. **Outcome 10** (**PA-OC-10**, Pipeline Fallback) is the contingent recovery path if reliability validation fails. **Outcome 11** (**PA-OC-11**, Pipeline Pattern Replication) replicates the proven framework to other config types (PASOE configs, customer runtime configs, infrastructure configs, etc.)—not application code. Application deployment (Caley's domain) is out of scope (see Decision Register PA-D-14).
 
 ### Definition of Done
 
@@ -57,10 +57,12 @@ Outcomes are **complete as complete as we can for now**: we deliver the outcome 
 
 ### Systems of record and planning views
 
-- **Jira (authoritative backlog):** **WSA-2656** is the **capability of record** for Pipeline Automation (*v2: Pipeline Automation*)—the single Jira root for this WSB. Outcome Epics (**WSA-3268**–**WSA-3278**), Stories, and Sub-tasks are the default source of truth for status, ownership, and sprint-level execution. Action items roll up under Epic **WSA-2657** (*PA Level: Action Items*). There is **no automatic sync** from GitHub Projects; items may exist in GitHub for discovery or stakeholder views—**reconcile into Jira** for commitment and reporting.
-- **Change log (planning ↔ Jira):** 2026-03-24 — Removed static **POC-1…POC-4** pseudo-deliverables from the PA kanban HTML artifact; the NGINX pipeline POC is tracked solely as Jira Story **WSA-3719** (`[POC]`). Kanban subtasks and progress on that board are driven from the Jira export (`Scripts/jira-export-pa.js` → `PA/Jira/pa-kanban-jira-status.json`).
+- **Jira (authoritative backlog):** **WSA-2656** is the **capability of record** for Pipeline Automation (*v2: Pipeline Automation*)—the single Jira root for this WSB. **Outcome Epics** are **WSA-3267** (**PA-OC-00** — Infrastructure & Architecture POC) and **WSA-3268**–**WSA-3278** (**PA-OC-01** … **PA-OC-11**). Stories and Sub-tasks roll up under those Epics. Action items roll up under Epic **WSA-2657** (*PA Level: Action Items*). There is **no automatic sync** from GitHub Projects; items may exist in GitHub for discovery or stakeholder views—**reconcile into Jira** for commitment and reporting.
+- **Change log (planning ↔ Jira):**
+  - **2026-03-24** — Removed static **POC-1…POC-4** pseudo-deliverables from the PA kanban HTML artifact; NGINX pipeline POC execution tracked in Jira with **`[POC]`** summary prefix. Kanban is driven from the Jira export (`Scripts/jira-export-pa.js` → `PA/Jira/pa-kanban-jira-status.json`).
+  - **2026-03-23** — **PA-OC-00** is a first-class outcome before **PA-OC-01**. Jira: create Epic **[PA-OC-00] Infrastructure & Architecture POC** (recommended key **WSA-3267**, parent **WSA-2656**), **Outcome Category** = POC (or Baseline per Jira config), labels **`oc-00`**, **`Pipeline-Automation`**, component **Pipeline Automation**. **Move all Stories whose summary starts with `[POC]`** (including **WSA-3719** if it remains separate) **under Epic WSA-3267** so the kanban **OC-00** board lists the full POC backlog. Update Epic Link / parent on each such Story; do not leave orphan `[POC]` stories under other outcome Epics except where a Story is legitimately split (then use links or description to reference PA-OC-00).
 - **This document (PA-WSB):** Normative outcome definitions, success criteria, deliverable IDs, dependencies, risks, and decisions.
-- **Visual timeline:** `PA/PA-Outcome-map.html` shows the **POC band** (weeks 1–2 on the timeline, before PA-OC-01) as **active engineering work**—building a proof-of-concept that **proves infrastructure and architecture** (how the pipeline will run, connect, and be operated) for leadership visibility. It is **not** idle schedule padding. POC is still **not** a separate **PA-OC-XX** row in the outcome table below (it does not add a twelfth numbered outcome); execution detail is tracked in **Jira** and reconciled here. The same page reflects **1.5 FTE** assumptions and calendar bands.
+- **Visual timeline:** `PA/PA-Outcome-map.html` shows **PA-OC-00** (weeks 1–2) as **active engineering**—proving infrastructure and architecture before **PA-OC-01**. It is **not** idle schedule padding. The same page reflects **1.5 FTE** assumptions and calendar bands.
 
 ---
 
@@ -68,7 +70,8 @@ Outcomes are **complete as complete as we can for now**: we deliver the outcome 
 
 | ID | Outcome | Category | Target Date | Milestone Alignment |
 |----|---------|----------|-------------|---------------------|
-| PA-OC-01 | [PA-OC-01] Foundation Access and Security Baseline Complete | Baseline | [TBD -- Weeks 1-2] | M3: Foundation Complete |
+| PA-OC-00 | [PA-OC-00] Infrastructure & Architecture POC | POC | [TBD -- Weeks 1-2] | — (enables M3 foundation) |
+| PA-OC-01 | [PA-OC-01] Foundation Access and Security Baseline Complete | Baseline | [TBD -- Weeks 3-5] | M3: Foundation Complete |
 | PA-OC-02 | Configuration Inventory and Credential Mapping Complete | Baseline | [TBD -- Weeks 2-4] | M3: Foundation Complete |
 | PA-OC-03 | Migration Path and Runner Infrastructure Defined | Baseline | [TBD -- Weeks 4-6] | M3: Foundation Complete |
 | PA-OC-04 | Configurations in Version Control | Baseline | [TBD -- Weeks 6-10] | M4: Config Pipeline Active |
@@ -89,7 +92,7 @@ The following outcomes can run concurrently once their dependencies are met:
 - **PA-OC-02** (Config Inventory) can begin specific work packages in parallel with PA-OC-01 completion -- Matthew is already building the config inventory from Ansible playbook analysis.
 - **PA-OC-06** (Deploy Pipeline) has a `should` dependency on PA-OC-05 (Build Pipeline) -- deployment can begin development in parallel, but full validation requires build artifacts.
 
-The **POC band** (see `PA-Outcome-map.html`) is a **two-week period of real delivery** before PA-OC-01 on the visual timeline: the team **builds and exercises a POC** to **prove infrastructure and architecture** (and related approach, tooling, and access). It does not add a twelfth numbered **PA-OC-XX** outcome; progress is reported via **Jira** and these planning views for leadership.
+**PA-OC-00** (see `PA-Outcome-map.html`) is the **first outcome** on the timeline (weeks 1–2): the team **builds and exercises a POC** to **prove infrastructure and architecture** (and related approach, tooling, and access). **PA-OC-01** must not be treated as complete until **PA-OC-00** is satisfied per its success criteria. Progress is reported via **Jira Epic WSA-3267** and these planning views.
 
 ---
 
@@ -97,7 +100,8 @@ The **POC band** (see `PA-Outcome-map.html`) is a **two-week period of real deli
 
 ```mermaid
 graph TD
-    PA-OC-01[PA-OC-01: Foundation & Security] -->|must| PA-OC-02[PA-OC-02: Config Inventory]
+    PA-OC-00[PA-OC-00: Infrastructure & Architecture POC] -->|must| PA-OC-01[PA-OC-01: Foundation & Security]
+    PA-OC-01 -->|must| PA-OC-02[PA-OC-02: Config Inventory]
     PA-OC-02 -->|must| PA-OC-03[PA-OC-03: Migration Path Defined]
     PA-OC-03 -->|must| PA-OC-04[PA-OC-04: Configs in VCS]
     PA-OC-04 -->|must| PA-OC-05[PA-OC-05: Build Pipeline]
@@ -124,10 +128,34 @@ graph TD
 
 ---
 
+### [PA-OC-00] Infrastructure & Architecture POC
+
+**Category:** POC
+**Target Date:** [TBD -- Weeks 1-2]
+**Owner:** Dynamo + DMSi engineering (per sprint)
+**Status:** [TBD] — see Jira Epic **WSA-3267** (create under **WSA-2656** if not present); all Stories with **`[POC]`** summary prefix belong under this Epic.
+**Source:** Pre-S0 engineering band (visual timeline weeks 1–2); proves how the pipeline will run, connect, and be operated before foundation/security baseline work (**PA-OC-01**).
+
+#### Success Criteria
+
+- [ ] A working **proof-of-concept** demonstrates the intended **infrastructure and architecture** for the NGINX config pipeline (runner reachability, repo integration approach, and at least one path that exercises build/deploy or equivalent automation consistent with the target design).
+- [ ] **Leadership-visible evidence** exists in Jira (Stories/Sub-tasks under Epic **WSA-3267**) that the approach, tooling, and access model are validated or explicitly risk-documented.
+- [ ] **PA-OC-01** may proceed without duplicating unresolved infrastructure unknowns that fall within this POC scope.
+
+#### Deliverables
+
+| ID | Deliverable | Owner | Due |
+|----|-------------|-------|-----|
+| PA-OC-00.1 | NGINX pipeline POC — infrastructure & architecture proof | Dynamo + DMSi | [TBD] |
+
+**Notes:** Historical Jira Story **WSA-3719** (`[POC]`) maps to this outcome; after the Epic exists, that Story (and any other **`[POC]`**-prefixed Stories) should sit **under Epic WSA-3267**. Runner/tooling spike work that was previously discussed under **PA-OC-03** remains in the WBS as **PA-OC-03.3**; only scope that truly belongs to the pre-foundation POC band stays under **PA-OC-00**.
+
+---
+
 ### [PA-OC-01] Foundation Access and Security Baseline Complete
 
 **Category:** Baseline
-**Target Date:** [TBD -- Weeks 1-2]
+**Target Date:** [TBD -- Weeks 3-5]
 **Owner:** Dynamo + Andy Meyers
 **Status:** Complete — see Jira Epic **WSA-3268**; reconcile success criteria below with evidence in Jira.
 **Source:** S0 (WP 0.1, 0.2, 0.3, 0.4, 0.5, 0.6)
@@ -1002,20 +1030,20 @@ These questions, once answered and acted upon, lock in irreversible choices.
 | Outcome Model Element | Jira Issue Type | Key / relationship |
 |-----------------------|-----------------|----------------------|
 | Capability (Pipeline Automation) | Capability | **WSA-2656** (*v2: Pipeline Automation*) — **capability of record**; root of the PA hierarchy |
-| Outcome (PA-OC-01 … PA-OC-11) | Epic | **Parent = WSA-2656** (Epic keys **WSA-3268**–**WSA-3278**). Epic **Summary** (and Jira **Epic Name** where used) match `[PA-OC-XX] …` titles in this WSB. |
+| Outcome (PA-OC-00 … PA-OC-11) | Epic | **Parent = WSA-2656**. **PA-OC-00** → Epic **WSA-3267** (*[PA-OC-00] Infrastructure & Architecture POC*). **PA-OC-01** … **PA-OC-11** → **WSA-3268**–**WSA-3278**. Epic **Summary** (and Jira **Epic Name** where used) match `[PA-OC-XX] …` titles in this WSB. |
 | Action items (cross-cutting risks, decisions, follow-ups) | Story / Action Item | Children of Epic **WSA-2657** (*PA Level: Action Items*), also under **WSA-2656** |
 | Deliverable (PA-OC-XX.Y) | Story | Under the Epic for that outcome (Epic Link / parent Epic) |
 | Task-level work | Sub-task | Parent = Story (Deliverable) |
 
 **Legacy (closed in Jira):** Epic **WSA-36** (*Stage 0: Tool Access and Process Knowledge*) was **cancelled / resolved**; work is **superseded by** Epic **WSA-3268** — **[PA-OC-01] Foundation Access and Security Baseline Complete**. Do not use **WSA-36** for new work.
 
-**Labels (Jira):** `Pipeline-Automation` plus per-outcome `oc-01` … `oc-11` on Epics **WSA-3268**–**WSA-3278**; capability **WSA-2656** also uses `PA-capability-of-record`. *Use the spelling and casing above so filters match.*
+**Labels (Jira):** `Pipeline-Automation` plus per-outcome `oc-00` … `oc-11` on Outcome Epics **WSA-3267**–**WSA-3278**; capability **WSA-2656** also uses `PA-capability-of-record`. *Use the spelling and casing above so filters match.*
 
 **Component:** `Pipeline Automation` (id **10016** in WSA) — set on outcome Epics for reporting.
 
 **Custom fields in Jira (WSA Epics):**
 
-- **Outcome Category** (`customfield_10428`): Baseline / Iterative / Conditional — **set per Epic** to match PA-OC-01…11 categories in this WSB.
+- **Outcome Category** (`customfield_10428`): POC / Baseline / Iterative / Conditional — **set per Epic** to match PA-OC-00…11 categories in this WSB (use the value closest to Jira’s allowed list if **POC** is not available).
 - **Due date** (system): optional **target completion** for an outcome Epic (closest match to “Target Date” in the outcome map).
 - **Dependency Type** (must / should / contingent): use **issue links** or documentation in Story/Sub-task descriptions until a dedicated field exists.
 - **Validation Status**: not yet a Jira field — track in description or labels if needed.
@@ -1026,6 +1054,7 @@ These questions, once answered and acted upon, lock in irreversible choices.
 
 | ID | Outcome | Category | Owner | Target Date | Status | % Complete | Risk Flag | Notes |
 |----|---------|----------|-------|-------------|--------|------------|-----------|-------|
+| PA-OC-00 | [PA-OC-00] Infrastructure & Architecture POC | POC | Dynamo + DMSi | [TBD] | Not Started | 0% | -- | Jira **WSA-3267**; all **`[POC]`** Stories under this Epic |
 | PA-OC-01 | [PA-OC-01] Foundation Access and Security Baseline Complete | Baseline | Dynamo + Andy | [TBD] | Complete | 100% | -- | Jira **WSA-3268** (replaces legacy **WSA-36**) |
 | PA-OC-02 | Config Inventory | Baseline | Dynamo + Andy | [TBD] | Not Started | 0% | -- | -- |
 | PA-OC-03 | Migration Path Defined | Baseline | Dynamo + Andy | [TBD] | Not Started | 0% | -- | -- |
@@ -1049,6 +1078,7 @@ This table shows how the original stage-gate WBS maps to this outcome-based stru
 
 | Original Stage | Original Work Packages | Outcome(s) | Notes |
 |---------------|----------------------|-------------|-------|
+| (Pre-S0 / timeline) | NGINX pipeline POC band | PA-OC-00 | First outcome on the calendar; Jira Epic **WSA-3267**; **`[POC]`** Stories |
 | S0: Access and Process Knowledge | WP 0.1-0.6 | PA-OC-01 | All S0 work maps to a single foundation outcome |
 | S1: Config Inventory Complete | WP 1.1-1.3 | PA-OC-02 | Credential management (WP 1.3) consolidated here from S0 security baseline |
 | S2: Migration Path Defined | WP 2.1-2.3 | PA-OC-03 | Runner strategy is infrastructure that enables multiple downstream outcomes |

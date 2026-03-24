@@ -357,6 +357,7 @@
   <div class="legend-item"><div class="legend-line should"></div> should dependency</div>
   <div class="legend-item"><div class="legend-line contingent"></div> contingent</div>
   <div class="legend-item"><div style="width:2px;height:14px;background:#E74C3C;opacity:0.5"></div> Milestone</div>
+  <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #2B2B2B;opacity:0.5"></div> As of last save</div>
 </div>
 
 <div class="container">
@@ -523,6 +524,25 @@ const outcomes = [
     detail:'CONDITIONAL: Triggers if VI-OC-05 or VI-OC-09 validation fails after max iterations. Legacy systems maintained; revised plan to Hilltop.' },
 ];
 
+/** Horizontal position on the 16-column track (same calendar span as program milestones). */
+const VI_TRACK_START = new Date(2026, 2, 1);
+const VI_TRACK_END = new Date(2026, 10, 1);
+
+/** Vertical "as of" line: last-modified time of this HTML file (document.lastModified). */
+function referenceDateFromDocument() {
+  const d = new Date(document.lastModified);
+  if (isNaN(d.getTime())) {
+    const x = new Date();
+    x.setHours(0, 0, 0, 0);
+    return x;
+  }
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+function formatAsOfTag(d) {
+  return 'AS OF ' + d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
+}
+
 // Build date markers (half-month periods: Mar-Oct 2026)
 const weekMarkersEl = document.getElementById('weekMarkers');
 const dateLabels = ['Mar 1','Mar 15','Apr 1','Apr 15','May 1','May 15','Jun 1','Jun 15','Jul 1','Jul 15','Aug 1','Aug 15','Sep 1','Sep 15','Oct 1','Oct 15'];
@@ -533,17 +553,22 @@ dateLabels.forEach(label => {
   weekMarkersEl.appendChild(d);
 });
 
-// "Today" marker line -- Mar 15 = start of column 2
-// Position: label column (200px) + 1/16 of the track width
+// As-of (last save) marker — linear calendar Mar 1–Nov 1, 2026 vs 16-column track
 const timelineEl = document.getElementById('timeline');
-const todayMarker = document.createElement('div');
-todayMarker.className = 'today-line';
-todayMarker.style.left = 'calc(200px + (100% - 200px) * 1 / 16)';
-const todayTag = document.createElement('div');
-todayTag.className = 'today-tag';
-todayTag.textContent = 'TODAY';
-todayMarker.appendChild(todayTag);
-timelineEl.appendChild(todayMarker);
+(function() {
+  const ref = referenceDateFromDocument();
+  const rangeMs = VI_TRACK_END - VI_TRACK_START;
+  const pct = Math.max(0, Math.min(100, ((ref - VI_TRACK_START) / rangeMs) * 100));
+  const left = 'calc(200px + (100% - 200px) * ' + (pct / 100) + ')';
+  const todayMarker = document.createElement('div');
+  todayMarker.className = 'today-line';
+  todayMarker.style.left = left;
+  const todayTag = document.createElement('div');
+  todayTag.className = 'today-tag';
+  todayTag.textContent = formatAsOfTag(ref);
+  todayMarker.appendChild(todayTag);
+  timelineEl.appendChild(todayMarker);
+})();
 
 // Build swim lanes
 const lanesEl = document.getElementById('swimLanes');
@@ -602,6 +627,38 @@ outcomes.forEach((oc, idx) => {
   lane.appendChild(track);
   lanesEl.appendChild(lane);
 });
+
+/** Program milestones: ../Project-Plan/project-milestones.json. Horizontal position: linear calendar Mar 1–Nov 1, 2026 vs 16-column track. */
+const FALLBACK_PROJECT_MILESTONES = [
+  { id: 'M2', date: '2026-03-27', label: 'M2 3/27' },
+  { id: 'M3', date: '2026-04-27', label: 'M3 4/27' },
+  { id: 'M4', date: '2026-10-27', label: 'M4 10/27' }
+];
+function loadProjectMilestones() {
+  return fetch('../Project-Plan/project-milestones.json')
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => data.milestones || FALLBACK_PROJECT_MILESTONES)
+    .catch(() => FALLBACK_PROJECT_MILESTONES);
+}
+function renderVIProjectMilestoneMarkers(milestones) {
+  const timelineEl = document.getElementById('timeline');
+  const labelWidth = 200;
+  const rangeMs = VI_TRACK_END - VI_TRACK_START;
+  milestones.forEach(m => {
+    const d = new Date(m.date + 'T12:00:00');
+    const pct = Math.max(0, Math.min(100, ((d - VI_TRACK_START) / rangeMs) * 100));
+    const line = document.createElement('div');
+    line.className = 'milestone-line';
+    line.style.left = `calc(${labelWidth}px + (100% - ${labelWidth}px) * ${pct / 100})`;
+    timelineEl.appendChild(line);
+    const tag = document.createElement('div');
+    tag.className = 'milestone-tag';
+    tag.style.left = `calc(${labelWidth}px + (100% - ${labelWidth}px) * ${pct / 100})`;
+    tag.textContent = m.label;
+    timelineEl.appendChild(tag);
+  });
+}
+loadProjectMilestones().then(renderVIProjectMilestoneMarkers);
 
 // Tooltip
 const tooltipEl = document.getElementById('tooltip');

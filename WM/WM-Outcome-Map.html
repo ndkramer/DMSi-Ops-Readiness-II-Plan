@@ -320,7 +320,7 @@
   <div class="legend-item"><div class="legend-dot" style="background:#76BE43"></div> Iterative (validation cycles)</div>
   <div class="legend-item"><div class="legend-line must"></div> must dependency</div>
   <div class="legend-item"><div class="legend-line should" style="border-color:#76BE43"></div> should dependency</div>
-  <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #2B2B2B;opacity:0.5"></div> Today</div>
+  <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #2B2B2B;opacity:0.5"></div> As of last save</div>
   <div class="legend-item"><div style="width:2px;height:14px;background:#E74C3C;opacity:0.5"></div> Deadline</div>
 </div>
 
@@ -531,15 +531,72 @@ outcomes.forEach((oc, idx) => {
   lanesEl.appendChild(lane);
 });
 
-// Add "Today" marker line (end of Week 4 = column position 4/18 through the grid)
+/** Program milestones: ../Project-Plan/project-milestones.json. Week 1 = Feb 16, 2026; 18-week grid. */
+const FALLBACK_PROJECT_MILESTONES = [
+  { id: 'M2', date: '2026-03-27', label: 'M2 3/27' },
+  { id: 'M3', date: '2026-04-27', label: 'M3 4/27' },
+  { id: 'M4', date: '2026-10-27', label: 'M4 10/27' }
+];
+const WM_MILESTONE_START = new Date(2026, 1, 16);
+const WM_MILESTONE_WEEKS = 18;
+function loadProjectMilestones() {
+  return fetch('../Project-Plan/project-milestones.json')
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => data.milestones || FALLBACK_PROJECT_MILESTONES)
+    .catch(() => FALLBACK_PROJECT_MILESTONES);
+}
+function renderWMProjectMilestoneMarkers(milestones) {
+  const timelineEl = document.getElementById('timeline');
+  const labelWidth = 200;
+  const spanDays = WM_MILESTONE_WEEKS * 7;
+  milestones.forEach(m => {
+    const d = new Date(m.date + 'T12:00:00');
+    const daysSince = (d - WM_MILESTONE_START) / 86400000;
+    const pct = Math.max(0, Math.min(100, (daysSince / spanDays) * 100));
+    const line = document.createElement('div');
+    line.className = 'milestone-line';
+    line.style.left = `calc(${labelWidth}px + (100% - ${labelWidth}px) * ${pct / 100})`;
+    timelineEl.appendChild(line);
+    const tag = document.createElement('div');
+    tag.className = 'milestone-tag';
+    tag.style.left = `calc(${labelWidth}px + (100% - ${labelWidth}px) * ${pct / 100})`;
+    tag.textContent = m.label;
+    timelineEl.appendChild(tag);
+  });
+}
+
+loadProjectMilestones().then(renderWMProjectMilestoneMarkers);
+
+/** Vertical "as of" line: last-modified time of this HTML file (document.lastModified). */
+function referenceDateFromDocument() {
+  const d = new Date(document.lastModified);
+  if (isNaN(d.getTime())) {
+    const x = new Date();
+    x.setHours(0, 0, 0, 0);
+    return x;
+  }
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+function formatAsOfTag(d) {
+  return 'AS OF ' + d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
+}
+
+// As-of (last save) marker on 18-week grid from Feb 16, 2026
 const timelineEl = document.getElementById('timeline');
-const todayLine = document.createElement('div');
-todayLine.style.cssText = 'position:absolute;top:0;bottom:0;width:2px;border-left:2px dashed #2B2B2B;z-index:3;opacity:0.5;left:calc(200px + ((4 / 18) * (100% - 200px)))';
-timelineEl.appendChild(todayLine);
-const todayTag = document.createElement('div');
-todayTag.style.cssText = 'position:absolute;top:-22px;background:rgba(43,43,43,0.5);color:white;font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px;white-space:nowrap;z-index:5;left:calc(200px + ((4 / 18) * (100% - 200px)));transform:translateX(-50%)';
-todayTag.textContent = 'TODAY';
-timelineEl.appendChild(todayTag);
+(function() {
+  const ref = referenceDateFromDocument();
+  const daysSince = (ref - WM_MILESTONE_START) / 86400000;
+  const pct = Math.max(0, Math.min(100, (daysSince / (WM_MILESTONE_WEEKS * 7)) * 100));
+  const left = `calc(200px + (100% - 200px) * ${pct / 100})`;
+  const todayLine = document.createElement('div');
+  todayLine.style.cssText = 'position:absolute;top:0;bottom:0;width:2px;border-left:2px dashed #2B2B2B;z-index:3;opacity:0.5;left:' + left;
+  timelineEl.appendChild(todayLine);
+  const todayTag = document.createElement('div');
+  todayTag.style.cssText = 'position:absolute;top:-22px;background:rgba(43,43,43,0.5);color:white;font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px;white-space:nowrap;z-index:5;left:' + left + ';transform:translateX(-50%)';
+  todayTag.textContent = formatAsOfTag(ref);
+  timelineEl.appendChild(todayTag);
+})();
 
 // Add end-of-May deadline line (Week 15 = column 15, which is ~83.3% through the 18-col grid)
 // The deadline falls at the end of Week 15 (May 29)

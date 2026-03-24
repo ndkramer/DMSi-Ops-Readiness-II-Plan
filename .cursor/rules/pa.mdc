@@ -16,7 +16,7 @@ When editing or creating content under the PA folder, follow the Pipeline Automa
 
 ## Conventions
 
-- Outcome IDs: PA-OC-01 through PA-OC-11 for PA. Categories: Baseline, Iterative, Conditional.
+- Outcome IDs: **PA-OC-00** (Infrastructure & Architecture POC) then **PA-OC-01** through **PA-OC-11**. Categories: **POC**, Baseline, Iterative, Conditional.
 - Deliverable IDs: PA-OC-XX.Y (e.g. PA-OC-01.1, PA-OC-01.2). Each deliverable has a short name and a bullet list of subtasks.
 - Risk IDs: PA-R-XX (outcome-level), PA-R-XN (cross-cutting), PA-R-SN (security).
 - Decision IDs: PA-D-XX. Classified as TYPE 1 (irreversible) or TYPE 2 (reversible).
@@ -26,7 +26,7 @@ When editing or creating content under the PA folder, follow the Pipeline Automa
 
 ## Jira alignment
 
-- **Capability root:** WSA-2656 (labels: `Pipeline-Automation`, `PA-capability-of-record`). **Action-item Epic:** WSA-2657 (`Pipeline-Automation`, `PA-action-items`). **Outcome Epics:** WSA-3268–WSA-3278 — each has `Pipeline-Automation` + `oc-01`…`oc-11`, **Outcome Category** custom field, and **Pipeline Automation** component where set. **POC pipeline story:** WSA-3719 uses summary prefix **`[POC]`** (same bracket convention as **`[PA-OC-XX]`** on stories under outcome epics); it is not a numbered PA-OC outcome. No automatic sync from GitHub Projects—backlog of record is Jira unless otherwise agreed.
+- **Capability root:** WSA-2656 (labels: `Pipeline-Automation`, `PA-capability-of-record`). **Action-item Epic:** WSA-2657 (`Pipeline-Automation`, `PA-action-items`). **Outcome Epics:** **WSA-3267** = **PA-OC-00** (*[PA-OC-00] Infrastructure & Architecture POC*); **WSA-3268**–**WSA-3278** = **PA-OC-01**…**PA-OC-11** — each has `Pipeline-Automation` + `oc-00`…`oc-11`, **Outcome Category** custom field, and **Pipeline Automation** component where set. **All Stories** whose summary starts with **`[POC]`** belong under Epic **WSA-3267** (including legacy **WSA-3719** until/unless folded into a single Story). Kanban hash **`#OC-00`**. No automatic sync from GitHub Projects—backlog of record is Jira unless otherwise agreed.
 
 ## Reference
 

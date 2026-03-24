@@ -432,7 +432,7 @@
 
     <div id="selector" class="outcome-selector">
         <h2>Pipeline Automation Outcomes</h2>
-        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>POC</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is <strong>active engineering</strong> to prove <strong>infrastructure and architecture</strong>; it is not a separate <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-OC-XX</code> outcome—see <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WSB.md</code> (v1.3). <strong>Jira</strong> is the authoritative backlog: capability <strong>WSA-2656</strong>; outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong>; action-item Epic <strong>WSA-2657</strong>. Pipeline POC execution is <strong>WSA-3719</strong> (<strong>[POC]</strong>); Sub-tasks and progress on cards come from the Jira export. Runner/tooling POC work also maps to <strong>PA-OC-03</strong> (e.g. OC-03.3). Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>. This view is for leadership alignment.</p>
+        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>PA-OC-00</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is the <strong>first outcome</strong>—Infrastructure &amp; Architecture POC—before <strong>PA-OC-01</strong>. See <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WSB.md</code> (v1.4). <strong>Jira:</strong> capability <strong>WSA-2656</strong>; Epic <strong>WSA-3267</strong> = PA-OC-00; outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong> = PA-OC-01–11; action-item Epic <strong>WSA-2657</strong>. All Stories with <strong>[POC]</strong> in the summary belong under Epic <strong>WSA-3267</strong>. Cards and columns use the Jira export. Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>. Hash <code>#POC</code> redirects to <code>#OC-00</code>.</p>
         <div class="outcome-list" id="outcomeList"></div>
     </div>
 
@@ -473,10 +473,11 @@
     <script src="Jira/pa-kanban-jira-status.js"></script>
     <script>
         const outcomeData = {
-            /* POC: no WBS deliverable rows — execution is Jira Story WSA-3719 only (see PA-WSB change log 2026-03-24). */
-            "POC": {
-                "name": "Infrastructure & Architecture POC (weeks 1–2; leadership view)",
-                "deliverables": []
+            "OC-00": {
+                "name": "[PA-OC-00] Infrastructure & Architecture POC",
+                "deliverables": [
+                    {"id": "PA-OC-00.1", "name": "NGINX pipeline POC — infrastructure & architecture proof", "subtasks": ["Exercise end-to-end path consistent with target NGINX pipeline design", "Document approach, tooling, access, and open risks for PA-OC-01", "Align evidence under Jira Epic WSA-3267 ([POC] Stories)"]}
+                ]
             },
             "OC-01": {
                 "name": "[PA-OC-01] Foundation Access and Security Baseline Complete",
@@ -574,7 +575,7 @@
 
             Object.entries(outcomeData).forEach(([id, outcome]) => {
                 const card = document.createElement('div');
-                card.className = 'outcome-card' + (id === 'POC' ? ' poc-phase' : '');
+                card.className = 'outcome-card' + (id === 'OC-00' ? ' poc-phase' : '');
                 card.innerHTML = `
                     <div class="outcome-id">${id}</div>
                     <div class="outcome-name">${outcome.name}</div>
@@ -600,28 +601,13 @@
             return 'backlog';
         }
 
-        /** OC-01 → WSA-3268 … OC-11 → WSA-3278 (same convention as PA-WSB §10). */
+        /** OC-00 → WSA-3267; OC-01 → WSA-3268 … OC-11 → WSA-3278 (PA-WSB §10). */
         function outcomeIdToEpicKey(outcomeId) {
             const m = /^OC-(\d{1,2})$/.exec(outcomeId);
             if (!m) return null;
             const n = parseInt(m[1], 10);
-            if (n < 1 || n > 11) return null;
+            if (n < 0 || n > 11) return null;
             return 'WSA-' + (3267 + n);
-        }
-
-        /** Jira Story for the internal NGINX pipeline POC ([POC] summary); also listed under PA-OC-03 Epic in exports. */
-        var POC_PIPELINE_STORY_KEY = 'WSA-3719';
-
-        function findPocPipelineStoryRow(jiraData) {
-            if (!jiraData || !jiraData.by_epic_key) return null;
-            var keys = Object.keys(jiraData.by_epic_key);
-            for (var i = 0; i < keys.length; i++) {
-                var list = jiraData.by_epic_key[keys[i]] || [];
-                for (var j = 0; j < list.length; j++) {
-                    if (list[j].issue_key === POC_PIPELINE_STORY_KEY) return list[j];
-                }
-            }
-            return null;
         }
 
         function resolveJiraRowToColumn(row) {
@@ -639,27 +625,6 @@
          * Merge WBS deliverables with all Jira Stories under the outcome Epic (GP# and other extras appear as additional cards).
          */
         function buildKanbanRowPlan(outcomeId, outcome, jiraData) {
-            if (outcomeId === 'POC') {
-                const ordered = [];
-                const pocStory = findPocPipelineStoryRow(jiraData);
-                if (pocStory) {
-                    ordered.push({
-                        kind: 'jira_extra',
-                        pocPipeline: true,
-                        deliverable: {
-                            id: pocStory.issue_key,
-                            name: pocStory.summary,
-                            subtasks: [],
-                        },
-                        jira: pocStory,
-                    });
-                }
-                outcome.deliverables.forEach(function (d) {
-                    ordered.push({ kind: 'poc', deliverable: d });
-                });
-                return ordered;
-            }
-
             const epicKey = outcomeIdToEpicKey(outcomeId);
             const byEpic = (jiraData && jiraData.by_epic_key) || {};
             const epicStories = epicKey ? byEpic[epicKey] || [] : [];
@@ -961,13 +926,11 @@
                               ? 'Loaded Jira snapshot over HTTP. '
                               : '';
                     var extra = '';
-                    if (outcomeId === 'POC' && result.data.by_epic_key) {
+                    if (result.data.by_epic_key && outcomeIdToEpicKey(outcomeId)) {
                         extra =
-                            ' Pipeline POC Story ' +
-                            POC_PIPELINE_STORY_KEY +
-                            ' ([POC]) with Sub-tasks from Jira when present in the export.';
-                    } else if (result.data.by_epic_key && outcomeIdToEpicKey(outcomeId)) {
-                        extra = ' Includes all Jira Stories under this outcome Epic (WSB rows + extra team stories).';
+                            outcomeId === 'OC-00'
+                                ? ' PA-OC-00 Epic WSA-3267 — all [POC] Stories and Sub-tasks from the export.'
+                                : ' Includes all Jira Stories under this outcome Epic (WSB rows + extra team stories).';
                     }
                     jiraLineEl.textContent =
                         prefix +
@@ -985,9 +948,10 @@
                     } else if (row.kind === 'jira_extra') {
                         resolved = resolveJiraRowToColumn(row.jira);
                         opts.cardClass = 'card-jira-extra';
-                        opts.extraMeta = row.pocPipeline
-                            ? 'Authoritative pipeline POC in Jira ([POC]); column = Story status. Subtasks tracked in Jira.'
-                            : 'Additional Jira story (no [PA-OC-x.y] id); map to WSB or absorb in planning.';
+                        opts.extraMeta =
+                            outcomeId === 'OC-00'
+                                ? 'Story under PA-OC-00 / Epic WSA-3267 ([POC] backlog).'
+                                : 'Additional Jira story (no [PA-OC-x.y] id); map to WSB or absorb in planning.';
                     } else if (row.kind === 'wbs_only') {
                         resolved = resolveDeliverableColumn(row.deliverable.id, jiraById);
                     } else {
@@ -1000,7 +964,12 @@
         }
 
         function handleHashChange() {
-            const hash = window.location.hash.substring(1);
+            let hash = window.location.hash.substring(1);
+            if (hash === 'POC') {
+                window.location.replace(window.location.pathname + window.location.search + '#OC-00');
+                return;
+            }
+            hash = decodeURIComponent(hash);
             if (hash && outcomeData[hash]) {
                 loadOutcome(hash).catch(function (err) {
                     console.error(err);

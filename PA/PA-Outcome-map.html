@@ -158,6 +158,19 @@
     z-index: 1;
     opacity: 0.4;
   }
+  .milestone-tag {
+    position: absolute;
+    top: -22px;
+    transform: translateX(-50%);
+    background: #E74C3C;
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 2px;
+    white-space: nowrap;
+    z-index: 5;
+  }
 
   .today-marker {
     position: absolute;
@@ -169,8 +182,7 @@
     z-index: 3;
     pointer-events: none;
   }
-  .today-marker::before {
-    content: 'TODAY';
+  .today-marker .today-marker-label {
     position: absolute;
     top: -22px;
     left: 0;
@@ -320,8 +332,8 @@
 
 <div class="header">
   <div>
-    <h1>PA-WSB v1.3: Pipeline Automation Outcome Map</h1>
-    <div class="subtitle">PA-WSB v1.3 | NGINX Config Pipeline — DMSi Software | POC band + 11 outcomes | Jira: capability <strong style="color:#ccc">WSA-2656</strong>, Epics <strong style="color:#ccc">WSA-3268</strong>–<strong style="color:#ccc">WSA-3278</strong>, Action items <strong style="color:#ccc">WSA-2657</strong>, POC story <strong style="color:#ccc">WSA-3719</strong> (<strong>[POC]</strong>) | 1.5 FTEs | 3/16/2026 – 10/30/2026</div>
+    <h1>PA-WSB v1.4: Pipeline Automation Outcome Map</h1>
+    <div class="subtitle">PA-WSB v1.4 | NGINX Config Pipeline — DMSi Software | <strong>12 outcomes</strong> (PA-OC-00 … PA-OC-11) | Jira: capability <strong style="color:#ccc">WSA-2656</strong>, Epics <strong style="color:#ccc">WSA-3267</strong> (PA-OC-00), <strong style="color:#ccc">WSA-3268</strong>–<strong style="color:#ccc">WSA-3278</strong>, Action items <strong style="color:#ccc">WSA-2657</strong> | 1.5 FTEs | 3/16/2026 – 10/30/2026</div>
   </div>
   <div class="brand">DYNAMO</div>
 </div>
@@ -334,7 +346,7 @@
   <div class="legend-item"><div class="legend-line must"></div> must dependency</div>
   <div class="legend-item"><div class="legend-line should"></div> should dependency</div>
   <div class="legend-item"><div class="legend-line contingent"></div> contingent</div>
-  <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #2B2B2B;opacity:0.5;"></div> Today</div>
+  <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #2B2B2B;opacity:0.5;"></div> As of last save</div>
 </div>
 
 <div class="container">
@@ -343,7 +355,7 @@
   <div class="summary-row">
     <div class="summary-card purple">
       <div class="sc-number">1</div>
-      <div class="sc-label">POC band (2 wks) — infra &amp; arch proof</div>
+      <div class="sc-label">PA-OC-00 POC (2 wks)</div>
     </div>
     <div class="summary-card blue">
       <div class="sc-number">7</div>
@@ -367,10 +379,10 @@
   <div class="section-title">Planning Assumptions</div>
   <div class="assumptions-card">
     <strong>Staffing:</strong> 1.5 FTEs dedicated to Pipeline Automation capability.<br>
-    <strong>Jira (authoritative backlog):</strong> <strong>WSA-2656</strong> is the <strong>capability of record</strong> (<em>v2: Pipeline Automation</em>). Outcome Epics are <strong>WSA-3268</strong>–<strong>WSA-3278</strong> (PA-OC-01 = <strong>WSA-3268</strong>). Action items roll up under Epic <strong>WSA-2657</strong>. The internal NGINX pipeline POC is <strong>WSA-3719</strong> with Jira summary prefix <strong>[POC]</strong> (not a PA-OC-XX row). Legacy Epic <strong>WSA-36</strong> is closed; work is superseded by <strong>WSA-3268</strong>.<br>
+    <strong>Jira (authoritative backlog):</strong> <strong>WSA-2656</strong> is the <strong>capability of record</strong> (<em>v2: Pipeline Automation</em>). <strong>PA-OC-00</strong> is Epic <strong>WSA-3267</strong> (<em>[PA-OC-00] Infrastructure &amp; Architecture POC</em>); outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong> map to <strong>PA-OC-01</strong>–<strong>PA-OC-11</strong>. All Stories with summary prefix <strong>[POC]</strong> belong under Epic <strong>WSA-3267</strong>. Action items roll up under Epic <strong>WSA-2657</strong>. Legacy Epic <strong>WSA-36</strong> is closed; work is superseded by <strong>WSA-3268</strong>.<br>
     <strong>Estimation approach:</strong> Very conservative -- durations scaled ~1.5x from original estimates to account for reduced staffing, decision wait times, and DMSi availability constraints.<br>
     <strong>Parallel work:</strong> Limited by 1.5 FTE capacity. PA-OC-05 (Build) and PA-OC-07 (Drift Detection) run in parallel after PA-OC-04, with PA-OC-05 at ~1 FTE and PA-OC-07 at ~0.5 FTE. PA-OC-06 (Deploy) starts once PA-OC-05 frees up capacity.<br>
-    <strong>POC band:</strong> First two weeks (from 3/16/2026) are <strong>active engineering</strong>—the team builds a POC that <strong>proves infrastructure and architecture</strong> (and validates approach, tooling, and access). This is real delivery work for leadership visibility, not schedule padding; execution detail is in <strong>Jira</strong> (see <strong>WSA-3719 [POC]</strong> and PA-OC-03 runner work). Aligns with <strong>PA-WSB.md</strong> v1.3.<br>
+    <strong>PA-OC-00:</strong> First two weeks (from 3/16/2026) are <strong>active engineering</strong>—the team delivers outcome <strong>PA-OC-00</strong> to <strong>prove infrastructure and architecture</strong> before <strong>PA-OC-01</strong>. Execution is tracked under Epic <strong>WSA-3267</strong>; align with <strong>PA-WSB.md</strong> v1.4.<br>
     <strong>Start date:</strong> Monday, March 16, 2026 &nbsp;|&nbsp; <strong>Projected completion (PA-OC-09):</strong> Friday, October 30, 2026
   </div>
 
@@ -451,7 +463,7 @@
 </div>
 
 <div class="footer">
-  Dynamo Consulting | PA-WSB v1.3 Outcome Map | March 2026 | 1.5 FTEs Conservative Estimate | Confidential
+  Dynamo Consulting | PA-WSB v1.4 Outcome Map | March 2026 | 1.5 FTEs Conservative Estimate | Confidential
 </div>
 
 <!-- Tooltip -->
@@ -479,10 +491,10 @@ function dateRange(startWk, endWk) {
 
 // Outcome data with actual dates
 const outcomes = [
-  { id:'POC', name:'Infrastructure & Architecture POC', cat:'POC', start:1, end:2, deps:[], risk:'', deliverables:0, milestone:'',
+  { id:'PA-OC-00', name:'Infrastructure & Architecture POC', cat:'POC', start:1, end:2, deps:[], risk:'', deliverables:1, milestone:'',
     dates: dateRange(1, 2),
-    detail:'Active engineering (weeks 1–2): build and exercise a POC that proves infrastructure and architecture—how the pipeline will run, connect, and be operated—plus approach, tooling, access, and velocity signals. Jira: Story WSA-3719 uses summary prefix [POC]; not a PA-OC-XX row. Reconcile with PA-WSB v1.3.' },
-  { id:'PA-OC-01', name:'Foundation Access and Security Baseline Complete', cat:'Baseline', start:3, end:5, deps:['POC'], risk:'PA-R-01', deliverables:6, milestone:'M3',
+    detail:'First outcome (weeks 1–2): prove infrastructure and architecture—how the pipeline will run, connect, and be operated—plus approach, tooling, access, and velocity. Jira Epic WSA-3267; all [POC] Stories under this Epic. Must complete before PA-OC-01. PA-WSB v1.4.' },
+  { id:'PA-OC-01', name:'Foundation Access and Security Baseline Complete', cat:'Baseline', start:3, end:5, deps:['PA-OC-00'], risk:'PA-R-01', deliverables:6, milestone:'M3',
     dates: dateRange(3, 5),
     detail:'Environment access, deployment process documentation, security baseline, data classification, access governance, network security. Jira Epic WSA-3268 ([PA-OC-01] Foundation Access and Security Baseline Complete). Legacy WSA-36 superseded.' },
   { id:'PA-OC-02', name:'Config Inventory & Credentials', cat:'Baseline', start:6, end:8, deps:['PA-OC-01'], risk:'PA-R-S1, PA-R-S2', deliverables:3, milestone:'M3',
@@ -534,9 +546,8 @@ for (let w = 1; w <= TOTAL_WEEKS; w++) {
 const lanesEl = document.getElementById('swimLanes');
 const barClass = { 'Baseline': 'bar-baseline', 'Iterative': 'bar-iterative', 'Conditional': 'bar-conditional', 'POC': 'bar-poc' };
 
-/** Maps timeline row id (POC, PA-OC-01, …) to PA-kanban.html hash (POC, OC-01, …). */
+/** Maps timeline row id (PA-OC-00, PA-OC-01, …) to PA-kanban.html hash (OC-00, OC-01, …). */
 function timelineIdToKanbanHash(timelineId) {
-  if (timelineId === 'POC') return 'POC';
   const m = /^PA-OC-(\d{2})$/.exec(timelineId);
   return m ? 'OC-' + m[1] : null;
 }
@@ -617,30 +628,74 @@ outcomes.forEach((oc, idx) => {
   lanesEl.appendChild(lane);
 });
 
-// Today marker
+/** Program milestones: ../Project-Plan/project-milestones.json (fallback mirrors that file). */
+const FALLBACK_PROJECT_MILESTONES = [
+  { id: 'M2', date: '2026-03-27', label: 'M2 3/27' },
+  { id: 'M3', date: '2026-04-27', label: 'M3 4/27' },
+  { id: 'M4', date: '2026-10-27', label: 'M4 10/27' }
+];
+function loadProjectMilestones() {
+  return fetch('../Project-Plan/project-milestones.json')
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => data.milestones || FALLBACK_PROJECT_MILESTONES)
+    .catch(() => FALLBACK_PROJECT_MILESTONES);
+}
+function renderProjectMilestoneMarkers(milestones) {
+  const timelineEl = document.getElementById('timeline');
+  const labelWidth = 200;
+  const projectStart = new Date(2026, 2, 16);
+  const spanDays = TOTAL_WEEKS * 7;
+  milestones.forEach(m => {
+    const d = new Date(m.date + 'T12:00:00');
+    const daysSince = (d - projectStart) / 86400000;
+    const pct = Math.max(0, Math.min(100, (daysSince / spanDays) * 100));
+    const line = document.createElement('div');
+    line.className = 'milestone-line';
+    line.style.left = `calc(${labelWidth}px + (100% - ${labelWidth}px) * ${pct / 100})`;
+    timelineEl.appendChild(line);
+    const tag = document.createElement('div');
+    tag.className = 'milestone-tag';
+    tag.style.left = `calc(${labelWidth}px + (100% - ${labelWidth}px) * ${pct / 100})`;
+    tag.textContent = m.label;
+    timelineEl.appendChild(tag);
+  });
+}
+loadProjectMilestones().then(renderProjectMilestoneMarkers);
+
+/** Vertical "as of" line: last-modified time of this HTML file (document.lastModified). */
+function referenceDateFromDocument() {
+  const d = new Date(document.lastModified);
+  if (isNaN(d.getTime())) {
+    const x = new Date();
+    x.setHours(0, 0, 0, 0);
+    return x;
+  }
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+function formatAsOfTag(d) {
+  return 'AS OF ' + d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
+}
+
+// As-of (last save) marker — position from file date on the 34-week grid from 3/16/2026
 (function() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const ref = referenceDateFromDocument();
   const projectStart = new Date(2026, 2, 16); // March 16, 2026
   const msPerDay = 86400000;
-  const daysSinceStart = (today - projectStart) / msPerDay;
-  const weekFloat = daysSinceStart / 7; // fractional week (0-based)
+  const daysSinceStart = (ref - projectStart) / msPerDay;
+  let weekFloat = daysSinceStart / 7;
+  weekFloat = Math.max(0, Math.min(TOTAL_WEEKS, weekFloat));
 
-  // Show if today falls within the timeline or up to 1 week before start
-  if (weekFloat >= -1 && weekFloat < TOTAL_WEEKS) {
-    const clampedWeek = Math.max(0, weekFloat); // clamp to left edge if before start
-    const timelineEl = document.getElementById('timeline');
-    const headerEl = document.querySelector('.timeline-header');
-    const labelWidth = 200; // px, matches grid-template-columns: 200px 1fr
-
-    // Calculate position as percentage of the track area
-    const pct = (weekFloat / TOTAL_WEEKS) * 100;
-
-    const marker = document.createElement('div');
-    marker.className = 'today-marker';
-    marker.style.left = `calc(${labelWidth}px + (100% - ${labelWidth}px) * ${clampedWeek / TOTAL_WEEKS})`;
-    timelineEl.appendChild(marker);
-  }
+  const timelineEl = document.getElementById('timeline');
+  const labelWidth = 200;
+  const marker = document.createElement('div');
+  marker.className = 'today-marker';
+  marker.style.left = `calc(${labelWidth}px + (100% - ${labelWidth}px) * ${weekFloat / TOTAL_WEEKS})`;
+  const lbl = document.createElement('span');
+  lbl.className = 'today-marker-label';
+  lbl.textContent = formatAsOfTag(ref);
+  marker.appendChild(lbl);
+  timelineEl.appendChild(marker);
 })();
 
 // Tooltip
@@ -713,7 +768,7 @@ function showTriggerTooltip(e, oc) {
 // Dependency graph (SVG)
 const svg = document.getElementById('depGraph');
 const nodes = {
-  'POC':   { x: 60, y: 60, color: '#9B59B6' },
+  'PA-OC-00': { x: 60, y: 60, color: '#9B59B6' },
   'PA-OC-01': { x: 180, y: 60, color: '#3498DB' },
   'PA-OC-02': { x: 310, y: 60, color: '#3498DB' },
   'PA-OC-03': { x: 440, y: 60, color: '#3498DB' },
@@ -728,7 +783,7 @@ const nodes = {
 };
 
 const edges = [
-  { from: 'POC', to: 'PA-OC-01', type: 'must' },
+  { from: 'PA-OC-00', to: 'PA-OC-01', type: 'must' },
   { from: 'PA-OC-01', to: 'PA-OC-02', type: 'must' },
   { from: 'PA-OC-02', to: 'PA-OC-03', type: 'must' },
   { from: 'PA-OC-03', to: 'PA-OC-04', type: 'must' },
@@ -780,7 +835,7 @@ edges.forEach(e => {
 
 // Draw nodes
 const shortNames = {
-  'POC':'POC',
+  'PA-OC-00':'Infra POC',
   'PA-OC-01':'Access & Security','PA-OC-02':'Config Inventory','PA-OC-03':'Migration Path',
   'PA-OC-04':'Configs in VCS','PA-OC-05':'Build Pipeline','PA-OC-06':'Deploy Pipeline',
   'PA-OC-07':'Drift Detection','PA-OC-08':'Reliability','PA-OC-09':'Enforcement',
@@ -804,7 +859,8 @@ Object.entries(nodes).forEach(([id, n]) => {
   text.setAttribute('font-size', '9');
   text.setAttribute('font-weight', '700');
   text.setAttribute('font-family', 'Arial');
-  text.textContent = id === 'POC' ? 'POC' : id.replace('PA-OC-0','OC-').replace('OC-','');
+  const mid = /^PA-OC-(\d+)$/.exec(id);
+  text.textContent = mid ? mid[1] : id;
   g.appendChild(text);
 
   const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
