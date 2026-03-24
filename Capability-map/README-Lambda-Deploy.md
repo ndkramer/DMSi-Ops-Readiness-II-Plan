@@ -48,6 +48,10 @@ After the first deploy from GitHub, the Lambda will serve the latest `capability
 
 If you use **`CONFLUENCE_TOKEN`** auth, open the map with **`?token=...`** on the HTML URL. The page repeats that token on **`fetch`** requests to `capability-map-state.json` and `capability-map-artifacts-dmsi.json` so those requests are allowed by the same Lambda auth.
 
+## Stage artifact links (SharePoint)
+
+Use **full `https://...` URLs** in `capability-map-state.json` and `capability-map-artifacts-dmsi.json`. **Relative** paths such as `sharepoint-wm-s0.html` resolve against the **Lambda Function URL** in the browser; those files are not in the deployment package, so the handler returns **`Not found`**. Relative paths are only intended for local `file://` copies that sit next to helper HTML files.
+
 ## If the new HTML doesn’t show after a successful deploy
 
 1. **Browser cache** – Do a hard refresh (e.g. Cmd+Shift+R / Ctrl+Shift+R) or open the Function URL in an incognito/private window. The handler sends `Cache-Control: no-cache, max-age=0` so new loads should not be cached.

@@ -1660,7 +1660,14 @@ function hasStageArtifactUrl(url) {
   var s = String(url).trim();
   if (s === '' || s === '#') return false;
   if (/^PASTE_DMSI_URL$/i.test(s)) return false;
-  return true;
+  // Absolute http(s) links (e.g. SharePoint) work from Lambda and locally.
+  if (/^https?:\/\//i.test(s) || s.startsWith('//')) return true;
+  // Relative paths (e.g. sharepoint-wm-s0.html) resolve to the same host as the map; on Lambda
+  // that host has no such file → 404 "Not found". Only allow relative when opened as file://.
+  try {
+    if (window.location.protocol === 'file:') return true;
+  } catch (e) {}
+  return false;
 }
 
 function makeStageCard(stage, capId, idx, theme) {
