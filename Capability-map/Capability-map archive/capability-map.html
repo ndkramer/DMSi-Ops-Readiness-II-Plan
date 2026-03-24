@@ -716,6 +716,14 @@
     transition: color 0.15s;
   }
   .summary-toggle-btn:hover { color: var(--text); }
+  .summary-version-label {
+    margin-right: auto;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
 
   /* Artifacts link (inside expanded body) */
   .artifacts-link {
@@ -868,6 +876,7 @@
   </div>
 </div>
 <div class="summary-toggle">
+  <span class="summary-version-label" id="summaryVersionLabel" style="display: none;" aria-hidden="true">DMSi Version</span>
   <button class="summary-toggle-btn" onclick="toggleSummary()">
     <span id="summaryToggleLabel">Hide summary</span>
     <span id="summaryToggleIcon">&#9650;</span>
@@ -2662,8 +2671,9 @@ function renderAll() {
 /** True when DMSi-specific artifact folder URLs should load from capability-map-artifacts-dmsi.json. */
 function isDmsiArtifactsVariant() {
   try {
-    var p = window.location.pathname || '';
-    if (/capability-map-dmsi\.html$/i.test(p)) return true;
+    var href = (window.location && window.location.href) || '';
+    var p = (window.location && window.location.pathname) || '';
+    if (/capability-map-dmsi\.html/i.test(href) || /capability-map-dmsi\.html/i.test(p)) return true;
     var q = new URLSearchParams(window.location.search || '');
     return q.get('artifacts') === 'dmsi';
   } catch (e) {
@@ -2675,11 +2685,13 @@ function isDmsiArtifactsVariant() {
 function applyArtifactUrlOverrides(list) {
   if (!list || !Array.isArray(list)) return;
   list.forEach(function (s) {
-    if (!s || typeof s.capabilityId !== 'string' || typeof s.num !== 'number') return;
-    if (!('artifactsUrl' in s)) return;
+    if (!s || typeof s.capabilityId !== 'string' || !('artifactsUrl' in s)) return;
+    var num = s.num;
+    if (typeof num === 'string') num = parseInt(num, 10);
+    if (typeof num !== 'number' || Number.isNaN(num)) return;
     var arrays = getStageArrays(s.capabilityId);
     for (var i = 0; i < arrays.length; i++) {
-      var found = arrays[i].find(function (stage) { return stage.num === s.num; });
+      var found = arrays[i].find(function (stage) { return stage.num === num; });
       if (found) {
         found.artifactsUrl = s.artifactsUrl;
         break;
@@ -2688,33 +2700,44 @@ function applyArtifactUrlOverrides(list) {
   });
 }
 
+/** After state (file or embedded), load DMSi artifact overrides when this page is the DMSi variant. */
+function fetchDmsiArtifactOverrides() {
+  if (!isDmsiArtifactsVariant()) return Promise.resolve();
+  return fetch('capability-map-artifacts-dmsi.json')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (artifactData) {
+      var list = artifactData && (artifactData.overrides || (Array.isArray(artifactData) ? artifactData : null));
+      if (Array.isArray(list)) applyArtifactUrlOverrides(list);
+    })
+    .catch(function () { /* keep state/embedded URLs */ });
+}
+
 function loadState() {
   fetch('capability-map-state.json')
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (data) {
       if (data) applyState(data);
       else applyState(EMBEDDED_STATE);
-      if (!isDmsiArtifactsVariant()) {
-        renderAll();
-        return;
-      }
-      return fetch('capability-map-artifacts-dmsi.json')
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (artifactData) {
-          var list = artifactData && (artifactData.overrides || (Array.isArray(artifactData) ? artifactData : null));
-          if (Array.isArray(list)) applyArtifactUrlOverrides(list);
-          renderAll();
-        })
-        .catch(function () {
-          renderAll();
-        });
+      return fetchDmsiArtifactOverrides();
     })
     .catch(function () {
       applyState(EMBEDDED_STATE);
+      return fetchDmsiArtifactOverrides();
+    })
+    .then(function () {
       renderAll();
     });
 }
 
+function updateSummaryVersionLabel() {
+  var el = document.getElementById('summaryVersionLabel');
+  if (!el) return;
+  var show = isDmsiArtifactsVariant();
+  el.style.display = show ? '' : 'none';
+  el.setAttribute('aria-hidden', show ? 'false' : 'true');
+}
+
+updateSummaryVersionLabel();
 loadState();
 
 // Tab switching
