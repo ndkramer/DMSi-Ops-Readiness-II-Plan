@@ -46,6 +46,8 @@ Your Lambda should be:
 
 After the first deploy from GitHub, the Lambda will serve the latest `capability-map.html` from this repo at the function URL root.
 
+If you use **`CONFLUENCE_TOKEN`** auth, open the map with **`?token=...`** on the HTML URL. The page repeats that token on **`fetch`** requests to `capability-map-state.json` and `capability-map-artifacts-dmsi.json` so those requests are allowed by the same Lambda auth.
+
 ## If the new HTML doesn’t show after a successful deploy
 
 1. **Browser cache** – Do a hard refresh (e.g. Cmd+Shift+R / Ctrl+Shift+R) or open the Function URL in an incognito/private window. The handler sends `Cache-Control: no-cache, max-age=0` so new loads should not be cached.

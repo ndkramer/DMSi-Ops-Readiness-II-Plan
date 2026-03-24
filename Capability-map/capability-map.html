@@ -2700,10 +2700,22 @@ function applyArtifactUrlOverrides(list) {
   });
 }
 
+/** Same-origin JSON fetches must repeat ?token= so Lambda auth (CONFLUENCE_TOKEN) allows the request. */
+function fetchUrlWithPageToken(resourcePath) {
+  try {
+    var token = new URLSearchParams(window.location.search || '').get('token');
+    if (!token) return resourcePath;
+    var sep = resourcePath.indexOf('?') >= 0 ? '&' : '?';
+    return resourcePath + sep + 'token=' + encodeURIComponent(token);
+  } catch (e) {
+    return resourcePath;
+  }
+}
+
 /** After state (file or embedded), load DMSi artifact overrides when this page is the DMSi variant. */
 function fetchDmsiArtifactOverrides() {
   if (!isDmsiArtifactsVariant()) return Promise.resolve();
-  return fetch('capability-map-artifacts-dmsi.json')
+  return fetch(fetchUrlWithPageToken('capability-map-artifacts-dmsi.json'))
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (artifactData) {
       var list = artifactData && (artifactData.overrides || (Array.isArray(artifactData) ? artifactData : null));
@@ -2713,7 +2725,7 @@ function fetchDmsiArtifactOverrides() {
 }
 
 function loadState() {
-  fetch('capability-map-state.json')
+  fetch(fetchUrlWithPageToken('capability-map-state.json'))
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (data) {
       if (data) applyState(data);
