@@ -50,7 +50,7 @@ If you use **`CONFLUENCE_TOKEN`** auth, open the map with **`?token=...`** on th
 
 ## Stage artifact links (SharePoint)
 
-Use **full `https://...` URLs** in `capability-map-state.json` and `capability-map-artifacts-dmsi.json`. **Relative** paths such as `sharepoint-wm-s0.html` resolve against the **Lambda Function URL** in the browser; those files are not in the deployment package, so the handler returns **`Not found`**. Relative paths are only intended for local `file://` copies that sit next to helper HTML files.
+The map shows a folder icon whenever `artifactsUrl` is set and is not `#` or `PASTE_DMSI_URL`. For **working** links from the Lambda URL, prefer **full `https://...` SharePoint URLs** in state or in DMSi overrides. **Relative** paths (e.g. `sharepoint-wm-s0.html`) still show the icon but resolve against the Function URL; if that file is not in the deployment package, the handler returns **`Not found`** until you add the file to the zip or switch to full URLs.
 
 ## If the new HTML doesn’t show after a successful deploy
 

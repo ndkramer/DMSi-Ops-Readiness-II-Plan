@@ -1654,20 +1654,13 @@ function getStatusLabel(s) {
   return s === 'done' ? 'Complete' : s === 'in-progress' ? 'In Progress' : 'Not Started';
 }
 
-/** True when artifact icon/link should show: real URL present (not #, blank, or PASTE_DMSI_URL). */
+/** True when artifact icon/link should show: not placeholder (not #, blank, or PASTE_DMSI_URL). Includes relative helper paths from state (e.g. sharepoint-*.html). */
 function hasStageArtifactUrl(url) {
   if (url == null || url === '') return false;
   var s = String(url).trim();
   if (s === '' || s === '#') return false;
   if (/^PASTE_DMSI_URL$/i.test(s)) return false;
-  // Absolute http(s) links (e.g. SharePoint) work from Lambda and locally.
-  if (/^https?:\/\//i.test(s) || s.startsWith('//')) return true;
-  // Relative paths (e.g. sharepoint-wm-s0.html) resolve to the same host as the map; on Lambda
-  // that host has no such file → 404 "Not found". Only allow relative when opened as file://.
-  try {
-    if (window.location.protocol === 'file:') return true;
-  } catch (e) {}
-  return false;
+  return true;
 }
 
 function makeStageCard(stage, capId, idx, theme) {
