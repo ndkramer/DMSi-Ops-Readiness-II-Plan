@@ -3,7 +3,7 @@
  * WBS Load Prep: archive current WBS and Jira-import JSON, create WBS-Load report stub.
  *
  * Part of the WBS update pattern. Run before reviewing Input and regenerating the WBS.
- * - Copies current WBS to {Folder}/Archive/{Prefix}-WSB-mm-dd-yyyy.md
+ * - Copies current WBS to {Folder}/Archive/... (PA: PA-WBS-mm-dd-yyyy.md; VI/WM: {Prefix}-WSB-mm-dd-yyyy.md)
  * - If present, copies Output Jira-import JSON to {Folder}/Output/Archive/{Prefix}-WSB-Jira-Import-mm-dd-yyyy.json
  * - Creates {Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md with stub sections (including archived JSON path)
  *
@@ -32,6 +32,14 @@ function ensureDir(dirPath) {
   }
 }
 
+/** PA uses PA-WBS.md / PA-WBS-{date}.md; VI and WM use {Prefix}-WSB.md. Jira import JSON name unchanged (e.g. PA-WSB-Jira-Import.json). */
+function getWbsArchiveNames(prefix) {
+  if (prefix === 'PA') {
+    return { wbsFileName: 'PA-WBS.md', archiveStem: 'PA-WBS' };
+  }
+  return { wbsFileName: `${prefix}-WSB.md`, archiveStem: `${prefix}-WSB` };
+}
+
 function run(capability) {
   const prefix = capability;
   const folderPath = path.join(PROJECT_ROOT, capability);
@@ -42,10 +50,10 @@ function run(capability) {
     process.exit(1);
   }
 
-  const wbsName = `${prefix}-WSB.md`;
-  const wbsPath = path.join(folderPath, wbsName);
+  const { wbsFileName, archiveStem } = getWbsArchiveNames(prefix);
+  const wbsPath = path.join(folderPath, wbsFileName);
   const archiveDir = path.join(folderPath, 'Archive');
-  const archivedWbsName = `${prefix}-WSB-${dateStamp}.md`;
+  const archivedWbsName = `${archiveStem}-${dateStamp}.md`;
   const archivedWbsPath = path.join(archiveDir, archivedWbsName);
 
   const jsonName = `${prefix}-WSB-Jira-Import.json`;

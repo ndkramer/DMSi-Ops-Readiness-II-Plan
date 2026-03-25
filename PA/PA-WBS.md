@@ -1,7 +1,7 @@
-# PA-WSB: Pipeline Automation -- Outcome-Based Work Breakdown Structure
+# PA-WBS: Pipeline Automation -- Outcome-Based Work Breakdown Structure
 
 **Dynamo Consulting | DMSi Software**
-**March 2026 | v1.5 | R0**
+**March 2026 | v1.6 | R0**
 **Classification: Dynamo Confidential**
 
 ---
@@ -59,10 +59,11 @@ Outcomes are **complete as complete as we can for now**: we deliver the outcome 
 
 - **Jira (authoritative backlog):** **WSA-2656** is the **capability of record** for Pipeline Automation (*v2: Pipeline Automation*)—the single Jira root for this WSB. **Outcome Epics** are **WSA-3758** (**PA-OC-00** — Infrastructure & Architecture POC) and **WSA-3268**–**WSA-3278** (**PA-OC-01** … **PA-OC-11**). Stories and Sub-tasks roll up under those Epics. Action items roll up under Epic **WSA-2657** (*PA Level: Action Items*). There is **no automatic sync** from GitHub Projects; items may exist in GitHub for discovery or stakeholder views—**reconcile into Jira** for commitment and reporting.
 - **Change log (planning ↔ Jira):**
+  - **2026-03-25** — **Filename:** canonical WBS markdown renamed from `PA-WSB.md` to **`PA-WBS.md`** (Work Breakdown Structure). Optional machine-readable outcome ↔ Jira mapping: **`PA/pa-outcomes.json`** (keep in sync when epic keys or the outcome list changes).
   - **2026-03-24** — **PA-OC-00** Jira Epic of record: **WSA-3758** (parent **WSA-2656**; supersedes placeholder **WSA-3267** in earlier planning drafts).
   - **2026-03-24** — Removed static **POC-1…POC-4** pseudo-deliverables from the PA kanban HTML artifact; NGINX pipeline POC execution tracked in Jira with **`[POC]`** summary prefix. Kanban is driven from the Jira export (`Scripts/jira-export-pa.js` → `PA/Jira/pa-kanban-jira-status.json`).
   - **2026-03-23** — **PA-OC-00** is a first-class outcome before **PA-OC-01**. Jira: Epic **[PA-OC-00] Infrastructure & Architecture POC** (**WSA-3758**, parent **WSA-2656**), **Outcome Category** = POC (or Baseline per Jira config), labels **`oc-00`**, **`Pipeline-Automation`**, component **Pipeline Automation**. **Move all Stories whose summary starts with `[POC]`** (including **WSA-3719** if it remains separate) **under Epic WSA-3758** so the kanban **OC-00** board lists the full POC backlog. Update Epic Link / parent on each such Story; do not leave orphan `[POC]` stories under other outcome Epics except where a Story is legitimately split (then use links or description to reference PA-OC-00).
-- **This document (PA-WSB):** Normative outcome definitions, success criteria, deliverable IDs, dependencies, risks, and decisions.
+- **This document (PA-WBS):** Normative outcome definitions, success criteria, deliverable IDs, dependencies, risks, and decisions.
 - **Visual timeline:** `PA/PA-Outcome-map.html` shows **PA-OC-00** (weeks 1–2) as **active engineering**—proving infrastructure and architecture before **PA-OC-01**. It is **not** idle schedule padding. The same page reflects **1.5 FTE** assumptions and calendar bands.
 
 ---
@@ -1031,7 +1032,7 @@ These questions, once answered and acted upon, lock in irreversible choices.
 | Outcome Model Element | Jira Issue Type | Key / relationship |
 |-----------------------|-----------------|----------------------|
 | Capability (Pipeline Automation) | Capability | **WSA-2656** (*v2: Pipeline Automation*) — **capability of record**; root of the PA hierarchy |
-| Outcome (PA-OC-00 … PA-OC-11) | Epic | **Parent = WSA-2656**. **PA-OC-00** → Epic **WSA-3758** (*[PA-OC-00] Infrastructure & Architecture POC*). **PA-OC-01** … **PA-OC-11** → **WSA-3268**–**WSA-3278**. Epic **Summary** (and Jira **Epic Name** where used) match `[PA-OC-XX] …` titles in this WSB. |
+| Outcome (PA-OC-00 … PA-OC-11) | Epic | **Parent = WSA-2656**. **PA-OC-00** → Epic **WSA-3758** (*[PA-OC-00] Infrastructure & Architecture POC*). **PA-OC-01** … **PA-OC-11** → **WSA-3268**–**WSA-3278**. Epic **Summary** (and Jira **Epic Name** where used) match `[PA-OC-XX] …` titles in this WBS. See **`pa-outcomes.json`**. |
 | Action items (cross-cutting risks, decisions, follow-ups) | Story / Action Item | Children of Epic **WSA-2657** (*PA Level: Action Items*), also under **WSA-2656** |
 | Deliverable (PA-OC-XX.Y) | Story | Under the Epic for that outcome (Epic Link / parent Epic) |
 | Task-level work | Sub-task | Parent = Story (Deliverable) |

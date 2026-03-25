@@ -1,12 +1,12 @@
 ---
-description: Pipeline Automation (PA) folder — follow PA-WSB outcome structure and conventions
+description: Pipeline Automation (PA) folder — follow PA-WBS outcome structure and conventions
 globs: PA/**
 alwaysApply: false
 ---
 
 # PA Folder Rules
 
-When editing or creating content under the PA folder, follow the Pipeline Automation outcome-based WBS structure and conventions (PA-WSB).
+When editing or creating content under the PA folder, follow the Pipeline Automation outcome-based WBS structure and conventions (**PA-WBS**). Optional structured outcome ↔ Jira map: `PA/pa-outcomes.json` (keep in sync with `PA-WBS.md` §10).
 
 ## Structure to follow
 
@@ -30,4 +30,4 @@ When editing or creating content under the PA folder, follow the Pipeline Automa
 
 ## Reference
 
-The canonical PA outcome structure is in the Pipeline Automation WBS (PA-WSB) document. When in doubt, match its format and level of detail.
+The canonical PA outcome structure is in **`PA-WBS.md`**. Folder overview: **`PA/README.md`**. When in doubt, match its format and level of detail.

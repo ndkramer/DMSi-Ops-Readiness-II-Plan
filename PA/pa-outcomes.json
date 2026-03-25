@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "capability": "PA",
+  "wbs_markdown": "PA-WBS.md",
+  "jira": {
+    "capability_issue_key": "WSA-2656",
+    "action_items_epic_key": "WSA-2657",
+    "poc_story_summary_prefix": "[POC]",
+    "legacy_superseded_epic": "WSA-36",
+    "superseding_epic_for_legacy": "WSA-3268",
+    "notes": "PA-OC-00 uses epic WSA-3758 (not 3267+0). PA-OC-01..11 use WSA-(3267+n) for n=1..11 => WSA-3268..WSA-3278."
+  },
+  "outcomes": [
+    { "id": "PA-OC-00", "jira_epic_key": "WSA-3758", "title": "[PA-OC-00] Infrastructure & Architecture POC" },
+    { "id": "PA-OC-01", "jira_epic_key": "WSA-3268", "title": "[PA-OC-01] Foundation Access and Security Baseline Complete" },
+    { "id": "PA-OC-02", "jira_epic_key": "WSA-3269", "title": "Configuration Inventory and Credential Mapping Complete" },
+    { "id": "PA-OC-03", "jira_epic_key": "WSA-3270", "title": "Migration Path and Runner Infrastructure Defined" },
+    { "id": "PA-OC-04", "jira_epic_key": "WSA-3271", "title": "Configurations in Version Control" },
+    { "id": "PA-OC-05", "jira_epic_key": "WSA-3272", "title": "Build Pipeline Operational" },
+    { "id": "PA-OC-06", "jira_epic_key": "WSA-3273", "title": "Deploy Pipeline Operational" },
+    { "id": "PA-OC-07", "jira_epic_key": "WSA-3274", "title": "Drift Detection Operational" },
+    { "id": "PA-OC-08", "jira_epic_key": "WSA-3275", "title": "Pipeline Reliability Validated" },
+    { "id": "PA-OC-09", "jira_epic_key": "WSA-3276", "title": "Config-as-Code Enforced" },
+    { "id": "PA-OC-10", "jira_epic_key": "WSA-3277", "title": "Pipeline Fallback Activated" },
+    { "id": "PA-OC-11", "jira_epic_key": "WSA-3278", "title": "Pipeline Pattern Replication" }
+  ]
+}

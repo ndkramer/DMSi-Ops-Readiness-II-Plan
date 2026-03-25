@@ -350,7 +350,7 @@ Capabilities using this model:
 | Capability | Jira root | WSB Document | Outcome Map | Outcomes | Status |
 |-----------|-----------|-------------|-------------|----------|--------|
 | Visibility Infrastructure | WSA-120 | VI-WSB.md | VI-WSB-Outcome-Map.html | 15 | Active |
-| Pipeline Automation | WSA-2656 (Capability) | PA-WSB.md | PA-Outcome-map.html | 11 | Active |
+| Pipeline Automation | WSA-2656 (Capability) | PA-WBS.md | PA-Outcome-map.html | 11 | Active |
 
 ---
 

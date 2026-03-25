@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PA-WSB v1.3: Pipeline Automation Kanban</title>
+    <title>PA-WBS v1.6: Pipeline Automation Kanban</title>
     <style>
         * {
             margin: 0;
@@ -432,7 +432,7 @@
 
     <div id="selector" class="outcome-selector">
         <h2>Pipeline Automation Outcomes</h2>
-        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>PA-OC-00</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is the <strong>first outcome</strong>—Infrastructure &amp; Architecture POC—before <strong>PA-OC-01</strong>. See <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WSB.md</code> (v1.5). <strong>Jira:</strong> capability <strong>WSA-2656</strong>; Epic <strong>WSA-3758</strong> = PA-OC-00; outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong> = PA-OC-01–11; action-item Epic <strong>WSA-2657</strong>. All Stories with <strong>[POC]</strong> in the summary belong under Epic <strong>WSA-3758</strong>. Cards and columns use the Jira export. Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>. Hash <code>#POC</code> redirects to <code>#OC-00</code>.</p>
+        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>PA-OC-00</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is the <strong>first outcome</strong>—Infrastructure &amp; Architecture POC—before <strong>PA-OC-01</strong>. See <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WBS.md</code> (v1.6). <strong>Jira:</strong> capability <strong>WSA-2656</strong>; Epic <strong>WSA-3758</strong> = PA-OC-00; outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong> = PA-OC-01–11; action-item Epic <strong>WSA-2657</strong>. All Stories with <strong>[POC]</strong> in the summary belong under Epic <strong>WSA-3758</strong>. Cards and columns use the Jira export. Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>. Hash <code>#POC</code> redirects to <code>#OC-00</code>.</p>
         <div class="outcome-list" id="outcomeList"></div>
     </div>
 
@@ -601,7 +601,7 @@
             return 'backlog';
         }
 
-        /** PA-OC-00 Epic WSA-3758; OC-01 → WSA-3268 … OC-11 → WSA-3278 (PA-WSB §10). */
+        /** PA-OC-00 Epic WSA-3758; OC-01 → WSA-3268 … OC-11 → WSA-3278 (PA-WBS §10). */
         function outcomeIdToEpicKey(outcomeId) {
             const m = /^OC-(\d{1,2})$/.exec(outcomeId);
             if (!m) return null;

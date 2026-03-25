@@ -79,11 +79,11 @@ flowchart TD
 |------|--------|
 | `{Folder}/Input/` | New or updated source files (specs, briefs). Process all files together. |
 | `{Folder}/Input/Archive/` | Processed Input files per run: contents of Input/ moved here after processing, one subfolder per date (`Input/Archive/{mm-dd-yyyy}/`). |
-| `{Folder}/Archive/` | Date-stamped WBS snapshots before each load: `{Prefix}-WSB-mm-dd-yyyy.md`. |
+| `{Folder}/Archive/` | Date-stamped WBS snapshots before each load: `{Prefix}-WSB-mm-dd-yyyy.md` (**PA** uses **`PA-WBS-mm-dd-yyyy.md`**). |
 | `{Folder}/Output/` | Current Jira-import JSON: `{Prefix}-WSB-Jira-Import.json`. Canonical artifact for Jira upload. |
 | `{Folder}/Output/Archive/` | Date-stamped JSON snapshots: `{Prefix}-WSB-Jira-Import-mm-dd-yyyy.json`. |
 | `{Folder}/Update-Reports/` | Load reports: `WBS-Load-mm-dd-yyyy.md`. |
-| `{Folder}/{Prefix}-WSB.md` | Current WBS (e.g. `PA/PA-WSB.md`). |
+| `{Folder}/{Prefix}-WSB.md` | Current WBS (**PA:** `PA/PA-WBS.md`; **VI/WM:** `{Prefix}-WSB.md`). Optional **PA** registry: `PA/pa-outcomes.json`. |
 
 Date format everywhere is **mm-dd-yyyy** (e.g. `03-17-2026`). The same run date is used for WBS archive, JSON archive, and report filename.
 
@@ -101,7 +101,7 @@ node Scripts/wbs-load-prep.js <capability>
 
 **What the script does:**
 
-1. **Archive WBS** — Copies `{Folder}/{Prefix}-WSB.md` to `{Folder}/Archive/{Prefix}-WSB-mm-dd-yyyy.md`.
+1. **Archive WBS** — Copies the current WBS file to Archive (**PA:** `PA-WBS.md` → `PA-WBS-mm-dd-yyyy.md`; **VI/WM:** `{Prefix}-WSB.md` → `{Prefix}-WSB-mm-dd-yyyy.md`).
 2. **Archive JSON** — If `{Folder}/Output/{Prefix}-WSB-Jira-Import.json` exists, copies it to `{Folder}/Output/Archive/{Prefix}-WSB-Jira-Import-mm-dd-yyyy.json` (creates `Output/Archive` if needed). If the file does not exist, this step is skipped without error.
 3. **Create report stub** — Creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with:
    - **Summary:** Paths to archived WBS and (when applicable) archived Jira import JSON.
@@ -115,7 +115,7 @@ node Scripts/wbs-load-prep.js <capability>
 ## Step 2: Review Input and regenerate WBS
 
 - **Review** all files in `{Folder}/Input/` against the current WBS and any constraint-vs-outcome and outcome maps. For each Input file, extract key content (outcomes, phases, risks, decisions, timeline, etc.) and either add/update the WBS or document the mapping to existing WBS keys.
-- **Regenerate** `{Folder}/{Prefix}-WSB.md` so it reflects the updated content. Preserve:
+- **Regenerate** the WBS file (**PA:** `PA-WBS.md`; **VI/WM:** `{Prefix}-WSB.md`) so it reflects the updated content. Preserve:
   - Document and key structure (outcome IDs, deliverable IDs, risk/decision/question IDs per capability rules, e.g. `.cursor/rules/pa.mdc`).
   - Section order, outcome map table, per-outcome template, Risks table (with Type 1/Type 2 where applicable), Decisions table, Open Questions.
 - **Fill in** the WBS-Load report: always complete the **Input files processed** section with a per-file summary (filename, what was extracted, what WBS changes or mappings resulted); then outcome map / constraint map changes, risks/decisions/questions changes, keys added/updated/removed, other substantial changes.
@@ -151,7 +151,7 @@ Example: `node Scripts/wbs-load-report-counts.js PA 03-17-2026`. The script diff
 
 | Step | Action |
 |------|--------|
-| **Archive** | Copy WBS to `Archive/{Prefix}-WSB-mm-dd-yyyy.md`; copy JSON to `Output/Archive/{Prefix}-WSB-Jira-Import-mm-dd-yyyy.json` (if present). |
+| **Archive** | Copy WBS to Archive (**PA:** `PA-WBS-mm-dd-yyyy.md`; **VI/WM:** `{Prefix}-WSB-mm-dd-yyyy.md`); copy JSON to `Output/Archive/{Prefix}-WSB-Jira-Import-mm-dd-yyyy.json` (if present). |
 | **Keys** | Use WBS-established keys (`outcome_id`, `item_id`) in the JSON. |
 | **Updates** | Regenerate/update the JSON from the updated WBS so it reflects current `work_items` and `action_items`; add/delete is derived by the future Jira process by diffing on keys. |
 | **Logic** | Keep existing JSON schema and structure (`metadata`, `work_items`, `action_items`). |

@@ -1,6 +1,6 @@
 ---
 name: wbs-update-pattern
-description: Two related workflows for Pipeline Automation (PA) and sibling capabilities. (1) Input-based WBS load — run prep script, process Input folder, regenerate WBS, archive Input, report. (2) Jira–WBS–planning alignment — compare Jira export to PA-WSB and planning HTML (PA-kanban, PA-Outcome-map), update WBS change log and classifications, adjust kanban/export scripts, rebuild pa-kanban-jira-status. Use when the user asks to import WBS from Input, OR to align the WBS and planning views with Jira, refresh kanban from Jira, reconcile POC vs outcomes, or update PA-kanban / PA-Outcome-map / PA-WSB after Jira changes.
+description: Two related workflows for Pipeline Automation (PA) and sibling capabilities. (1) Input-based WBS load — run prep script, process Input folder, regenerate WBS, archive Input, report. (2) Jira–WBS–planning alignment — compare Jira export to PA-WBS and planning HTML (PA-kanban, PA-Outcome-map), update WBS change log and classifications, adjust kanban/export scripts, rebuild pa-kanban-jira-status. Use when the user asks to import WBS from Input, OR to align the WBS and planning views with Jira, refresh kanban from Jira, reconcile POC vs outcomes, or update PA-kanban / PA-Outcome-map / PA-WBS after Jira changes.
 ---
 
 # WBS Update Pattern
@@ -10,9 +10,11 @@ This skill covers **two** repeatable processes. Pick the one that matches the us
 | User intent | Pattern |
 |-------------|---------|
 | “Import latest PA WBS from Input”, “Run WBS load for VI”, load files from `{Capability}/Input/` | **A — Input → WBS** |
-| “Align WBS with Jira”, “Update kanban from Jira”, “Reconcile POC / [POC] / outcomes”, refresh `PA-kanban` / `PA-Outcome-map` / `PA-WSB` after Jira | **B — Jira ↔ WBS ↔ planning HTML** |
+| “Align WBS with Jira”, “Update kanban from Jira”, “Reconcile POC / [POC] / outcomes”, refresh `PA-kanban` / `PA-Outcome-map` / `PA-WBS` after Jira | **B — Jira ↔ WBS ↔ planning HTML** |
 
 Capability folders use prefixes **PA**, **VI**, **WM** (this repo documents **PA** most fully). Follow `.cursor/rules/{capability}.mdc` when editing that capability’s artifacts.
+
+**PA folder map:** [`PA/README.md`](../../../PA/README.md). **Canonical WBS file:** `PA/PA-WBS.md`. **Optional JSON registry** (outcome ↔ epic keys for scripts): `PA/pa-outcomes.json` — update when §10 Jira mapping changes.
 
 ---
 
@@ -34,13 +36,14 @@ node Scripts/wbs-load-prep.js <capability>
 
 Example: `node Scripts/wbs-load-prep.js PA`
 
-This archives the current WBS to `{Folder}/Archive/{Prefix}-WSB-mm-dd-yyyy.md`, archives the Jira-import JSON to `{Folder}/Output/Archive/...` (if present), and creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with a stub. Note the run date (mm-dd-yyyy) for step 4.
+This archives the current WBS to `{Folder}/Archive/...` (**PA:** `PA-WBS-mm-dd-yyyy.md`; **VI/WM:** `{Prefix}-WSB-mm-dd-yyyy.md`), archives the Jira-import JSON to `{Folder}/Output/Archive/...` (if present), and creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with a stub. Note the run date (mm-dd-yyyy) for step 4.
 
 ### 3. Review Input and regenerate WBS
 
 - **Read** all files in `{Capability}/Input/`. Process **each file** explicitly.
 - **For each file**: extract outcomes, deliverables, phases, risks, decisions, questions, timeline, tables. Either update the WBS (preserving keys and structure per the capability rule file) or document mapping to existing WBS keys.
-- **Compare** with the current `{Prefix}-WSB.md` and any constraint vs outcome maps. **Regenerate** the WBS accordingly. Preserve document structure, outcome table, per-outcome sections, risks/decisions/questions tables.
+- **Compare** with the current WBS file (**PA:** `PA-WBS.md`; **VI/WM:** `{Prefix}-WSB.md`) and any constraint vs outcome maps. **Regenerate** the WBS accordingly. Preserve document structure, outcome table, per-outcome sections, risks/decisions/questions tables.
+- **PA:** If Jira epic keys or outcome IDs change, update **`pa-outcomes.json`** to match `PA-WBS.md` §10.
 - **Fill the WBS-Load report**: per-file “Input files processed” summaries (filename → extracted content → WBS edits or “mapped to existing keys”). Do not leave this section generic.
 
 ### 4. Move processed Input to Archive
@@ -53,7 +56,7 @@ Use the same **dateStamp** as the WBS-Load report (mm-dd-yyyy).
 
 ### 5. Jira import JSON (manual reminder)
 
-After regeneration, remind the user to update `{Capability}/Output/{Prefix}-WSB-Jira-Import.json` from the new WBS if that file is maintained manually. Preserve schema (`metadata`, `work_items`, `action_items`) and WBS keys.
+After regeneration, remind the user to update `{Capability}/Output/{Prefix}-WSB-Jira-Import.json` from the new WBS if that file is maintained manually. Preserve schema (`metadata`, `work_items`, `action_items`) and WBS keys. (**PA** import filename remains `PA-WSB-Jira-Import.json` for now.)
 
 ### Reference (Pattern A)
 
@@ -63,39 +66,40 @@ After regeneration, remind the user to update `{Capability}/Output/{Prefix}-WSB-
 
 ## Pattern B — Jira ↔ WBS ↔ planning HTML alignment (PA)
 
-Use this when the user wants **planning artifacts** (`PA/PA-WSB.md`, `PA/PA-Outcome-map.html`, `PA/PA-kanban.html`) to match **Jira as the authoritative backlog**, or after **Jira** changes (epic keys, POC story naming, subtasks, superseded epics).
+Use this when the user wants **planning artifacts** (`PA/PA-WBS.md`, `PA/PA-Outcome-map.html`, `PA/PA-kanban.html`) to match **Jira as the authoritative backlog**, or after **Jira** changes (epic keys, POC story naming, subtasks, superseded epics).
 
 ### Principles
 
 1. **Jira is source of truth** for execution status, story keys, and Sub-task completion; the WBS defines **normative** outcomes, deliverable IDs, and dependencies.
-2. **Reconcile conflicts** explicitly: if static WBS or kanban “planning rows” duplicate or contradict Jira, prefer Jira for **what work exists**; update or remove static rows and **document the change in PA-WSB** (change log bullet with date).
-3. **POC vs PA-OC-XX**: The NGINX pipeline POC is **not** a numbered PA-OC outcome; it is typically **Story WSA-3719** with summary prefix **`[POC]`** (same bracket convention as `[PA-OC-xx.y]`). Runner/tooling POC may also appear under **PA-OC-03** (e.g. OC-03.3). Do not invent parallel “POC-1…POC-4” WBS rows if Jira is the only execution home—**drop** them from `PA-kanban.html` `outcomeData` and record the change in the WBS.
-4. **Capability keys (PA)** — verify against `.cursor/rules/pa.mdc` and live Jira: **WSA-2656** (capability), **WSA-3268–WSA-3278** (outcome epics), **WSA-2657** (action items epic), legacy **WSA-36** → **WSA-3268**.
+2. **Reconcile conflicts** explicitly: if static WBS or kanban “planning rows” duplicate or contradict Jira, prefer Jira for **what work exists**; update or remove static rows and **document the change in PA-WBS.md** (change log bullet with date).
+3. **POC / PA-OC-00:** Pre-foundation NGINX pipeline POC is outcome **PA-OC-00** (Jira Epic **WSA-3758**). Stories with summary prefix **`[POC]`** belong under that Epic (e.g. legacy **WSA-3719**). Runner/tooling spike may also appear under **PA-OC-03** (e.g. OC-03.3). Do not invent parallel “POC-1…POC-4” WBS rows if Jira is the only execution home—**drop** them from `PA-kanban.html` `outcomeData` and record the change in the WBS.
+4. **Capability keys (PA)** — verify against `.cursor/rules/pa.mdc`, **`pa-outcomes.json`**, and live Jira: **WSA-2656** (capability), **WSA-3758** (PA-OC-00), **WSA-3268–WSA-3278** (PA-OC-01…11), **WSA-2657** (action items epic), legacy **WSA-36** → **WSA-3268**.
 
 ### Steps (checklist)
 
 1. **Refresh Jira data (PA)**  
    - Run `node Scripts/jira-export-pa.js` from project root (needs `JIRA_URL`, `JIRA_USERNAME`, `JIRA_API_TOKEN` in env or `.cursor/.env`), **or** rebuild kanban-only from the latest export: `node Scripts/jira-kanban-status-from-export.js` (no API call).  
-   - Outputs include `PA/Jira/PA-Jira-mm-dd-yyyy-json.json`, `PA/Jira/pa-kanban-jira-status.json`, and `PA/Jira/pa-kanban-jira-status.js` (embedded snapshot for `file://`).
+   - Outputs include **dated** `PA/Jira/PA-Jira-mm-dd-yyyy-json.json` (retain multiple dated files), `PA/Jira/pa-kanban-jira-status.json`, and `PA/Jira/pa-kanban-jira-status.js` (embedded snapshot for `file://`).
 
-2. **Read the WBS** (`PA/PA-WSB.md`) — especially **Systems of record and planning views**, outcome table, and any POC / Jira language. Decide:  
+2. **Read the WBS** (`PA/PA-WBS.md`) — especially **Systems of record and planning views**, outcome table, and any POC / Jira language. Decide:  
    - Does Jira require a **WBS edit** (new change log line, clarification, or removal of obsolete wording)?  
-   - Is **reclassification** needed (e.g. `[POC]` on the POC story, explicit “not a twelfth outcome”)?
+   - Is **reclassification** needed (e.g. `[POC]` on the POC story, explicit OC-00 epic)?
 
-3. **Update `PA/PA-WSB.md` when artifacts change**  
+3. **Update `PA/PA-WBS.md` when artifacts change**  
    - Add a **Change log** bullet under systems of record (or equivalent) with **date**, what changed, and why (e.g. removed static POC pseudo-deliverables; kanban subtasks from export).  
-   - Keep **v1.x** and classification lines consistent if the user maintains version stamps.
+   - Keep **v1.x** and classification lines consistent if the user maintains version stamps.  
+   - If epic keys changed, update **`PA/pa-outcomes.json`**.
 
 4. **Update `PA/PA-Outcome-map.html`** (if Jira/WBS messaging changed)  
    - Subtitle: capability, epic range, action-items epic, POC story key + `[POC]` if relevant.  
    - **Planning assumptions**: authoritative backlog, FTE, POC band = active engineering (not buffer), Jira keys.  
-   - POC swimlane tooltip / `detail` text: align with WBS + Jira (e.g. WSA-3719, `[POC]`).  
-   - Footer / title: optional **PA-WSB v** stamp to match the WBS.
+   - POC swimlane tooltip / `detail` text: align with WBS + Jira (e.g. WSA-3758, `[POC]`).  
+   - Footer / title: optional **PA-WBS v** stamp to match the WBS.
 
 5. **Update `PA/PA-kanban.html`**  
-   - **Intro** paragraph: Jira keys, POC story, `[POC]`, action-items epic, legacy epic note—match WBS/pa.mdc.  
+   - **Intro** paragraph: Jira keys, POC epic, `[POC]`, action-items epic, legacy epic note—match WBS/pa.mdc.  
    - **`outcomeData`**: Remove or empty planning-only rows when Jira owns that work (e.g. `POC.deliverables: []` with a **short comment** in the script pointing to the WBS change log).  
-   - **POC board**: Ensure **Story WSA-3719** appears from `by_epic_key` / export (see `POC_PIPELINE_STORY_KEY` and `findPocPipelineStoryRow`). Avoid **`var` inside functions** where a later `const` with the same name exists in the same function (hoisting bug).  
+   - **POC board**: Ensure **`[POC]`** stories under **WSA-3758** appear from `by_epic_key` / export (see `POC_PIPELINE_STORY_KEY` and `findPocPipelineStoryRow` if present). Avoid **`var` inside functions** where a later `const` with the same name exists in the same function (hoisting bug).  
    - **Kanban JSON**: `Scripts/jira-export-pa.js` attaches **`subtasks[]`** to each Story in `buildKanbanJiraStatusJson` (Sub-tasks indexed by parent). Cards show **progress** (done/total, segments or bar, %) and **Subtask checklist** from export; WBS-only subtasks remain as local checklist when no Jira rows.  
    - After script changes, **re-run** export or `jira-kanban-status-from-export.js` and commit updated `pa-kanban-jira-status.*`.
 
@@ -110,11 +114,12 @@ Use this when the user wants **planning artifacts** (`PA/PA-WSB.md`, `PA/PA-Outc
 
 | Area | Files |
 |------|--------|
-| WBS | `PA/PA-WSB.md` |
+| WBS | `PA/PA-WBS.md` |
+| Outcome registry (optional) | `PA/pa-outcomes.json` |
 | Maps | `PA/PA-Outcome-map.html` |
 | Kanban UI | `PA/PA-kanban.html` |
-| Jira export / kanban data | `Scripts/jira-export-pa.js`, `Scripts/jira-kanban-status-from-export.js`, `PA/Jira/pa-kanban-jira-status.json`, `PA/Jira/pa-kanban-jira-status.js`, optional dated `PA/Jira/PA-Jira-*-json.json` |
-| Rules / docs | `.cursor/rules/pa.mdc`, `PA/Jira/README.md` (optional) |
+| Jira export / kanban data | `Scripts/jira-export-pa.js`, `Scripts/jira-kanban-status-from-export.js`, `PA/Jira/pa-kanban-jira-status.json`, `PA/Jira/pa-kanban-jira-status.js`, dated `PA/Jira/PA-Jira-mm-dd-yyyy-json.json` |
+| Rules / docs | `.cursor/rules/pa.mdc`, `PA/Jira/README.md`, `PA/README.md` (optional) |
 
 ### When Pattern A and B overlap
 
@@ -125,5 +130,6 @@ If **Input** contains stakeholder docs that **change outcomes** while **Jira** a
 ## Reference
 
 - Pattern A (detailed): [Documentation/WBS-Update-Pattern.md](../../../Documentation/WBS-Update-Pattern.md)  
+- PA folder: [PA/README.md](../../../PA/README.md)  
 - PA Jira export: [PA/Jira/README.md](../../../PA/Jira/README.md)  
 - PA rules: [.cursor/rules/pa.mdc](../../rules/pa.mdc)

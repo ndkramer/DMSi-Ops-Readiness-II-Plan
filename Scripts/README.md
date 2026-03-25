@@ -20,7 +20,7 @@ node Scripts/wbs-load-prep.js <capability>
 
 **What it does:**
 
-1. Copies `{Folder}/{Prefix}-WSB.md` → `{Folder}/Archive/{Prefix}-WSB-mm-dd-yyyy.md`
+1. Copies current WBS → Archive (**PA:** `PA-WBS.md` → `PA-WBS-mm-dd-yyyy.md`; **VI/WM:** `{Prefix}-WSB.md` → `{Prefix}-WSB-mm-dd-yyyy.md`)
 2. If present, copies `{Folder}/Output/{Prefix}-WSB-Jira-Import.json` → `{Folder}/Output/Archive/{Prefix}-WSB-Jira-Import-mm-dd-yyyy.json`
 3. Creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with stub sections:
    - Summary (archived WBS and JSON paths)

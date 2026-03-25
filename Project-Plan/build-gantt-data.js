@@ -2,7 +2,7 @@
 /**
  * Build Gantt data from PA, VI, and WM WBS markdown files.
  *
- * Reads WM/WM-WSB.md, VI/VI-WSB.md, PA/PA-WSB.md (paths relative to repo root),
+ * Reads WM/WM-WSB.md, VI/VI-WSB.md, PA/PA-WBS.md (paths relative to repo root),
  * parses the Outcome Map table in each, computes capability start/end dates,
  * and writes Project-Plan/gantt-data.json for use by Combined-Outcome-Gantt.html.
  *
@@ -212,7 +212,7 @@ function buildMeta(outcomes, prefix) {
 function main() {
   const wmPath = path.join(REPO_ROOT, 'WM', 'WM-WSB.md');
   const viPath = path.join(REPO_ROOT, 'VI', 'VI-WSB.md');
-  const paPath = path.join(REPO_ROOT, 'PA', 'PA-WSB.md');
+  const paPath = path.join(REPO_ROOT, 'PA', 'PA-WBS.md');
 
   const wmContent = fs.readFileSync(wmPath, 'utf8');
   const viContent = fs.readFileSync(viPath, 'utf8');

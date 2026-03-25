@@ -6,6 +6,8 @@ This folder holds **exports from Jira** for the Pipeline Automation (PA) capabil
 
 You can say **"Export PA WSA-2656 from Jira"** (or "Export PA from Jira"). The agent will run the export script and place the file here. See [.cursor/skills/jira-export/SKILL.md](../.cursor/skills/jira-export/SKILL.md) for the full process and trigger phrases.
 
+**Planning:** Normative WBS is [`../PA-WBS.md`](../PA-WBS.md). Optional structured outcome ↔ epic keys: [`../pa-outcomes.json`](../pa-outcomes.json). **Keep multiple** dated `PA-Jira-mm-dd-yyyy-json.json` files when re-exporting.
+
 ## Export file
 
 - **Summary prefixes in Jira:** Outcome-linked stories often use `[PA-OC-XX]` in the summary. **PA-OC-00** is Epic **WSA-3758**; all **`[POC]`**-prefixed Stories roll up under that Epic (parent **WSA-2656**). Historical Story **WSA-3719** should live under **WSA-3758**.

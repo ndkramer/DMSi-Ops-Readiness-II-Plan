@@ -7,7 +7,7 @@ This document describes the **reusable process** that generates `Combined-Outcom
 1. **Source of truth**: WBS markdown files in each capability folder:
    - `WM/WM-WSB.md` — Work Management
    - `VI/VI-WSB.md` — Visibility Infrastructure
-   - `PA/PA-WSB.md` — Pipeline Automation
+   - `PA/PA-WBS.md` — Pipeline Automation
 
 2. **Build script**: `Project-Plan/build-gantt-data.js` reads those files, parses the **Outcome Map** table in each, computes capability start/end dates, and writes **`Project-Plan/gantt-data.json`**.
 

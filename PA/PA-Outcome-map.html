@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PA-WSB v1.3: Outcome Map — Pipeline Automation</title>
+<title>PA-WBS v1.6: Outcome Map — Pipeline Automation</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; color: #2B2B2B; }
@@ -332,8 +332,8 @@
 
 <div class="header">
   <div>
-    <h1>PA-WSB v1.5: Pipeline Automation Outcome Map</h1>
-    <div class="subtitle">PA-WSB v1.5 | NGINX Config Pipeline — DMSi Software | <strong>12 outcomes</strong> (PA-OC-00 … PA-OC-11) | Jira: capability <strong style="color:#ccc">WSA-2656</strong>, Epics <strong style="color:#ccc">WSA-3758</strong> (PA-OC-00), <strong style="color:#ccc">WSA-3268</strong>–<strong style="color:#ccc">WSA-3278</strong>, Action items <strong style="color:#ccc">WSA-2657</strong> | 1.5 FTEs | 3/16/2026 – 10/30/2026</div>
+    <h1>PA-WBS v1.6: Pipeline Automation Outcome Map</h1>
+    <div class="subtitle">PA-WBS v1.6 | NGINX Config Pipeline — DMSi Software | <strong>12 outcomes</strong> (PA-OC-00 … PA-OC-11) | Jira: capability <strong style="color:#ccc">WSA-2656</strong>, Epics <strong style="color:#ccc">WSA-3758</strong> (PA-OC-00), <strong style="color:#ccc">WSA-3268</strong>–<strong style="color:#ccc">WSA-3278</strong>, Action items <strong style="color:#ccc">WSA-2657</strong> | 1.5 FTEs | 3/16/2026 – 10/30/2026</div>
   </div>
   <div class="brand">DYNAMO</div>
 </div>
@@ -382,7 +382,7 @@
     <strong>Jira (authoritative backlog):</strong> <strong>WSA-2656</strong> is the <strong>capability of record</strong> (<em>v2: Pipeline Automation</em>). <strong>PA-OC-00</strong> is Epic <strong>WSA-3758</strong> (<em>[PA-OC-00] Infrastructure &amp; Architecture POC</em>); outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong> map to <strong>PA-OC-01</strong>–<strong>PA-OC-11</strong>. All Stories with summary prefix <strong>[POC]</strong> belong under Epic <strong>WSA-3758</strong>. Action items roll up under Epic <strong>WSA-2657</strong>. Legacy Epic <strong>WSA-36</strong> is closed; work is superseded by <strong>WSA-3268</strong>.<br>
     <strong>Estimation approach:</strong> Very conservative -- durations scaled ~1.5x from original estimates to account for reduced staffing, decision wait times, and DMSi availability constraints.<br>
     <strong>Parallel work:</strong> Limited by 1.5 FTE capacity. PA-OC-05 (Build) and PA-OC-07 (Drift Detection) run in parallel after PA-OC-04, with PA-OC-05 at ~1 FTE and PA-OC-07 at ~0.5 FTE. PA-OC-06 (Deploy) starts once PA-OC-05 frees up capacity.<br>
-    <strong>PA-OC-00:</strong> First two weeks (from 3/16/2026) are <strong>active engineering</strong>—the team delivers outcome <strong>PA-OC-00</strong> to <strong>prove infrastructure and architecture</strong> before <strong>PA-OC-01</strong>. Execution is tracked under Epic <strong>WSA-3758</strong>; align with <strong>PA-WSB.md</strong> v1.5.<br>
+    <strong>PA-OC-00:</strong> First two weeks (from 3/16/2026) are <strong>active engineering</strong>—the team delivers outcome <strong>PA-OC-00</strong> to <strong>prove infrastructure and architecture</strong> before <strong>PA-OC-01</strong>. Execution is tracked under Epic <strong>WSA-3758</strong>; align with <strong>PA-WBS.md</strong> v1.6.<br>
     <strong>Start date:</strong> Monday, March 16, 2026 &nbsp;|&nbsp; <strong>Projected completion (PA-OC-09):</strong> Friday, October 30, 2026
   </div>
 
@@ -463,7 +463,7 @@
 </div>
 
 <div class="footer">
-  Dynamo Consulting | PA-WSB v1.5 Outcome Map | March 2026 | 1.5 FTEs Conservative Estimate | Confidential
+  Dynamo Consulting | PA-WBS v1.6 Outcome Map | March 2026 | 1.5 FTEs Conservative Estimate | Confidential
 </div>
 
 <!-- Tooltip -->
@@ -493,7 +493,7 @@ function dateRange(startWk, endWk) {
 const outcomes = [
   { id:'PA-OC-00', name:'Infrastructure & Architecture POC', cat:'POC', start:1, end:2, deps:[], risk:'', deliverables:1, milestone:'',
     dates: dateRange(1, 2),
-    detail:'First outcome (weeks 1–2): prove infrastructure and architecture—how the pipeline will run, connect, and be operated—plus approach, tooling, access, and velocity. Jira Epic WSA-3758; all [POC] Stories under this Epic. Must complete before PA-OC-01. PA-WSB v1.5.' },
+    detail:'First outcome (weeks 1–2): prove infrastructure and architecture—how the pipeline will run, connect, and be operated—plus approach, tooling, access, and velocity. Jira Epic WSA-3758; all [POC] Stories under this Epic. Must complete before PA-OC-01. PA-WBS v1.6.' },
   { id:'PA-OC-01', name:'Foundation Access and Security Baseline Complete', cat:'Baseline', start:3, end:5, deps:['PA-OC-00'], risk:'PA-R-01', deliverables:6, milestone:'M3',
     dates: dateRange(3, 5),
     detail:'Environment access, deployment process documentation, security baseline, data classification, access governance, network security. Jira Epic WSA-3268 ([PA-OC-01] Foundation Access and Security Baseline Complete). Legacy WSA-36 superseded.' },
@@ -520,7 +520,7 @@ const outcomes = [
     detail:'2-week measurement window (rolling): 90%+ success rate for all 3 pipelines. Max 3 cycles. Fallback: trigger PA-OC-10. Timeline allows time for fixes between cycles.' },
   { id:'PA-OC-09', name:'Config-as-Code Enforced', cat:'Iterative', start:29, end:33, deps:['PA-OC-08'], risk:'PA-R-08', deliverables:4, milestone:'M5',
     dates: dateRange(29, 33),
-    detail:'4-week enforcement period per PA-WSB. No manual changes allowed. Team training, runbooks, IRP update. Max 2 cycles.' },
+    detail:'4-week enforcement period per PA-WBS. No manual changes allowed. Team training, runbooks, IRP update. Max 2 cycles.' },
   { id:'PA-OC-10', name:'Pipeline Fallback', cat:'Conditional', start:0, end:0, deps:[], risk:'', deliverables:2, milestone:'',
     dates: 'Trigger-activated',
     detail:'CONDITIONAL: Triggers if PA-OC-08 reliability fails after 3 cycles. Manual processes maintained; revised plan to Hilltop.' },
