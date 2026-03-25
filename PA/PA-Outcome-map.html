@@ -296,9 +296,50 @@
     margin-top: 2px;
   }
   .d-type.type1 { background: #FDEAEA; color: #E74C3C; }
+  .d-type.type2 { background: #E8F4EC; color: #1B5E20; }
+  .d-type.resolved { background: #E8F5E9; color: #2E7D32; }
   .decision-card .d-text { font-size: 12px; line-height: 1.4; }
   .decision-card .d-id { font-weight: 700; color: #2B2B2B; }
   .decision-card .d-owner { font-size: 11px; color: #999; margin-top: 2px; }
+  .decision-card.d-resolved { border-left: 3px solid #76BE43; }
+
+  .decision-tabs { margin-top: 8px; }
+  .decision-tabs-note {
+    font-size: 11px;
+    color: #666;
+    margin: 8px 0 0 0;
+    line-height: 1.45;
+  }
+  .decision-tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 12px;
+    border-bottom: 2px solid #76BE43;
+  }
+  .decision-tab-btn {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #e8e8e8;
+    border: none;
+    border-radius: 6px 6px 0 0;
+    cursor: pointer;
+    color: #555;
+    font-family: inherit;
+  }
+  .decision-tab-btn:hover { background: #ddd; color: #2B2B2B; }
+  .decision-tab-btn.active {
+    background: white;
+    color: #2B2B2B;
+    box-shadow: 0 -1px 4px rgba(0,0,0,0.06);
+  }
+  .decision-tab-btn:focus-visible {
+    outline: 2px solid #76BE43;
+    outline-offset: 2px;
+  }
+  .decision-tab-panel { display: none; margin-top: 16px; }
+  .decision-tab-panel.active { display: block; }
 
   .footer {
     text-align: center;
@@ -414,42 +455,118 @@
     </div>
   </div>
 
-  <!-- Critical Decisions -->
-  <div class="section-title">Critical Decisions (Type 1 -- Irreversible)</div>
-  <div class="decision-grid">
-    <div class="decision-card">
-      <div class="d-type type1">TYPE 1</div>
-      <div>
-        <div class="d-text"><span class="d-id">PA-D-03:</span> SOC 2 compliance standard for pipeline artifacts</div>
-        <div class="d-owner">Owner: Andy + Ryan | Required by: PA-OC-01 exit (4/17)</div>
+  <!-- Decisions (PA-WBS.md §6) — tabbed Type 1 / Type 2 -->
+  <div class="section-title">Decisions</div>
+  <div class="decision-tabs">
+    <p class="decision-tabs-note">Sourced from <strong>PA-WBS.md</strong> §6 Decision Register (March 2026). <strong>Type 1</strong> = one-way door (irreversible); <strong>Type 2</strong> = two-way door (reversible). Parenthetical dates match the conservative timeline on this page (weeks from 3/16/2026).</p>
+    <div class="decision-tabs-nav" role="tablist" aria-label="Decision categories">
+      <button type="button" class="decision-tab-btn active" role="tab" id="tab-decisions-t1" aria-selected="true" aria-controls="panel-decisions-t1">Critical Decisions (Type 1 — Irreversible)</button>
+      <button type="button" class="decision-tab-btn" role="tab" id="tab-decisions-t2" aria-selected="false" aria-controls="panel-decisions-t2">Decisions (Type 2 — Reversible)</button>
+    </div>
+    <div id="panel-decisions-t1" class="decision-tab-panel active" role="tabpanel" aria-labelledby="tab-decisions-t1">
+      <div class="decision-grid">
+        <div class="decision-card">
+          <div class="d-type type1">TYPE 1</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-02:</span> Secret management approach (GitHub Secrets, HashiCorp Vault, AWS Secrets Manager)</div>
+            <div class="d-owner">Owner: Dynamo + Andy | Required by: PA-OC-01 exit (4/17)</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type1">TYPE 1</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-03:</span> SOC 2 compliance standard for pipeline artifacts</div>
+            <div class="d-owner">Owner: Andy + Ryan | Required by: PA-OC-01 exit (4/17)</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type1">TYPE 1</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-07:</span> GitHub runner deployment model (AWS account, VPC)</div>
+            <div class="d-owner">Owner: Andy + Dynamo | Required by: PA-OC-03 exit (5/29)</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type1">TYPE 1</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-08:</span> Ansible automation feasibility — can it run without human interaction?</div>
+            <div class="d-owner">Owner: Dynamo + Rex | Required by: PA-OC-03 exit (5/29)</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type1">TYPE 1</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-10:</span> Config-as-code enforcement policy (what happens when the pipeline is the only path?)</div>
+            <div class="d-owner">Owner: Andy + leadership | Required by: PA-OC-08 exit (9/25)</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type1">TYPE 1</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-13:</span> CAB change request process for pipeline deployments</div>
+            <div class="d-owner">Owner: Andy + Ryan | Required by: PA-OC-04 entry (6/1)</div>
+          </div>
+        </div>
+        <div class="decision-card d-resolved">
+          <div class="d-type resolved">RESOLVED</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-14:</span> Application deployment automation (Caley&apos;s domain) in or out of scope?</div>
+            <div class="d-owner">Owner: Cameron | Required: Immediately — <strong>Out of scope</strong> (documented 12 Mar 2026 per PA-WBS.md)</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="decision-card">
-      <div class="d-type type1">TYPE 1</div>
-      <div>
-        <div class="d-text"><span class="d-id">PA-D-07:</span> GitHub runner deployment model (AWS account, VPC)</div>
-        <div class="d-owner">Owner: Andy + Dynamo | Required by: PA-OC-03 exit (5/29)</div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <div class="d-type type1">TYPE 1</div>
-      <div>
-        <div class="d-text"><span class="d-id">PA-D-08:</span> Ansible automation feasibility -- can it run without human interaction?</div>
-        <div class="d-owner">Owner: Dynamo + Rex | Required by: PA-OC-03 exit (5/29)</div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <div class="d-type type1">TYPE 1</div>
-      <div>
-        <div class="d-text"><span class="d-id">PA-D-10:</span> Config-as-code enforcement policy</div>
-        <div class="d-owner">Owner: Andy + leadership | Required by: PA-OC-08 exit (9/25)</div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <div class="d-type type1">TYPE 1</div>
-      <div>
-        <div class="d-text"><span class="d-id">PA-D-13:</span> CAB change request process for pipeline deployments</div>
-        <div class="d-owner">Owner: Andy + Ryan | Required by: PA-OC-04 entry (6/1)</div>
+    <div id="panel-decisions-t2" class="decision-tab-panel" role="tabpanel" aria-labelledby="tab-decisions-t2">
+      <div class="decision-grid">
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-01:</span> GitHub runner deployment model (tools VPC vs. per-region vs. hosted)</div>
+            <div class="d-owner">Owner: Dynamo + Andy | Required by: PA-OC-01 exit (4/17)</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-04:</span> Priority ordering for config types beyond NGINX</div>
+            <div class="d-owner">Owner: Andy + Dynamo | Required by: PA-OC-02 exit (5/8)</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-05:</span> Repository structure pattern (by config type, client, environment)</div>
+            <div class="d-owner">Owner: Dynamo | Required by: PA-OC-03 exit (5/29)</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-06:</span> Canonical config format per type</div>
+            <div class="d-owner">Owner: Dynamo | Required by: PA-OC-03 exit (5/29)</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-09:</span> Drift detection alerting channel (PagerDuty vs. Slack)</div>
+            <div class="d-owner">Owner: Andy | Required by: PA-OC-05 entry (7/6)</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-11:</span> Data classification standard for pipeline artifacts</div>
+            <div class="d-owner">Owner: GRC + Dynamo | Required by: PA-OC-01 exit (4/17)</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">PA-D-12:</span> Credential rotation and management tooling</div>
+            <div class="d-owner">Owner: Dynamo + Andy | Required by: PA-OC-02 exit (5/8)</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -874,6 +991,40 @@ Object.entries(nodes).forEach(([id, n]) => {
 
   svg.appendChild(g);
 });
+</script>
+<script>
+/* Decision tabs: Type 1 / Type 2 panels (PA-WBS §6). */
+(function () {
+  var nav = document.querySelector('.decision-tabs-nav');
+  if (!nav) return;
+  var btns = nav.querySelectorAll('.decision-tab-btn');
+  var panels = document.querySelectorAll('.decision-tabs .decision-tab-panel');
+  if (!btns.length || !panels.length) return;
+  function activate(i) {
+    btns.forEach(function (b, j) {
+      var on = j === i;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.tabIndex = on ? 0 : -1;
+    });
+    panels.forEach(function (p, j) {
+      p.classList.toggle('active', j === i);
+    });
+  }
+  btns.forEach(function (btn, i) {
+    btn.addEventListener('click', function () { activate(i); });
+    btn.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      var next = i + (e.key === 'ArrowRight' ? 1 : -1);
+      if (next < 0) next = btns.length - 1;
+      if (next >= btns.length) next = 0;
+      btns[next].focus();
+      activate(next);
+    });
+  });
+  activate(0);
+})();
 </script>
 </body>
 </html>
