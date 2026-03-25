@@ -22,6 +22,7 @@ on:
       - 'Capability-map/index.mjs'
       - 'Project-Plan/Combined-Outcome-Gantt.html'
       - 'Project-Plan/gantt-data.json'
+      - 'Project-Plan/project-milestones.json'
       - 'WM/'
       - 'VI/'
       - 'PA/'
@@ -44,8 +45,14 @@ jobs:
           cd Capability-map
           zip -r ../deploy.zip index.mjs capability-map.html capability-map-dmsi.html capability-map-state.json capability-map-artifacts-dmsi.json
           cd ../Project-Plan
-          zip -g ../deploy.zip Combined-Outcome-Gantt.html gantt-data.json
+          # Root of zip: legacy Lambda URLs …/Combined-Outcome-Gantt.html
+          zip -g ../deploy.zip Combined-Outcome-Gantt.html gantt-data.json project-milestones.json
           cd ..
+          # Repo-style paths: …/Project-Plan/Combined-Outcome-Gantt.html (Confluence / bookmarks)
+          zip -g deploy.zip \
+            Project-Plan/Combined-Outcome-Gantt.html \
+            Project-Plan/gantt-data.json \
+            Project-Plan/project-milestones.json
           zip -r deploy.zip WM VI PA
           zip -j -g deploy.zip WSB-WSC/WSB-WSC-Outcome-Map.html
           echo "Package size: $(du -h deploy.zip | cut -f1)"
