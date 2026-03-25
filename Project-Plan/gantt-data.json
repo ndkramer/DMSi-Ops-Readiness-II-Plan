@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-25T18:22:15.717Z",
+  "generatedAt": "2026-03-25T21:46:08.132Z",
   "timeline": {
     "start": "2026-02-01",
     "end": "2026-11-01"
@@ -35,8 +35,8 @@
     },
     {
       "id": "VI",
-      "name": "Visibility Infrastructure",
-      "meta": "16 outcomes",
+      "name": "Visibility Infrastructure & Proactive Detection",
+      "meta": "16 outcomes | PD AIOps active since Mar 1",
       "barClass": "bar-vi",
       "start": "2026-03-01",
       "end": "2026-06-11",
@@ -62,7 +62,7 @@
       "detail": "9 outcomes\n2026-02-16 - 2026-06-19"
     },
     "VI": {
-      "title": "Visibility Infrastructure",
+      "title": "Visibility Infrastructure & Proactive Detection",
       "detail": "16 outcomes\n2026-03-01 - 2026-06-11"
     },
     "PP": {

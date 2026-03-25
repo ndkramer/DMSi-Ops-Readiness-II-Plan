@@ -430,15 +430,15 @@ months.forEach(m => {
 
 // Fallback capability data (used if gantt-data.json is missing or fetch fails)
 const FALLBACK_CAPABILITIES = [
-  { id: 'WM', name: 'Work Management', meta: '9 outcomes | OC-01 & OC-02 complete', barClass: 'bar-wm', start: new Date(2026, 1, 15), end: new Date(2026, 5, 19), link: '../WM/WM-Outcome-Map.html', outcomes: 9, detail: 'Process design, tool selection, adoption, board accuracy, flow metrics, prioritization.' },
-  { id: 'VI', name: 'Visibility Infrastructure & Proactive Detection', meta: '16 outcomes | PD AIOps active since Mar 1', barClass: 'bar-vi', start: new Date(2026, 2, 1), end: new Date(2026, 9, 31), link: '../VI/VI-WSB-Outcome-Map.html', outcomes: 16, detail: 'Dynatrace rollout, PagerDuty AIOps, host instrumentation, log migration, synthetic monitoring, application telemetry, alerting, proactive operations.' },
-  { id: 'PP', name: 'Pipeline Automation', meta: '11 outcomes + POC | Starts with 2-week POC', barClass: 'bar-pp', start: new Date(2026, 2, 16), end: new Date(2026, 9, 30), link: '../PA/PA-Outcome-map.html', outcomes: 11, detail: 'NGINX config pipeline POC, foundation, config inventory, version control migration, build/deploy/drift pipelines, reliability validation, config-as-code enforcement.' }
+  { id: 'WM', name: 'Work Management', meta: '9 outcomes | OC-01, OC-02 complete', barClass: 'bar-wm', start: new Date(2026, 1, 16), end: new Date(2026, 5, 19), link: '../WM/WM-Outcome-Map.html', outcomes: 9, detail: 'Process design, tool selection, adoption, board accuracy, flow metrics, prioritization. OC-01 (Discovery) and OC-02 (Operating Model) already complete.' },
+  { id: 'VI', name: 'Visibility Infrastructure & Proactive Detection', meta: '16 outcomes | PD AIOps active since Mar 1', barClass: 'bar-vi', start: new Date(2026, 2, 1), end: new Date(2026, 5, 11), link: '../VI/VI-WSB-Outcome-Map.html', outcomes: 16, detail: 'Dynatrace rollout, PagerDuty AIOps, host instrumentation, log migration, synthetic monitoring, application telemetry, alerting, proactive operations.' },
+  { id: 'PP', name: 'Pipeline Automation', meta: '12 outcomes + POC | Starts with 2-week POC', barClass: 'bar-pp', start: new Date(2026, 2, 16), end: new Date(2026, 7, 21), link: '../PA/PA-Outcome-map.html', outcomes: 12, detail: 'NGINX config pipeline POC, foundation, config inventory, version control migration, build/deploy/drift pipelines, reliability validation, config-as-code enforcement.' }
 ];
 /** Inline fallback if project-milestones.json is missing or fetch fails (mirrors Project-Plan/project-milestones.json). */
 const FALLBACK_MILESTONES = [
-  { id: 'M2', date: '2026-03-27', label: 'M2 3/27' },
-  { id: 'M3', date: '2026-04-27', label: 'M3 4/27' },
-  { id: 'M4', date: '2026-10-27', label: 'M4 10/27' }
+  { id: 'M2', date: '2026-03-28', label: 'M2: Mar 28' },
+  { id: 'M3', date: '2026-05-28', label: 'M3: May 28' },
+  { id: 'M4', date: '2026-10-27', label: 'M4: Oct 27' }
 ];
 
 function parseCapabilityDates(data) {
@@ -576,16 +576,23 @@ function initGantt(data) {
 }
 
 (function loadGanttData() {
+  const token = new URLSearchParams(window.location.search).get('token');
+  function fetchUrl(path) {
+    if (!token) return path;
+    const sep = path.indexOf('?') >= 0 ? '&' : '?';
+    return path + sep + 'token=' + encodeURIComponent(token);
+  }
+
   if (window.GANTT_DATA) {
     const d = window.GANTT_DATA;
     if (!d.milestones || !d.milestones.length) d.milestones = FALLBACK_MILESTONES;
     initGantt(d);
     return;
   }
-  fetch('gantt-data.json')
+  fetch(fetchUrl('gantt-data.json'))
     .then(r => r.ok ? r.json() : Promise.reject(new Error('Not ok')))
     .then(data =>
-      fetch('project-milestones.json')
+      fetch(fetchUrl('project-milestones.json'))
         .then(r => r.ok ? r.json() : Promise.reject())
         .then(ms => {
           if (ms && ms.milestones && ms.milestones.length) data.milestones = ms.milestones;

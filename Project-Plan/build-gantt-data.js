@@ -136,6 +136,8 @@ function parseWM(content) {
 
 // --- VI ---
 const VI_START = new Date(2026, 2, 1);   // Mar 1, 2026 (PagerDuty); Dynatrace Apr 1 - use Mar 1 for min bar
+/** Display name on Combined Gantt (matches outcome-map / stakeholder language). */
+const VI_DISPLAY_NAME = 'Visibility Infrastructure & Proactive Detection';
 
 function parseVI(content) {
   const rows = extractOutcomeMapTable(content);
@@ -243,8 +245,8 @@ function main() {
     },
     {
       id: 'VI',
-      name: 'Visibility Infrastructure',
-      meta: buildMeta(viOutcomes, 'VI'),
+      name: VI_DISPLAY_NAME,
+      meta: `${buildMeta(viOutcomes, 'VI')} | PD AIOps active since Mar 1`,
       barClass: 'bar-vi',
       start: (viRange.start || new Date(2026, 2, 1)).toISOString().slice(0, 10),
       end: (viRange.end || new Date(2026, 9, 31)).toISOString().slice(0, 10),
@@ -278,7 +280,7 @@ function main() {
     capabilities,
     summaryCards: {
       WM: { title: 'Work Management', detail: `${wmOutcomes.length} outcomes\n${capabilities[0].start} - ${capabilities[0].end}` },
-      VI: { title: 'Visibility Infrastructure', detail: `${viOutcomes.length} outcomes\n${capabilities[1].start} - ${capabilities[1].end}` },
+      VI: { title: VI_DISPLAY_NAME, detail: `${viOutcomes.length} outcomes\n${capabilities[1].start} - ${capabilities[1].end}` },
       PP: { title: 'Pipeline Automation', detail: `${paOutcomes.length} outcomes (+ POC)\n${capabilities[2].start} - ${capabilities[2].end}` }
     }
   };
