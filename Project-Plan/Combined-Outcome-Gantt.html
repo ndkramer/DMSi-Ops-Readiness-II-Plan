@@ -376,7 +376,7 @@
 
 <div class="legend-bar">
   <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg, #3498DB, #2980B9)"></div> Work Management (WM)</div>
-  <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg, #9B59B6, #8E44AD)"></div> Visibility Infrastructure (VI)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg, #9B59B6, #8E44AD)"></div> Visibility Infrastructure &amp; Proactive Detection (VI)</div>
   <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg, #E67E22, #D35400)"></div> Pipeline Automation (PP)</div>
   <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #E74C3C;opacity:0.6"></div> Milestone</div>
   <div class="legend-item"><div style="width:0;height:14px;border-left:3px solid #76BE43;opacity:0.7"></div> As of last save</div>
@@ -431,7 +431,7 @@ months.forEach(m => {
 // Fallback capability data (used if gantt-data.json is missing or fetch fails)
 const FALLBACK_CAPABILITIES = [
   { id: 'WM', name: 'Work Management', meta: '9 outcomes | OC-01 & OC-02 complete', barClass: 'bar-wm', start: new Date(2026, 1, 15), end: new Date(2026, 5, 19), link: '../WM/WM-Outcome-Map.html', outcomes: 9, detail: 'Process design, tool selection, adoption, board accuracy, flow metrics, prioritization.' },
-  { id: 'VI', name: 'Visibility Infrastructure', meta: '16 outcomes | PD AIOps active since Mar 1', barClass: 'bar-vi', start: new Date(2026, 2, 1), end: new Date(2026, 9, 31), link: '../VI/VI-WSB-Outcome-Map.html', outcomes: 16, detail: 'Dynatrace rollout, PagerDuty AIOps, host instrumentation, log migration, synthetic monitoring, application telemetry, alerting, proactive operations.' },
+  { id: 'VI', name: 'Visibility Infrastructure & Proactive Detection', meta: '16 outcomes | PD AIOps active since Mar 1', barClass: 'bar-vi', start: new Date(2026, 2, 1), end: new Date(2026, 9, 31), link: '../VI/VI-WSB-Outcome-Map.html', outcomes: 16, detail: 'Dynatrace rollout, PagerDuty AIOps, host instrumentation, log migration, synthetic monitoring, application telemetry, alerting, proactive operations.' },
   { id: 'PP', name: 'Pipeline Automation', meta: '11 outcomes + POC | Starts with 2-week POC', barClass: 'bar-pp', start: new Date(2026, 2, 16), end: new Date(2026, 9, 30), link: '../PA/PA-Outcome-map.html', outcomes: 11, detail: 'NGINX config pipeline POC, foundation, config inventory, version control migration, build/deploy/drift pipelines, reliability validation, config-as-code enforcement.' }
 ];
 /** Inline fallback if project-milestones.json is missing or fetch fails (mirrors Project-Plan/project-milestones.json). */

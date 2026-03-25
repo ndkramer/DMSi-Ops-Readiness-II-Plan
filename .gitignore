@@ -23,3 +23,7 @@ npm-debug.log*
 # Local / temp
 *.tmp
 .cache/
+
+# Microsoft Office (lock files while document is open)
+~$*.docx
+~$*.xlsx
