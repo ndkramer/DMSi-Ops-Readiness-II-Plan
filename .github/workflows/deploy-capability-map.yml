@@ -6,6 +6,8 @@
 #   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY  (or configure OIDC and use role)
 #   LAMBDA_FUNCTION_NAME                       (e.g. capability-map or your Lambda name)
 # Optional: AWS_REGION (defaults to us-east-2 for capability-map Lambda)
+#
+# Path filters: a push must change at least one listed path (empty commits do not trigger).
 
 name: Deploy Capability Map to Lambda
 
