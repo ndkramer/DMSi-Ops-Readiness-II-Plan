@@ -16,12 +16,12 @@ node Scripts/wbs-load-prep.js <capability>
 
 - `node Scripts/wbs-load-prep.js PA`
 - `node Scripts/wbs-load-prep.js VI`
-- `node Scripts/wbs-load-prep.js WM` (JSON archive skipped if `WM/Output/WM-WSB-Jira-Import.json` does not exist)
+- `node Scripts/wbs-load-prep.js WM` (JSON archive skipped if `WM/Output/WM-WBS-Jira-Import.json` does not exist)
 
 **What it does:**
 
-1. Copies current WBS → Archive (**PA:** `PA-WBS.md` → `PA-WBS-mm-dd-yyyy.md`; **VI/WM:** `{Prefix}-WSB.md` → `{Prefix}-WSB-mm-dd-yyyy.md`)
-2. If present, copies `{Folder}/Output/{Prefix}-WSB-Jira-Import.json` → `{Folder}/Output/Archive/{Prefix}-WSB-Jira-Import-mm-dd-yyyy.json`
+1. Copies current WBS → Archive (`{Prefix}-WBS.md` → `{Prefix}-WBS-mm-dd-yyyy.md` for PA, VI, WM)
+2. If present, copies `{Folder}/Output/{Prefix}-WBS-Jira-Import.json` → `{Folder}/Output/Archive/{Prefix}-WBS-Jira-Import-mm-dd-yyyy.json`
 3. Creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with stub sections:
    - Summary (archived WBS and JSON paths)
    - **Change summary table:** Work items, Risks, Decisions, Questions × Added | Deleted | Updated (initial 0s; see counts script below)

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "capability": "VI",
+  "wbs_markdown": "VI-WBS.md",
+  "jira": {
+    "capability_issue_key": "WSA-120",
+    "notes": "Populate outcomes[] with jira_epic_key per row when VI-WBS.md §9 lists stable Epic keys for each VI-OC-XX."
+  },
+  "outcomes": []
+}

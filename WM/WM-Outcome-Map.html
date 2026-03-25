@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WM-WSB: Outcome Map - Work Management</title>
+<title>WM-WBS: Outcome Map - Work Management</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; color: #2B2B2B; }
@@ -284,10 +284,48 @@
     margin-top: 2px;
   }
   .d-type.type1 { background: #FDEAEA; color: #E74C3C; }
-  .d-type.type2 { background: #EAF7EA; color: #27AE60; }
+  .d-type.type2 { background: #E8F4EC; color: #1B5E20; }
   .decision-card .d-text { font-size: 12px; line-height: 1.4; }
   .decision-card .d-id { font-weight: 700; color: #2B2B2B; }
   .decision-card .d-owner { font-size: 11px; color: #999; margin-top: 2px; }
+
+  .decision-tabs { margin-top: 8px; }
+  .decision-tabs-note {
+    font-size: 11px;
+    color: #666;
+    margin: 8px 0 0 0;
+    line-height: 1.45;
+  }
+  .decision-tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 12px;
+    border-bottom: 2px solid #76BE43;
+  }
+  .decision-tab-btn {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #e8e8e8;
+    border: none;
+    border-radius: 6px 6px 0 0;
+    cursor: pointer;
+    color: #555;
+    font-family: inherit;
+  }
+  .decision-tab-btn:hover { background: #ddd; color: #2B2B2B; }
+  .decision-tab-btn.active {
+    background: white;
+    color: #2B2B2B;
+    box-shadow: 0 -1px 4px rgba(0,0,0,0.06);
+  }
+  .decision-tab-btn:focus-visible {
+    outline: 2px solid #76BE43;
+    outline-offset: 2px;
+  }
+  .decision-tab-panel { display: none; margin-top: 16px; }
+  .decision-tab-panel.active { display: block; }
 
   .footer {
     text-align: center;
@@ -309,7 +347,7 @@
 
 <div class="header">
   <div>
-    <h1>WM-WSB: Work Management Outcome Map</h1>
+    <h1>WM-WBS: Work Management Outcome Map</h1>
     <div class="subtitle">DMSi Software -- Workstream A | 1 FTE Dynamo | Start: Feb 15 | Deadline: End of May | ~18 Weeks (~3 wks past deadline)</div>
   </div>
   <div class="brand">DYNAMO</div>
@@ -379,35 +417,69 @@
     </div>
   </div>
 
-  <!-- Critical Decisions -->
-  <div class="section-title">Critical Decisions</div>
-  <div class="decision-grid">
-    <div class="decision-card">
-      <div class="d-type type1">TYPE 1</div>
-      <div>
-        <div class="d-text"><span class="d-id">WM-D-04:</span> Relationship between work management system and 360 -- replace vs. promote from 360</div>
-        <div class="d-owner">Owner: Bryan + Andy + Brent | Required by: WM-OC-03.1</div>
+  <!-- Decisions (WM-WBS.md §6) — tabbed Type 1 / Type 2 -->
+  <div class="section-title">Decisions</div>
+  <div class="decision-tabs">
+    <p class="decision-tabs-note">Sourced from <strong>WM-WBS.md</strong> §6 Decision Register (March 2026). <strong>Type 1</strong> = one-way door (irreversible); <strong>Type 2</strong> = two-way door (reversible). &quot;Required by&quot; uses deliverable / outcome IDs from the WBS; align dates with the timeline above (Week 1 = Feb 16, 2026).</p>
+    <div class="decision-tabs-nav" role="tablist" aria-label="WM decision categories">
+      <button type="button" class="decision-tab-btn active" role="tab" id="wm-tab-decisions-t1" aria-selected="true" aria-controls="wm-panel-decisions-t1">Critical Decisions (Type 1 — Irreversible)</button>
+      <button type="button" class="decision-tab-btn" role="tab" id="wm-tab-decisions-t2" aria-selected="false" aria-controls="wm-panel-decisions-t2">Decisions (Type 2 — Reversible)</button>
+    </div>
+    <div id="wm-panel-decisions-t1" class="decision-tab-panel active" role="tabpanel" aria-labelledby="wm-tab-decisions-t1">
+      <div class="decision-grid">
+        <div class="decision-card">
+          <div class="d-type type1">TYPE 1</div>
+          <div>
+            <div class="d-text"><span class="d-id">WM-D-04:</span> Relationship between work management system and 360 (replace vs. promote)</div>
+            <div class="d-owner">Owner: Bryan + Andy + Brent | Required by: WM-OC-03.1</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="decision-card">
-      <div class="d-type type2">TYPE 2</div>
-      <div>
-        <div class="d-text"><span class="d-id">WM-D-01:</span> Does routing function formalize into triage, or does Casora continue pre-screening?</div>
-        <div class="d-owner">Owner: Bryan + Andy | Required by: WM-OC-02.4</div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <div class="d-type type2">TYPE 2</div>
-      <div>
-        <div class="d-text"><span class="d-id">WM-D-05:</span> Tool selection -- Jira, GitHub Projects, Teamwork, monday.com, Shortcut, or other</div>
-        <div class="d-owner">Owner: Bryan + Andy + Brent | Required by: WM-OC-03.2</div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <div class="d-type type2">TYPE 2</div>
-      <div>
-        <div class="d-text"><span class="d-id">WM-D-03:</span> Progress Engineering (Bob Dixon) included in initial rollout or phased in later?</div>
-        <div class="d-owner">Owner: Bryan + Brent | Required by: WM-OC-02.6</div>
+    <div id="wm-panel-decisions-t2" class="decision-tab-panel" role="tabpanel" aria-labelledby="wm-tab-decisions-t2">
+      <div class="decision-grid">
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">WM-D-01:</span> Does routing function formalize into triage, or does Casora pre-screen?</div>
+            <div class="d-owner">Owner: Bryan + Andy | Required by: WM-OC-02.4</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">WM-D-02:</span> Triage group composition</div>
+            <div class="d-owner">Owner: Bryan | Required by: WM-OC-02.4</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">WM-D-03:</span> Progress Engineering (Bob Dixon) in initial rollout or phased?</div>
+            <div class="d-owner">Owner: Bryan + Brent | Required by: WM-OC-02.6</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">WM-D-05:</span> Tool selection (Jira, GitHub Projects, Teamwork, monday.com, Shortcut, or other)</div>
+            <div class="d-owner">Owner: Bryan + Andy + Brent | Required by: WM-OC-03.2</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">WM-D-06:</span> PagerDuty integration scope (all incidents vs. severity threshold)</div>
+            <div class="d-owner">Owner: Bryan + Andy | Required by: WM-OC-06.2</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">WM-D-07:</span> Commitment tier model (three tiers vs. two)</div>
+            <div class="d-owner">Owner: Bryan | Required by: WM-OC-06.3</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -421,7 +493,7 @@
 </div>
 
 <div class="footer">
-  Dynamo Consulting | WM-WSB Outcome Map | March 2026 | 1 FTE Dynamo | Start: Feb 15 | Deadline: End of May | ~18 Weeks | Confidential
+  Dynamo Consulting | WM-WBS Outcome Map | March 2026 | 1 FTE Dynamo | Start: Feb 15 | Deadline: End of May | ~18 Weeks | Confidential
 </div>
 
 <!-- Tooltip -->
@@ -736,6 +808,40 @@ Object.entries(nodes).forEach(([id, n]) => {
 
   svg.appendChild(g);
 });
+</script>
+<script>
+/* WM decision tabs — WM-WBS.md §6 */
+(function () {
+  var nav = document.querySelector('.decision-tabs-nav');
+  if (!nav) return;
+  var btns = nav.querySelectorAll('.decision-tab-btn');
+  var panels = document.querySelectorAll('.decision-tabs .decision-tab-panel');
+  if (!btns.length || !panels.length) return;
+  function activate(i) {
+    btns.forEach(function (b, j) {
+      var on = j === i;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.tabIndex = on ? 0 : -1;
+    });
+    panels.forEach(function (p, j) {
+      p.classList.toggle('active', j === i);
+    });
+  }
+  btns.forEach(function (btn, i) {
+    btn.addEventListener('click', function () { activate(i); });
+    btn.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      var next = i + (e.key === 'ArrowRight' ? 1 : -1);
+      if (next < 0) next = btns.length - 1;
+      if (next >= btns.length) next = 0;
+      btns[next].focus();
+      activate(next);
+    });
+  });
+  activate(0);
+})();
 </script>
 </body>
 </html>

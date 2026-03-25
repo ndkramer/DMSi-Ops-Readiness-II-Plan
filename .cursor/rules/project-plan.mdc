@@ -88,7 +88,7 @@ Links use relative paths (no leading `/` or absolute paths).
 
 ## Data and WBS
 
-- Source of truth: WBS markdown in `WM/WM-WSB.md`, `VI/VI-WSB.md`, `PA/PA-WBS.md`. Each has outcome map table, dependencies (mermaid), per-outcome sections, deliverables (OC-XX.Y), subtask bullets.
+- Source of truth: WBS markdown in `WM/WM-WBS.md`, `VI/VI-WBS.md`, `PA/PA-WBS.md`. Each has outcome map table, dependencies (mermaid), per-outcome sections, deliverables (OC-XX.Y), subtask bullets.
 - When building/updating HTML: parse WBS for outcome metadata and deliverables/subtasks; timeline positions from outcome map data (week/period indices).
 
 ---

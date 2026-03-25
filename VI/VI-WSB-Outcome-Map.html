@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VI-WSB: Outcome Map - Visibility Infrastructure &amp; Proactive Detection</title>
+<title>VI-WBS: Outcome Map - Visibility Infrastructure &amp; Proactive Detection</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; color: #2B2B2B; }
@@ -318,10 +318,48 @@
     margin-top: 2px;
   }
   .d-type.type1 { background: #FDEAEA; color: #E74C3C; }
-  .d-type.type2 { background: #EAF7EA; color: #27AE60; }
+  .d-type.type2 { background: #E8F4EC; color: #1B5E20; }
   .decision-card .d-text { font-size: 12px; line-height: 1.4; }
   .decision-card .d-id { font-weight: 700; color: #2B2B2B; }
   .decision-card .d-owner { font-size: 11px; color: #999; margin-top: 2px; }
+
+  .decision-tabs { margin-top: 8px; }
+  .decision-tabs-note {
+    font-size: 11px;
+    color: #666;
+    margin: 8px 0 0 0;
+    line-height: 1.45;
+  }
+  .decision-tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 12px;
+    border-bottom: 2px solid #76BE43;
+  }
+  .decision-tab-btn {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #e8e8e8;
+    border: none;
+    border-radius: 6px 6px 0 0;
+    cursor: pointer;
+    color: #555;
+    font-family: inherit;
+  }
+  .decision-tab-btn:hover { background: #ddd; color: #2B2B2B; }
+  .decision-tab-btn.active {
+    background: white;
+    color: #2B2B2B;
+    box-shadow: 0 -1px 4px rgba(0,0,0,0.06);
+  }
+  .decision-tab-btn:focus-visible {
+    outline: 2px solid #76BE43;
+    outline-offset: 2px;
+  }
+  .decision-tab-panel { display: none; margin-top: 16px; }
+  .decision-tab-panel.active { display: block; }
 
   .footer {
     text-align: center;
@@ -343,7 +381,7 @@
 
 <div class="header">
   <div>
-    <h1>VI-WSB: Visibility Infrastructure &amp; Proactive Detection Outcome Map</h1>
+    <h1>VI-WBS: Visibility Infrastructure &amp; Proactive Detection Outcome Map</h1>
     <div class="subtitle">Dynatrace Implementation -- DMSi Software | 1.5 FTE Conservative Estimate | Dynatrace: vendor POC in progress | Full rollout calendar from Apr 1, 2026 (revisit after POC) | PD AIOps active since Mar 1</div>
   </div>
   <div class="brand">DYNAMO</div>
@@ -411,35 +449,160 @@
     </div>
   </div>
 
-  <!-- Critical Decisions -->
-  <div class="section-title">Critical Decisions (Type 1 -- Irreversible)</div>
-  <div class="decision-grid">
-    <div class="decision-card">
-      <div class="d-type type1">TYPE 1</div>
-      <div>
-        <div class="d-text"><span class="d-id">VI-D-01:</span> Dynatrace SaaS vs. Managed deployment</div>
-        <div class="d-owner">Owner: Andy Meyers | Required by: VI-OC-01 exit</div>
+  <!-- Decisions (VI-WBS.md §6) — tabbed Type 1 / Type 2 -->
+  <div class="section-title">Decisions</div>
+  <div class="decision-tabs">
+    <p class="decision-tabs-note">Sourced from <strong>VI-WBS.md</strong> §6 Decision Register (March 2026). <strong>Type 1</strong> = one-way door (irreversible); <strong>Type 2</strong> = two-way door (reversible). &quot;Required by&quot; matches the WBS; calendar bands on this page start from the conservative rollout grid (revisit after Dynatrace POC).</p>
+    <div class="decision-tabs-nav" role="tablist" aria-label="VI decision categories">
+      <button type="button" class="decision-tab-btn active" role="tab" id="vi-tab-decisions-t1" aria-selected="true" aria-controls="vi-panel-decisions-t1">Critical Decisions (Type 1 — Irreversible)</button>
+      <button type="button" class="decision-tab-btn" role="tab" id="vi-tab-decisions-t2" aria-selected="false" aria-controls="vi-panel-decisions-t2">Decisions (Type 2 — Reversible)</button>
+    </div>
+    <div id="vi-panel-decisions-t1" class="decision-tab-panel active" role="tabpanel" aria-labelledby="vi-tab-decisions-t1">
+      <div class="decision-grid">
+        <div class="decision-card">
+          <div class="d-type type1">TYPE 1</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-01:</span> Dynatrace SaaS vs. Managed deployment</div>
+            <div class="d-owner">Owner: Andy Meyers | Required by: VI-OC-01 exit</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type1">TYPE 1</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-02:</span> Licensing model (DPS vs. Classic) — multi-year contract</div>
+            <div class="d-owner">Owner: DMSi Procurement + Dynamo | Required by: VI-OC-02.4</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type1">TYPE 1</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-16:</span> Elastic decommission — data archival before shutdown (irreversible)</div>
+            <div class="d-owner">Owner: Andy + Leanne (GRC) | Required by: VI-OC-12.1</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type1">TYPE 1</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-17:</span> Log retention period (35/90/custom days)</div>
+            <div class="d-owner">Owner: Andy + Leanne (GRC) | Required by: VI-OC-02.3</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="decision-card">
-      <div class="d-type type1">TYPE 1</div>
-      <div>
-        <div class="d-text"><span class="d-id">VI-D-02:</span> Licensing model (DPS vs. Classic) -- 3-year TCO $784K-$1.075M</div>
-        <div class="d-owner">Owner: DMSi Procurement + Dynamo | Required by: VI-OC-02</div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <div class="d-type type1">TYPE 1</div>
-      <div>
-        <div class="d-text"><span class="d-id">VI-D-16:</span> Elastic decommission -- data archival before shutdown (data loss is permanent)</div>
-        <div class="d-owner">Owner: Andy + Leanne (GRC) | Required by: VI-OC-12</div>
-      </div>
-    </div>
-    <div class="decision-card">
-      <div class="d-type type1">TYPE 1</div>
-      <div>
-        <div class="d-text"><span class="d-id">VI-D-17:</span> Log retention period (35/90/custom days) -- purged logs cannot be recovered</div>
-        <div class="d-owner">Owner: Andy + Leanne (GRC) | Required by: VI-OC-02</div>
+    <div id="vi-panel-decisions-t2" class="decision-tab-panel" role="tabpanel" aria-labelledby="vi-tab-decisions-t2">
+      <div class="decision-grid">
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-03:</span> CheckMK coexistence duration</div>
+            <div class="d-owner">Owner: Brent + Andy | Required by: VI-OC-01 exit</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-04:</span> APM ownership and dev team capacity</div>
+            <div class="d-owner">Owner: Brent | Required by: VI-OC-02 exit</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-05:</span> Infrastructure scope (production vs. all)</div>
+            <div class="d-owner">Owner: Andy + Dynamo | Required by: VI-OC-01.2</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-06:</span> RBAC model</div>
+            <div class="d-owner">Owner: Andy + Dynamo | Required by: VI-OC-02.5</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-07:</span> Dual-alerting deduplication strategy</div>
+            <div class="d-owner">Owner: Brent + Andy | Required by: VI-OC-03.3</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-08:</span> Process group naming convention</div>
+            <div class="d-owner">Owner: Andy | Required by: VI-OC-04.1</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-09:</span> Alert soft-launch strategy</div>
+            <div class="d-owner">Owner: Dynamo + DMSi Eng | Required by: VI-OC-03.3</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-10:</span> Synthetic location type for RDP journeys</div>
+            <div class="d-owner">Owner: Andy + Dynamo | Required by: VI-OC-07.3</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-11:</span> Synthetic test frequency</div>
+            <div class="d-owner">Owner: Dynamo + Andy | Required by: VI-OC-07.2</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-12:</span> A2W synthetic test timing</div>
+            <div class="d-owner">Owner: Robin + Brent | Required by: VI-OC-07.7</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-13:</span> Network monitoring tool (Dynatrace vs. ThousandEyes)</div>
+            <div class="d-owner">Owner: Andy + Dynamo | Required by: VI-OC-07.8</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-14:</span> APM depth for OpenEdge (JVM only vs. + OTel)</div>
+            <div class="d-owner">Owner: Brent + dev team | Required by: VI-OC-02.2</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-15:</span> RUM scope and timing</div>
+            <div class="d-owner">Owner: Robin + Brent + Dynamo | Required by: VI-OC-08.6</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-18:</span> Log ingestion scope</div>
+            <div class="d-owner">Owner: Andy + Dynamo | Required by: VI-OC-06.1</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-19:</span> PagerDuty-to-ticket integration (portable webhook vs. native)</div>
+            <div class="d-owner">Owner: Dynamo + WSC lead | Required by: VI-OC-03.3</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-20:</span> New Relic disposition</div>
+            <div class="d-owner">Owner: Andy + Dynamo | Required by: VI-OC-01 exit</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -453,7 +616,7 @@
 </div>
 
 <div class="footer">
-  Dynamo Consulting | VI-WSB Outcome Map | March 2026 | 1.5 FTE Conservative Estimate | Confidential
+  Dynamo Consulting | VI-WBS Outcome Map | March 2026 | 1.5 FTE Conservative Estimate | Confidential
 </div>
 
 <!-- Tooltip -->
@@ -813,6 +976,40 @@ Object.entries(nodes).forEach(([id, n]) => {
 
   svg.appendChild(g);
 });
+</script>
+<script>
+/* VI decision tabs — VI-WBS.md §6 */
+(function () {
+  var nav = document.querySelector('.decision-tabs-nav');
+  if (!nav) return;
+  var btns = nav.querySelectorAll('.decision-tab-btn');
+  var panels = document.querySelectorAll('.decision-tabs .decision-tab-panel');
+  if (!btns.length || !panels.length) return;
+  function activate(i) {
+    btns.forEach(function (b, j) {
+      var on = j === i;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.tabIndex = on ? 0 : -1;
+    });
+    panels.forEach(function (p, j) {
+      p.classList.toggle('active', j === i);
+    });
+  }
+  btns.forEach(function (btn, i) {
+    btn.addEventListener('click', function () { activate(i); });
+    btn.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      var next = i + (e.key === 'ArrowRight' ? 1 : -1);
+      if (next < 0) next = btns.length - 1;
+      if (next >= btns.length) next = 0;
+      btns[next].focus();
+      activate(next);
+    });
+  });
+  activate(0);
+})();
 </script>
 </body>
 </html>

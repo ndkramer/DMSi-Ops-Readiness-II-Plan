@@ -16,7 +16,7 @@ You can say **"Export PA WSA-2656 from Jira"** (or "Export PA from Jira"). The a
   - `metadata`: export date, root keys (WSA-2656, WSA-2657), counts (epics, stories, subtasks, action_items).
   - `capability`, `action_item_root`: full Jira issue objects for the two roots.
   - `epics`, `stories`, `subtasks`, `action_items`: arrays of full Jira issue objects as returned by the API.
-  - **`work_items`**: flat list in the same shape as [PA-WSB-Jira-Import](../Output/PA-WSB-Jira-Import.json) — one entry per Epic, Story, and Sub-task with `key`, `issue_type`, `summary`, `description`, `parent`, `labels`, `owner`, `priority`, `outcome_id`, `category`, `target`, `status`, `component`.
+  - **`work_items`**: flat list in the same shape as [PA-WBS-Jira-Import](../Output/PA-WBS-Jira-Import.json) — one entry per Epic, Story, and Sub-task with `key`, `issue_type`, `summary`, `description`, `parent`, `labels`, `owner`, `priority`, `outcome_id`, `category`, `target`, `status`, `component`.
   - **`action_items_flat`**: same flat shape for Action Items (with `link_to`, `link_type`), so you can diff or reuse data like the WSB Jira-Import format.
 
 ## How to run the export

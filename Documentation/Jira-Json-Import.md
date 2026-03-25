@@ -80,21 +80,21 @@ Same flat shape as above for **Action Items**, plus:
 | `link_to` | string | Key of the action-item root (e.g. `WSA-2657`). |
 | `link_type` | string | Link type (e.g. `"Related to"`). |
 
-Use `work_items` and `action_items_flat` when comparing to `PA-WSB-Jira-Import.json` (which has `work_items` and `action_items`) or when building an import/sync step.
+Use `work_items` and `action_items_flat` when comparing to `PA-WBS-Jira-Import.json` (which has `work_items` and `action_items`) or when building an import/sync step.
 
 ## Relationship to WBS Jira-Import
 
 | Artifact | Source | Purpose |
 |----------|--------|---------|
 | **Jira JSON** (`PA-Jira-mm-dd-yyyy-json.json`) | Export **from Jira** (this format) | Current state in Jira; input to diff/import. |
-| **WBS Jira-Import** (`PA-WSB-Jira-Import.json`) | Derived **from** [`PA-WBS.md`](../PA/PA-WBS.md) (manual or generator) | Target state; what should be in Jira. |
+| **WBS Jira-Import** (`PA-WBS-Jira-Import.json`) | Derived **from** [`PA-WBS.md`](../PA/PA-WBS.md) (manual or generator) | Target state; what should be in Jira. |
 
 - **Jira JSON** = “what Jira has.”
-- **PA-WSB-Jira-Import** = “what the WBS says should be in Jira.” (Filename retains **WSB** for historical compatibility; normative doc is **PA-WBS.md**.)
+- **PA-WBS-Jira-Import** = “what the WBS says should be in Jira.” (Filename aligns with **PA-WBS.md**; VI/WM use **`VI-WBS-Jira-Import.json`**, **`WM-WBS-Jira-Import.json`**.)
 
 Optional outcome ↔ epic registry: [`pa-outcomes.json`](../PA/pa-outcomes.json).
 
-Diffing `work_items` / `action_items_flat` (Jira JSON) against `work_items` / `action_items` (PA-WSB-Jira-Import) by key or outcome_id supports add/update/delete decisions for a future Jira import or sync process.
+Diffing `work_items` / `action_items_flat` (Jira JSON) against `work_items` / `action_items` (PA-WBS-Jira-Import) by key or outcome_id supports add/update/delete decisions for a future Jira import or sync process.
 
 ## How to generate the Jira JSON (export)
 

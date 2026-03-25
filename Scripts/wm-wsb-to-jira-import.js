@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * Generates WM-WSB-Jira-Import.json from the WM-WSB outcome structure.
+ * Generates WM-WBS-Jira-Import.json from the WM-WBS outcome structure.
  * Capability root in Jira: WSA-2881 (Work Management).
- * Output: WM/Output/WM-WSB-Jira-Import.json
+ * Output: WM/Output/WM-WBS-Jira-Import.json
  *
  * Usage: node Scripts/wm-wsb-to-jira-import.js
  */
@@ -47,7 +47,7 @@ const outcomes = [
   { id: 'WM-OC-09', title: 'Prioritization Drives Execution', category: 'Baseline', target: 'Weeks 14-18 (May 18 - Jun 19)' }
 ];
 
-// Deliverables and sub-tasks extracted from WM-WSB.md. Each deliverable: { id, title, owner, tasks: [{ summary, description }] }
+// Deliverables and sub-tasks extracted from WM-WBS.md. Each deliverable: { id, title, owner, tasks: [{ summary, description }] }
 const deliverables = {
   'WM-OC-01': [
     { id: 'WM-OC-01.1', title: 'Discovery Sessions with Engineering Team', owner: 'Dynamo + Bryan + Andy', tasks: [
@@ -284,7 +284,7 @@ for (const oc of outcomes) {
   }
 }
 
-// Action items: risks and decisions from WM-WSB (link to action item root WSA-2882)
+// Action items: risks and decisions from WM-WBS (link to action item root WSA-2882)
 const actionItems = [
   { issue_type: 'Action Item', summary: '[WM-R-01] Team provides "polished answers" rather than honest assessment', description: 'Risk: Team provides "polished answers" rather than honest assessment of how work actually flows. Mitigation: Frame as system improvement, not evaluation; demonstrate value through early quick wins.', link_to: ACTION_ITEM_ROOT_KEY, link_type: 'Related to', labels: 'Risk', owner: 'Dynamo', priority: 'Medium', item_id: 'WM-R-01', item_type: 'Risk', severity_or_type: 'MEDIUM', related_outcome: 'WM-OC-01', required_by: '', status: 'Open', component: COMPONENT },
   { issue_type: 'Action Item', summary: '[WM-R-02] Discovery reveals more complexity than expected', description: 'Risk: Discovery reveals more complexity than expected (additional shadow systems, undocumented processes). Mitigation: Budget flexibility in weeks 1-2; document what is found and adjust operating model scope.', link_to: ACTION_ITEM_ROOT_KEY, link_type: 'Related to', labels: 'Risk', owner: 'Dynamo', priority: 'Low', item_id: 'WM-R-02', item_type: 'Risk', severity_or_type: 'LOW', related_outcome: 'WM-OC-01', required_by: '', status: 'Open', component: COMPONENT },
@@ -346,7 +346,7 @@ const outDir = path.join(__dirname, '..', 'WM', 'Output');
 if (!fs.existsSync(outDir)) {
   fs.mkdirSync(outDir, { recursive: true });
 }
-const outPath = path.join(outDir, 'WM-WSB-Jira-Import.json');
+const outPath = path.join(outDir, 'WM-WBS-Jira-Import.json');
 fs.writeFileSync(outPath, JSON.stringify(payload, null, 2), 'utf8');
 console.log('Wrote', outPath);
 console.log('Counts: %d Epics, %d Stories, %d Sub-tasks, %d Action Items', epicCount, storyCount, subtaskCount, actionItems.length);

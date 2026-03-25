@@ -213,7 +213,7 @@ function descriptionToText(desc) {
 }
 
 /**
- * Flatten a raw Jira issue (key + fields) into the same shape as PA-WSB-Jira-Import:
+ * Flatten a raw Jira issue (key + fields) into the same shape as PA-WBS-Jira-Import:
  * issue_type, summary, description, parent, labels, owner, priority, outcome_id, category, target, status, component.
  * keyToSummary: optional map of issue key -> summary for resolving parent to summary.
  */
@@ -420,7 +420,7 @@ async function run() {
     actionItems = await ensureFullIssues(baseUrl, actionItems);
   }
 
-  // Key -> summary for resolving parent to summary (same shape as PA-WSB-Jira-Import).
+  // Key -> summary for resolving parent to summary (same shape as PA-WBS-Jira-Import).
   const keyToSummary = {};
   epics.forEach((i) => {
     const k = i.key || i.id;

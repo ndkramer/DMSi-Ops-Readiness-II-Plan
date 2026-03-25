@@ -1,12 +1,12 @@
 ---
-description: Visibility Infrastructure (VI) folder — follow VI-WSB outcome structure and conventions
+description: Visibility Infrastructure (VI) folder — follow VI-WBS outcome structure and conventions
 globs: VI/**
 alwaysApply: false
 ---
 
 # VI Folder Rules
 
-When editing or creating content under the Visibility Infrastructure folder, follow the VI outcome-based WBS structure and conventions (VI-WSB).
+When editing or creating content under the Visibility Infrastructure folder, follow the VI outcome-based WBS structure and conventions (VI-WBS).
 
 ## Structure to follow
 
@@ -29,4 +29,4 @@ When editing or creating content under the Visibility Infrastructure folder, fol
 
 ## Reference
 
-The canonical VI outcome structure is in the Visibility Infrastructure WBS (VI-WSB) document. When in doubt, match its format and level of detail.
+The canonical VI outcome structure is in **`VI-WBS.md`**. See **`VI/README.md`** for folder layout, Jira exports, and optional **`vi-outcomes.json`**. When in doubt, match the WBS format and level of detail.

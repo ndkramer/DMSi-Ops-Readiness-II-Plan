@@ -1,4 +1,4 @@
-# WM-WSB: Work Management -- Outcome-Based Work Breakdown Structure
+# WM-WBS: Work Management -- Outcome-Based Work Breakdown Structure
 
 **Dynamo Consulting | DMSi Software**
 **March 2026 | v1.1**

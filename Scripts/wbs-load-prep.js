@@ -3,8 +3,8 @@
  * WBS Load Prep: archive current WBS and Jira-import JSON, create WBS-Load report stub.
  *
  * Part of the WBS update pattern. Run before reviewing Input and regenerating the WBS.
- * - Copies current WBS to {Folder}/Archive/... (PA: PA-WBS-mm-dd-yyyy.md; VI/WM: {Prefix}-WSB-mm-dd-yyyy.md)
- * - If present, copies Output Jira-import JSON to {Folder}/Output/Archive/{Prefix}-WSB-Jira-Import-mm-dd-yyyy.json
+ * - Copies current WBS to {Folder}/Archive/... ({Prefix}-WBS-mm-dd-yyyy.md for PA, VI, WM)
+ * - If present, copies Output Jira-import JSON to {Folder}/Output/Archive/{Prefix}-WBS-Jira-Import-mm-dd-yyyy.json
  * - Creates {Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md with stub sections (including archived JSON path)
  *
  * Run from project root: node Scripts/wbs-load-prep.js <capability>
@@ -32,12 +32,9 @@ function ensureDir(dirPath) {
   }
 }
 
-/** PA uses PA-WBS.md / PA-WBS-{date}.md; VI and WM use {Prefix}-WSB.md. Jira import JSON name unchanged (e.g. PA-WSB-Jira-Import.json). */
+/** Canonical WBS: {PA|VI|WM}-WBS.md. Jira target-state JSON: {Prefix}-WBS-Jira-Import.json */
 function getWbsArchiveNames(prefix) {
-  if (prefix === 'PA') {
-    return { wbsFileName: 'PA-WBS.md', archiveStem: 'PA-WBS' };
-  }
-  return { wbsFileName: `${prefix}-WSB.md`, archiveStem: `${prefix}-WSB` };
+  return { wbsFileName: `${prefix}-WBS.md`, archiveStem: `${prefix}-WBS` };
 }
 
 function run(capability) {
@@ -56,10 +53,10 @@ function run(capability) {
   const archivedWbsName = `${archiveStem}-${dateStamp}.md`;
   const archivedWbsPath = path.join(archiveDir, archivedWbsName);
 
-  const jsonName = `${prefix}-WSB-Jira-Import.json`;
+  const jsonName = `${prefix}-WBS-Jira-Import.json`;
   const jsonPath = path.join(folderPath, 'Output', jsonName);
   const outputArchiveDir = path.join(folderPath, 'Output', 'Archive');
-  const archivedJsonName = `${prefix}-WSB-Jira-Import-${dateStamp}.json`;
+  const archivedJsonName = `${prefix}-WBS-Jira-Import-${dateStamp}.json`;
   const archivedJsonPath = path.join(outputArchiveDir, archivedJsonName);
 
   const updateReportsDir = path.join(folderPath, 'Update-Reports');

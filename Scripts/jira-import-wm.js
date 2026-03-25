@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Jira Import: create Epics, Stories, Sub-tasks, and Action Items from
- * WM/Output/WM-WSB-Jira-Import.json under the WM capability root (WSA-2881).
+ * WM/Output/WM-WBS-Jira-Import.json under the WM capability root (WSA-2881).
  *
  * Uses Jira REST API v3. Requires JIRA_URL, JIRA_USERNAME, JIRA_API_TOKEN in
  * process.env or .cursor/.env. Run from project root.
@@ -13,10 +13,10 @@
  * related_outcome (Epic) and required_by (Story) so risks/decisions appear on the right work.
  *
  * Usage:
- *   node Scripts/jira-import-wm.js                        # WM/Output/WM-WSB-Jira-Import.json under WSA-2881
+ *   node Scripts/jira-import-wm.js                        # WM/Output/WM-WBS-Jira-Import.json under WSA-2881
  *   node Scripts/jira-import-wm.js --dry-run              # log only, no API calls
  *   node Scripts/jira-import-wm.js <jsonPath> [rootKey] [actionItemRootKey]
- *   node Scripts/jira-import-wm.js WM/Output/Archive/WM-WSB-Jira-Import.json WSA-508 WSA-509
+ *   node Scripts/jira-import-wm.js WM/Output/Archive/WM-WBS-Jira-Import.json WSA-508 WSA-509
  */
 
 const fs = require('fs');
@@ -24,7 +24,7 @@ const path = require('path');
 const https = require('https');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
-const DEFAULT_IMPORT_JSON = path.join(PROJECT_ROOT, 'WM', 'Output', 'WM-WSB-Jira-Import.json');
+const DEFAULT_IMPORT_JSON = path.join(PROJECT_ROOT, 'WM', 'Output', 'WM-WBS-Jira-Import.json');
 const DELAY_MS = 250;
 
 function loadEnvFromFile() {

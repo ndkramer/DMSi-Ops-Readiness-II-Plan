@@ -4,8 +4,8 @@
  * WBS-Load report "Change summary" table with added/deleted/updated counts.
  *
  * Run after regenerating the WBS/JSON. Compares:
- *   {Folder}/Output/Archive/{Prefix}-WSB-Jira-Import-{dateStamp}.json (before)
- *   {Folder}/Output/{Prefix}-WSB-Jira-Import.json (after)
+ *   {Folder}/Output/Archive/{Prefix}-WBS-Jira-Import-{dateStamp}.json (before)
+ *   {Folder}/Output/{Prefix}-WBS-Jira-Import.json (after)
  *
  * Run from project root: node Scripts/wbs-load-report-counts.js <capability> <dateStamp>
  * Example: node Scripts/wbs-load-report-counts.js PA 03-17-2026
@@ -45,8 +45,8 @@ function diffCounts(oldArr, newArr, keyField) {
 function run(capability, dateStamp) {
   const prefix = capability;
   const folderPath = path.join(PROJECT_ROOT, capability);
-  const archivedJsonPath = path.join(folderPath, 'Output', 'Archive', `${prefix}-WSB-Jira-Import-${dateStamp}.json`);
-  const currentJsonPath = path.join(folderPath, 'Output', `${prefix}-WSB-Jira-Import.json`);
+  const archivedJsonPath = path.join(folderPath, 'Output', 'Archive', `${prefix}-WBS-Jira-Import-${dateStamp}.json`);
+  const currentJsonPath = path.join(folderPath, 'Output', `${prefix}-WBS-Jira-Import.json`);
   const reportPath = path.join(folderPath, 'Update-Reports', `WBS-Load-${dateStamp}.md`);
 
   if (!fs.existsSync(archivedJsonPath)) {

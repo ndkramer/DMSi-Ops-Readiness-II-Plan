@@ -10,8 +10,8 @@ All data originates from the WBS (Work Breakdown Structure) markdown files:
 
 ```
 WBS/
-  WM-WSB.md    -- Work Management capability
-  VI-WSB.md    -- Visibility Infrastructure capability
+  WM-WBS.md    -- Work Management capability
+  VI-WBS.md    -- Visibility Infrastructure capability
   PP-WSB.md    -- Pipeline Automation capability
 ```
 
@@ -29,7 +29,7 @@ These WBS files are the single source of truth. Everything in the HTML files is 
 
 Each WBS has an outcome map table near the top. This is the primary data source for timeline placement.
 
-Example from WM-WSB.md:
+Example from WM-WBS.md:
 ```
 | OC-01 | Current State Discovery Complete | Baseline | Weeks 1-2 | Feb 16 - Feb 27 | -- | Yes (COMPLETE) |
 | OC-02 | Operating Model and Process Design Complete | Baseline | Weeks 2-3 | Feb 23 - Mar 6 | M2 (designed) | Yes (COMPLETE) |

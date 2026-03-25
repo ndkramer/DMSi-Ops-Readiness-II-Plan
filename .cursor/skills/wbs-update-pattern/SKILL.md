@@ -14,7 +14,13 @@ This skill covers **two** repeatable processes. Pick the one that matches the us
 
 Capability folders use prefixes **PA**, **VI**, **WM** (this repo documents **PA** most fully). Follow `.cursor/rules/{capability}.mdc` when editing that capability’s artifacts.
 
-**PA folder map:** [`PA/README.md`](../../../PA/README.md). **Canonical WBS file:** `PA/PA-WBS.md`. **Optional JSON registry** (outcome ↔ epic keys for scripts): `PA/pa-outcomes.json` — update when §10 Jira mapping changes.
+**Folder maps:** [`PA/README.md`](../../../PA/README.md), [`VI/README.md`](../../../VI/README.md), [`WM/README.md`](../../../WM/README.md).
+
+**Canonical WBS files:** `PA/PA-WBS.md`, `VI/VI-WBS.md`, `WM/WM-WBS.md`.
+
+**Optional JSON registries** (outcome ↔ Jira keys for scripts): `PA/pa-outcomes.json` (keep in sync with PA-WBS §10); `VI/vi-outcomes.json`, `WM/wm-outcomes.json` (extend when those WBS Jira tables are fully keyed).
+
+**Jira-import target JSON (manual or generator):** `{Capability}/Output/{Prefix}-WBS-Jira-Import.json` for PA, VI, and WM.
 
 ---
 
@@ -36,14 +42,15 @@ node Scripts/wbs-load-prep.js <capability>
 
 Example: `node Scripts/wbs-load-prep.js PA`
 
-This archives the current WBS to `{Folder}/Archive/...` (**PA:** `PA-WBS-mm-dd-yyyy.md`; **VI/WM:** `{Prefix}-WSB-mm-dd-yyyy.md`), archives the Jira-import JSON to `{Folder}/Output/Archive/...` (if present), and creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with a stub. Note the run date (mm-dd-yyyy) for step 4.
+This archives the current WBS to `{Folder}/Archive/{Prefix}-WBS-mm-dd-yyyy.md` (PA, VI, WM), archives `{Folder}/Output/{Prefix}-WBS-Jira-Import.json` to `{Folder}/Output/Archive/...` (if present), and creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with a stub. Note the run date (mm-dd-yyyy) for step 4.
 
 ### 3. Review Input and regenerate WBS
 
 - **Read** all files in `{Capability}/Input/`. Process **each file** explicitly.
 - **For each file**: extract outcomes, deliverables, phases, risks, decisions, questions, timeline, tables. Either update the WBS (preserving keys and structure per the capability rule file) or document mapping to existing WBS keys.
-- **Compare** with the current WBS file (**PA:** `PA-WBS.md`; **VI/WM:** `{Prefix}-WSB.md`) and any constraint vs outcome maps. **Regenerate** the WBS accordingly. Preserve document structure, outcome table, per-outcome sections, risks/decisions/questions tables.
+- **Compare** with the current WBS file (`{Prefix}-WBS.md`) and any constraint vs outcome maps. **Regenerate** the WBS accordingly. Preserve document structure, outcome table, per-outcome sections, risks/decisions/questions tables.
 - **PA:** If Jira epic keys or outcome IDs change, update **`pa-outcomes.json`** to match `PA-WBS.md` §10.
+- **VI / WM:** When Jira mapping in the WBS stabilizes, update **`vi-outcomes.json`** / **`wm-outcomes.json`** to match.
 - **Fill the WBS-Load report**: per-file “Input files processed” summaries (filename → extracted content → WBS edits or “mapped to existing keys”). Do not leave this section generic.
 
 ### 4. Move processed Input to Archive
@@ -56,7 +63,7 @@ Use the same **dateStamp** as the WBS-Load report (mm-dd-yyyy).
 
 ### 5. Jira import JSON (manual reminder)
 
-After regeneration, remind the user to update `{Capability}/Output/{Prefix}-WSB-Jira-Import.json` from the new WBS if that file is maintained manually. Preserve schema (`metadata`, `work_items`, `action_items`) and WBS keys. (**PA** import filename remains `PA-WSB-Jira-Import.json` for now.)
+After regeneration, remind the user to update `{Capability}/Output/{Prefix}-WBS-Jira-Import.json` from the new WBS if that file is maintained manually. Preserve schema (`metadata`, `work_items`, `action_items`) and WBS keys. **WM:** `node Scripts/wm-wsb-to-jira-import.js` regenerates `WM-WBS-Jira-Import.json` from embedded structure (re-sync with `WM-WBS.md` when that script’s data is updated).
 
 ### Reference (Pattern A)
 
@@ -125,11 +132,18 @@ Use this when the user wants **planning artifacts** (`PA/PA-WBS.md`, `PA/PA-Outc
 
 If **Input** contains stakeholder docs that **change outcomes** while **Jira** already has epics/stories, run **Pattern A** for WBS content, then **Pattern B** to align HTML and exports—or do B after A so planning HTML and `pa-kanban-jira-status` reflect the new WBS narrative and current Jira.
 
+### VI and WM — Jira alignment (same discipline, fewer automated scripts)
+
+- **Normative:** `VI-WBS.md`, `WM-WBS.md`, outcome maps, kanban HTML.
+- **Dated exports:** keep multiple **`VI/Jira/VI-Jira-mm-dd-yyyy-json.json`** and **`WM/Jira/WM-Jira-mm-dd-yyyy-json.json`** (same retention rule as **`PA/Jira/PA-Jira-*.json`**).
+- **Target-state JSON:** `VI/Output/VI-WBS-Jira-Import.json`, `WM/Output/WM-WBS-Jira-Import.json`.
+- Full **Pattern B** checklist above is PA-specific; for VI/WM, reconcile exports vs WBS manually until dedicated export scripts exist.
+
 ---
 
 ## Reference
 
 - Pattern A (detailed): [Documentation/WBS-Update-Pattern.md](../../../Documentation/WBS-Update-Pattern.md)  
-- PA folder: [PA/README.md](../../../PA/README.md)  
-- PA Jira export: [PA/Jira/README.md](../../../PA/Jira/README.md)  
-- PA rules: [.cursor/rules/pa.mdc](../../rules/pa.mdc)
+- Folders: [PA/README.md](../../../PA/README.md), [VI/README.md](../../../VI/README.md), [WM/README.md](../../../WM/README.md)  
+- Jira: [PA/Jira/README.md](../../../PA/Jira/README.md), [VI/Jira/README.md](../../../VI/Jira/README.md), [WM/Jira/README.md](../../../WM/Jira/README.md)  
+- Rules: [.cursor/rules/pa.mdc](../../rules/pa.mdc), [.cursor/rules/vi.mdc](../../rules/vi.mdc), [.cursor/rules/wm.mdc](../../rules/wm.mdc)

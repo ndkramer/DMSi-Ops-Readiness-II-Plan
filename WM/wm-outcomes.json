@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "capability": "WM",
+  "wbs_markdown": "WM-WBS.md",
+  "jira": {
+    "notes": "Populate capability_issue_key and outcomes[] when WM-WBS.md §9 Jira mapping is finalized (mirror PA/pa-outcomes.json)."
+  },
+  "outcomes": []
+}

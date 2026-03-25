@@ -203,7 +203,7 @@ Two capabilities have been implemented using this model. Both started as stage-g
 
 ### 7.1 Visibility Infrastructure (VI-WSB)
 
-The Dynatrace Visibility Infrastructure implementation (previously structured as S0-S9) was mapped into 15 outcomes. The simplified view below shows the core 10-outcome structure; the full VI-WSB.md expands this with 5 additional outcomes identified during elaboration (Host Fleet Instrumented, External Availability Monitoring, A2W Monitoring Readiness, Predictive Operations, and a more detailed Legacy Fallback).
+The Dynatrace Visibility Infrastructure implementation (previously structured as S0-S9) was mapped into 15 outcomes. The simplified view below shows the core 10-outcome structure; the full VI-WBS.md expands this with 5 additional outcomes identified during elaboration (Host Fleet Instrumented, External Availability Monitoring, A2W Monitoring Readiness, Predictive Operations, and a more detailed Legacy Fallback).
 
 **Summary:** 15 outcomes (6 Baseline, 6 Iterative, 3 Conditional), 4 Type 1 decisions, 16 Type 2 decisions, ~60 deliverables.
 
@@ -349,7 +349,7 @@ Capabilities using this model:
 
 | Capability | Jira root | WSB Document | Outcome Map | Outcomes | Status |
 |-----------|-----------|-------------|-------------|----------|--------|
-| Visibility Infrastructure | WSA-120 | VI-WSB.md | VI-WSB-Outcome-Map.html | 15 | Active |
+| Visibility Infrastructure | WSA-120 | VI-WBS.md | VI-WSB-Outcome-Map.html | 15 | Active |
 | Pipeline Automation | WSA-2656 (Capability) | PA-WBS.md | PA-Outcome-map.html | 11 | Active |
 
 ---

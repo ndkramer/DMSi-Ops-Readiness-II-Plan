@@ -186,8 +186,8 @@ In the planning workspace, WBS and visuals are organized by capability. The pars
 |--------|---------|
 | **Project-Plan** | Combined project plan docs and visuals (e.g. combined Gantt). |
 | **PA** | Pipeline Automation: WBS markdown (e.g. `PP-WSB.md`), outcome maps, kanban. |
-| **VI** | Visibility Infrastructure: WBS markdown (e.g. `VI-WSB.md`), outcome maps, kanban. |
-| **WM** | Work Management: WBS markdown (e.g. `WM-WSB.md`), outcome maps, kanban. |
+| **VI** | Visibility Infrastructure: WBS markdown (e.g. `VI-WBS.md`), outcome maps, kanban. |
+| **WM** | Work Management: WBS markdown (e.g. `WM-WBS.md`), outcome maps, kanban. |
 
 Parsed output (e.g. `wbs-data.json`) and merged `project-plan.json` live in the target repo’s `data/` directory; the deploy package does not duplicate the planning workspace folder names.
 

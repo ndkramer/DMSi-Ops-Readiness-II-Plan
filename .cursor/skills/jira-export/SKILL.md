@@ -23,7 +23,7 @@ When the user asks to **export a capability from Jira** (e.g. "Export PA WSA-265
 - **Sub-tasks** (children of each Story)
 - **Action items** (children of the action-item root)
 
-Output includes both **raw Jira issue objects** and **flat lists** (`work_items`, `action_items_flat`) in the same shape as the WSB Jira-Import format.
+Output includes both **raw Jira issue objects** and **flat lists** (`work_items`, `action_items_flat`) in the same shape as the **WBS Jira-Import** format (`{Capability}-WBS-Jira-Import.json` family).
 
 ## Steps
 

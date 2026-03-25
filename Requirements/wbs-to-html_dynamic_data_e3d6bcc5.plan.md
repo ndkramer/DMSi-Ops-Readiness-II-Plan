@@ -19,7 +19,7 @@ isProject: false
   - **Outcome maps** (e.g. [PA/PP-Outcome-map.html](PA/PP-Outcome-map.html), [VI/VI-WSB-Outcome-Map.html](VI/VI-WSB-Outcome-Map.html), [WM/WM-Outcome-Map.html](WM/WM-Outcome-Map.html)): `outcomes` array (id, name, cat, start, end, deps, risk, deliverables count, milestone, dates), dependency edges, node positions, and summary/decision cards.
   - **Kanban boards** (e.g. [PA/PP-kanban.html](PA/PP-kanban.html), [VI/VI-kanban.html](VI/VI-kanban.html), [WM/WM-kanban.html](WM/WM-kanban.html)): Large `outcomeData` object keyed by outcome ID with `name` and `deliverables[]` (id, name, subtasks[]).
   - **Combined Gantt** ([Project-Plan/Combined-Outcome-Gantt.html](Project-Plan/Combined-Outcome-Gantt.html)): Hardcoded capability metadata (WM, VI, PP) with outcome counts and date ranges.
-- **WBS source by capability**: The **source of truth** for WBS content is markdown in each capability folder: [PA/PP-WSB.md](PA/PP-WSB.md), [VI/VI-WSB.md](VI/VI-WSB.md), [WM/WM-WSB.md](WM/WM-WSB.md). Each file contains:
+- **WBS source by capability**: The **source of truth** for WBS content is markdown in each capability folder: [PA/PP-WSB.md](PA/PP-WSB.md), [VI/VI-WBS.md](VI/VI-WBS.md), [WM/WM-WBS.md](WM/WM-WBS.md). Each file contains:
   - **Outcome map table** (ID, Outcome, Category, Target Date, Milestone)
   - **Mermaid dependency block** (from/to/type: must, should, contingent)
   - **Per-outcome sections**: `### OC-XX: Title`, **Category:**, **Target Date:**, **Owner:**, **Status:**, **Success Criteria** (bullets), **Deliverables** (table), then **OC-XX.Y: Deliverable Name** with bullet subtasks
@@ -64,7 +64,7 @@ flowchart LR
 
 **Add a parser script** (Node.js or Python, your preference) that:
 
-- **Input**: One WBS file at a time (e.g. `PA/PP-WSB.md`, `VI/VI-WSB.md`, `WM/WM-WSB.md`).
+- **Input**: One WBS file at a time (e.g. `PA/PP-WSB.md`, `VI/VI-WBS.md`, `WM/WM-WBS.md`).
 - **Output**: One JSON file per WBS, e.g. `data/PP.json`, `data/VI.json`, `data/WM.json` (or a shared `data/` under Project-Plan or repo root per PRD).
 
 **Parsing steps**
@@ -192,13 +192,13 @@ Per the PRD, the system uses three data sources and Lambda hosting:
 
 **Naming / mapping**
 
-- Keep a clear convention: **PA**: `PP-WSB.md` → `PP` → `PP-Outcome-map.html`, `PP-kanban.html`, `data/PP-data.js` (or `PP.json`). **VI**: `VI-WSB.md` → `VI` → `VI-WSB-Outcome-Map.html`, `VI-kanban.html`, `data/VI-data.js`. **WM**: `WM-WSB.md` → `WM` → `WM-Outcome-Map.html`, `WM-kanban.html`, `data/WM-data.js`. Combined views live in **Project-Plan/**.
+- Keep a clear convention: **PA**: `PP-WSB.md` → `PP` → `PP-Outcome-map.html`, `PP-kanban.html`, `data/PP-data.js` (or `PP.json`). **VI**: `VI-WBS.md` → `VI` → `VI-WSB-Outcome-Map.html`, `VI-kanban.html`, `data/VI-data.js`. **WM**: `WM-WBS.md` → `WM` → `WM-Outcome-Map.html`, `WM-kanban.html`, `data/WM-data.js`. Combined views live in **Project-Plan/**.
 
 ---
 
 ## 4. Build Automation (Optional but Recommended)
 
-- **Manual**: Run the parser (e.g. `node scripts/parse-wbs.js` or `python scripts/parse_wbs.py`) after editing any WBS file; regenerate `data/*.js` (or `*.json`). When working locally, the parser reads from the capability folders **PA/** (PP-WSB.md), **VI/** (VI-WSB.md), **WM/** (WM-WSB.md).
+- **Manual**: Run the parser (e.g. `node scripts/parse-wbs.js` or `python scripts/parse_wbs.py`) after editing any WBS file; regenerate `data/*.js` (or `*.json`). When working locally, the parser reads from the capability folders **PA/** (PP-WSB.md), **VI/** (VI-WBS.md), **WM/** (WM-WBS.md).
 - **File watcher**: Use a dev tool (e.g. `nodemon`, `watchman`, or a VS Code task) to run the parser when any WBS file in PA/, VI/, or WM/ changes.
 - **CI (recommended)**: WBS source lives in capability folders (PA, VI, WM) in GitHub; run the parser in GitHub Actions on push (e.g. to default branch or when PA/, VI/, WM/ change), then commit updated `data/` (or publish the built site). That way updating WBS and pushing automatically regenerates data and updates the HTML.
 
@@ -270,7 +270,7 @@ flowchart LR
 1. **Parser**: Implement the WBS parser for one file (e.g. PA/PP-WSB.md) and emit one JSON (or JS) file. Validate against the current PA outcome map and kanban structure.
 2. **Outcome map**: Refactor one outcome map page (PA) to use the generated data; keep timeline working (with temporary mapping or parser-produced weeks).
 3. **Kanban**: Refactor the same project’s kanban page (PA) to use the same data.
-4. **Parser**: Extend parser for VI (VI/VI-WSB.md) and WM (WM/WM-WSB.md) (same schema); add week-range extraction and/or start-date config if desired.
+4. **Parser**: Extend parser for VI (VI/VI-WBS.md) and WM (WM/WM-WBS.md) (same schema); add week-range extraction and/or start-date config if desired.
 5. **Remaining HTML**: Switch VI and WM outcome maps and kanbans to their data files; then refactor Project-Plan/Combined Gantt to use the three datasets.
 6. **Docs and automation**: Add a short README (how to run the parser, how to regenerate data; note source folders PA/, VI/, WM/ and combined output in Project-Plan/ or data/), and optionally a file watcher or CI job.
 **Phase 2 – GitHub Projects (push)**  
