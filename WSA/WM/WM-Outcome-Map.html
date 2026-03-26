@@ -367,7 +367,7 @@
 <body>
 
 <div class="header">
-  <a href="../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined outcome Gantt" title="Combined Outcome Gantt">&#8592;</a>
+  <a href="../../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined outcome Gantt" title="Combined Outcome Gantt">&#8592;</a>
   <div class="header-main">
     <h1>WM-WBS: Work Management Outcome Map</h1>
     <div class="subtitle">DMSi Software -- Workstream A | 1 FTE Dynamo | Start: Feb 15 | Deadline: End of May | ~18 Weeks (~3 wks past deadline)</div>
@@ -625,7 +625,7 @@ outcomes.forEach((oc, idx) => {
   lanesEl.appendChild(lane);
 });
 
-/** Program milestones: ../Project-Plan/project-milestones.json. Week 1 = Feb 16, 2026; 18-week grid. */
+/** Program milestones: ../../Project-Plan/project-milestones.json. Week 1 = Feb 16, 2026; 18-week grid. */
 const FALLBACK_PROJECT_MILESTONES = [
   { id: 'M2', date: '2026-03-27', label: 'M2 3/27' },
   { id: 'M3', date: '2026-04-27', label: 'M3 4/27' },
@@ -634,7 +634,7 @@ const FALLBACK_PROJECT_MILESTONES = [
 const WM_MILESTONE_START = new Date(2026, 1, 16);
 const WM_MILESTONE_WEEKS = 18;
 function loadProjectMilestones() {
-  return fetch('../Project-Plan/project-milestones.json')
+  return fetch('../../Project-Plan/project-milestones.json')
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(data => data.milestones || FALLBACK_PROJECT_MILESTONES)
     .catch(() => FALLBACK_PROJECT_MILESTONES);

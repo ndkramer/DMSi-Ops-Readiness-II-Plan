@@ -2,7 +2,7 @@
 
 ## Dated exports
 
-- **`WB-Jira-MM-DD-YYYY-json.json`** — full Jira API exports once **`wb-outcomes.json`** lists capability and action-item keys and you run **`node Scripts/jira-export-wb.js`** (or **`node Scripts/jira-export-pa.js WB <capabilityKey> <actionEpicKey>`**). **Retain multiple** dated files for history (same pattern as **`PA/Jira/`** and **`WM/Jira/`**). The shared exporter does **not** write PA-style `pa-kanban-jira-status.*` files for WB; **`WB-kanban.html`** is WBS-static until wired to Jira.
+- **`WB-Jira-MM-DD-YYYY-json.json`** — full Jira API exports once **`wb-outcomes.json`** lists capability and action-item keys and you run **`node Scripts/jira-export-wb.js`** (or **`node Scripts/jira-export-pa.js WB <capabilityKey> <actionEpicKey>`**). **Retain multiple** dated files for history (same pattern as **`WSA/PA/Jira/`** and **`WSA/WM/Jira/`**). The shared exporter does **not** write PA-style `pa-kanban-jira-status.*` files for WB; **`WB-kanban.html`** is WBS-static until wired to Jira.
 
 ## Target-state import JSON
 

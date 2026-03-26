@@ -1,12 +1,12 @@
 ---
 description: Work Management (WM) folder — follow WM-WBS outcome structure and conventions
-globs: WM/**
+globs: WSA/WM/**
 alwaysApply: false
 ---
 
 # WM Folder Rules
 
-When editing or creating content under the WM folder, follow the Work Management outcome-based WBS structure and conventions (WM-WBS).
+When editing or creating content under **`WSA/WM/`**, follow the Work Management outcome-based WBS structure and conventions (WM-WBS).
 
 ## Structure to follow
 
@@ -22,4 +22,4 @@ When editing or creating content under the WM folder, follow the Work Management
 
 ## Reference
 
-The canonical WM outcome structure is in **`WM-WBS.md`**. See **`WM/README.md`** for folder layout, Jira exports, and optional **`wm-outcomes.json`**. When in doubt, match the WBS format and level of detail.
+The canonical WM outcome structure is in **`WM-WBS.md`** (under **`WSA/WM/`**). See **`README.md`** in that folder for layout, Jira exports, and optional **`wm-outcomes.json`**. When in doubt, match the WBS format and level of detail.

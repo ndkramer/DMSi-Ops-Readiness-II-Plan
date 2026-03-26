@@ -5,7 +5,7 @@
  * Run after processing is complete (read Input, update/map WBS, fill report). Moves
  * all files from {Folder}/Input/ to {Folder}/Input/Archive/{dateStamp}/ so they are
  * marked as processed. Use the same dateStamp as the WBS-Load report for this run.
- * **WB** resolves to `WSB-WSC/WB` via `wbs-capability-folder.js`.
+ * **PA**, **VI**, **WM** resolve to `WSA/{capability}`; **WB** to `WSB-WSC/WB` (`wbs-capability-folder.js`).
  *
  * Run from project root: node Scripts/wbs-move-input-to-archive.js <capability> <dateStamp>
  * Example: node Scripts/wbs-move-input-to-archive.js PA 03-17-2026

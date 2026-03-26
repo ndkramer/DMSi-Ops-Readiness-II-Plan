@@ -4,7 +4,7 @@ This folder holds **exports from Jira** for the Pipeline Automation (PA) capabil
 
 ## Reusable process: "Export PA WSA-2656 from Jira"
 
-You can say **"Export PA WSA-2656 from Jira"** (or "Export PA from Jira"). The agent will run the export script and place the file here. See [.cursor/skills/jira-export/SKILL.md](../.cursor/skills/jira-export/SKILL.md) for the full process and trigger phrases.
+You can say **"Export PA WSA-2656 from Jira"** (or "Export PA from Jira"). The agent will run the export script and place the file here. See [.cursor/skills/jira-export/SKILL.md](../../../../.cursor/skills/jira-export/SKILL.md) for the full process and trigger phrases.
 
 **Planning:** Normative WBS is [`../PA-WBS.md`](../PA-WBS.md). Optional structured outcome ↔ epic keys: [`../pa-outcomes.json`](../pa-outcomes.json). **Keep multiple** dated `PA-Jira-mm-dd-yyyy-json.json` files when re-exporting.
 
@@ -30,18 +30,18 @@ node Scripts/jira-export-pa.js PA WSA-2656
 node Scripts/jira-export-pa.js PA WSA-2656 WSA-2657
 ```
 
-Output is written to `PA/Jira/PA-Jira-<mm-dd-yyyy>-json.json`.
+Output is written to `WSA/PA/Jira/PA-Jira-<mm-dd-yyyy>-json.json`.
 
 **Requirements:**
 
 - Jira credentials in the environment. The script will use `JIRA_URL`, `JIRA_USERNAME`, and `JIRA_API_TOKEN` from `process.env`. If not set, it tries loading from `.cursor/.env` (do not commit that file).
 - Node.js (no extra npm dependencies).
 
-Output is written to `PA/Jira/PA-Jira-<mm-dd-yyyy>-json.json` using the current date.
+Output is written to `WSA/PA/Jira/PA-Jira-<mm-dd-yyyy>-json.json` using the current date.
 
 The same run also writes **`pa-kanban-jira-status.json`** and **`pa-kanban-jira-status.js`** for `PA-kanban.html` (per-deliverable status plus **all Stories per outcome Epic**, including team-added work). Offline rebuild: `node Scripts/jira-kanban-status-from-export.js`.
 
 ## See also
 
-- [Documentation/Jira-Json-Import.md](../Documentation/Jira-Json-Import.md) — full JSON structure, flat lists, and import workflow
-- [Scripts/README.md](../Scripts/README.md) — documents `jira-export-pa.js` and other scripts.
+- [Documentation/Jira-Json-Import.md](../../../Documentation/Jira-Json-Import.md) — full JSON structure, flat lists, and import workflow
+- [Scripts/README.md](../../../Scripts/README.md) — documents `jira-export-pa.js` and other scripts.

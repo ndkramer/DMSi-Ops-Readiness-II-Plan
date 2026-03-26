@@ -16,7 +16,7 @@ node Scripts/wbs-load-prep.js <capability>
 
 - `node Scripts/wbs-load-prep.js PA`
 - `node Scripts/wbs-load-prep.js VI`
-- `node Scripts/wbs-load-prep.js WM` (JSON archive skipped if `WM/Output/WM-WBS-Jira-Import.json` does not exist)
+- `node Scripts/wbs-load-prep.js WM` (JSON archive skipped if `WSA/WM/Output/WM-WBS-Jira-Import.json` does not exist)
 
 **What it does:**
 
@@ -84,7 +84,7 @@ node Scripts/jira-export-pa.js PA WSA-2656 WSA-2657
 
 **Requirements:** `JIRA_URL`, `JIRA_USERNAME`, and `JIRA_API_TOKEN` in the environment (or in `.cursor/.env`). Uses Jira REST API v3; fetches full issue details when the search API returns minimal results.
 
-See [PA/Jira/README.md](../PA/Jira/README.md) for output format and folder.
+See [PA/Jira/README.md](../WSA/PA/Jira/README.md) for output format and folder.
 
 ---
 

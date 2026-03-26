@@ -43,13 +43,13 @@ Output includes both **raw Jira issue objects** and **flat lists** (`work_items`
    - `node Scripts/jira-export-pa.js PA WSA-2656 WSA-2657` — explicit roots
 
 3. **Output location**  
-   The script writes to **`{Capability}/Jira/{Prefix}-Jira-mm-dd-yyyy-json.json`** (e.g. `PA/Jira/PA-Jira-03-17-2026-json.json`). It creates the folder if needed.
+   The script writes to **`WSA/{Capability}/Jira/{Prefix}-Jira-mm-dd-yyyy-json.json`** for PA/VI/WM (e.g. `WSA/PA/Jira/PA-Jira-03-17-2026-json.json`). It creates the folder if needed.
 
 4. **Requirements**  
    Jira credentials must be set: `JIRA_URL`, `JIRA_USERNAME`, `JIRA_API_TOKEN` in the environment or in `.cursor/.env`. The script loads `.cursor/.env` if those vars are not set.
 
 ## Reference
 
-- Script: [Scripts/jira-export-pa.js](../../Scripts/jira-export-pa.js)
-- Output folder and format: [PA/Jira/README.md](../../PA/Jira/README.md)
-- Scripts overview: [Scripts/README.md](../../Scripts/README.md)
+- Script: [Scripts/jira-export-pa.js](../../../Scripts/jira-export-pa.js)
+- Output folder and format: [PA/Jira/README.md](../../../WSA/PA/Jira/README.md)
+- Scripts overview: [Scripts/README.md](../../../Scripts/README.md)

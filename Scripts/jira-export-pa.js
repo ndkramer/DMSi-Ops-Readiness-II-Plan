@@ -7,7 +7,7 @@
  * Uses Jira REST API v3. Requires JIRA_URL, JIRA_USERNAME, JIRA_API_TOKEN in process.env
  * (or .cursor/.env). Run from project root.
  *
- * Also writes PA/Jira/pa-kanban-jira-status.json and pa-kanban-jira-status.js (embedded global for file://).
+ * Also writes WSA/PA/Jira/pa-kanban-jira-status.json and pa-kanban-jira-status.js (embedded global for file://).
  * Offline rebuild: node Scripts/jira-kanban-status-from-export.js
  *
  * Usage:

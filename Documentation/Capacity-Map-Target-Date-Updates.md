@@ -7,9 +7,9 @@ This document describes the reusable process that updates stage target dates in 
 ## What the process does
 
 1. **Reads outcome-map HTML files** for each capability that has an outcome map:
-   - **WM** (Work Management): `WM/WM-Outcome-Map.html`
-   - **VI** (Visibility Infrastructure): `VI/VI-WSB-Outcome-Map.html`
-   - **PA** (Pipeline Automation): `PA/PA-Outcome-map.html`
+   - **WM** (Work Management): `WSA/WM/WM-Outcome-Map.html`
+   - **VI** (Visibility Infrastructure): `WSA/VI/VI-WSB-Outcome-Map.html`
+   - **PA** (Pipeline Automation): `WSA/PA/PA-Outcome-map.html`
    - **WSB-WSC** (Workstream B & C): `WSB-WSC/WSB-WSC-Outcome-Map.html`
    - **WB** (Customer Support, five-outcome WBS): `WSB-WSC/WB/WB-Outcome-Map.html` — **not** read by `sync-stage-dates-from-outcome-maps.js` today; Workstream B stage dates in the capability map still follow the combined WSB-WSC map. Use the WB map for the **WB-OC-01 … WB-OC-05** program-month view.
 
@@ -41,9 +41,9 @@ Stages for capabilities that do not have an outcome map (pd, ls, wsd) are left u
 ```mermaid
 flowchart LR
   subgraph inputs [Outcome map sources]
-    WM[WM/WM-Outcome-Map.html]
-    VI[VI/VI-WSB-Outcome-Map.html]
-    PA[PA/PA-Outcome-map.html]
+    WM[WSA/WM/WM-Outcome-Map.html]
+    VI[WSA/VI/VI-WSB-Outcome-Map.html]
+    PA[WSA/PA/PA-Outcome-map.html]
     WSBWSC[WSB-WSC/WSB-WSC-Outcome-Map.html]
   end
 
@@ -120,9 +120,9 @@ The outcome-map HTML files are the source of truth for dates. The script does no
 
 | Capability | ID   | Stages updated | Source outcome map        |
 |------------|------|----------------|---------------------------|
-| Work Management | wm  | 0–6 (7)  | WM/WM-Outcome-Map.html    |
-| Visibility Infrastructure | vi | 0–5 (6)  | VI/VI-WSB-Outcome-Map.html |
-| Pipeline Automation | pa  | 0–5 (6)  | PA/PA-Outcome-map.html     |
+| Work Management | wm  | 0–6 (7)  | WSA/WM/WM-Outcome-Map.html    |
+| Visibility Infrastructure | vi | 0–5 (6)  | WSA/VI/VI-WSB-Outcome-Map.html |
+| Pipeline Automation | pa  | 0–5 (6)  | WSA/PA/PA-Outcome-map.html     |
 | Support Operating Model (Workstream B) | wsb | 0–5 (6)  | WSB-WSC/WSB-WSC-Outcome-Map.html |
 | Support & Engineering Tooling (Workstream C) | wsc | 0–5 (6)  | WSB-WSC/WSB-WSC-Outcome-Map.html |
 

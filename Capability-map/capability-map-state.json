@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "Mar 17, 2026",
+  "lastUpdated": "Mar 26, 2026",
   "summary": {
     "headline": "Sprint 2 is active across all workstreams.",
     "narrative": "Work Management and Visibility Infrastructure are on track. Proactive Detection and Pipeline Automation are in discovery. Workstreams B, C, and D planning is underway with timelines TBD pending tooling decisions."
@@ -95,8 +95,8 @@
       "status": "in-progress",
       "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCQYCCV_9UMQ5_xCaJmFjmEATsb7XOD8J_mv-sk8DjJgXE?e=WPgs5e",
       "blockers": [],
-      "targetStart": "Feb 29, 2026",
-      "targetEnd": "Mar 20, 2026"
+      "targetStart": "Feb 23, 2026",
+      "targetEnd": "Mar 6, 2026"
     },
     {
       "capabilityId": "wm",
@@ -104,8 +104,8 @@
       "status": "in-progress",
       "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCesn-mHu54RLP2dj7D7iUoAb7FqufrhwIgagO25rHXbRs?e=draens",
       "blockers": [],
-      "targetStart": "Mar 16, 2026",
-      "targetEnd": "Apr 10, 2026"
+      "targetStart": "Mar 2, 2026",
+      "targetEnd": "Mar 27, 2026"
     },
     {
       "capabilityId": "wm",
@@ -113,7 +113,7 @@
       "status": "not-started",
       "artifactsUrl": "#",
       "blockers": [],
-      "targetStart": "Mar 29, 2026",
+      "targetStart": "Mar 16, 2026",
       "targetEnd": "Apr 17, 2026"
     },
     {
@@ -140,8 +140,8 @@
       "status": "done",
       "artifactsUrl": "sharepoint-wm-s0.html",
       "blockers": [],
-      "targetStart": "Feb 16, 2026",
-      "targetEnd": "Feb 27, 2026"
+      "targetStart": "Apr 1, 2026",
+      "targetEnd": "May 23, 2026"
     },
     {
       "capabilityId": "vi",
@@ -276,7 +276,7 @@
       "status": "not-started",
       "artifactsUrl": "#",
       "blockers": [],
-      "targetStart": "Mar 16, 2026",
+      "targetStart": "Mar 30, 2026",
       "targetEnd": "May 29, 2026"
     },
     {

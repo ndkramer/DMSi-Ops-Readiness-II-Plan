@@ -4,7 +4,7 @@
 **March 2026 | v1.0 | R0**
 **Classification: Dynamo Confidential**
 
-**Source:** [`WSB-WSC/WSB/Customer Support Implementation Plan.docx`](../WSB/Customer%20Support%20Implementation%20Plan.docx) (Implementation Plan & Execution Roadmap, Phase: Execution). This WBS translates that phased plan into the same outcome-based structure used by `PA/PA-WBS.md`.
+**Source:** [`WSB-WSC/WSB/Customer Support Implementation Plan.docx`](../WSB/Customer%20Support%20Implementation%20Plan.docx) (Implementation Plan & Execution Roadmap, Phase: Execution). This WBS translates that phased plan into the same outcome-based structure used by `WSA/PA/PA-WBS.md`.
 
 **Canonical path:** `WSB-WSC/WB/WB-WBS.md` (Workstream B — Customer Support). Optional outcome registry: [`wb-outcomes.json`](wb-outcomes.json).
 
@@ -576,4 +576,4 @@ Risks below are adapted from the source **Risk Register** and program narrative.
 
 ---
 
-*Document derived March 2026 from DMSi Customer Support Implementation Plan & Execution Roadmap. Outcome structure aligned to `PA/PA-WBS.md` conventions.*
+*Document derived March 2026 from DMSi Customer Support Implementation Plan & Execution Roadmap. Outcome structure aligned to `WSA/PA/PA-WBS.md` conventions.*

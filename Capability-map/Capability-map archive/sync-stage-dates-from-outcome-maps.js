@@ -8,7 +8,7 @@
  *
  * Run from project root: node Capability-map/sync-stage-dates-from-outcome-maps.js
  *
- * Requires: WM/WM-Outcome-Map.html, VI/VI-WSB-Outcome-Map.html, PA/PA-Outcome-map.html,
+ * Requires: WSA/WM/WM-Outcome-Map.html, WSA/VI/VI-WSB-Outcome-Map.html, WSA/PA/PA-Outcome-map.html,
  *           WSB-WSC/WSB-WSC-Outcome-Map.html (Workstream B & C)
  * Updates: Capability-map/capability-map-state.json (stages[].targetStart/targetEnd, lastUpdated)
  *         Capability-map/capability-map.html (EMBEDDED_STATE block, so file-open shows current dates)
@@ -17,8 +17,7 @@
 
 const fs = require('fs');
 const path = require('path');
-
-const PROJECT_ROOT = path.resolve(__dirname, '..');
+const { getCapabilityFolder } = require('../../Scripts/wbs-capability-folder');
 const STATE_PATH = path.join(__dirname, 'capability-map-state.json');
 const HTML_PATH = path.join(__dirname, 'capability-map.html');
 const EMBEDDED_STATE_REGEX = /var EMBEDDED_STATE = \{[\s\S]*?\n\};/;
@@ -218,10 +217,10 @@ function getStageDates(capabilityId, stageNum, outcomeDatesByCap, wsbWscActivity
 }
 
 function main() {
-  const wmHtml = fs.readFileSync(path.join(PROJECT_ROOT, 'WM', 'WM-Outcome-Map.html'), 'utf8');
-  const viHtml = fs.readFileSync(path.join(PROJECT_ROOT, 'VI', 'VI-WSB-Outcome-Map.html'), 'utf8');
-  const paHtml = fs.readFileSync(path.join(PROJECT_ROOT, 'PA', 'PA-Outcome-map.html'), 'utf8');
-  const wsbWscPath = path.join(PROJECT_ROOT, 'WSB-WSC', 'WSB-WSC-Outcome-Map.html');
+  const wmHtml = fs.readFileSync(path.join(getCapabilityFolder('WM'), 'WM-Outcome-Map.html'), 'utf8');
+  const viHtml = fs.readFileSync(path.join(getCapabilityFolder('VI'), 'VI-WSB-Outcome-Map.html'), 'utf8');
+  const paHtml = fs.readFileSync(path.join(getCapabilityFolder('PA'), 'PA-Outcome-map.html'), 'utf8');
+  const wsbWscPath = path.join(path.resolve(__dirname, '../..'), 'WSB-WSC', 'WSB-WSC-Outcome-Map.html');
   let wsbWscActivityDates = {};
   if (fs.existsSync(wsbWscPath)) {
     const wsbWscHtml = fs.readFileSync(wsbWscPath, 'utf8');

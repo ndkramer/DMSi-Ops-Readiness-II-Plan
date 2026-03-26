@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Rebuild PA/Jira/pa-kanban-jira-status.json and pa-kanban-jira-status.js from the latest PA/Jira/PA-Jira-mm-dd-yyyy-json.json
+ * Rebuild WSA/PA/Jira/pa-kanban-jira-status.json and pa-kanban-jira-status.js from the latest PA-Jira-mm-dd-yyyy-json.json
  * without calling the Jira API. Use when you have a fresh export file but cannot re-hit the API.
  *
  * Usage: node Scripts/jira-kanban-status-from-export.js
@@ -12,8 +12,10 @@ const fs = require('fs');
 const path = require('path');
 const { buildKanbanJiraStatusJson, writeKanbanStatusArtifacts } = require('./jira-export-pa.js');
 
+const { getCapabilityFolder } = require('./wbs-capability-folder');
+const JIRA_DIR = path.join(getCapabilityFolder('PA'), 'Jira');
+
 const PROJECT_ROOT = path.resolve(__dirname, '..');
-const JIRA_DIR = path.join(PROJECT_ROOT, 'PA', 'Jira');
 
 function loadEnvFromFile() {
   const envPath = path.join(PROJECT_ROOT, '.cursor', '.env');
@@ -38,7 +40,7 @@ function main() {
     .readdirSync(JIRA_DIR)
     .filter((f) => /^PA-Jira-\d{2}-\d{2}-\d{4}-json\.json$/.test(f));
   if (!files.length) {
-    console.error('No PA-Jira-*-json.json found in PA/Jira');
+    console.error('No PA-Jira-*-json.json found in', JIRA_DIR);
     process.exit(1);
   }
   files.sort();

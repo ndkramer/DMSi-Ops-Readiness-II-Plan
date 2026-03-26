@@ -2,7 +2,7 @@
 
 **Location:** `WSB-WSC/WB/` (capability id for scripts remains **`WB`** — e.g. `node Scripts/wbs-load-prep.js WB`).
 
-Normative planning for the **DMSi Customer Support Transformation** (outcome-based WBS aligned to `PA/PA-WBS.md` patterns).
+Normative planning for the **DMSi Customer Support Transformation** (outcome-based WBS aligned to `WSA/PA/PA-WBS.md` patterns).
 
 ## Canonical documents
 

@@ -10,7 +10,7 @@ alwaysApply: false
 
 When editing the project plan HTML system, follow these rules. The system is interconnected, self-contained HTML with **no external dependencies** (no CDN, no frameworks, no build). Vanilla HTML, CSS, and JavaScript only.
 
-**In this repo:** Combined Gantt lives in `Project-Plan/`. Outcome maps and Kanban boards live in `WM/`, `VI/`, `PA/`, and `WSB-WSC/WB/` (Customer Support). The same design system and layer structure below apply to all of them.
+**In this repo:** Combined Gantt lives in `Project-Plan/`. Workstream A capability folders (**WM**, **VI**, **PA**) live under **`WSA/`**; Customer Support (**WB**) lives in `WSB-WSC/WB/`. The same design system and layer structure below apply to all of them.
 
 **Three layers:**
 1. **Combined Gantt** — top-level tabbed view, one bar per capability
@@ -24,8 +24,8 @@ Navigation: Combined Gantt → Outcome Map → Kanban Board, with back links at 
 ## File Structure
 
 - `Project-Plan/Combined-Outcome-Gantt.html` — top-level tabbed dashboard
-- `WM/WM-Outcome-Map.html`, `VI/VI-WSB-Outcome-Map.html`, `PA/PA-Outcome-map.html`, `WSB-WSC/WB/WB-Outcome-Map.html` — outcome maps
-- `WM/WM-kanban.html`, `VI/VI-kanban.html`, `PA/PA-kanban.html`, `WSB-WSC/WB/WB-kanban.html` — kanban boards
+- `WSA/WM/WM-Outcome-Map.html`, `WSA/VI/VI-WSB-Outcome-Map.html`, `WSA/PA/PA-Outcome-map.html`, `WSB-WSC/WB/WB-Outcome-Map.html` — outcome maps
+- `WSA/WM/WM-kanban.html`, `WSA/VI/VI-kanban.html`, `WSA/PA/PA-kanban.html`, `WSB-WSC/WB/WB-kanban.html` — kanban boards
 
 Links use relative paths (no leading `/` or absolute paths).
 
@@ -88,7 +88,7 @@ Links use relative paths (no leading `/` or absolute paths).
 
 ## Data and WBS
 
-- Source of truth: WBS markdown in `WM/WM-WBS.md`, `VI/VI-WBS.md`, `PA/PA-WBS.md`. Each has outcome map table, dependencies (mermaid), per-outcome sections, deliverables (OC-XX.Y), subtask bullets.
+- Source of truth: WBS markdown in `WSA/WM/WM-WBS.md`, `WSA/VI/VI-WBS.md`, `WSA/PA/PA-WBS.md`. Each has outcome map table, dependencies (mermaid), per-outcome sections, deliverables (OC-XX.Y), subtask bullets.
 - When building/updating HTML: parse WBS for outcome metadata and deliverables/subtasks; timeline positions from outcome map data (week/period indices).
 
 ---

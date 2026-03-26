@@ -401,7 +401,7 @@
 <body>
 
 <div class="header">
-  <a href="../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined outcome Gantt" title="Combined Outcome Gantt">&#8592;</a>
+  <a href="../../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined outcome Gantt" title="Combined Outcome Gantt">&#8592;</a>
   <div class="header-main">
     <h1>VI-WBS: Visibility Infrastructure &amp; Proactive Detection Outcome Map</h1>
     <div class="subtitle">Dynatrace Implementation -- DMSi Software | 1.5 FTE Conservative Estimate | Dynatrace: vendor POC in progress | Full rollout calendar from Apr 1, 2026 (revisit after POC) | PD AIOps active since Mar 1</div>
@@ -813,14 +813,14 @@ outcomes.forEach((oc, idx) => {
   lanesEl.appendChild(lane);
 });
 
-/** Program milestones: ../Project-Plan/project-milestones.json. Horizontal position: linear calendar Mar 1–Nov 1, 2026 vs 16-column track. */
+/** Program milestones: ../../Project-Plan/project-milestones.json. Horizontal position: linear calendar Mar 1–Nov 1, 2026 vs 16-column track. */
 const FALLBACK_PROJECT_MILESTONES = [
   { id: 'M2', date: '2026-03-27', label: 'M2 3/27' },
   { id: 'M3', date: '2026-04-27', label: 'M3 4/27' },
   { id: 'M4', date: '2026-10-27', label: 'M4 10/27' }
 ];
 function loadProjectMilestones() {
-  return fetch('../Project-Plan/project-milestones.json')
+  return fetch('../../Project-Plan/project-milestones.json')
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(data => data.milestones || FALLBACK_PROJECT_MILESTONES)
     .catch(() => FALLBACK_PROJECT_MILESTONES);

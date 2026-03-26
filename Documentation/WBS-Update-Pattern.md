@@ -6,7 +6,7 @@ This document describes the reusable process for updating capability WBS documen
 
 A project skill is available so you can run this process by saying things like:
 
-- **"Import the latest PA WBS information"** — Loads all files from `PA/Input/` and follows the full process for Pipeline Automation.
+- **"Import the latest PA WBS information"** — Loads all files from `WSA/PA/Input/` and follows the full process for Pipeline Automation.
 - **"Load PA WBS from Input"** / **"Run WBS load for VI"** / **"Run WBS load for WB"** — Same idea for the given capability (PA, VI, WM, or WB).
 
 The skill lives at `.cursor/skills/wbs-update-pattern/SKILL.md`. When invoked, the agent will run the prep script, then review Input and regenerate the WBS (and remind you to update the Jira import JSON). No need to paste this doc or spell out steps; use the phrase and the skill applies.
@@ -83,7 +83,7 @@ flowchart TD
 | `{Folder}/Output/` | Current Jira-import JSON: `{Prefix}-WBS-Jira-Import.json`. Canonical artifact for Jira upload. |
 | `{Folder}/Output/Archive/` | Date-stamped JSON snapshots: `{Prefix}-WBS-Jira-Import-mm-dd-yyyy.json`. |
 | `{Folder}/Update-Reports/` | Load reports: `WBS-Load-mm-dd-yyyy.md`. |
-| `{Folder}/{Prefix}-WBS.md` | Current WBS (`PA/PA-WBS.md`, `VI/VI-WBS.md`, `WM/WM-WBS.md`, `WSB-WSC/WB/WB-WBS.md`). Optional registries: `PA/pa-outcomes.json`, `VI/vi-outcomes.json`, `WM/wm-outcomes.json`, `WSB-WSC/WB/wb-outcomes.json` (populate when outcome ↔ Jira mapping is stable). **WB** on disk is **`WSB-WSC/WB/`**; `node Scripts/wbs-load-prep.js WB` resolves via `Scripts/wbs-capability-folder.js`. |
+| `{Folder}/{Prefix}-WBS.md` | Current WBS (`WSA/PA/PA-WBS.md`, `WSA/VI/VI-WBS.md`, `WSA/WM/WM-WBS.md`, `WSB-WSC/WB/WB-WBS.md`). Optional registries: `WSA/PA/pa-outcomes.json`, `WSA/VI/vi-outcomes.json`, `WSA/WM/wm-outcomes.json`, `WSB-WSC/WB/wb-outcomes.json` (populate when outcome ↔ Jira mapping is stable). **PA/VI/WM** on disk live under **`WSA/{PA,VI,WM}/`**; **WB** is **`WSB-WSC/WB/`**. `node Scripts/wbs-load-prep.js <capability>` resolves via `Scripts/wbs-capability-folder.js`. |
 
 Date format everywhere is **mm-dd-yyyy** (e.g. `03-17-2026`). The same run date is used for WBS archive, JSON archive, and report filename.
 

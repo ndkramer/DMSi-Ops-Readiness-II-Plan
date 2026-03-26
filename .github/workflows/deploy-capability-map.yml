@@ -23,9 +23,7 @@ on:
       - 'Project-Plan/Combined-Outcome-Gantt.html'
       - 'Project-Plan/gantt-data.json'
       - 'Project-Plan/project-milestones.json'
-      - 'WM/'
-      - 'VI/'
-      - 'PA/'
+      - 'WSA/'
       - 'WSB-WSC/WB/'
       - 'WSB-WSC/'
       - '.github/workflows/deploy-capability-map.yml'
@@ -54,7 +52,7 @@ jobs:
             Project-Plan/Combined-Outcome-Gantt.html \
             Project-Plan/gantt-data.json \
             Project-Plan/project-milestones.json
-          zip -r deploy.zip WM VI PA WSB-WSC/WB
+          zip -r deploy.zip WSA/WM WSA/VI WSA/PA WSB-WSC/WB
           zip -j -g deploy.zip WSB-WSC/WSB-WSC-Outcome-Map.html
           echo "Package size: $(du -h deploy.zip | cut -f1)"
 

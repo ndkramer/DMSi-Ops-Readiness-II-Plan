@@ -2,7 +2,7 @@
 
 ## Dated exports
 
-- **`WM-Jira-MM-DD-YYYY-json.json`** — saved Jira API exports. **Retain multiple** dated files for history (same pattern as **`PA/Jira/PA-Jira-*.json`**).
+- **`WM-Jira-MM-DD-YYYY-json.json`** — saved Jira API exports. **Retain multiple** dated files for history (same pattern as **`WSA/PA/Jira/PA-Jira-*.json`**).
 
 ## Target-state import JSON
 

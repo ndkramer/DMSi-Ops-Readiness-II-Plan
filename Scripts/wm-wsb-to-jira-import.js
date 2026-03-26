@@ -2,13 +2,14 @@
 /**
  * Generates WM-WBS-Jira-Import.json from the WM-WBS outcome structure.
  * Capability root in Jira: WSA-2881 (Work Management).
- * Output: WM/Output/WM-WBS-Jira-Import.json
+ * Output: WSA/WM/Output/WM-WBS-Jira-Import.json
  *
  * Usage: node Scripts/wm-wsb-to-jira-import.js
  */
 
 const fs = require('fs');
 const path = require('path');
+const { getCapabilityFolder } = require('./wbs-capability-folder');
 
 const ROOT_KEY = 'WSA-2881';
 const ACTION_ITEM_ROOT_KEY = 'WSA-2882';
@@ -342,7 +343,7 @@ const payload = {
   action_items: actionItems
 };
 
-const outDir = path.join(__dirname, '..', 'WM', 'Output');
+const outDir = path.join(getCapabilityFolder('WM'), 'Output');
 if (!fs.existsSync(outDir)) {
   fs.mkdirSync(outDir, { recursive: true });
 }

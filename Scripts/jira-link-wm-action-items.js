@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Link existing WM action items (risks/decisions) to their related work items in Jira.
- * Uses WM/Output/WM-WBS-Jira-Import.json: each action item has related_outcome (Epic)
+ * Uses WSA/WM/Output/WM-WBS-Jira-Import.json: each action item has related_outcome (Epic)
  * and optionally required_by (Story). Creates "Relates to" links from action item -> Epic/Story.
  *
  * Use this after a WM import when action items were created but not linked to Epics/Stories.
@@ -19,7 +19,8 @@ const path = require('path');
 const https = require('https');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
-const IMPORT_JSON = path.join(PROJECT_ROOT, 'WM', 'Output', 'WM-WBS-Jira-Import.json');
+const { getCapabilityFolder } = require('./wbs-capability-folder');
+const IMPORT_JSON = path.join(getCapabilityFolder('WM'), 'Output', 'WM-WBS-Jira-Import.json');
 const DELAY_MS = 200;
 
 function loadEnvFromFile() {

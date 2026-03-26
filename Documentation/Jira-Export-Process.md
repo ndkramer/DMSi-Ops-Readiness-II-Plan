@@ -31,7 +31,7 @@ Configured capabilities and default roots are in the script (`CAPABILITY_CONFIG`
 
 ## Output
 
-- **Location:** `{Capability}/Jira/` (e.g. `PA/Jira/`).
+- **Location:** `{Capability}/Jira/` — for **PA/VI/WM** this is **`WSA/{Capability}/Jira/`** (e.g. `WSA/PA/Jira/`).
 - **Filename:** `{Prefix}-Jira-mm-dd-yyyy-json.json` (e.g. `PA-Jira-03-17-2026-json.json`).
 - **Contents:** Metadata, full Jira issue objects (capability, action_item_root, epics, stories, subtasks, action_items), and flat lists **work_items** and **action_items_flat** in the same shape as the WSB Jira-Import format.
 
@@ -43,5 +43,5 @@ Configured capabilities and default roots are in the script (`CAPABILITY_CONFIG`
 
 - [JQL-Capability-Hierarchy](JQL-Capability-Hierarchy.md) — JQL for root + Epics, root + Epics + action items, and full tree via export script (e.g. WSA-508)
 - [Jira-Json-Import](Jira-Json-Import.md) — full JSON structure, flat lists, and import workflow
-- [PA/Jira/README.md](../PA/Jira/README.md) — output folder and file format
+- [PA/Jira/README.md](../WSA/PA/Jira/README.md) — output folder and file format
 - [Scripts/README.md](../Scripts/README.md) — script usage

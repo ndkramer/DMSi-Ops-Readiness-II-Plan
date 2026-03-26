@@ -2,7 +2,7 @@
 /**
  * Build Gantt data from PA, VI, and WM WBS markdown files.
  *
- * Reads WM/WM-WBS.md, VI/VI-WBS.md, PA/PA-WBS.md (paths relative to repo root),
+ * Reads WSA/WM/WM-WBS.md, WSA/VI/VI-WBS.md, WSA/PA/PA-WBS.md,
  * parses the Outcome Map table in each, computes capability start/end dates,
  * and writes Project-Plan/gantt-data.json for use by Combined-Outcome-Gantt.html.
  *
@@ -17,6 +17,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getCapabilityFolder } = require('../Scripts/wbs-capability-folder');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const PROJECT_PLAN = __dirname;
@@ -212,9 +213,9 @@ function buildMeta(outcomes, prefix) {
 }
 
 function main() {
-  const wmPath = path.join(REPO_ROOT, 'WM', 'WM-WBS.md');
-  const viPath = path.join(REPO_ROOT, 'VI', 'VI-WBS.md');
-  const paPath = path.join(REPO_ROOT, 'PA', 'PA-WBS.md');
+  const wmPath = path.join(getCapabilityFolder('WM'), 'WM-WBS.md');
+  const viPath = path.join(getCapabilityFolder('VI'), 'VI-WBS.md');
+  const paPath = path.join(getCapabilityFolder('PA'), 'PA-WBS.md');
 
   const wmContent = fs.readFileSync(wmPath, 'utf8');
   const viContent = fs.readFileSync(viPath, 'utf8');
@@ -239,7 +240,7 @@ function main() {
       barClass: 'bar-wm',
       start: (wmRange.start || WM_START).toISOString().slice(0, 10),
       end: (wmRange.end || new Date(2026, 5, 19)).toISOString().slice(0, 10),
-      link: '../WM/WM-Outcome-Map.html',
+      link: '../WSA/WM/WM-Outcome-Map.html',
       outcomes: wmOutcomes.length,
       detail: 'Process design, tool selection, adoption, board accuracy, flow metrics, prioritization. OC-01 (Discovery) and OC-02 (Operating Model) already complete.'
     },
@@ -250,7 +251,7 @@ function main() {
       barClass: 'bar-vi',
       start: (viRange.start || new Date(2026, 2, 1)).toISOString().slice(0, 10),
       end: (viRange.end || new Date(2026, 9, 31)).toISOString().slice(0, 10),
-      link: '../VI/VI-WSB-Outcome-Map.html',
+      link: '../WSA/VI/VI-WSB-Outcome-Map.html',
       outcomes: viOutcomes.length,
       detail: 'Dynatrace rollout, PagerDuty AIOps, host instrumentation, log migration, synthetic monitoring, application telemetry, alerting, proactive operations.'
     },
@@ -261,7 +262,7 @@ function main() {
       barClass: 'bar-pp',
       start: (paRange.start || new Date(2026, 2, 16)).toISOString().slice(0, 10),
       end: (paRange.end || new Date(2026, 9, 30)).toISOString().slice(0, 10),
-      link: '../PA/PA-Outcome-map.html',
+      link: '../WSA/PA/PA-Outcome-map.html',
       outcomes: paOutcomes.length,
       detail: 'NGINX config pipeline POC, foundation, config inventory, version control migration, build/deploy/drift pipelines, reliability validation, config-as-code enforcement.'
     }

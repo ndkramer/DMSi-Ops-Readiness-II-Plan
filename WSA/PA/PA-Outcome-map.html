@@ -393,7 +393,7 @@
 <body>
 
 <div class="header">
-  <a href="../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined outcome Gantt" title="Combined Outcome Gantt">&#8592;</a>
+  <a href="../../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined outcome Gantt" title="Combined Outcome Gantt">&#8592;</a>
   <div class="header-main">
     <h1>PA-WBS v1.6: Pipeline Automation Outcome Map</h1>
     <div class="subtitle">PA-WBS v1.6 | NGINX Config Pipeline — DMSi Software | <strong>12 outcomes</strong> (PA-OC-00 … PA-OC-11) | Jira: capability <strong style="color:#ccc">WSA-2656</strong>, Epics <strong style="color:#ccc">WSA-3758</strong> (PA-OC-00), <strong style="color:#ccc">WSA-3268</strong>–<strong style="color:#ccc">WSA-3278</strong>, Action items <strong style="color:#ccc">WSA-2657</strong> | 1.5 FTEs | 3/16/2026 – 10/30/2026</div>
@@ -767,14 +767,14 @@ outcomes.forEach((oc, idx) => {
   lanesEl.appendChild(lane);
 });
 
-/** Program milestones: ../Project-Plan/project-milestones.json (fallback mirrors that file). */
+/** Program milestones: ../../Project-Plan/project-milestones.json (fallback mirrors that file). */
 const FALLBACK_PROJECT_MILESTONES = [
   { id: 'M2', date: '2026-03-27', label: 'M2 3/27' },
   { id: 'M3', date: '2026-04-27', label: 'M3 4/27' },
   { id: 'M4', date: '2026-10-27', label: 'M4 10/27' }
 ];
 function loadProjectMilestones() {
-  return fetch('../Project-Plan/project-milestones.json')
+  return fetch('../../Project-Plan/project-milestones.json')
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(data => data.milestones || FALLBACK_PROJECT_MILESTONES)
     .catch(() => FALLBACK_PROJECT_MILESTONES);
