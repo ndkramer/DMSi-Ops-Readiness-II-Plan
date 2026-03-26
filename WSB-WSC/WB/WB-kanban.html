@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support (WB) — Kanban</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; }
+        header {
+            background-color: #2B2B2B;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(230, 81, 0, 0.25);
+            color: #FFCC80;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 24px;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+        .back-link:hover { background-color: rgba(230, 81, 0, 0.4); }
+        .header-content h1 { font-size: 28px; font-weight: normal; color: #E65100; }
+        .header-content p { font-size: 14px; color: #bbb; margin-top: 4px; }
+        .outcome-selector { max-width: 800px; margin: 40px auto; padding: 20px; }
+        .outcome-selector h2 { color: #2B2B2B; margin-bottom: 20px; font-size: 24px; }
+        .outcome-list { list-style: none; }
+        .outcome-list li { margin-bottom: 12px; }
+        .outcome-link {
+            display: block;
+            padding: 16px 20px;
+            background-color: white;
+            border-left: 4px solid #E65100;
+            text-decoration: none;
+            color: #333;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+        .outcome-link:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border-left-color: #2B2B2B; }
+        .outcome-link .id { font-weight: bold; color: #E65100; margin-right: 8px; }
+        .kanban-container { display: none; padding: 30px 20px; max-width: 1600px; margin: 0 auto; }
+        .kanban-container.active { display: block; }
+        .columns-wrapper {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            min-height: calc(100vh - 200px);
+        }
+        .column { display: flex; flex-direction: column; background-color: #f0f0f0; border-radius: 8px; overflow: hidden; }
+        .column-header { padding: 16px; color: white; font-weight: bold; font-size: 16px; text-align: center; }
+        .column-backlog .column-header { background-color: #3498DB; }
+        .column-advancing .column-header { background-color: #76BE43; }
+        .column-stalled .column-header { background-color: #E67E22; }
+        .column-blocked .column-header { background-color: #E74C3C; }
+        .column-done .column-header { background-color: #999; }
+        .column-content {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 6px;
+            padding: 14px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            transition: box-shadow 0.2s;
+            cursor: default;
+        }
+        .card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); }
+        .card-id { font-weight: bold; color: #2B2B2B; font-size: 14px; margin-bottom: 6px; }
+        .card-name { font-size: 14px; color: #333; line-height: 1.4; margin-bottom: 10px; }
+        .toggle-subtasks {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #E65100;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            border: none;
+            background: none;
+            padding: 0;
+        }
+        .toggle-subtasks:hover { color: #2B2B2B; }
+        .toggle-icon { display: inline-block; width: 12px; height: 12px; transition: transform 0.3s; }
+        .toggle-icon.expanded { transform: rotate(90deg); }
+        .subtasks-container { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; margin-top: 8px; }
+        .subtasks-container.visible { max-height: 800px; }
+        .subtasks-list { list-style: none; padding-top: 8px; border-top: 1px solid #eee; }
+        .subtask-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 12px; color: #666; line-height: 1.3; }
+        .subtask-item input[type="checkbox"] { margin-top: 3px; cursor: pointer; flex-shrink: 0; }
+        .subtask-text { flex: 1; }
+        @media (max-width: 1400px) { .columns-wrapper { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 800px) { .columns-wrapper { grid-template-columns: 1fr; } header { flex-direction: column; align-items: flex-start; } }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="back-link" id="back-link" href="WB-Outcome-Map.html" title="Back to Outcome Map">←</a>
+        <div class="header-content">
+            <h1 id="header-title">WB: [Outcome] — Work Items</h1>
+            <p id="header-subtitle">WBS-derived deliverables (Jira sync TBD)</p>
+        </div>
+    </header>
+    <script>
+      (function(){
+        var t = new URLSearchParams(window.location.search).get('token');
+        if (t) document.getElementById('back-link').setAttribute('href', 'WB-Outcome-Map.html?token=' + encodeURIComponent(t));
+      })();
+    </script>
+
+    <div class="outcome-selector" id="outcomeSelector">
+        <h2>Select an Outcome</h2>
+        <ul class="outcome-list" id="outcomeList"></ul>
+    </div>
+
+    <div class="kanban-container" id="kanbanContainer">
+        <div class="columns-wrapper">
+            <div class="column column-backlog">
+                <div class="column-header">Backlog</div>
+                <div class="column-content" id="col-backlog"></div>
+            </div>
+            <div class="column column-advancing">
+                <div class="column-header">Advancing</div>
+                <div class="column-content" id="col-advancing"></div>
+            </div>
+            <div class="column column-stalled">
+                <div class="column-header">Stalled</div>
+                <div class="column-content" id="col-stalled"></div>
+            </div>
+            <div class="column column-blocked">
+                <div class="column-header">Blocked</div>
+                <div class="column-content" id="col-blocked"></div>
+            </div>
+            <div class="column column-done">
+                <div class="column-header">Done</div>
+                <div class="column-content" id="col-done"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* Deliverables from WB-WBS.md — replace with Jira-driven data when export exists */
+        const outcomeData = {
+            "WB-OC-01": {
+                name: "Alignment & Instrumentation Complete",
+                deliverables: [
+                    { id: "WB-OC-01.1", name: "Governance charter & kickoff", subtasks: ["Kick-off meeting; agree governance cadences", "Identify Engineering and Product counterparts"] },
+                    { id: "WB-OC-01.2", name: "Baseline scorecard (v0)", subtasks: ["Publish current baseline Scorecard v0 to leadership"] },
+                    { id: "WB-OC-01.3", name: "Customer segmentation setup", subtasks: ["Finalize Enterprise vs Commercial criteria", "Create segment attribute in 360", "Tag all customer accounts with segment", "Validate with Account Management (top 50)"] }
+                ]
+            },
+            "WB-OC-02": {
+                name: "Prove Flow & Communications Complete",
+                deliverables: [
+                    { id: "WB-OC-02.1", name: "Major Incident Management (MIM)", subtasks: ["Define MIM role and escalation criteria", "Incident communication templates and plan", "Configure paging for Sev-1/2 to MIM rotation", "Train 2-3 agents; launch MIM (15–30 min first update)", "RCA SLO and coverage in Scorecard (80%+ Sev-1/2)"] },
+                    { id: "WB-OC-02.2", name: "Initial pod structure", subtasks: ["Design Agility Core pod", "Design Other Products desk", "Routing tags in 360", "Assign 8–10 agents; routing live", "Stand up Other Products desk (4–6)"] },
+                    { id: "WB-OC-02.3", name: "SLO adoption", subtasks: ["Publish Enterprise vs Commercial SLOs", "SLA clocks in 360 by segment", "Train supervisors; measure first response by segment", "Weekly SLO review in Control Room"] }
+                ]
+            },
+            "WB-OC-03": {
+                name: "Full Pod Scale Complete",
+                deliverables: [
+                    { id: "WB-OC-03.1", name: "Full pod expansion", subtasks: ["Design Reporting & Printing pod", "Design WMS & Integrations pod", "Stand up both pods"] },
+                    { id: "WB-OC-03.2", name: "Enterprise fast-lane & routing", subtasks: ["Enterprise fast-lane overlay", "Refine severity-based routing"] }
+                ]
+            },
+            "WB-OC-04": {
+                name: "Tooling Selection & AI Layer Complete",
+                deliverables: [
+                    { id: "WB-OC-04.1", name: "SaaS platform selection", subtasks: ["SaaS Support Suite RFP", "Demos, references, TCO", "Steering decision; contract; migration blueprint"] },
+                    { id: "WB-OC-04.2", name: "Agentic AI layer", subtasks: ["AI vendor RFP and contract", "Integration design (360, KB)", "Pilot (10 agents); measure; refine; full rollout"] }
+                ]
+            },
+            "WB-OC-05": {
+                name: "Platform Migration & Institutionalization Complete",
+                deliverables: [
+                    { id: "WB-OC-05.1", name: "Platform configuration", subtasks: ["Segments, skills routing, SLA clocks", "KB migration, guided flows", "SSO, monitoring/incident integrations"] },
+                    { id: "WB-OC-05.2", name: "Migration execution", subtasks: ["Pilot train/migrate/monitor", "Full train and migration", "Freeze 360 for new Support tickets"] },
+                    { id: "WB-OC-05.3", name: "Institutionalization", subtasks: ["Scorecard for new platform", "Benefits realization assessment", "Close transformation program"] }
+                ]
+            }
+        };
+
+        function getOutcomeIdFromHash() {
+            const hash = window.location.hash.slice(1);
+            return hash || null;
+        }
+
+        function createOutcomeList() {
+            const list = document.getElementById('outcomeList');
+            list.innerHTML = '';
+            Object.keys(outcomeData).sort().forEach(id => {
+                const outcome = outcomeData[id];
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = '#' + id;
+                a.className = 'outcome-link';
+                a.innerHTML = '<span class="id">' + id + '</span><span class="name">' + outcome.name + '</span>';
+                li.appendChild(a);
+                list.appendChild(li);
+            });
+        }
+
+        function createCard(deliverable) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            const id = document.createElement('div');
+            id.className = 'card-id';
+            id.textContent = deliverable.id;
+            const name = document.createElement('div');
+            name.className = 'card-name';
+            name.textContent = deliverable.name;
+            card.appendChild(id);
+            card.appendChild(name);
+            if (deliverable.subtasks && deliverable.subtasks.length) {
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'toggle-subtasks';
+                const icon = document.createElement('span');
+                icon.className = 'toggle-icon';
+                icon.textContent = '▶';
+                const label = document.createElement('span');
+                label.textContent = 'Show subtasks';
+                toggleBtn.appendChild(icon);
+                toggleBtn.appendChild(label);
+                const subtasksContainer = document.createElement('div');
+                subtasksContainer.className = 'subtasks-container';
+                const subtasksList = document.createElement('ul');
+                subtasksList.className = 'subtasks-list';
+                deliverable.subtasks.forEach(subtask => {
+                    const item = document.createElement('li');
+                    item.className = 'subtask-item';
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    const text = document.createElement('span');
+                    text.className = 'subtask-text';
+                    text.textContent = subtask;
+                    item.appendChild(checkbox);
+                    item.appendChild(text);
+                    subtasksList.appendChild(item);
+                });
+                subtasksContainer.appendChild(subtasksList);
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const isVisible = subtasksContainer.classList.toggle('visible');
+                    icon.classList.toggle('expanded', isVisible);
+                    label.textContent = isVisible ? 'Hide subtasks' : 'Show subtasks';
+                });
+                card.appendChild(toggleBtn);
+                card.appendChild(subtasksContainer);
+            }
+            return card;
+        }
+
+        function loadOutcome(outcomeId) {
+            const outcome = outcomeData[outcomeId];
+            if (!outcome) return;
+            document.getElementById('header-title').textContent = 'WB: ' + outcomeId + ' — ' + outcome.name;
+            document.getElementById('header-subtitle').textContent = outcome.deliverables.length + ' deliverables (see WB-WBS.md)';
+            ['col-backlog', 'col-advancing', 'col-stalled', 'col-blocked', 'col-done'].forEach(cid => {
+                document.getElementById(cid).innerHTML = '';
+            });
+            outcome.deliverables.forEach(deliverable => {
+                document.getElementById('col-backlog').appendChild(createCard(deliverable));
+            });
+            document.getElementById('outcomeSelector').style.display = 'none';
+            document.getElementById('kanbanContainer').classList.add('active');
+        }
+
+        function handleHashChange() {
+            const outcomeId = getOutcomeIdFromHash();
+            if (outcomeId && outcomeData[outcomeId]) {
+                loadOutcome(outcomeId);
+            } else {
+                document.getElementById('outcomeSelector').style.display = 'block';
+                document.getElementById('kanbanContainer').classList.remove('active');
+            }
+        }
+
+        createOutcomeList();
+        window.addEventListener('hashchange', handleHashChange);
+        handleHashChange();
+    </script>
+</body>
+</html>

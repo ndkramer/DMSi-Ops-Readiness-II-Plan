@@ -216,6 +216,7 @@
   .bar-wm { background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%); }
   .bar-vi { background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%); }
   .bar-pp { background: linear-gradient(135deg, #E67E22 0%, #D35400 100%); }
+  .bar-wb { background: linear-gradient(135deg, #E65100 0%, #BF360C 100%); }
 
   /* Milestones */
   .milestone-line {
@@ -289,7 +290,7 @@
   /* Summary cards */
   .summary-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 30px;
   }
@@ -305,6 +306,7 @@
   .summary-card.blue { border-left-color: #3498DB; }
   .summary-card.purple { border-left-color: #9B59B6; }
   .summary-card.orange { border-left-color: #E67E22; }
+  .summary-card.wb { border-left-color: #E65100; }
 
   .section-title {
     font-size: 16px;
@@ -432,7 +434,8 @@ months.forEach(m => {
 const FALLBACK_CAPABILITIES = [
   { id: 'WM', name: 'Work Management', meta: '9 outcomes | OC-01, OC-02 complete', barClass: 'bar-wm', start: new Date(2026, 1, 16), end: new Date(2026, 5, 19), link: '../WM/WM-Outcome-Map.html', outcomes: 9, detail: 'Process design, tool selection, adoption, board accuracy, flow metrics, prioritization. OC-01 (Discovery) and OC-02 (Operating Model) already complete.' },
   { id: 'VI', name: 'Visibility Infrastructure & Proactive Detection', meta: '16 outcomes | PD AIOps active since Mar 1', barClass: 'bar-vi', start: new Date(2026, 2, 1), end: new Date(2026, 5, 11), link: '../VI/VI-WSB-Outcome-Map.html', outcomes: 16, detail: 'Dynatrace rollout, PagerDuty AIOps, host instrumentation, log migration, synthetic monitoring, application telemetry, alerting, proactive operations.' },
-  { id: 'PP', name: 'Pipeline Automation', meta: '12 outcomes + POC | Starts with 2-week POC', barClass: 'bar-pp', start: new Date(2026, 2, 16), end: new Date(2026, 7, 21), link: '../PA/PA-Outcome-map.html', outcomes: 12, detail: 'NGINX config pipeline POC, foundation, config inventory, version control migration, build/deploy/drift pipelines, reliability validation, config-as-code enforcement.' }
+  { id: 'PP', name: 'Pipeline Automation', meta: '12 outcomes + POC | Starts with 2-week POC', barClass: 'bar-pp', start: new Date(2026, 2, 16), end: new Date(2026, 7, 21), link: '../PA/PA-Outcome-map.html', outcomes: 12, detail: 'NGINX config pipeline POC, foundation, config inventory, version control migration, build/deploy/drift pipelines, reliability validation, config-as-code enforcement.' },
+  { id: 'WB', name: 'Customer Support (WB)', meta: '5 outcomes | Jira TBD', barClass: 'bar-wb', start: new Date(2026, 2, 1), end: new Date(2027, 1, 1), link: '../WSB-WSC/WB/WB-Outcome-Map.html', outcomes: 5, detail: 'Alignment & instrumentation, prove flow (MIM/pods/SLOs), full pod scale, SaaS + Agentic AI, platform migration off 360. See WB-WBS.md.' }
 ];
 /** Inline fallback if project-milestones.json is missing or fetch fails (mirrors Project-Plan/project-milestones.json). */
 const FALLBACK_MILESTONES = [
@@ -478,9 +481,9 @@ function formatAsOfTag(d) {
 function renderSummaryCards(summaryCardsOrCaps) {
   const el = document.getElementById('summaryRow');
   if (!el) return;
-  const cards = summaryCardsOrCaps.WM ? [summaryCardsOrCaps.WM, summaryCardsOrCaps.VI, summaryCardsOrCaps.PP] : null;
+  const cards = summaryCardsOrCaps.WM ? [summaryCardsOrCaps.WM, summaryCardsOrCaps.VI, summaryCardsOrCaps.PP, summaryCardsOrCaps.WB].filter(Boolean) : null;
   const caps = cards ? null : summaryCardsOrCaps;
-  const classes = ['blue', 'purple', 'orange'];
+  const classes = ['blue', 'purple', 'orange', 'wb'];
   const items = cards ? cards : (caps || []).map(c => ({
     title: c.name,
     detail: c.outcomes + ' outcomes<br>' + (c.start instanceof Date ? c.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : c.start) + ' - ' + (c.end instanceof Date ? c.end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : c.end)

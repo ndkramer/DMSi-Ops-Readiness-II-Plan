@@ -15,10 +15,31 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 16px;
   }
+  .header-back {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+    text-decoration: none;
+    font-size: 22px;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s;
+  }
+  .header-back:hover {
+    background: rgba(118,190,67,0.45);
+    color: #fff;
+  }
+  .header-main { flex: 1; min-width: 0; }
   .header h1 { font-size: 22px; font-weight: 600; }
   .header .subtitle { font-size: 13px; color: #aaa; margin-top: 4px; }
-  .header .brand { color: #76BE43; font-weight: 700; font-size: 14px; }
+  .header .brand { color: #76BE43; font-weight: 700; font-size: 14px; flex-shrink: 0; }
 
   .legend-bar {
     background: white;
@@ -372,7 +393,8 @@
 <body>
 
 <div class="header">
-  <div>
+  <a href="../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined outcome Gantt" title="Combined Outcome Gantt">&#8592;</a>
+  <div class="header-main">
     <h1>PA-WBS v1.6: Pipeline Automation Outcome Map</h1>
     <div class="subtitle">PA-WBS v1.6 | NGINX Config Pipeline — DMSi Software | <strong>12 outcomes</strong> (PA-OC-00 … PA-OC-11) | Jira: capability <strong style="color:#ccc">WSA-2656</strong>, Epics <strong style="color:#ccc">WSA-3758</strong> (PA-OC-00), <strong style="color:#ccc">WSA-3268</strong>–<strong style="color:#ccc">WSA-3278</strong>, Action items <strong style="color:#ccc">WSA-2657</strong> | 1.5 FTEs | 3/16/2026 – 10/30/2026</div>
   </div>

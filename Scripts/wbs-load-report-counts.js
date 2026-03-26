@@ -15,8 +15,7 @@
 
 const fs = require('fs');
 const path = require('path');
-
-const PROJECT_ROOT = path.resolve(__dirname, '..');
+const { getCapabilityFolder } = require('./wbs-capability-folder');
 
 function itemMap(arr, keyField) {
   const m = new Map();
@@ -44,7 +43,7 @@ function diffCounts(oldArr, newArr, keyField) {
 
 function run(capability, dateStamp) {
   const prefix = capability;
-  const folderPath = path.join(PROJECT_ROOT, capability);
+  const folderPath = getCapabilityFolder(capability);
   const archivedJsonPath = path.join(folderPath, 'Output', 'Archive', `${prefix}-WBS-Jira-Import-${dateStamp}.json`);
   const currentJsonPath = path.join(folderPath, 'Output', `${prefix}-WBS-Jira-Import.json`);
   const reportPath = path.join(folderPath, 'Update-Reports', `WBS-Load-${dateStamp}.md`);

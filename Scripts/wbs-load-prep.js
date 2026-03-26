@@ -3,20 +3,19 @@
  * WBS Load Prep: archive current WBS and Jira-import JSON, create WBS-Load report stub.
  *
  * Part of the WBS update pattern. Run before reviewing Input and regenerating the WBS.
- * - Copies current WBS to {Folder}/Archive/... ({Prefix}-WBS-mm-dd-yyyy.md for PA, VI, WM)
+ * - Copies current WBS to {Folder}/Archive/... ({Prefix}-WBS-mm-dd-yyyy.md for PA, VI, WM, WB)
  * - If present, copies Output Jira-import JSON to {Folder}/Output/Archive/{Prefix}-WBS-Jira-Import-mm-dd-yyyy.json
  * - Creates {Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md with stub sections (including archived JSON path)
  *
  * Run from project root: node Scripts/wbs-load-prep.js <capability>
  * Example: node Scripts/wbs-load-prep.js PA
  *
- * Capability: folder name and prefix (e.g. PA, VI, WM). Uses same date for all archives in one run.
+ * Capability: folder name and prefix (e.g. PA, VI, WM). **WB** resolves to **WSB-WSC/WB** (see wbs-capability-folder.js). Uses same date for all archives in one run.
  */
 
 const fs = require('fs');
 const path = require('path');
-
-const PROJECT_ROOT = path.resolve(__dirname, '..');
+const { getCapabilityFolder, capabilityFolderDisplay } = require('./wbs-capability-folder');
 
 function getDateStamp() {
   const d = new Date();
@@ -32,14 +31,15 @@ function ensureDir(dirPath) {
   }
 }
 
-/** Canonical WBS: {PA|VI|WM}-WBS.md. Jira target-state JSON: {Prefix}-WBS-Jira-Import.json */
+/** Canonical WBS: {PA|VI|WM|WB}-WBS.md. Jira target-state JSON: {Prefix}-WBS-Jira-Import.json */
 function getWbsArchiveNames(prefix) {
   return { wbsFileName: `${prefix}-WBS.md`, archiveStem: `${prefix}-WBS` };
 }
 
 function run(capability) {
   const prefix = capability;
-  const folderPath = path.join(PROJECT_ROOT, capability);
+  const folderPath = getCapabilityFolder(capability);
+  const folderLabel = capabilityFolderDisplay(capability);
   const dateStamp = getDateStamp();
 
   if (!fs.existsSync(folderPath)) {
@@ -72,16 +72,16 @@ function run(capability) {
   }
   ensureDir(archiveDir);
   fs.copyFileSync(wbsPath, archivedWbsPath);
-  console.log(`Archived WBS: ${capability}/Archive/${archivedWbsName}`);
+  console.log(`Archived WBS: ${folderLabel}/Archive/${archivedWbsName}`);
 
   // 2. Archive Jira-import JSON if present
   if (fs.existsSync(jsonPath)) {
     ensureDir(outputArchiveDir);
     fs.copyFileSync(jsonPath, archivedJsonPath);
-    jsonArchived = `${capability}/Output/Archive/${archivedJsonName}`;
+    jsonArchived = `${folderLabel}/Output/Archive/${archivedJsonName}`;
     console.log(`Archived Jira import JSON: ${jsonArchived}`);
   } else {
-    console.log(`No Jira import JSON at ${capability}/Output/${jsonName}; skip archive.`);
+    console.log(`No Jira import JSON at ${folderLabel}/Output/${jsonName}; skip archive.`);
   }
 
   // 3. Create WBS-Load report stub
@@ -90,7 +90,7 @@ function run(capability) {
 
 ## Summary
 
-- **WBS archived:** \`${capability}/Archive/${archivedWbsName}\`
+- **WBS archived:** \`${folderLabel}/Archive/${archivedWbsName}\`
 ${jsonArchived ? `- **Jira import JSON archived:** \`${jsonArchived}\`` : '- **Jira import JSON:** not present for this capability (no archive created).'}
 - **Report generated:** ${new Date().toISOString().slice(0, 10)}
 
@@ -107,7 +107,7 @@ Counts are relative to the archived JSON for this run. Fill after regenerating W
 
 ## Input files processed
 
-For **each file** in \`${capability}/Input/\`: list the filename; briefly state what was extracted (e.g. outcomes, phases, risks, decisions, timeline, tables); state what WBS changes were made (e.g. "Added PA-OC-X", "Updated PA-R-X2") or "Mapped to existing PA-OC-01 through PA-OC-09; no WBS edit." Do not leave this section generic; the user must see that each Input file was read and processed.
+For **each file** in \`${folderLabel}/Input/\`: list the filename; briefly state what was extracted (e.g. outcomes, phases, risks, decisions, timeline, tables); state what WBS changes were made (e.g. "Added PA-OC-X", "Updated PA-R-X2") or "Mapped to existing PA-OC-01 through PA-OC-09; no WBS edit." Do not leave this section generic; the user must see that each Input file was read and processed.
 ${(function () {
     const inputDir = path.join(folderPath, 'Input');
     if (!fs.existsSync(inputDir)) return '\n(No Input folder or no files listed.)';
@@ -139,11 +139,11 @@ ${(function () {
 ## Next steps
 
 - **Regenerate WBS** from Input and current maps; preserve structure and key conventions.
-- **Regenerate Jira import JSON** from the updated WBS (manual step until a generator exists). Update \`${capability}/Output/${jsonName}\` so it reflects current work_items and action_items keyed by WBS IDs; this file is used by the future Jira upload process.
+- **Regenerate Jira import JSON** from the updated WBS (manual step until a generator exists). Update \`${folderLabel}/Output/${jsonName}\` so it reflects current work_items and action_items keyed by WBS IDs; this file is used by the future Jira upload process.
 `;
 
   fs.writeFileSync(reportPath, reportStub, 'utf8');
-  console.log(`Created report stub: ${capability}/Update-Reports/${reportName}`);
+  console.log(`Created report stub: ${folderLabel}/Update-Reports/${reportName}`);
 }
 
 const capability = process.argv[2];

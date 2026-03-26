@@ -1,0 +1,99 @@
+{
+  "metadata": {
+    "root_key": "[TBD]",
+    "label": "Customer Support Transformation",
+    "component": "Customer Support",
+    "action_item_root_key": "[TBD]",
+    "counts": {
+      "epics": 5,
+      "stories": 0,
+      "subtasks": 0,
+      "risks": 0,
+      "decisions": 0,
+      "total_work_items": 5,
+      "total_action_items": 0,
+      "grand_total": 5
+    },
+    "import_order": [
+      "1. Set metadata.root_key and action_item_root_key to WSA capability / action-item epic keys.",
+      "2. Import all items with issue_type = Epic (parent = capability root).",
+      "3. Import Stories for each deliverable (WB-OC-XX.Y) under the matching Epic.",
+      "4. Import Sub-tasks under Stories as needed.",
+      "5. Import Action Items linked to action_item_root_key for cross-cutting risks and decisions."
+    ],
+    "notes": "Seed file — expand work_items from WB-WBS.md deliverables when Jira keys are assigned."
+  },
+  "work_items": [
+    {
+      "issue_type": "Epic",
+      "summary": "[WB-OC-01] Alignment & Instrumentation Complete",
+      "description": "Phase 0. Governance, Scorecard v0, customer segmentation, incident process documented.",
+      "parent": "[TBD]",
+      "labels": "customer-support,wsb,wb-oc-01",
+      "owner": "Trans Lead + Sponsor",
+      "priority": "Medium",
+      "outcome_id": "WB-OC-01",
+      "category": "Baseline",
+      "target": "[TBD]",
+      "status": "To Do",
+      "component": "Customer Support"
+    },
+    {
+      "issue_type": "Epic",
+      "summary": "[WB-OC-02] Prove Flow & Communications Complete",
+      "description": "Phase 1. MIM, initial pods, SLO adoption.",
+      "parent": "[TBD]",
+      "labels": "customer-support,wsb,wb-oc-02",
+      "owner": "Trans Lead + Support + Eng",
+      "priority": "Medium",
+      "outcome_id": "WB-OC-02",
+      "category": "Baseline",
+      "target": "[TBD]",
+      "status": "To Do",
+      "component": "Customer Support"
+    },
+    {
+      "issue_type": "Epic",
+      "summary": "[WB-OC-03] Full Pod Scale Complete",
+      "description": "Phase 2. All Agility pods operational.",
+      "parent": "[TBD]",
+      "labels": "customer-support,wsb,wb-oc-03",
+      "owner": "Trans Lead + Supervisors",
+      "priority": "Medium",
+      "outcome_id": "WB-OC-03",
+      "category": "Baseline",
+      "target": "[TBD]",
+      "status": "To Do",
+      "component": "Customer Support"
+    },
+    {
+      "issue_type": "Epic",
+      "summary": "[WB-OC-04] Tooling Selection & AI Layer Complete",
+      "description": "Phase 3. SaaS selection, Agentic AI, migration blueprint.",
+      "parent": "[TBD]",
+      "labels": "customer-support,wsb,wb-oc-04",
+      "owner": "Trans Lead + Sponsor",
+      "priority": "Medium",
+      "outcome_id": "WB-OC-04",
+      "category": "Baseline",
+      "target": "[TBD]",
+      "status": "To Do",
+      "component": "Customer Support"
+    },
+    {
+      "issue_type": "Epic",
+      "summary": "[WB-OC-05] Platform Migration & Institutionalization Complete",
+      "description": "Phase 4. New platform live, 360 freeze, benefits realization.",
+      "parent": "[TBD]",
+      "labels": "customer-support,wsb,wb-oc-05",
+      "owner": "Vendor/Ops + Eng + Support",
+      "priority": "Medium",
+      "outcome_id": "WB-OC-05",
+      "category": "Iterative",
+      "target": "[TBD]",
+      "status": "To Do",
+      "component": "Customer Support"
+    }
+  ],
+  "action_items": []
+}

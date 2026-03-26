@@ -1,6 +1,6 @@
 ---
 name: wbs-update-pattern
-description: Two related workflows for Pipeline Automation (PA) and sibling capabilities. (1) Input-based WBS load — run prep script, process Input folder, regenerate WBS, archive Input, report. (2) Jira–WBS–planning alignment — compare Jira export to PA-WBS and planning HTML (PA-kanban, PA-Outcome-map), update WBS change log and classifications, adjust kanban/export scripts, rebuild pa-kanban-jira-status. Use when the user asks to import WBS from Input, OR to align the WBS and planning views with Jira, refresh kanban from Jira, reconcile POC vs outcomes, or update PA-kanban / PA-Outcome-map / PA-WBS after Jira changes.
+description: Two related workflows for Pipeline Automation (PA) and sibling capabilities (VI, WM, WB). (1) Input-based WBS load — run prep script, process Input folder, regenerate WBS, archive Input, report. (2) Jira–WBS–planning alignment — compare Jira export to the capability WBS and planning HTML (e.g. PA-kanban, PA-Outcome-map; WB-kanban when Jira-backed), update WBS change log, adjust exports. Use when the user asks to import WBS from Input, OR to align the WBS and planning views with Jira, refresh kanban from Jira, reconcile POC vs outcomes (PA), or update planning artifacts after Jira changes.
 ---
 
 # WBS Update Pattern
@@ -12,15 +12,15 @@ This skill covers **two** repeatable processes. Pick the one that matches the us
 | “Import latest PA WBS from Input”, “Run WBS load for VI”, load files from `{Capability}/Input/` | **A — Input → WBS** |
 | “Align WBS with Jira”, “Update kanban from Jira”, “Reconcile POC / [POC] / outcomes”, refresh `PA-kanban` / `PA-Outcome-map` / `PA-WBS` after Jira | **B — Jira ↔ WBS ↔ planning HTML** |
 
-Capability folders use prefixes **PA**, **VI**, **WM** (this repo documents **PA** most fully). Follow `.cursor/rules/{capability}.mdc` when editing that capability’s artifacts.
+Capability folders use prefixes **PA**, **VI**, **WM**, **WB** (Customer Support / Workstream B). Follow `.cursor/rules/{capability}.mdc` when editing that capability’s artifacts.
 
-**Folder maps:** [`PA/README.md`](../../../PA/README.md), [`VI/README.md`](../../../VI/README.md), [`WM/README.md`](../../../WM/README.md).
+**Folder maps:** [`PA/README.md`](../../../PA/README.md), [`VI/README.md`](../../../VI/README.md), [`WM/README.md`](../../../WM/README.md), [`WSB-WSC/WB/README.md`](../../../WSB-WSC/WB/README.md).
 
-**Canonical WBS files:** `PA/PA-WBS.md`, `VI/VI-WBS.md`, `WM/WM-WBS.md`.
+**Canonical WBS files:** `PA/PA-WBS.md`, `VI/VI-WBS.md`, `WM/WM-WBS.md`, `WSB-WSC/WB/WB-WBS.md`.
 
-**Optional JSON registries** (outcome ↔ Jira keys for scripts): `PA/pa-outcomes.json` (keep in sync with PA-WBS §10); `VI/vi-outcomes.json`, `WM/wm-outcomes.json` (extend when those WBS Jira tables are fully keyed).
+**Optional JSON registries** (outcome ↔ Jira keys for scripts): `PA/pa-outcomes.json` (keep in sync with PA-WBS §10); `VI/vi-outcomes.json`, `WM/wm-outcomes.json`, `WSB-WSC/WB/wb-outcomes.json` (extend when those WBS Jira tables are fully keyed).
 
-**Jira-import target JSON (manual or generator):** `{Capability}/Output/{Prefix}-WBS-Jira-Import.json` for PA, VI, and WM.
+**Jira-import target JSON (manual or generator):** `{Capability}/Output/{Prefix}-WBS-Jira-Import.json` for PA, VI, WM; for **WB** the folder is **`WSB-WSC/WB/`** (run `wbs-load-prep.js WB` — see `Scripts/wbs-capability-folder.js`).
 
 ---
 
@@ -30,7 +30,7 @@ When the user asks to **import the latest [capability] WBS information** (or sim
 
 ### 1. Identify the capability
 
-From the user’s message, determine **PA**, **VI**, or **WM**. If unclear, ask.
+From the user’s message, determine **PA**, **VI**, **WM**, or **WB**. If unclear, ask.
 
 ### 2. Run the prep script
 
@@ -42,7 +42,7 @@ node Scripts/wbs-load-prep.js <capability>
 
 Example: `node Scripts/wbs-load-prep.js PA`
 
-This archives the current WBS to `{Folder}/Archive/{Prefix}-WBS-mm-dd-yyyy.md` (PA, VI, WM), archives `{Folder}/Output/{Prefix}-WBS-Jira-Import.json` to `{Folder}/Output/Archive/...` (if present), and creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with a stub. Note the run date (mm-dd-yyyy) for step 4.
+This archives the current WBS to `{Folder}/Archive/{Prefix}-WBS-mm-dd-yyyy.md` (PA, VI, WM, WB), archives `{Folder}/Output/{Prefix}-WBS-Jira-Import.json` to `{Folder}/Output/Archive/...` (if present), and creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with a stub. Note the run date (mm-dd-yyyy) for step 4.
 
 ### 3. Review Input and regenerate WBS
 
@@ -50,7 +50,7 @@ This archives the current WBS to `{Folder}/Archive/{Prefix}-WBS-mm-dd-yyyy.md` (
 - **For each file**: extract outcomes, deliverables, phases, risks, decisions, questions, timeline, tables. Either update the WBS (preserving keys and structure per the capability rule file) or document mapping to existing WBS keys.
 - **Compare** with the current WBS file (`{Prefix}-WBS.md`) and any constraint vs outcome maps. **Regenerate** the WBS accordingly. Preserve document structure, outcome table, per-outcome sections, risks/decisions/questions tables.
 - **PA:** If Jira epic keys or outcome IDs change, update **`pa-outcomes.json`** to match `PA-WBS.md` §10.
-- **VI / WM:** When Jira mapping in the WBS stabilizes, update **`vi-outcomes.json`** / **`wm-outcomes.json`** to match.
+- **VI / WM / WB:** When Jira mapping in the WBS stabilizes, update **`vi-outcomes.json`** / **`wm-outcomes.json`** / **`wb-outcomes.json`** to match.
 - **Fill the WBS-Load report**: per-file “Input files processed” summaries (filename → extracted content → WBS edits or “mapped to existing keys”). Do not leave this section generic.
 
 ### 4. Move processed Input to Archive
@@ -132,18 +132,18 @@ Use this when the user wants **planning artifacts** (`PA/PA-WBS.md`, `PA/PA-Outc
 
 If **Input** contains stakeholder docs that **change outcomes** while **Jira** already has epics/stories, run **Pattern A** for WBS content, then **Pattern B** to align HTML and exports—or do B after A so planning HTML and `pa-kanban-jira-status` reflect the new WBS narrative and current Jira.
 
-### VI and WM — Jira alignment (same discipline, fewer automated scripts)
+### VI, WM, and WB — Jira alignment (same discipline, fewer automated scripts)
 
-- **Normative:** `VI-WBS.md`, `WM-WBS.md`, outcome maps, kanban HTML.
-- **Dated exports:** keep multiple **`VI/Jira/VI-Jira-mm-dd-yyyy-json.json`** and **`WM/Jira/WM-Jira-mm-dd-yyyy-json.json`** (same retention rule as **`PA/Jira/PA-Jira-*.json`**).
-- **Target-state JSON:** `VI/Output/VI-WBS-Jira-Import.json`, `WM/Output/WM-WBS-Jira-Import.json`.
-- Full **Pattern B** checklist above is PA-specific; for VI/WM, reconcile exports vs WBS manually until dedicated export scripts exist.
+- **Normative:** `VI/VI-WBS.md`, `WM/WM-WBS.md`, `WSB-WSC/WB/WB-WBS.md`, outcome maps, kanban HTML.
+- **Dated exports:** keep multiple **`VI/Jira/VI-Jira-mm-dd-yyyy-json.json`**, **`WM/Jira/WM-Jira-mm-dd-yyyy-json.json`**, **`WSB-WSC/WB/Jira/WB-Jira-mm-dd-yyyy-json.json`** (same retention rule as **`PA/Jira/PA-Jira-*.json`**). **WB:** after keys exist in **`wb-outcomes.json`**, run **`node Scripts/jira-export-wb.js`** (or **`node Scripts/jira-export-pa.js WB <capabilityKey> <actionEpicKey>`**). The shared exporter writes the dated JSON under **`WSB-WSC/WB/Jira/`**; it does **not** emit PA-style kanban status files for non-PA capabilities.
+- **Target-state JSON:** `VI/Output/VI-WBS-Jira-Import.json`, `WM/Output/WM-WBS-Jira-Import.json`, `WSB-WSC/WB/Output/WB-WBS-Jira-Import.json`.
+- Full **Pattern B** checklist above is PA-specific; for VI/WM/WB, reconcile exports vs WBS manually and refresh HTML narratives until kanban is wired to Jira (WB-kanban is WBS-static today).
 
 ---
 
 ## Reference
 
 - Pattern A (detailed): [Documentation/WBS-Update-Pattern.md](../../../Documentation/WBS-Update-Pattern.md)  
-- Folders: [PA/README.md](../../../PA/README.md), [VI/README.md](../../../VI/README.md), [WM/README.md](../../../WM/README.md)  
-- Jira: [PA/Jira/README.md](../../../PA/Jira/README.md), [VI/Jira/README.md](../../../VI/Jira/README.md), [WM/Jira/README.md](../../../WM/Jira/README.md)  
-- Rules: [.cursor/rules/pa.mdc](../../rules/pa.mdc), [.cursor/rules/vi.mdc](../../rules/vi.mdc), [.cursor/rules/wm.mdc](../../rules/wm.mdc)
+- Folders: [PA/README.md](../../../PA/README.md), [VI/README.md](../../../VI/README.md), [WM/README.md](../../../WM/README.md), [WSB-WSC/WB/README.md](../../../WSB-WSC/WB/README.md)  
+- Jira: [PA/Jira/README.md](../../../PA/Jira/README.md), [VI/Jira/README.md](../../../VI/Jira/README.md), [WM/Jira/README.md](../../../WM/Jira/README.md), [WSB-WSC/WB/Jira/README.md](../../../WSB-WSC/WB/Jira/README.md)  
+- Rules: [.cursor/rules/pa.mdc](../../rules/pa.mdc), [.cursor/rules/vi.mdc](../../rules/vi.mdc), [.cursor/rules/wm.mdc](../../rules/wm.mdc), [.cursor/rules/wb.mdc](../../rules/wb.mdc)

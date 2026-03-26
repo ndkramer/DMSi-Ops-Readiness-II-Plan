@@ -11,6 +11,7 @@ This document describes the reusable process that updates stage target dates in 
    - **VI** (Visibility Infrastructure): `VI/VI-WSB-Outcome-Map.html`
    - **PA** (Pipeline Automation): `PA/PA-Outcome-map.html`
    - **WSB-WSC** (Workstream B & C): `WSB-WSC/WSB-WSC-Outcome-Map.html`
+   - **WB** (Customer Support, five-outcome WBS): `WSB-WSC/WB/WB-Outcome-Map.html` — **not** read by `sync-stage-dates-from-outcome-maps.js` today; Workstream B stage dates in the capability map still follow the combined WSB-WSC map. Use the WB map for the **WB-OC-01 … WB-OC-05** program-month view.
 
 2. **Parses dates** from each source (day-level when available for accurate display and sprint indicators):
    - WM: `dateRange` strings (e.g. "Wk 1-2 (Feb 16 - Feb 27)") → start/end day extracted.
@@ -99,7 +100,7 @@ If `WSB-WSC/WSB-WSC-Outcome-Map.html` is missing, the script still runs and upda
 
 ## When to run it
 
-- After changing dates or outcome ranges in any of the outcome-map HTML files (WM, VI, PA, or WSB-WSC).
+- After changing dates or outcome ranges in any of the outcome-map HTML files (WM, VI, PA, or WSB-WSC). For **WB-OC** date bands, update `WSB-WSC/WB/WB-Outcome-Map.html` manually for now; extend the sync script if capability-map should ingest WB directly.
 - When you want the capability map’s “Workstream B & C” tab (and other capability stages) to reflect the latest target dates from those outcome maps.
 - As part of a regular refresh before sharing or presenting the capability map.
 

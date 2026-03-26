@@ -7,7 +7,7 @@ This document describes the reusable process for updating capability WBS documen
 A project skill is available so you can run this process by saying things like:
 
 - **"Import the latest PA WBS information"** — Loads all files from `PA/Input/` and follows the full process for Pipeline Automation.
-- **"Load PA WBS from Input"** / **"Run WBS load for VI"** — Same idea for the given capability (PA, VI, or WM).
+- **"Load PA WBS from Input"** / **"Run WBS load for VI"** / **"Run WBS load for WB"** — Same idea for the given capability (PA, VI, WM, or WB).
 
 The skill lives at `.cursor/skills/wbs-update-pattern/SKILL.md`. When invoked, the agent will run the prep script, then review Input and regenerate the WBS (and remind you to update the Jira import JSON). No need to paste this doc or spell out steps; use the phrase and the skill applies.
 
@@ -79,11 +79,11 @@ flowchart TD
 |------|--------|
 | `{Folder}/Input/` | New or updated source files (specs, briefs). Process all files together. |
 | `{Folder}/Input/Archive/` | Processed Input files per run: contents of Input/ moved here after processing, one subfolder per date (`Input/Archive/{mm-dd-yyyy}/`). |
-| `{Folder}/Archive/` | Date-stamped WBS snapshots before each load: `{Prefix}-WBS-mm-dd-yyyy.md` (PA, VI, WM). |
+| `{Folder}/Archive/` | Date-stamped WBS snapshots before each load: `{Prefix}-WBS-mm-dd-yyyy.md` (PA, VI, WM, WB). |
 | `{Folder}/Output/` | Current Jira-import JSON: `{Prefix}-WBS-Jira-Import.json`. Canonical artifact for Jira upload. |
 | `{Folder}/Output/Archive/` | Date-stamped JSON snapshots: `{Prefix}-WBS-Jira-Import-mm-dd-yyyy.json`. |
 | `{Folder}/Update-Reports/` | Load reports: `WBS-Load-mm-dd-yyyy.md`. |
-| `{Folder}/{Prefix}-WBS.md` | Current WBS (`PA/PA-WBS.md`, `VI/VI-WBS.md`, `WM/WM-WBS.md`). Optional registries: `PA/pa-outcomes.json`, `VI/vi-outcomes.json`, `WM/wm-outcomes.json` (populate when outcome ↔ Jira mapping is stable). |
+| `{Folder}/{Prefix}-WBS.md` | Current WBS (`PA/PA-WBS.md`, `VI/VI-WBS.md`, `WM/WM-WBS.md`, `WSB-WSC/WB/WB-WBS.md`). Optional registries: `PA/pa-outcomes.json`, `VI/vi-outcomes.json`, `WM/wm-outcomes.json`, `WSB-WSC/WB/wb-outcomes.json` (populate when outcome ↔ Jira mapping is stable). **WB** on disk is **`WSB-WSC/WB/`**; `node Scripts/wbs-load-prep.js WB` resolves via `Scripts/wbs-capability-folder.js`. |
 
 Date format everywhere is **mm-dd-yyyy** (e.g. `03-17-2026`). The same run date is used for WBS archive, JSON archive, and report filename.
 
@@ -97,11 +97,11 @@ Date format everywhere is **mm-dd-yyyy** (e.g. `03-17-2026`). The same run date 
 node Scripts/wbs-load-prep.js <capability>
 ```
 
-**Examples:** `PA`, `VI`, `WM` (for WM, JSON archive is skipped if no `Output` JSON exists).
+**Examples:** `PA`, `VI`, `WM`, `WB` (JSON archive is skipped if no `Output` JSON exists).
 
 **What the script does:**
 
-1. **Archive WBS** — Copies the current WBS file to Archive (`{Prefix}-WBS.md` → `{Prefix}-WBS-mm-dd-yyyy.md` for PA, VI, WM).
+1. **Archive WBS** — Copies the current WBS file to Archive (`{Prefix}-WBS.md` → `{Prefix}-WBS-mm-dd-yyyy.md` for PA, VI, WM, WB).
 2. **Archive JSON** — If `{Folder}/Output/{Prefix}-WBS-Jira-Import.json` exists, copies it to `{Folder}/Output/Archive/{Prefix}-WBS-Jira-Import-mm-dd-yyyy.json` (creates `Output/Archive` if needed). If the file does not exist, this step is skipped without error.
 3. **Create report stub** — Creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with:
    - **Summary:** Paths to archived WBS and (when applicable) archived Jira import JSON.

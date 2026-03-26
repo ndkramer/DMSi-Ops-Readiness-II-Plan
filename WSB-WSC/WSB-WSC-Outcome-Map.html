@@ -15,10 +15,31 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 16px;
   }
+  .header-back {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+    text-decoration: none;
+    font-size: 22px;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s;
+  }
+  .header-back:hover {
+    background: rgba(118,190,67,0.45);
+    color: #fff;
+  }
+  .header-main { flex: 1; min-width: 0; }
   .header h1 { font-size: 22px; font-weight: 600; }
   .header .subtitle { font-size: 13px; color: #aaa; margin-top: 4px; }
-  .header .brand { color: #76BE43; font-weight: 700; font-size: 14px; }
+  .header .brand { color: #76BE43; font-weight: 700; font-size: 14px; flex-shrink: 0; }
 
   .legend-bar {
     background: white;
@@ -365,7 +386,8 @@
 <body>
 
 <div class="header">
-  <div>
+  <a href="../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined outcome Gantt" title="Combined Outcome Gantt">&#8592;</a>
+  <div class="header-main">
     <h1>WSB-WSC: Customer Support &amp; Tooling Outcome Map</h1>
     <div class="subtitle">Workstreams B &amp; C -- DMSi Software | 24 Sprints (S = 2 weeks) | Calendar dates pending scheduling</div>
   </div>
@@ -382,6 +404,12 @@
 </div>
 
 <div class="container">
+
+  <div style="background:#FFF8E1;border-left:4px solid #E65100;border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:12px;line-height:1.5;">
+    <strong>WB outcome model (Workstream B):</strong> For the five-outcome Customer Support transformation WBS (<strong>WB-OC-01</strong> … <strong>WB-OC-05</strong>), see
+    <a href="WB/WB-Outcome-Map.html" style="color:#E65100;font-weight:600;">WSB-WSC/WB/WB-Outcome-Map.html</a>
+    and <a href="WB/WB-WBS.md" style="color:#E65100;font-weight:600;">WSB-WSC/WB/WB-WBS.md</a>.
+  </div>
 
   <!-- Summary Cards -->
   <div class="summary-row">

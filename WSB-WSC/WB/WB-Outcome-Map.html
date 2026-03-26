@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WB-WBS: Outcome Map — Customer Support Transformation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; color: #2B2B2B; }
+
+  .header {
+    background: #2B2B2B;
+    color: white;
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .header-back {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+    text-decoration: none;
+    font-size: 22px;
+    line-height: 1;
+  }
+  .header-back:hover { background: rgba(118,190,67,0.45); color: #fff; }
+  .header-main { flex: 1; min-width: 0; }
+  .header h1 { font-size: 22px; font-weight: 600; }
+  .header .subtitle { font-size: 13px; color: #aaa; margin-top: 4px; }
+  .header .brand { color: #76BE43; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+
+  .legend-bar {
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 14px 40px;
+    display: flex;
+    gap: 28px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 3px; }
+  .legend-line { width: 30px; height: 0; border-top: 2px solid #555; }
+  .legend-line.must { border-color: #2B2B2B; border-width: 2px; }
+  .legend-line.should { border-color: #76BE43; border-width: 2px; }
+
+  .container { padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
+
+  .callout {
+    background: #E8F4FD;
+    border-left: 4px solid #3498DB;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .callout a { color: #2980B9; font-weight: 600; }
+
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  .summary-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    border-left: 4px solid #76BE43;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .summary-card .sc-number { font-size: 32px; font-weight: 700; color: #2B2B2B; }
+  .summary-card .sc-label { font-size: 12px; color: #888; margin-top: 4px; }
+  .summary-card.blue { border-left-color: #3498DB; }
+  .summary-card.green { border-left-color: #76BE43; }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2B2B2B;
+    margin: 30px 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #76BE43;
+  }
+
+  .timeline-header {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    margin-bottom: 0;
+  }
+  .timeline-label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 8px 0; }
+  .month-markers {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    border-bottom: 2px solid #2B2B2B;
+    padding-bottom: 6px;
+  }
+  .month-marker { font-size: 9px; color: #888; text-align: center; font-weight: 600; }
+
+  .swim-lane {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: 56px;
+    border-bottom: 1px solid #e8e8e8;
+    align-items: center;
+  }
+  .lane-label {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 10px 8px 0;
+    line-height: 1.3;
+  }
+  .lane-label .oc-id { color: #E65100; font-weight: 700; display: block; font-size: 11px; }
+  .lane-label .oc-cat { font-size: 10px; color: #999; font-weight: 400; margin-top: 2px; }
+
+  .lane-track {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    height: 100%;
+    position: relative;
+    align-items: center;
+  }
+
+  .outcome-bar {
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 4px;
+  }
+  .bar-baseline { background: #3498DB; }
+  .bar-iterative { background: #76BE43; }
+
+  .plus-btn {
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 1.5px solid rgba(255,255,255,0.6);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 15px;
+    text-align: center;
+    text-decoration: none;
+    z-index: 20;
+  }
+  .plus-btn:hover { background: rgba(255,255,255,0.5); }
+
+  .tooltip {
+    display: none;
+    position: fixed;
+    background: #2B2B2B;
+    color: white;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    max-width: 380px;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    pointer-events: none;
+  }
+  .tooltip.show { display: block; }
+  .tooltip .tt-title { font-size: 14px; font-weight: 700; color: #76BE43; margin-bottom: 8px; }
+  .tooltip .tt-row { display: flex; gap: 8px; margin: 3px 0; }
+  .tooltip .tt-label { color: #aaa; min-width: 80px; }
+
+  .insight-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .insight-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .insight-card h3 { font-size: 13px; font-weight: 700; color: #E65100; margin-bottom: 8px; }
+  .insight-card p { font-size: 12px; line-height: 1.5; color: #555; }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    font-size: 11px;
+    color: #999;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 1000px) {
+    .summary-row { grid-template-columns: repeat(2, 1fr); }
+    .insight-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="../../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined Gantt" title="Combined Outcome Gantt">&#8592;</a>
+  <div class="header-main">
+    <h1>WB-WBS: Customer Support Transformation — Outcome Map</h1>
+    <div class="subtitle">Workstream B | 5 outcomes | Jira keys TBD — see <strong>WB-WBS.md</strong> §11 and <strong>wb-outcomes.json</strong> | Normative: <strong>WB-WBS.md</strong></div>
+  </div>
+  <div class="brand">DYNAMO</div>
+</div>
+
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-dot" style="background:#3498DB"></div> Baseline</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#76BE43"></div> Iterative</div>
+  <div class="legend-item"><div class="legend-line must"></div> must</div>
+  <div class="legend-item"><div class="legend-line should" style="border-color:#76BE43"></div> should</div>
+</div>
+
+<div class="container">
+
+  <div class="callout">
+    <strong>Combined WSB + WSC view:</strong> For the legacy stage-style timeline covering both Workstream B and C, see
+    <a href="../WSB-WSC-Outcome-Map.html">WSB-WSC-Outcome-Map.html</a>.
+    This page tracks only the <strong>WB-OC-01 … WB-OC-05</strong> outcome model from <strong>WB-WBS.md</strong>.
+  </div>
+
+  <div class="summary-row">
+    <div class="summary-card blue">
+      <div class="sc-number">4</div>
+      <div class="sc-label">Baseline outcomes</div>
+    </div>
+    <div class="summary-card green">
+      <div class="sc-number">1</div>
+      <div class="sc-label">Iterative outcome</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-number">18</div>
+      <div class="sc-label">Program months (planning grid)</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-number">5</div>
+      <div class="sc-label">Outcome epics (target)</div>
+    </div>
+  </div>
+
+  <div class="section-title">Implementation timeline (indicative program months)</div>
+  <div id="timeline" style="position:relative;">
+    <div class="timeline-header">
+      <div class="timeline-label">Outcome</div>
+      <div class="month-markers" id="monthMarkers"></div>
+    </div>
+    <div id="swimLanes"></div>
+  </div>
+
+  <div class="section-title">Planning notes</div>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <h3>Parallel tooling and scale</h3>
+      <p>WB-OC-03 (full pod scale) and WB-OC-04 (SaaS + AI) can overlap once WB-OC-02 is underway. WB-OC-05 depends on vendor selection and migration blueprint from WB-OC-04.</p>
+    </div>
+    <div class="insight-card">
+      <h3>Jira alignment</h3>
+      <p>When capability and Epic keys exist, update <strong>wb-outcomes.json</strong>, run Pattern B from the wbs-update-pattern skill, and refresh this page’s subtitle with live keys.</p>
+    </div>
+  </div>
+
+  <div class="section-title">Dependency flow</div>
+  <div style="background:white;border-radius:8px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);overflow-x:auto;">
+    <svg id="depGraph" width="900" height="280" viewBox="0 0 900 280"></svg>
+  </div>
+
+</div>
+
+<div class="footer">
+  Dynamo Consulting | WB-WBS Outcome Map | March 2026 | Align with WB-WBS.md | Confidential
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// 18 columns = program months M1–M18 (indicative; calendar TBD in WB-WBS)
+const outcomes = [
+  { id:'WB-OC-01', name:'Alignment & Instrumentation', cat:'Baseline', start:1, end:2, deps:[], risk:'WB-R-01', deliverables:3,
+    dateRange:'M1–M2 (Phase 0, weeks 1–4)',
+    detail:'Governance charter, Scorecard v0, segmentation in 360, incident process documented.' },
+  { id:'WB-OC-02', name:'Prove Flow & Communications', cat:'Baseline', start:2, end:5, deps:['WB-OC-01'], risk:'WB-R-02', deliverables:3,
+    dateRange:'M2–M5 (Phase 1)',
+    detail:'MIM, Agility Core + Other Products pods, Enterprise vs Commercial SLOs, FCR baseline.' },
+  { id:'WB-OC-03', name:'Full Pod Scale', cat:'Baseline', start:4, end:9, deps:['WB-OC-02'], risk:'WB-R-03', deliverables:2,
+    dateRange:'M4–M9 (Phase 2)',
+    detail:'All Agility pods, fast-lane, routing optimization; ~15% handling reduction target.' },
+  { id:'WB-OC-04', name:'Tooling & AI Layer', cat:'Baseline', start:3, end:10, deps:['WB-OC-02','WB-OC-03'], risk:'WB-R-04', deliverables:2,
+    dateRange:'M3–M10 (Phase 3; overlaps scale)',
+    detail:'SaaS RFP through contract; Agentic AI pilot through rollout; migration blueprint.' },
+  { id:'WB-OC-05', name:'Platform Migration', cat:'Iterative', start:10, end:18, deps:['WB-OC-04'], risk:'WB-R-05', deliverables:3,
+    dateRange:'M10–M18 (Phase 4)',
+    detail:'Configure platform, pilot + full migration, freeze 360 for Support, benefits realization.' },
+];
+
+function withToken(url) {
+  var p = new URLSearchParams(window.location.search);
+  var t = p.get('token');
+  if (!t) return url;
+  var i = url.indexOf('#');
+  var base = i >= 0 ? url.slice(0, i) : url;
+  var hash = i >= 0 ? url.slice(i) : '';
+  var sep = base.indexOf('?') >= 0 ? '&' : '?';
+  return base + sep + 'token=' + encodeURIComponent(t) + hash;
+}
+
+const monthMarkersEl = document.getElementById('monthMarkers');
+for (let i = 1; i <= 18; i++) {
+  const d = document.createElement('div');
+  d.className = 'month-marker';
+  d.textContent = 'M' + i;
+  monthMarkersEl.appendChild(d);
+}
+
+const lanesEl = document.getElementById('swimLanes');
+const barClass = { 'Baseline': 'bar-baseline', 'Iterative': 'bar-iterative' };
+
+outcomes.forEach((oc, idx) => {
+  const lane = document.createElement('div');
+  lane.className = 'swim-lane';
+
+  const label = document.createElement('div');
+  label.className = 'lane-label';
+  label.innerHTML = `<span class="oc-id">${oc.id}</span>${oc.name}<div class="oc-cat">${oc.cat}</div>`;
+  lane.appendChild(label);
+
+  const track = document.createElement('div');
+  track.className = 'lane-track';
+
+  const bar = document.createElement('div');
+  bar.className = `outcome-bar ${barClass[oc.cat]}`;
+  bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
+  bar.style.position = 'relative';
+  bar.dataset.idx = idx;
+
+  const barText = document.createElement('span');
+  barText.textContent = oc.id.replace('WB-OC-0', 'OC-');
+  bar.appendChild(barText);
+
+  const plusBtn = document.createElement('a');
+  plusBtn.className = 'plus-btn';
+  plusBtn.href = withToken(`WB-kanban.html#${oc.id}`);
+  plusBtn.textContent = '+';
+  plusBtn.title = 'Kanban for ' + oc.id;
+  plusBtn.addEventListener('click', (e) => e.stopPropagation());
+  bar.appendChild(plusBtn);
+
+  bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
+  bar.addEventListener('mousemove', (e) => moveTooltip(e));
+  bar.addEventListener('mouseleave', hideTooltip);
+
+  track.appendChild(bar);
+  lane.appendChild(track);
+  lanesEl.appendChild(lane);
+});
+
+const tooltipEl = document.getElementById('tooltip');
+function showTooltip(e, oc) {
+  let html = `<div class="tt-title">${oc.id}: ${oc.name}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Category:</span> ${oc.cat}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Timeline:</span> ${oc.dateRange}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Deliverables:</span> ${oc.deliverables}</div>`;
+  if (oc.risk) html += `<div class="tt-row"><span class="tt-label">Risks:</span> ${oc.risk}</div>`;
+  if (oc.deps.length) html += `<div class="tt-row"><span class="tt-label">Depends:</span> ${oc.deps.join(', ')}</div>`;
+  html += `<div style="margin-top:8px;font-size:11px;color:#ccc;line-height:1.4">${oc.detail}</div>`;
+  tooltipEl.innerHTML = html;
+  tooltipEl.classList.add('show');
+  moveTooltip(e);
+}
+function moveTooltip(e) {
+  let x = e.clientX + 16, y = e.clientY + 16;
+  if (x + 380 > window.innerWidth) x = e.clientX - 396;
+  if (y + 300 > window.innerHeight) y = e.clientY - 200;
+  tooltipEl.style.left = x + 'px';
+  tooltipEl.style.top = y + 'px';
+}
+function hideTooltip() { tooltipEl.classList.remove('show'); }
+
+// Dependency SVG (matches WB-WBS §3)
+const svg = document.getElementById('depGraph');
+const nodes = {
+  'WB-OC-01': { x: 100, y: 100, color: '#3498DB' },
+  'WB-OC-02': { x: 280, y: 100, color: '#3498DB' },
+  'WB-OC-03': { x: 460, y: 60, color: '#3498DB' },
+  'WB-OC-04': { x: 460, y: 160, color: '#3498DB' },
+  'WB-OC-05': { x: 720, y: 110, color: '#76BE43' },
+};
+const edges = [
+  { from: 'WB-OC-01', to: 'WB-OC-02', type: 'must' },
+  { from: 'WB-OC-02', to: 'WB-OC-03', type: 'must' },
+  { from: 'WB-OC-02', to: 'WB-OC-04', type: 'should' },
+  { from: 'WB-OC-03', to: 'WB-OC-04', type: 'should' },
+  { from: 'WB-OC-04', to: 'WB-OC-05', type: 'must' },
+];
+const edgeColors = { must: '#2B2B2B', should: '#76BE43' };
+
+const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+['must','should'].forEach(type => {
+  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+  marker.setAttribute('id', 'arrow-wb-' + type);
+  marker.setAttribute('viewBox', '0 0 10 10');
+  marker.setAttribute('refX', '28'); marker.setAttribute('refY', '5');
+  marker.setAttribute('markerWidth', '6'); marker.setAttribute('markerHeight', '6');
+  marker.setAttribute('orient', 'auto-start-reverse');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
+  path.setAttribute('fill', edgeColors[type]);
+  marker.appendChild(path);
+  defs.appendChild(marker);
+});
+svg.appendChild(defs);
+
+edges.forEach(e => {
+  const f = nodes[e.from], t = nodes[e.to];
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', f.x); line.setAttribute('y1', f.y);
+  line.setAttribute('x2', t.x); line.setAttribute('y2', t.y);
+  line.setAttribute('stroke', edgeColors[e.type]);
+  line.setAttribute('stroke-width', e.type === 'must' ? '2' : '1.5');
+  line.setAttribute('opacity', '0.55');
+  line.setAttribute('marker-end', 'url(#arrow-wb-' + e.type + ')');
+  svg.appendChild(line);
+});
+
+Object.entries(nodes).forEach(([id, n]) => {
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y);
+  circle.setAttribute('r', '24');
+  circle.setAttribute('fill', n.color);
+  circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '2');
+  g.appendChild(circle);
+  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  text.setAttribute('x', n.x); text.setAttribute('y', n.y + 4);
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('fill', 'white');
+  text.setAttribute('font-size', '8');
+  text.setAttribute('font-weight', '700');
+  text.setAttribute('font-family', 'Arial');
+  text.textContent = id.replace('WB-OC-', '');
+  g.appendChild(text);
+  svg.appendChild(g);
+});
+</script>
+</body>
+</html>

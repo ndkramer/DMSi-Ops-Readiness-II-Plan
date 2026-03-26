@@ -54,6 +54,17 @@
       "link": "../PA/PA-Outcome-map.html",
       "outcomes": 12,
       "detail": "NGINX config pipeline POC, foundation, config inventory, version control migration, build/deploy/drift pipelines, reliability validation, config-as-code enforcement."
+    },
+    {
+      "id": "WB",
+      "name": "Customer Support (WB)",
+      "meta": "5 outcomes | Jira TBD",
+      "barClass": "bar-wb",
+      "start": "2026-03-01",
+      "end": "2027-02-01",
+      "link": "../WSB-WSC/WB/WB-Outcome-Map.html",
+      "outcomes": 5,
+      "detail": "Alignment & instrumentation, prove flow (MIM/pods/SLOs), full pod scale, SaaS + Agentic AI, platform migration off 360. See WB-WBS.md."
     }
   ],
   "summaryCards": {
@@ -68,6 +79,10 @@
     "PP": {
       "title": "Pipeline Automation",
       "detail": "12 outcomes (+ POC)\n2026-03-16 - 2026-08-21"
+    },
+    "WB": {
+      "title": "Customer Support (WB)",
+      "detail": "5 outcomes\n2026-03-01 - 2027-02-01"
     }
   }
 }

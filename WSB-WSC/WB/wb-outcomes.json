@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "capability": "WB",
+  "wbs_markdown": "WB-WBS.md",
+  "jira": {
+    "capability_issue_key": null,
+    "action_items_epic_key": null,
+    "notes": "Populate when Jira hierarchy exists. Then run: node Scripts/jira-export-wb.js (or node Scripts/jira-export-pa.js WB <capabilityKey> <actionEpicKey>). Keep in sync with WB-WBS.md §11."
+  },
+  "outcomes": [
+    { "id": "WB-OC-01", "jira_epic_key": null, "title": "[WB-OC-01] Alignment & Instrumentation Complete" },
+    { "id": "WB-OC-02", "jira_epic_key": null, "title": "[WB-OC-02] Prove Flow & Communications Complete" },
+    { "id": "WB-OC-03", "jira_epic_key": null, "title": "[WB-OC-03] Full Pod Scale Complete" },
+    { "id": "WB-OC-04", "jira_epic_key": null, "title": "[WB-OC-04] Tooling Selection & AI Layer Complete" },
+    { "id": "WB-OC-05", "jira_epic_key": null, "title": "[WB-OC-05] Platform Migration & Institutionalization Complete" }
+  ]
+}

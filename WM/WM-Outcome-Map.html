@@ -15,10 +15,31 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 16px;
   }
+  .header-back {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+    text-decoration: none;
+    font-size: 22px;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s;
+  }
+  .header-back:hover {
+    background: rgba(118,190,67,0.45);
+    color: #fff;
+  }
+  .header-main { flex: 1; min-width: 0; }
   .header h1 { font-size: 22px; font-weight: 600; }
   .header .subtitle { font-size: 13px; color: #aaa; margin-top: 4px; }
-  .header .brand { color: #76BE43; font-weight: 700; font-size: 14px; }
+  .header .brand { color: #76BE43; font-weight: 700; font-size: 14px; flex-shrink: 0; }
 
   .legend-bar {
     background: white;
@@ -346,7 +367,8 @@
 <body>
 
 <div class="header">
-  <div>
+  <a href="../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined outcome Gantt" title="Combined Outcome Gantt">&#8592;</a>
+  <div class="header-main">
     <h1>WM-WBS: Work Management Outcome Map</h1>
     <div class="subtitle">DMSi Software -- Workstream A | 1 FTE Dynamo | Start: Feb 15 | Deadline: End of May | ~18 Weeks (~3 wks past deadline)</div>
   </div>

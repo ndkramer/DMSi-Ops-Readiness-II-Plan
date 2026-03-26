@@ -10,7 +10,7 @@ alwaysApply: false
 
 When editing the project plan HTML system, follow these rules. The system is interconnected, self-contained HTML with **no external dependencies** (no CDN, no frameworks, no build). Vanilla HTML, CSS, and JavaScript only.
 
-**In this repo:** Combined Gantt lives in `Project-Plan/`. Outcome maps and Kanban boards live in `WM/`, `VI/`, and `PA/`. The same design system and layer structure below apply to all of them.
+**In this repo:** Combined Gantt lives in `Project-Plan/`. Outcome maps and Kanban boards live in `WM/`, `VI/`, `PA/`, and `WSB-WSC/WB/` (Customer Support). The same design system and layer structure below apply to all of them.
 
 **Three layers:**
 1. **Combined Gantt** — top-level tabbed view, one bar per capability
@@ -24,8 +24,8 @@ Navigation: Combined Gantt → Outcome Map → Kanban Board, with back links at 
 ## File Structure
 
 - `Project-Plan/Combined-Outcome-Gantt.html` — top-level tabbed dashboard
-- `WM/WM-Outcome-Map.html`, `VI/VI-WSB-Outcome-Map.html`, `PA/PA-Outcome-map.html` — outcome maps
-- `WM/WM-kanban.html`, `VI/VI-kanban.html`, `PA/PA-kanban.html` — kanban boards
+- `WM/WM-Outcome-Map.html`, `VI/VI-WSB-Outcome-Map.html`, `PA/PA-Outcome-map.html`, `WSB-WSC/WB/WB-Outcome-Map.html` — outcome maps
+- `WM/WM-kanban.html`, `VI/VI-kanban.html`, `PA/PA-kanban.html`, `WSB-WSC/WB/WB-kanban.html` — kanban boards
 
 Links use relative paths (no leading `/` or absolute paths).
 
