@@ -1,7 +1,7 @@
 # Dynamo-OS — Product requirements (PRD)
 
 **Status:** Draft (aligned to internal planning)  
-**Last updated:** 2026-03-26 (workstreams-at-root; Git/S3/SSM + PR policy; Jira exit north star; Lambda phasing)  
+**Last updated:** 2026-03-26 (Dynamo GitHub/AWS target; workstreams-at-root; Git/S3/SSM + PR; Jira exit; Lambda phasing)  
 **Audience:** Owners of planning repos (e.g. DMSI-Op-Readiness-II-Plan) and the future **Dynamo-OS** tooling repository.
 
 ## Purpose
@@ -9,6 +9,11 @@
 Split **reusable tooling** (WBS lifecycle, map sync, Gantt data build, Lambda static handler, and **transitional** Jira adapters) into a **Dynamo-OS** repository, delivered as a **versioned npm package with a CLI**. Each **project repository** holds **planning data**, **capability work**, **HTML artifacts**, and **project-specific configuration** (disk paths, Gantt sources; Jira settings only while Jira remains).
 
 **First project consumer:** `DMSI-Op-Readiness-II-Plan`. Additional independent project repos follow the same layout and config.
+
+### Repository and cloud hosting (target)
+
+- **GitHub:** This planning repo is intended to live under the **Dynamo** GitHub organization (or equivalent Dynamo-owned account), not under prior personal or legacy remotes. **Canonical URL and `org/repo` slug are TBD** — record them here and in [Dynamo-OS-requirements.md](./Dynamo-OS-requirements.md) when the repository is created or transferred.
+- **AWS:** GitHub Actions deploys the static **capability-map Lambda** (and any follow-on functions) into the **Dynamo AWS account**. **Lambda function name, region, IAM/OIDC to GitHub, and secret names/values are TBD** — the owner will provide them at cutover; workflow files in `.github/workflows/` should be updated to match.
 
 ---
 
@@ -229,7 +234,7 @@ Use this after moving folders so tooling, CI, and docs stay trustworthy.
 
 ## AWS Lambda (phasing)
 
-**Today (this repo):** One Lambda deploys a **ZIP** of static HTML/JSON (capability map, Gantt, workstream trees) via [`.github/workflows/deploy-capability-map.yml`](.github/workflows/deploy-capability-map.yml); handler serves files from the package (`Capability-map/index.mjs`).
+**Today (this repo):** One Lambda deploys a **ZIP** of static HTML/JSON (capability map, Gantt, workstream trees) via [`.github/workflows/deploy-capability-map.yml`](.github/workflows/deploy-capability-map.yml); handler serves files from the package (`Capability-map/index.mjs`). **Target runtime:** **Dynamo AWS account**; align `LAMBDA_FUNCTION_NAME`, region, and credentials with that account when the owner supplies final values (see **Repository and cloud hosting** above).
 
 **Next (planned direction):** **Additional Lambda functions** for API-style or **scheduled** work (e.g. report generation, or **transitional** Jira adapters). Design passes should follow **Source of truth, Git, and runtime stores** above and respect the **Jira direction** (north star).
 
@@ -311,6 +316,7 @@ Cursor loads rules from **`.cursor/rules/*.mdc`** at the **repository root**. �
 
 ## Related documents
 
+- [Dynamo-OS-requirements.md](./Dynamo-OS-requirements.md) — **handoff brief** for Dynamo-OS maintainers (copy into that repo as `requirements.md` if desired)  
 - `Documentation/WBS-Update-Pattern.md`  
 - `Documentation/Jira-Export-Process.md`  
 - `Scripts/README.md`  
