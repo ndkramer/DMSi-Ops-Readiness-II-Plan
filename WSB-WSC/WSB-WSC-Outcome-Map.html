@@ -68,7 +68,7 @@
     border-top: 2px solid #555;
   }
   .legend-line.must { border-color: #2B2B2B; border-width: 2px; }
-  .legend-line.should { border-color: #76BE43; border-width: 2px; }
+  .legend-line.should { border-color: #76BE43; border-width: 2px; border-top-style: dashed; }
   .legend-line.contingent { border-color: #E67E22; border-width: 2px; border-top-style: dashed; }
 
   .container { padding: 30px 40px; max-width: 1500px; margin: 0 auto; }
@@ -308,6 +308,25 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     overflow-x: auto;
   }
+  .dep-graph-note {
+    font-size: 11px;
+    color: #666;
+    margin: 0 0 12px 0;
+    line-height: 1.45;
+    max-width: 960px;
+  }
+  .dep-edge-hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 18;
+    cursor: help;
+    pointer-events: stroke;
+  }
+  .dep-edge-hit:focus { outline: none; }
+  .dep-edge-hit:focus-visible {
+    stroke: rgba(118, 190, 67, 0.35);
+    stroke-width: 14;
+  }
 
   /* Constraint model reference */
   .constraint-grid {
@@ -509,7 +528,8 @@
   <!-- Dependency Graph -->
   <div class="section-title">Dependency Flow</div>
   <div class="dep-container">
-    <svg id="depGraph" width="1200" height="480" viewBox="0 0 1200 480"></svg>
+    <p class="dep-graph-note"><strong>Canonical data:</strong> <code>wsb-wsc-outcome-dependencies.json</code> → <code>dependency_edges</code> (loaded at runtime; <code>#wsb-dependency-edges-fallback</code> mirrors it for <code>file://</code>). Edit the JSON first, then refresh the fallback block when edge text changes. <strong>Type 1</strong> (WSB-WSC map): strategic / hard-to-reverse commitments (e.g. platform path, segmentation). <strong>Type 2</strong>: reversible choices that can be adjusted after pilot. <strong>BLOCKER</strong>: items from the Critical Decisions panel that must clear before dependent work. <strong>Hover</strong> (or keyboard-focus) any arrow for timing, prerequisites, decisions, and cross-workstream notes.</p>
+    <svg id="depGraph" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-label="WSB-WSC activity dependency flow: O operational, E environmental, T technological. Hover arrows for details."></svg>
   </div>
 
   <!-- Constraint Model Reference -->
@@ -533,6 +553,261 @@
 
 <!-- Tooltip -->
 <div class="tooltip" id="tooltip"></div>
+
+<script type="application/json" id="wsb-dependency-edges-fallback">
+[
+  {
+    "id": "w-e-o1-o2",
+    "from": "O1",
+    "to": "O2",
+    "type": "must",
+    "curve": 0,
+    "timing": "O1 completes S1–S2 window on timeline; O2 starts S2 and needs segmentation/entitlement outputs plus E1 role labels.",
+    "prerequisite": "Operating model socialization requires data pull, segmentation, and entitlement rules from O1.",
+    "decisions": [
+      {
+        "id": "D-02",
+        "decision_type": "TYPE 1",
+        "text": "Enterprise vs. Commercial segmentation model and entitlement rules.",
+        "required_by": "WSB Stage 2 / before SLA definitions"
+      },
+      {
+        "id": "B-01",
+        "decision_type": "BLOCKER",
+        "text": "Incident vs. Case vs. Ticket taxonomy — must resolve before service level definitions (feeds E1/O2).",
+        "required_by": "WSB Stage 1 Foundation"
+      }
+    ],
+    "granular": [
+      "Maps to activity deps: O2 depends on O1 in swimlane data."
+    ]
+  },
+  {
+    "id": "w-e-o2-o3",
+    "from": "O2",
+    "to": "O3",
+    "type": "must",
+    "curve": 0,
+    "timing": "O3 runs S4–S5 after O2 socialization iterations; tooling for test environments typically depends on T4 progress.",
+    "prerequisite": "Controlled testing requires agreed operating model from O2.",
+    "decisions": [],
+    "granular": [
+      "Prereq note: O3 also lists T4 (tooling configured for testing) — see T4→O3 contingent link."
+    ]
+  },
+  {
+    "id": "w-e-o3-o4",
+    "from": "O3",
+    "to": "O4",
+    "type": "must",
+    "curve": 0,
+    "timing": "Institutionalization follows successful model testing (O3).",
+    "prerequisite": "Validated tiered framework, pod routing, and SLA behavior before full rollout.",
+    "decisions": []
+  },
+  {
+    "id": "w-e-e1-e2",
+    "from": "E1",
+    "to": "E2",
+    "type": "must",
+    "curve": 0,
+    "timing": "Tiger team alignment (E2) follows ratified roles, labels, and taxonomy work in E1.",
+    "prerequisite": "Shared definitions for incidents, severity, roles, and communication accountability.",
+    "decisions": [
+      {
+        "id": "B-01",
+        "decision_type": "BLOCKER",
+        "text": "Incident vs. Case vs. Ticket taxonomy.",
+        "required_by": "Before E1 can fully close / WSB Stage 1"
+      }
+    ]
+  },
+  {
+    "id": "w-e-t1-t2",
+    "from": "T1",
+    "to": "T2",
+    "type": "must",
+    "curve": 0,
+    "timing": "RFP/evaluation (T2) starts after capability audit (T1) documents gaps and priorities.",
+    "prerequisite": "Requirements documented from T1 before vendor/options analysis.",
+    "decisions": [
+      {
+        "id": "B-02",
+        "decision_type": "BLOCKER",
+        "text": "WSC requirements must incorporate all stakeholder/persona priorities.",
+        "required_by": "WSC Stage 1 Requirements"
+      }
+    ]
+  },
+  {
+    "id": "w-e-t2-t3",
+    "from": "T2",
+    "to": "T3",
+    "type": "must",
+    "curve": 0,
+    "timing": "OpSec, compliance, and contracting follow down-selected path from T2.",
+    "prerequisite": "Evaluation complete with a recommendation and leadership alignment.",
+    "decisions": [
+      {
+        "id": "D-01",
+        "decision_type": "TYPE 1",
+        "text": "Enhance 360, adopt new platform (Zendesk/Freshdesk/JSM class), or hybrid.",
+        "required_by": "WSC Stage 3 Implementation Plan"
+      }
+    ]
+  },
+  {
+    "id": "w-e-t3-t4",
+    "from": "T3",
+    "to": "T4",
+    "type": "must",
+    "curve": 0,
+    "timing": "Deployment/development begins after contracting and security gates.",
+    "prerequisite": "Budget sign-off and vendor contracts in place.",
+    "decisions": []
+  },
+  {
+    "id": "w-e-t4-t5",
+    "from": "T4",
+    "to": "T5",
+    "type": "must",
+    "curve": 0,
+    "timing": "Operationalizing follows phased deployment (T4).",
+    "prerequisite": "Production-ready rollout and training complete.",
+    "decisions": []
+  },
+  {
+    "id": "w-e-t5-t6",
+    "from": "T5",
+    "to": "T6",
+    "type": "must",
+    "curve": 0,
+    "timing": "Enhancements/iterations (T6) assume stable live tooling from T5; E3 runs in parallel refinement loop.",
+    "prerequisite": "Tooling live for full case lifecycle before automation/AI layering.",
+    "decisions": []
+  },
+  {
+    "id": "w-e-o1-e1",
+    "from": "O1",
+    "to": "E1",
+    "type": "must",
+    "curve": -35,
+    "timing": "Environmental definitions need segmentation/entitlement context from O1 (S1 overlap).",
+    "prerequisite": "Data and entitlement model informs role and label definitions.",
+    "decisions": [
+      {
+        "id": "D-02",
+        "decision_type": "TYPE 1",
+        "text": "Segmentation and entitlement rules.",
+        "required_by": "WSB Stage 2"
+      }
+    ],
+    "cross_cutting": "X-01 (panel): WSC Stage 0 aligns with WSB Stage 1 outputs for incident management requirements."
+  },
+  {
+    "id": "w-e-e1-o2",
+    "from": "E1",
+    "to": "O2",
+    "type": "should",
+    "curve": 40,
+    "timing": "Recommended: ratify E1 before heavy O2 socialization; some O2 prep may proceed with risk acceptance.",
+    "prerequisite": "Role/taxonomy clarity strongly reduces rework in operating model iterations.",
+    "decisions": [],
+    "granular": [
+      "Should dependency — parallel socialization possible with explicit stakeholder risk."
+    ]
+  },
+  {
+    "id": "w-e-o1-t1",
+    "from": "O1",
+    "to": "T1",
+    "type": "must",
+    "curve": 45,
+    "timing": "T1 audit must reflect what the operating model needs from tooling (S0–S1 overlap).",
+    "prerequisite": "O1 outputs define capability targets for gap analysis.",
+    "decisions": [
+      {
+        "id": "B-02",
+        "decision_type": "BLOCKER",
+        "text": "Stakeholder/persona coverage in requirements.",
+        "required_by": "T1 / WSC Stage 1"
+      }
+    ],
+    "cross_cutting": "X-01: tooling requirements grounded in WSB operating model design."
+  },
+  {
+    "id": "w-e-e1-t1",
+    "from": "E1",
+    "to": "T1",
+    "type": "must",
+    "curve": -30,
+    "timing": "T1 needs E1 role and workflow definitions to score current vs needed capabilities.",
+    "prerequisite": "People/process requirements from environmental track feed the audit.",
+    "decisions": []
+  },
+  {
+    "id": "w-e-e2-t4",
+    "from": "E2",
+    "to": "T4",
+    "type": "should",
+    "curve": 0,
+    "timing": "Deployment runs smoother when tiger team alignment (E2) precedes large-scale rollout.",
+    "prerequisite": "Cross-functional alignment on direction before major config/migration work.",
+    "decisions": [],
+    "granular": [
+      "Should — can compress with risk acceptance if leadership drives sequencing."
+    ],
+    "cross_cutting": "X-02: WSB routing/SLA configuration waits on WSC path decision (see D-01)."
+  },
+  {
+    "id": "w-e-o4-e3",
+    "from": "O4",
+    "to": "E3",
+    "type": "must",
+    "curve": 0,
+    "timing": "Data read on results (E3) needs live operating model (O4) for meaningful metrics.",
+    "prerequisite": "Institutionalized model producing pod and incident metrics.",
+    "decisions": []
+  },
+  {
+    "id": "w-e-t5-e3",
+    "from": "T5",
+    "to": "E3",
+    "type": "must",
+    "curve": 0,
+    "timing": "E3 iterative refinement requires tooling live (T5) and dashboards.",
+    "prerequisite": "Production tooling supporting case lifecycle and reporting.",
+    "decisions": []
+  },
+  {
+    "id": "w-e-e3-t6",
+    "from": "E3",
+    "to": "T6",
+    "type": "should",
+    "curve": 0,
+    "timing": "Enhancements benefit from data-driven feedback loop from E3.",
+    "prerequisite": "Operational metrics informing automation and AI priorities.",
+    "decisions": [],
+    "granular": [
+      "Should — enhancement backlog can start from T5 with less E3 signal if needed."
+    ]
+  },
+  {
+    "id": "w-e-t4-o3",
+    "from": "T4",
+    "to": "O3",
+    "type": "contingent",
+    "curve": -50,
+    "timing": "Contingent: O3 prerequisite “tooling configured for testing” — activated when test/pilot environments depend on T4 deliverables.",
+    "prerequisite": "Without deploy-phase tooling, operating model testing may be limited or delayed.",
+    "decisions": [],
+    "granular": [
+      "Maps to O3 prereqs in swimlane data: tooling configured for testing (WSC dependency)."
+    ]
+  }
+]
+</script>
+
 
 <script>
 // Activity data mapped from Excel + constraint model
@@ -710,162 +985,271 @@ function showTooltip(e, act) {
 }
 
 function moveTooltip(e) {
-  let x = e.clientX + 16;
-  let y = e.clientY + 16;
-  if (x + 400 > window.innerWidth) x = e.clientX - 416;
-  if (y + 300 > window.innerHeight) y = e.clientY - 200;
+  let x, y;
+  if (e && typeof e.clientX === 'number' && typeof e.clientY === 'number') {
+    x = e.clientX + 16;
+    y = e.clientY + 16;
+    if (x + 400 > window.innerWidth) x = e.clientX - 416;
+    if (y + 300 > window.innerHeight) y = e.clientY - 200;
+  } else {
+    x = 24;
+    y = 80;
+  }
   tooltipEl.style.left = x + 'px';
   tooltipEl.style.top = y + 'px';
 }
 
 function hideTooltip() { tooltipEl.classList.remove('show'); }
 
-// Dependency Graph (SVG)
+// Dependency Graph (SVG) — interactive edges aligned with PA-Outcome-map.html pattern
 const svg = document.getElementById('depGraph');
+const NODE_R = 22;
 
 const nodes = {
-  'O1': { x: 100, y: 60, color: '#E65100' },
-  'O2': { x: 280, y: 60, color: '#E65100' },
-  'O3': { x: 460, y: 60, color: '#E65100' },
-  'O4': { x: 640, y: 60, color: '#E65100' },
-  'E1': { x: 190, y: 200, color: '#5c6bc0' },
-  'E2': { x: 370, y: 200, color: '#5c6bc0' },
-  'E3': { x: 730, y: 200, color: '#5c6bc0' },
-  'T1': { x: 280, y: 340, color: '#2e7d32' },
-  'T2': { x: 440, y: 340, color: '#2e7d32' },
-  'T3': { x: 600, y: 340, color: '#2e7d32' },
-  'T4': { x: 760, y: 340, color: '#2e7d32' },
-  'T5': { x: 920, y: 340, color: '#2e7d32' },
-  'T6': { x: 1080, y: 340, color: '#2e7d32' },
+  'O1': { x: 100, y: 70, color: '#E65100' },
+  'O2': { x: 280, y: 70, color: '#E65100' },
+  'O3': { x: 460, y: 70, color: '#E65100' },
+  'O4': { x: 640, y: 70, color: '#E65100' },
+  'E1': { x: 190, y: 210, color: '#5c6bc0' },
+  'E2': { x: 370, y: 210, color: '#5c6bc0' },
+  'E3': { x: 730, y: 210, color: '#5c6bc0' },
+  'T1': { x: 280, y: 350, color: '#2e7d32' },
+  'T2': { x: 440, y: 350, color: '#2e7d32' },
+  'T3': { x: 600, y: 350, color: '#2e7d32' },
+  'T4': { x: 760, y: 350, color: '#2e7d32' },
+  'T5': { x: 920, y: 350, color: '#2e7d32' },
+  'T6': { x: 1080, y: 350, color: '#2e7d32' },
 };
 
-const edges = [
-  // Operational chain
-  { from: 'O1', to: 'O2', type: 'must' },
-  { from: 'O2', to: 'O3', type: 'must' },
-  { from: 'O3', to: 'O4', type: 'must' },
-  // Environmental chain
-  { from: 'E1', to: 'E2', type: 'must' },
-  // Tech chain
-  { from: 'T1', to: 'T2', type: 'must' },
-  { from: 'T2', to: 'T3', type: 'must' },
-  { from: 'T3', to: 'T4', type: 'must' },
-  { from: 'T4', to: 'T5', type: 'must' },
-  { from: 'T5', to: 'T6', type: 'must' },
-  // Cross-track dependencies
-  { from: 'O1', to: 'E1', type: 'must' },
-  { from: 'E1', to: 'O2', type: 'should' },
-  { from: 'O1', to: 'T1', type: 'must' },
-  { from: 'E1', to: 'T1', type: 'must' },
-  { from: 'E2', to: 'T4', type: 'should' },
-  { from: 'O4', to: 'E3', type: 'must' },
-  { from: 'T5', to: 'E3', type: 'must' },
-  { from: 'E3', to: 'T6', type: 'should' },
-  { from: 'T4', to: 'O3', type: 'contingent' },
-];
-
 const edgeColors = { must: '#2B2B2B', should: '#76BE43', contingent: '#E67E22' };
-const edgeDash = { must: '', should: '', contingent: '6,4' };
+const edgeDash = { must: '', should: '4,3', contingent: '8,5' };
 
-// Arrowhead defs
-const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-['must','should','contingent'].forEach(type => {
-  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-  marker.setAttribute('id', `arrow-${type}`);
-  marker.setAttribute('viewBox', '0 0 10 10');
-  marker.setAttribute('refX', '28'); marker.setAttribute('refY', '5');
-  marker.setAttribute('markerWidth', '6'); marker.setAttribute('markerHeight', '6');
-  marker.setAttribute('orient', 'auto-start-reverse');
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
-  path.setAttribute('fill', edgeColors[type]);
-  marker.appendChild(path);
-  defs.appendChild(marker);
-});
-svg.insertBefore(defs, svg.firstChild);
+function trimLine(x1, y1, x2, y2, r) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len, uy = dy / len;
+  return { sx: x1 + ux * r, sy: y1 + uy * r, ex: x2 - ux * r, ey: y2 - uy * r };
+}
 
-// Track labels on graph
-const trackLabels = [
-  { text: 'OPERATIONAL', x: 20, y: 65, color: '#E65100' },
-  { text: 'ENVIRONMENTAL', x: 20, y: 205, color: '#5c6bc0' },
-  { text: 'TECHNOLOGICAL', x: 20, y: 345, color: '#2e7d32' },
-];
-trackLabels.forEach(tl => {
-  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  label.setAttribute('x', tl.x); label.setAttribute('y', tl.y);
-  label.setAttribute('fill', tl.color);
-  label.setAttribute('font-size', '8');
-  label.setAttribute('font-weight', '700');
-  label.setAttribute('font-family', 'Arial');
-  label.setAttribute('letter-spacing', '1');
-  label.textContent = tl.text;
-  svg.appendChild(label);
-});
+function quadPath(sx, sy, ex, ey, curve) {
+  const mx = (sx + ex) / 2, my = (sy + ey) / 2;
+  const dx = ex - sx, dy = ey - sy;
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len, ny = dx / len;
+  const cx = mx + nx * (curve || 0), cy = my + ny * (curve || 0);
+  return `M ${sx} ${sy} Q ${cx} ${cy} ${ex} ${ey}`;
+}
 
-// Track separator lines
-[130, 270].forEach(yy => {
-  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  line.setAttribute('x1', '10'); line.setAttribute('y1', yy);
-  line.setAttribute('x2', '1190'); line.setAttribute('y2', yy);
-  line.setAttribute('stroke', '#e0e0e0');
-  line.setAttribute('stroke-width', '1');
-  line.setAttribute('stroke-dasharray', '4,4');
-  svg.appendChild(line);
-});
+function decisionBadgeHtml(dt) {
+  if (dt === 'TYPE 1') return '<span style="color:#E74C3C;font-weight:700">TYPE 1</span>';
+  if (dt === 'TYPE 2') return '<span style="color:#76BE43;font-weight:700">TYPE 2</span>';
+  if (dt === 'BLOCKER') return '<span style="color:#E65100;font-weight:700">BLOCKER</span>';
+  return '<span style="color:#7986cb;font-weight:700">' + dt + '</span>';
+}
 
-// Draw edges
-edges.forEach(e => {
-  const f = nodes[e.from], t = nodes[e.to];
-  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  line.setAttribute('x1', f.x); line.setAttribute('y1', f.y);
-  line.setAttribute('x2', t.x); line.setAttribute('y2', t.y);
-  line.setAttribute('stroke', edgeColors[e.type]);
-  line.setAttribute('stroke-width', e.type === 'must' ? '2' : '1.5');
-  if (edgeDash[e.type]) line.setAttribute('stroke-dasharray', edgeDash[e.type]);
-  line.setAttribute('opacity', '0.5');
-  line.setAttribute('marker-end', `url(#arrow-${e.type})`);
-  svg.appendChild(line);
-});
+function showDepEdgeTooltip(e, edge) {
+  const typeLabel = edge.type === 'must' ? 'Must (hard prerequisite)' : edge.type === 'should' ? 'Should (recommended sequence)' : 'Contingent (condition-based)';
+  let html = `<div class="tt-title">${edge.from} → ${edge.to}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Link type:</span> ${typeLabel}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Timing:</span> ${edge.timing}</div>`;
+  html += `<div style="margin-top:8px;font-size:11px;color:#ddd;line-height:1.45;"><strong style="color:#76BE43">Prerequisite / effect:</strong> ${edge.prerequisite}</div>`;
+  if (edge.granular && edge.granular.length) {
+    html += `<div class="tt-deps"><span class="tt-label">Granular notes:</span><ul style="margin:6px 0 0 16px;padding:0;font-size:11px;color:#ccc;line-height:1.45;">`;
+    edge.granular.forEach(g => { html += `<li>${g}</li>`; });
+    html += `</ul></div>`;
+  }
+  if (edge.decisions && edge.decisions.length) {
+    html += `<div class="tt-deps"><span class="tt-label">Decisions ahead:</span>`;
+    edge.decisions.forEach(d => {
+      const border = d.decision_type === 'TYPE 1' ? '#E74C3C' : d.decision_type === 'BLOCKER' ? '#E65100' : '#76BE43';
+      html += `<div style="margin:8px 0 0 0;padding:8px 10px;background:#333;border-radius:4px;border-left:3px solid ${border};font-size:11px;line-height:1.45;">${decisionBadgeHtml(d.decision_type)} <strong>${d.id}</strong> — ${d.text}<div style="color:#999;margin-top:4px;">Required by: ${d.required_by}</div></div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<div class="tt-deps"><span class="tt-label">Decisions ahead:</span> <span style="font-size:11px;color:#aaa">None on this link; see Critical Decisions panel above.</span></div>`;
+  }
+  if (edge.cross_cutting) {
+    html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid #444;font-size:11px;color:#ccc;line-height:1.45;"><strong style="color:#76BE43">Cross-workstream:</strong> ${edge.cross_cutting}</div>`;
+  }
+  tooltipEl.innerHTML = html;
+  tooltipEl.style.maxWidth = '440px';
+  tooltipEl.classList.add('show');
+  if (e.type === 'focus' && e.target && typeof e.target.getBoundingClientRect === 'function') {
+    const r = e.target.getBoundingClientRect();
+    let lx = r.right + 12;
+    let ty = r.top + r.height / 2 - 40;
+    const tw = 440;
+    if (lx + tw > window.innerWidth - 8) lx = Math.max(8, r.left - tw - 12);
+    if (ty < 8) ty = 8;
+    if (ty + 320 > window.innerHeight) ty = window.innerHeight - 328;
+    tooltipEl.style.left = lx + 'px';
+    tooltipEl.style.top = ty + 'px';
+  } else {
+    moveTooltip(e);
+  }
+}
 
-// Draw nodes
-Object.entries(nodes).forEach(([id, n]) => {
-  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+const shortNames = {
+  'O1': 'Data & Segmentation', 'O2': 'Model Socialization', 'O3': 'Model Testing', 'O4': 'Institutionalization',
+  'E1': 'Roles & Definitions', 'E2': 'Tiger Team Alignment', 'E3': 'Data Read / Refine',
+  'T1': 'Capability Audit', 'T2': 'RFP Process', 'T3': 'OpSec & Contracting',
+  'T4': 'Deploy & Dev', 'T5': 'Operationalizing', 'T6': 'Enhancements'
+};
 
-  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y);
-  circle.setAttribute('r', '22');
-  circle.setAttribute('fill', n.color);
-  circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '2');
-  g.appendChild(circle);
+function buildWsbWscDepGraph(depEdges) {
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  text.setAttribute('x', n.x); text.setAttribute('y', n.y + 4);
-  text.setAttribute('text-anchor', 'middle');
-  text.setAttribute('fill', 'white');
-  text.setAttribute('font-size', '10');
-  text.setAttribute('font-weight', '700');
-  text.setAttribute('font-family', 'Arial');
-  text.textContent = id;
-  g.appendChild(text);
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  ['must', 'should', 'contingent'].forEach(type => {
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker.setAttribute('id', `arrow-${type}`);
+    marker.setAttribute('viewBox', '0 0 10 10');
+    marker.setAttribute('refX', '9');
+    marker.setAttribute('refY', '5');
+    marker.setAttribute('markerWidth', '7');
+    marker.setAttribute('markerHeight', '7');
+    marker.setAttribute('orient', 'auto');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
+    path.setAttribute('fill', edgeColors[type]);
+    marker.appendChild(path);
+    defs.appendChild(marker);
+  });
+  svg.insertBefore(defs, svg.firstChild);
 
-  // Short name label below node
-  const shortNames = {
-    'O1':'Data & Segmentation','O2':'Model Socialization','O3':'Model Testing','O4':'Institutionalization',
-    'E1':'Roles & Definitions','E2':'Tiger Team Alignment','E3':'Data Read / Refine',
-    'T1':'Capability Audit','T2':'RFP Process','T3':'OpSec & Contracting',
-    'T4':'Deploy & Dev','T5':'Operationalizing','T6':'Enhancements'
-  };
-  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  label.setAttribute('x', n.x); label.setAttribute('y', n.y + 38);
-  label.setAttribute('text-anchor', 'middle');
-  label.setAttribute('fill', '#555');
-  label.setAttribute('font-size', '8');
-  label.setAttribute('font-family', 'Arial');
-  label.textContent = shortNames[id] || id;
-  g.appendChild(label);
+  const trackLabels = [
+    { text: 'OPERATIONAL', x: 20, y: 75, color: '#E65100' },
+    { text: 'ENVIRONMENTAL', x: 20, y: 215, color: '#5c6bc0' },
+    { text: 'TECHNOLOGICAL', x: 20, y: 355, color: '#2e7d32' },
+  ];
+  trackLabels.forEach(tl => {
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', tl.x); label.setAttribute('y', tl.y);
+    label.setAttribute('fill', tl.color);
+    label.setAttribute('font-size', '8');
+    label.setAttribute('font-weight', '700');
+    label.setAttribute('font-family', 'Arial');
+    label.setAttribute('letter-spacing', '1');
+    label.textContent = tl.text;
+    svg.appendChild(label);
+  });
 
-  svg.appendChild(g);
-});
+  [140, 280].forEach(yy => {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', '10'); line.setAttribute('y1', yy);
+    line.setAttribute('x2', '1190'); line.setAttribute('y2', yy);
+    line.setAttribute('stroke', '#e0e0e0');
+    line.setAttribute('stroke-width', '1');
+    line.setAttribute('stroke-dasharray', '4,4');
+    svg.appendChild(line);
+  });
+
+  const edgeLayerBelow = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  edgeLayerBelow.setAttribute('class', 'dep-edges-visible');
+  svg.appendChild(edgeLayerBelow);
+
+  const hitPaths = [];
+  depEdges.forEach(edge => {
+    const f = nodes[edge.from], t = nodes[edge.to];
+    if (!f || !t) return;
+    const { sx, sy, ex, ey } = trimLine(f.x, f.y, t.x, t.y, NODE_R);
+    const d = quadPath(sx, sy, ex, ey, edge.curve);
+    const visible = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    visible.setAttribute('d', d);
+    visible.setAttribute('fill', 'none');
+    visible.setAttribute('stroke', edgeColors[edge.type]);
+    visible.setAttribute('stroke-width', edge.type === 'must' ? '2.2' : '1.8');
+    if (edgeDash[edge.type]) visible.setAttribute('stroke-dasharray', edgeDash[edge.type]);
+    visible.setAttribute('opacity', '0.72');
+    visible.setAttribute('marker-end', `url(#arrow-${edge.type})`);
+    visible.setAttribute('pointer-events', 'none');
+    edgeLayerBelow.appendChild(visible);
+    hitPaths.push({ d, edge });
+  });
+
+  const nodeLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  nodeLayer.setAttribute('class', 'dep-nodes');
+  svg.appendChild(nodeLayer);
+
+  const edgeLayerHit = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  edgeLayerHit.setAttribute('class', 'dep-edges-hit');
+  svg.appendChild(edgeLayerHit);
+
+  hitPaths.forEach(({ d, edge }) => {
+    const hit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    hit.setAttribute('d', d);
+    hit.setAttribute('class', 'dep-edge-hit');
+    hit.setAttribute('tabindex', '0');
+    hit.setAttribute('aria-label', `${edge.from} to ${edge.to}, ${edge.type} dependency`);
+    hit.addEventListener('mouseenter', (ev) => showDepEdgeTooltip(ev, edge));
+    hit.addEventListener('mousemove', moveTooltip);
+    hit.addEventListener('mouseleave', hideTooltip);
+    hit.addEventListener('focus', (ev) => showDepEdgeTooltip(ev, edge));
+    hit.addEventListener('blur', hideTooltip);
+    edgeLayerHit.appendChild(hit);
+  });
+
+  Object.entries(nodes).forEach(([id, n]) => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y);
+    circle.setAttribute('r', String(NODE_R));
+    circle.setAttribute('fill', n.color);
+    circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '2');
+    g.appendChild(circle);
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', n.x); text.setAttribute('y', n.y + 4);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('fill', 'white');
+    text.setAttribute('font-size', '10');
+    text.setAttribute('font-weight', '700');
+    text.setAttribute('font-family', 'Arial');
+    text.textContent = id;
+    g.appendChild(text);
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', n.x); label.setAttribute('y', n.y + 38);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('fill', '#555');
+    label.setAttribute('font-size', '8');
+    label.setAttribute('font-family', 'Arial');
+    label.textContent = shortNames[id] || id;
+    g.appendChild(label);
+    nodeLayer.appendChild(g);
+  });
+}
+
+async function initWsbWscDependencyGraph() {
+  let raw = [];
+  try {
+    const res = await fetch(new URL('wsb-wsc-outcome-dependencies.json', document.URL), { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.dependency_edges) && data.dependency_edges.length) {
+        raw = data.dependency_edges;
+      }
+    }
+  } catch (err) {}
+  if (!raw.length) {
+    const el = document.getElementById('wsb-dependency-edges-fallback');
+    if (el && el.textContent.trim()) {
+      try { raw = JSON.parse(el.textContent); } catch (e2) {}
+    }
+  }
+  if (!raw.length) {
+    const msg = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    msg.setAttribute('x', '40');
+    msg.setAttribute('y', '280');
+    msg.setAttribute('fill', '#888');
+    msg.setAttribute('font-size', '11');
+    msg.setAttribute('font-family', 'Arial');
+    msg.textContent = 'Could not load dependency_edges (wsb-wsc-outcome-dependencies.json or #wsb-dependency-edges-fallback).';
+    svg.appendChild(msg);
+    return;
+  }
+  buildWsbWscDepGraph(raw);
+}
+
+initWsbWscDependencyGraph();
 
 // Stage-Gate Reference
 const wsbStageData = [

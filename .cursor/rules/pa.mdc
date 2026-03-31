@@ -6,7 +6,7 @@ alwaysApply: false
 
 # PA Folder Rules
 
-When editing or creating content under **`WSA/PA/`**, follow the Pipeline Automation outcome-based WBS structure and conventions (**PA-WBS**). Optional structured outcome ↔ Jira map: `pa-outcomes.json` (keep in sync with `PA-WBS.md` §10).
+When editing or creating content under **`WSA/PA/`**, follow the Pipeline Automation outcome-based WBS structure and conventions (**PA-WBS**). Structured outcome ↔ Jira map: `pa-outcomes.json` (keep in sync with `PA-WBS.md` §10). **`dependency_edges`** in that file is canonical for `PA-Outcome-map.html` Dependency Flow; when edges or gates change, update the JSON and the HTML `#pa-dependency-edges-fallback` embed.
 
 ## Structure to follow
 

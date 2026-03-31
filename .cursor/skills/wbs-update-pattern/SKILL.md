@@ -1,6 +1,6 @@
 ---
 name: wbs-update-pattern
-description: Two related workflows for Pipeline Automation (PA) and sibling capabilities (VI, WM, WB). (1) Input-based WBS load — run prep script, process Input folder, regenerate WBS, archive Input, report. (2) Jira–WBS–planning alignment — compare Jira export to the capability WBS and planning HTML (e.g. PA-kanban, PA-Outcome-map; WB-kanban when Jira-backed), update WBS change log, adjust exports. Use when the user asks to import WBS from Input, OR to align the WBS and planning views with Jira, refresh kanban from Jira, reconcile POC vs outcomes (PA), or update planning artifacts after Jira changes.
+description: Two related workflows for Pipeline Automation (PA) and sibling capabilities (VI, WM, WB). (1) Input-based WBS load — run prep script, process Input folder, regenerate WBS, archive Input, report. (2) Jira–WBS–planning alignment — compare Jira export to the capability WBS and planning HTML (e.g. PA-kanban, PA-Outcome-map; WB-kanban when Jira-backed), update WBS change log, adjust exports. **Dependency Flow data is JSON-first:** `pa-outcomes.json` → `dependency_edges` (PA) and `wsb-wsc-outcome-dependencies.json` (WSB–WSC combined map); HTML uses `fetch` plus an embedded `#…-dependency-edges-fallback` for `file://`. Catalog `WSB-WSC/dependency-sources.yml`; deploy workflow zips dependency JSON for Lambda. Use when the user asks to import WBS from Input, OR to align WBS and planning views with Jira, refresh kanban, reconcile POC vs outcomes (PA), update dependency charts or JSON edges, or update planning artifacts after Jira changes.
 ---
 
 # WBS Update Pattern
@@ -14,11 +14,45 @@ This skill covers **two** repeatable processes. Pick the one that matches the us
 
 Capability folders use prefixes **PA**, **VI**, **WM**, **WB** (Customer Support / Workstream B). Follow `.cursor/rules/{capability}.mdc` when editing that capability’s artifacts.
 
+### Outcome map dependency flow (required pattern for planning HTML)
+
+When creating or updating **Outcome Map** HTML that includes a **Dependency Flow** diagram (**`PA-Outcome-map.html`** is the reference; apply the same interaction model to sibling maps such as **`WSB-WSC/WSB-WSC-Outcome-Map.html`**, and to future **`VI-*-Outcome-map.html`** / **`WM-*-Outcome-map.html`** / **`WB-Outcome-map.html`** if added):
+
+1. **SVG graph** — Outcome (or activity) nodes with **curved** edges; **must** = solid dark stroke, **should** = **dashed** green stroke, **contingent** = dashed orange. Legend must match (dashed “should” line in the legend bar).
+2. **Hit targets** — Draw **visible** edges in a layer **below** node circles; draw **wide transparent** paths (`dep-edge-hit`, ~18px stroke) in a layer **above** nodes so the full arrow remains hoverable and keyboard-focusable (`tabindex="0"`).
+3. **Tooltips** — On **hover** and **focus**, show the shared page tooltip (`#tooltip`) with at least: **link type**, **timing**, **prerequisite / effect**, optional **granular** bullets (WBS gates, parallel-work nuance), **decisions ahead** with **TYPE 1** / **TYPE 2** labels per that capability’s decision register (PA: PA-D-XX; VI: VI-D-XX; WM: per WM-WBS). Where the map uses **blockers** or cross-deps instead (e.g. WSB-WSC), use a **BLOCKER** or **CROSS-DEP** badge in the same list. Optional **cross-workstream** line (PA: PA-CW-XX; WSB-WSC: X-01 / X-02 narrative).
+4. **Intro copy** — A short **`dep-graph-note`** under the section title defining Type 1 vs Type 2 for that capability (or pointing to the WBS § that defines them).
+5. **`moveTooltip`** — Must tolerate missing `clientX`/`clientY` (keyboard); **focus** on an edge should position the tooltip via **`getBoundingClientRect`** on the focused path (same approach as `PA-Outcome-map.html`).
+
+**`*-outcomes.json` (`schema_version` ≥ 2):** include **`dependency_edges`** as an array of objects aligned with the HTML model so scripts or future generators can stay in sync:
+
+| Field | Purpose |
+|--------|---------|
+| `id` | Stable edge id (e.g. `e-01-02`) |
+| `from`, `to` | Outcome or activity ids matching the map |
+| `type` | `must` \| `should` \| `contingent` |
+| `curve` | Optional number: perpendicular offset for quadratic curve |
+| `timing` | When the dependency bites (sprints, weeks, gates) |
+| `prerequisite` | What must be true because of this link |
+| `decisions` | `[{ "id", "decision_type": "TYPE 1" \| "TYPE 2" \| "BLOCKER" (or equivalent), "text", "required_by" }]` |
+| `granular` | Optional string array (§9-style gates, notes) |
+| `cross_cutting` | Optional string (cross-workstream ids / narrative) |
+
+**Authoritative copy and edit order (do not skip steps):**
+
+1. **Edit JSON first** — **`WSA/PA/pa-outcomes.json`** → **`dependency_edges`** (requires **`schema_version` ≥ 2** for PA). **`WSB-WSC/wsb-wsc-outcome-dependencies.json`** → **`dependency_edges`** for the combined O/E/T map (separate file; not `wb-outcomes.json`).
+2. **Align normative prose** — Update **`PA-WBS.md`** §3 Mermaid (and per-outcome dependency tables, §8–§9 gates) or the equivalent narrative for WSB–WSC so markdown matches JSON.
+3. **Sync HTML fallbacks** — Copy the same `dependency_edges` array into the **`<script type="application/json" id="pa-dependency-edges-fallback">`** (PA) or **`id="wsb-dependency-edges-fallback"`** (WSB–WSC) block inside the Outcome Map HTML so **double-click / `file://`** still renders the graph when `fetch` to the sidecar JSON fails.
+4. **Runtime behavior** — Outcome maps call **`fetch`** on **`pa-outcomes.json`** or **`wsb-wsc-outcome-dependencies.json`** (same directory as the HTML); parsed edges are normalized (`decision_type` → tooltip `t`, `cross_cutting` → `crossCutting` where needed for PA).
+5. **Catalog and CI** — **`WSB-WSC/dependency-sources.yml`** lists all canonical dependency JSON paths for humans and automation. **`.github/workflows/deploy-capability-map.yml`** includes those files in **`paths`** filters and zips **`wsb-wsc-outcome-dependencies.json`** and **`dependency-sources.yml`** with the Lambda package; **`WSA/PA/`** zip already includes **`pa-outcomes.json`**.
+
+**Reminder:** After edits, commit and push to **GitHub**.
+
 **Folder maps:** [`PA/README.md`](../../../WSA/PA/README.md), [`VI/README.md`](../../../WSA/VI/README.md), [`WM/README.md`](../../../WSA/WM/README.md), [`WSB-WSC/WB/README.md`](../../../WSB-WSC/WB/README.md).
 
 **Canonical WBS files:** `WSA/PA/PA-WBS.md`, `WSA/VI/VI-WBS.md`, `WSA/WM/WM-WBS.md`, `WSB-WSC/WB/WB-WBS.md`.
 
-**Optional JSON registries** (outcome ↔ Jira keys for scripts): `WSA/PA/pa-outcomes.json` (keep in sync with PA-WBS §10); `WSA/VI/vi-outcomes.json`, `WSA/WM/wm-outcomes.json`, `WSB-WSC/WB/wb-outcomes.json` (extend when those WBS Jira tables are fully keyed).
+**JSON registries:** **`WSA/PA/pa-outcomes.json`** — Jira keys (`PA-WBS.md` §10) **and** canonical **`dependency_edges`** for `PA-Outcome-map.html`. **`WSA/VI/vi-outcomes.json`**, **`WSA/WM/wm-outcomes.json`**, **`WSB-WSC/WB/wb-outcomes.json`** — outcome ↔ Jira when WBS §9/§11 is keyed; **`dependency_edges`** optional (`schema_version` ≥ 2) until those maps ship interactive Dependency Flow. **WSB–WSC combined activity map:** dependencies live in **`WSB-WSC/wsb-wsc-outcome-dependencies.json`**, not only in WB folder JSON.
 
 **Jira-import target JSON (manual or generator):** `{Capability}/Output/{Prefix}-WBS-Jira-Import.json` for PA, VI, WM; for **WB** the folder is **`WSB-WSC/WB/`** (run `wbs-load-prep.js WB` — see `Scripts/wbs-capability-folder.js`).
 
@@ -49,8 +83,9 @@ This archives the current WBS to `{Folder}/Archive/{Prefix}-WBS-mm-dd-yyyy.md` (
 - **Read** all files in `{Capability}/Input/`. Process **each file** explicitly.
 - **For each file**: extract outcomes, deliverables, phases, risks, decisions, questions, timeline, tables. Either update the WBS (preserving keys and structure per the capability rule file) or document mapping to existing WBS keys.
 - **Compare** with the current WBS file (`{Prefix}-WBS.md`) and any constraint vs outcome maps. **Regenerate** the WBS accordingly. Preserve document structure, outcome table, per-outcome sections, risks/decisions/questions tables.
-- **PA:** If Jira epic keys or outcome IDs change, update **`pa-outcomes.json`** to match `PA-WBS.md` §10.
-- **VI / WM / WB:** When Jira mapping in the WBS stabilizes, update **`vi-outcomes.json`** / **`wm-outcomes.json`** / **`wb-outcomes.json`** to match.
+- **PA:** If Jira epic keys or outcome IDs change, update **`pa-outcomes.json`** to match `PA-WBS.md` §10. If **outcome dependencies, decision gates, or PA-CW-XX links** change, update **`pa-outcomes.json` → `dependency_edges`** first, then **`PA-WBS.md`** §3–§9, then **`#pa-dependency-edges-fallback`** in **`PA-Outcome-map.html`** (see **Authoritative copy and edit order** above).
+- **WSB–WSC combined map:** If O/E/T activity dependencies or blocker/decision text on edges change, update **`WSB-WSC/wsb-wsc-outcome-dependencies.json`**, align narrative docs as needed, then **`#wsb-dependency-edges-fallback`** in **`WSB-WSC-Outcome-Map.html`**. Consider **`WSB-WSC/dependency-sources.yml`** if new artifacts are added.
+- **VI / WM / WB:** When Jira mapping in the WBS stabilizes, update **`vi-outcomes.json`** / **`wm-outcomes.json`** / **`wb-outcomes.json`** to match. If the capability gains an Outcome Map HTML with **Dependency Flow**, populate **`dependency_edges`** and extend **`dependency-sources.yml`**; use **`schema_version` ≥ 2** for VI/WM.
 - **Fill the WBS-Load report**: per-file “Input files processed” summaries (filename → extracted content → WBS edits or “mapped to existing keys”). Do not leave this section generic.
 
 ### 4. Move processed Input to Archive
@@ -95,12 +130,13 @@ Use this when the user wants **planning artifacts** (`WSA/PA/PA-WBS.md`, `WSA/PA
 3. **Update `WSA/PA/PA-WBS.md` when artifacts change**  
    - Add a **Change log** bullet under systems of record (or equivalent) with **date**, what changed, and why (e.g. removed static POC pseudo-deliverables; kanban subtasks from export).  
    - Keep **v1.x** and classification lines consistent if the user maintains version stamps.  
-   - If epic keys changed, update **`WSA/PA/pa-outcomes.json`**.
+   - If epic keys changed, update **`WSA/PA/pa-outcomes.json`** **`outcomes[]`**. If dependency gates, cross-workstream links, or edge types changed, update **`dependency_edges`** in the same file, then **`#pa-dependency-edges-fallback`** in **`PA-Outcome-map.html`**.
 
 4. **Update `WSA/PA/PA-Outcome-map.html`** (if Jira/WBS messaging changed)  
    - Subtitle: capability, epic range, action-items epic, POC story key + `[POC]` if relevant.  
    - **Planning assumptions**: authoritative backlog, FTE, POC band = active engineering (not buffer), Jira keys.  
    - POC swimlane tooltip / `detail` text: align with WBS + Jira (e.g. WSA-3758, `[POC]`).  
+   - **Dependency Flow:** **`pa-outcomes.json` → `dependency_edges` is canonical** — the page loads edges via **`fetch('pa-outcomes.json')`** and builds the SVG in **`initPaDependencyGraph`**. Do **not** maintain a duplicate inline `depEdges` array in script; after any edge change, update JSON, then paste the same array into **`#pa-dependency-edges-fallback`** for offline `file://`. Edge hovers must reflect timing, prerequisites, TYPE 1/2 / BLOCKER, granular gates, and PA-CW-XX per **Outcome map dependency flow**.  
    - Footer / title: optional **PA-WBS v** stamp to match the WBS.
 
 5. **Update `WSA/PA/PA-kanban.html`**  
@@ -112,7 +148,8 @@ Use this when the user wants **planning artifacts** (`WSA/PA/PA-WBS.md`, `WSA/PA
 
 6. **Validate**  
    - Open `WSA/PA/PA-kanban.html` in a browser: outcome grid renders (no silent JS syntax errors).  
-   - `#POC` shows the pipeline POC story with Jira-linked subtasks when the export includes them.
+   - `#POC` shows the pipeline POC story with Jira-linked subtasks when the export includes them.  
+   - Open **`PA-Outcome-map.html`** with a **local HTTP server** from `WSA/PA/` (or deployed Lambda) so **`fetch('pa-outcomes.json')`** succeeds; confirm Dependency Flow renders. Optionally open via **`file://`** and confirm the **fallback** embed still draws the graph.
 
 7. **Git**  
    - Commit related changes together with a clear message; remind the user to **push to GitHub**.
@@ -122,11 +159,13 @@ Use this when the user wants **planning artifacts** (`WSA/PA/PA-WBS.md`, `WSA/PA
 | Area | Files |
 |------|--------|
 | WBS | `WSA/PA/PA-WBS.md` |
-| Outcome registry (optional) | `WSA/PA/pa-outcomes.json` |
-| Maps | `WSA/PA/PA-Outcome-map.html` |
+| Outcome + dependency JSON | `WSA/PA/pa-outcomes.json` (`outcomes[]`, **`dependency_edges`**) |
+| WSB–WSC dependency JSON / catalog | `WSB-WSC/wsb-wsc-outcome-dependencies.json`, `WSB-WSC/dependency-sources.yml` |
+| Maps | `WSA/PA/PA-Outcome-map.html` (fetch + `#pa-dependency-edges-fallback`), `WSB-WSC/WSB-WSC-Outcome-Map.html` (fetch + `#wsb-dependency-edges-fallback`) |
 | Kanban UI | `WSA/PA/PA-kanban.html` |
 | Jira export / kanban data | `Scripts/jira-export-pa.js`, `Scripts/jira-kanban-status-from-export.js`, `WSA/PA/Jira/pa-kanban-jira-status.json`, `WSA/PA/Jira/pa-kanban-jira-status.js`, dated `WSA/PA/Jira/PA-Jira-mm-dd-yyyy-json.json` |
-| Rules / docs | `.cursor/rules/pa.mdc`, `WSA/PA/Jira/README.md`, `WSA/PA/README.md` (optional) |
+| Deploy (when deps or map change) | `.github/workflows/deploy-capability-map.yml` |
+| Rules / docs | `.cursor/rules/pa.mdc`, `WSA/PA/Jira/README.md`, `WSA/PA/README.md`, `Documentation/WBS-Update-Pattern.md` (optional) |
 
 ### When Pattern A and B overlap
 
@@ -138,12 +177,14 @@ If **Input** contains stakeholder docs that **change outcomes** while **Jira** a
 - **Dated exports:** keep multiple **`WSA/VI/Jira/VI-Jira-mm-dd-yyyy-json.json`**, **`WSA/WM/Jira/WM-Jira-mm-dd-yyyy-json.json`**, **`WSB-WSC/WB/Jira/WB-Jira-mm-dd-yyyy-json.json`** (same retention rule as **`WSA/PA/Jira/PA-Jira-*.json`**). **WB:** after keys exist in **`wb-outcomes.json`**, run **`node Scripts/jira-export-wb.js`** (or **`node Scripts/jira-export-pa.js WB <capabilityKey> <actionEpicKey>`**). The shared exporter writes the dated JSON under **`WSB-WSC/WB/Jira/`**; it does **not** emit PA-style kanban status files for non-PA capabilities.
 - **Target-state JSON:** `WSA/VI/Output/VI-WBS-Jira-Import.json`, `WSA/WM/Output/WM-WBS-Jira-Import.json`, `WSB-WSC/WB/Output/WB-WBS-Jira-Import.json`.
 - Full **Pattern B** checklist above is PA-specific; for VI/WM/WB, reconcile exports vs WBS manually and refresh HTML narratives until kanban is wired to Jira (WB-kanban is WBS-static today).
+- **WSB–WSC combined outcome map** (`WSB-WSC-Outcome-Map.html`): treat **`wsb-wsc-outcome-dependencies.json`** like PA’s `dependency_edges` — JSON first, then HTML fallback; not a substitute for **`WB-WBS.md`** WB-OC epics.
 
 ---
 
 ## Reference
 
-- Pattern A (detailed): [Documentation/WBS-Update-Pattern.md](../../../Documentation/WBS-Update-Pattern.md)  
+- Pattern A (detailed): [Documentation/WBS-Update-Pattern.md](../../../Documentation/WBS-Update-Pattern.md) (includes **Outcome-map dependency edges** table)  
+- Dependency catalog: [WSB-WSC/dependency-sources.yml](../../../WSB-WSC/dependency-sources.yml)  
 - Folders: [PA/README.md](../../../WSA/PA/README.md), [VI/README.md](../../../WSA/VI/README.md), [WM/README.md](../../../WSA/WM/README.md), [WSB-WSC/WB/README.md](../../../WSB-WSC/WB/README.md)  
 - Jira: [PA/Jira/README.md](../../../WSA/PA/Jira/README.md), [VI/Jira/README.md](../../../WSA/VI/Jira/README.md), [WM/Jira/README.md](../../../WSA/WM/Jira/README.md), [WSB-WSC/WB/Jira/README.md](../../../WSB-WSC/WB/Jira/README.md)  
 - Rules: [.cursor/rules/pa.mdc](../../rules/pa.mdc), [.cursor/rules/vi.mdc](../../rules/vi.mdc), [.cursor/rules/wm.mdc](../../rules/wm.mdc), [.cursor/rules/wb.mdc](../../rules/wb.mdc)

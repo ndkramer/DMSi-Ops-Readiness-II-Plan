@@ -1,10 +1,11 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "capability": "VI",
   "wbs_markdown": "VI-WBS.md",
   "jira": {
     "capability_issue_key": "WSA-120",
-    "notes": "Populate outcomes[] with jira_epic_key per row when VI-WBS.md §9 lists stable Epic keys for each VI-OC-XX."
+    "notes": "Populate outcomes[] with jira_epic_key per row when VI-WBS.md §9 lists stable Epic keys for each VI-OC-XX. Optional dependency_edges[]: same object shape as PA-Outcome-map.html depEdges (id, from, to, type, curve?, timing, prerequisite, decisions[{id, decision_type, text, required_by}], granular?, cross_cutting?). Align with VI-WBS.md dependency graph and VI-D-XX TYPE 1/2 register. See .cursor/skills/wbs-update-pattern."
   },
-  "outcomes": []
+  "outcomes": [],
+  "dependency_edges": []
 }

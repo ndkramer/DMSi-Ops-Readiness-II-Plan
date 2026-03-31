@@ -68,7 +68,7 @@
     border-top: 2px solid #555;
   }
   .legend-line.must { border-color: #2B2B2B; border-width: 2px; }
-  .legend-line.should { border-color: #76BE43; border-width: 2px; }
+  .legend-line.should { border-color: #76BE43; border-width: 2px; border-top-style: dashed; }
   .legend-line.contingent { border-color: #E67E22; border-width: 2px; border-top-style: dashed; }
 
   .container { padding: 30px 40px; max-width: 1600px; margin: 0 auto; }
@@ -371,6 +371,30 @@
     margin-top: 40px;
   }
 
+  /* Dependency flow: interactive edges */
+  .dep-graph-wrap { position: relative; }
+  .dep-graph-note {
+    font-size: 11px;
+    color: #666;
+    margin: 0 0 12px 0;
+    line-height: 1.45;
+    max-width: 900px;
+  }
+  .dep-edge-hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 18;
+    cursor: help;
+    pointer-events: stroke;
+  }
+  .dep-edge-hit:focus {
+    outline: none;
+  }
+  .dep-edge-hit:focus-visible {
+    stroke: rgba(118, 190, 67, 0.35);
+    stroke-width: 14;
+  }
+
   .assumptions-card {
     background: white;
     border-radius: 8px;
@@ -595,8 +619,9 @@
 
   <!-- Dependency Map -->
   <div class="section-title">Dependency Flow</div>
-  <div style="background:white;border-radius:8px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);overflow-x:auto;">
-    <svg id="depGraph" width="1200" height="480" viewBox="0 0 1200 480"></svg>
+  <div class="dep-graph-wrap" style="background:white;border-radius:8px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);overflow-x:auto;">
+    <p class="dep-graph-note"><strong>Canonical data:</strong> <code>pa-outcomes.json</code> → <code>dependency_edges</code> (loaded at runtime; <code>#pa-dependency-edges-fallback</code> mirrors it for <code>file://</code>). Edit the JSON first, then refresh the fallback block in this file when edge text changes. <strong>Type 1</strong> decisions are one-way doors (irreversible); they need explicit sign-off and cannot auto-default. <strong>Type 2</strong> decisions are two-way doors (reversible); default adoption rules apply if not resolved within 3 business days after the required-by date (per PA-WBS §5). <strong>Hover</strong> (or keyboard-focus) any arrow for timing, prerequisite detail, decisions to make ahead of time, and cross-workstream links (PA-CW-XX).</p>
+    <svg id="depGraph" width="1280" height="620" viewBox="0 0 1280 620" role="img" aria-label="PA outcome dependency flow: nodes are outcomes; arrows are must, should, or contingent dependencies. Hover arrows for details."></svg>
   </div>
 
 </div>
@@ -607,6 +632,342 @@
 
 <!-- Tooltip -->
 <div class="tooltip" id="tooltip"></div>
+
+<script type="application/json" id="pa-dependency-edges-fallback">
+[
+  {
+    "id": "e-00-01",
+    "from": "PA-OC-00",
+    "to": "PA-OC-01",
+    "type": "must",
+    "curve": 0,
+    "timing": "POC band (weeks 1–2 on this timeline) must satisfy PA-OC-00 success criteria before PA-OC-01 is treated complete; foundation work may overlap late POC only where risks are documented.",
+    "prerequisite": "Hard prerequisite: infrastructure & architecture proof (runner reachability, repo integration, at least one exercised automation path) so PA-OC-01 does not redo unresolved POC-scope unknowns.",
+    "decisions": [],
+    "cross_cutting": "PA-CW-01 (Visibility Infrastructure): Dan's security review and PA-OC-01 WP 0.3 baseline should be coordinated with VI; biweekly security sync per PA-WBS §8."
+  },
+  {
+    "id": "e-01-02",
+    "from": "PA-OC-01",
+    "to": "PA-OC-02",
+    "type": "must",
+    "curve": 0,
+    "timing": "PA-OC-02 cannot be fully validated until PA-OC-01 exit. Per WBS parallel note: specific inventory work packages may start earlier (e.g. Ansible-based discovery) but credential validation and closure still depend on access/security baseline.",
+    "prerequisite": "Environment access, deployment process documentation, security baseline, and network path knowledge needed before inventory is trustworthy.",
+    "decisions": [
+      {
+        "id": "PA-D-01",
+        "decision_type": "TYPE 2",
+        "text": "GitHub runner topology preference (tools VPC vs per-region vs hosted).",
+        "required_by": "PA-OC-01 exit (feeds later PA-D-07 Type 1 lock-in)"
+      },
+      {
+        "id": "PA-D-02",
+        "decision_type": "TYPE 1",
+        "text": "Secret management approach (GitHub Secrets, Vault, AWS Secrets Manager).",
+        "required_by": "PA-OC-01 exit"
+      },
+      {
+        "id": "PA-D-03",
+        "decision_type": "TYPE 1",
+        "text": "SOC 2 compliance standard for pipeline artifacts.",
+        "required_by": "PA-OC-01 exit"
+      },
+      {
+        "id": "PA-D-11",
+        "decision_type": "TYPE 2",
+        "text": "Data classification standard for pipeline artifacts (GRC review).",
+        "required_by": "PA-OC-01 exit"
+      },
+      {
+        "id": "PA-D-04",
+        "decision_type": "TYPE 2",
+        "text": "Priority ordering for config types beyond NGINX.",
+        "required_by": "PA-OC-02 exit"
+      },
+      {
+        "id": "PA-D-12",
+        "decision_type": "TYPE 2",
+        "text": "Credential rotation and management tooling.",
+        "required_by": "PA-OC-02 exit"
+      }
+    ],
+    "granular": [
+      "§9 gate: runner model, secrets, SOC 2 baseline, and data classification resolved before treating OC-01→OC-02 transition as clean."
+    ]
+  },
+  {
+    "id": "e-02-03",
+    "from": "PA-OC-02",
+    "to": "PA-OC-03",
+    "type": "must",
+    "curve": 0,
+    "timing": "Export methods, repo structure, and runner POC need an accurate NGINX config inventory and credential plan.",
+    "prerequisite": "Inventory of NGINX configs + credential/secret management plan (no raw secrets in VCS) before migration design commits.",
+    "decisions": [
+      {
+        "id": "PA-D-04",
+        "decision_type": "TYPE 2",
+        "text": "Priority ordering for config types beyond NGINX.",
+        "required_by": "PA-OC-02 exit"
+      },
+      {
+        "id": "PA-D-12",
+        "decision_type": "TYPE 2",
+        "text": "Credential rotation and management tooling.",
+        "required_by": "PA-OC-02 exit"
+      }
+    ],
+    "granular": [
+      "Complete PA-OC-02.3 before config migration (PA-R-X7 mitigation)."
+    ]
+  },
+  {
+    "id": "e-03-04",
+    "from": "PA-OC-03",
+    "to": "PA-OC-04",
+    "type": "must",
+    "curve": 0,
+    "timing": "Migration execution starts after export method, repo structure, branching, and runner/Ansible feasibility are defined. PA-D-13 must be understood before PA-OC-04 entry (WBS dependency not shown on §3 mermaid alone).",
+    "prerequisite": "PA-OC-03 deliverables complete; plus CAB/change process understood before production config migration.",
+    "decisions": [
+      {
+        "id": "PA-D-05",
+        "decision_type": "TYPE 2",
+        "text": "Repository structure pattern (by config type, client, environment).",
+        "required_by": "PA-OC-03 exit"
+      },
+      {
+        "id": "PA-D-06",
+        "decision_type": "TYPE 2",
+        "text": "Canonical config format per type.",
+        "required_by": "PA-OC-03 exit"
+      },
+      {
+        "id": "PA-D-07",
+        "decision_type": "TYPE 1",
+        "text": "GitHub runner deployment model (AWS account, VPC).",
+        "required_by": "PA-OC-03 exit"
+      },
+      {
+        "id": "PA-D-08",
+        "decision_type": "TYPE 1",
+        "text": "Ansible automation feasibility (no blocking MFA/human steps).",
+        "required_by": "PA-OC-03 exit"
+      },
+      {
+        "id": "PA-D-13",
+        "decision_type": "TYPE 1",
+        "text": "CAB change request process for pipeline deployments (lead time, evidence).",
+        "required_by": "Before PA-OC-04 entry"
+      }
+    ],
+    "cross_cutting": "PA-CW-02 (Work Management): pipeline tasks should live in the same work system as operational readiness (should).",
+    "granular": [
+      "§9: repo structure, format, runner infra, Ansible feasibility + PA-D-13 before productive migration."
+    ]
+  },
+  {
+    "id": "e-04-05",
+    "from": "PA-OC-04",
+    "to": "PA-OC-05",
+    "type": "must",
+    "curve": -28,
+    "timing": "Build pipeline operates on Git-backed configs; align CAB approval timing with production migration per PA-OC-04.1.",
+    "prerequisite": "Configs in Git as source of truth; secret scan clean; branch protection/CODEOWNERS in place.",
+    "decisions": [
+      {
+        "id": "PA-D-13",
+        "decision_type": "TYPE 1",
+        "text": "CAB process (already required at PA-OC-04 entry; affects production migration).",
+        "required_by": "PA-OC-04"
+      },
+      {
+        "id": "PA-D-09",
+        "decision_type": "TYPE 2",
+        "text": "Drift alerting channel (PagerDuty vs Slack) — also cited at PA-OC-05 entry for build-adjacent ops.",
+        "required_by": "PA-OC-05 entry"
+      }
+    ]
+  },
+  {
+    "id": "e-04-07",
+    "from": "PA-OC-04",
+    "to": "PA-OC-07",
+    "type": "must",
+    "curve": 32,
+    "timing": "Drift compares live state to Git; can run in parallel with PA-OC-05/06 once PA-OC-04 completes (key parallelism in WBS).",
+    "prerequisite": "Git is the declared source of truth before drift metrics are meaningful.",
+    "decisions": [
+      {
+        "id": "PA-D-09",
+        "decision_type": "TYPE 2",
+        "text": "Drift detection alerting channel (PagerDuty vs Slack).",
+        "required_by": "PA-OC-07 entry"
+      },
+      {
+        "id": "PA-D-13",
+        "decision_type": "TYPE 1",
+        "text": "CAB / change discipline for production-impacting work.",
+        "required_by": "As applicable to drift rollout"
+      }
+    ],
+    "cross_cutting": "PA-CW-03 (Learning System): drift metrics should align with operational scorecard definitions (should)."
+  },
+  {
+    "id": "e-03-06",
+    "from": "PA-OC-03",
+    "to": "PA-OC-06",
+    "type": "must",
+    "curve": 40,
+    "timing": "Deploy pipeline needs confirmed runner connectivity and Ansible automation feasibility before it can be fully validated.",
+    "prerequisite": "Runner strategy POC and \"no human-in-the-loop\" validation per PA-OC-03.3.",
+    "decisions": [
+      {
+        "id": "PA-D-07",
+        "decision_type": "TYPE 1",
+        "text": "Runner placement and AWS/VPC model.",
+        "required_by": "PA-OC-03 exit"
+      },
+      {
+        "id": "PA-D-08",
+        "decision_type": "TYPE 1",
+        "text": "Ansible feasibility; if infeasible, deploy mechanism must be redesigned (PA-R-X4).",
+        "required_by": "PA-OC-03 exit"
+      }
+    ]
+  },
+  {
+    "id": "e-05-06",
+    "from": "PA-OC-05",
+    "to": "PA-OC-06",
+    "type": "should",
+    "curve": 0,
+    "timing": "Recommended sequence: deploy development can start in parallel, but full deploy validation needs build artifacts.",
+    "prerequisite": "Should dependency — can proceed with documented risk acceptance if build lags.",
+    "decisions": [],
+    "granular": [
+      "WBS: PA-OC-05 → PA-OC-06 is \"should\", not \"must\"."
+    ]
+  },
+  {
+    "id": "e-05-08",
+    "from": "PA-OC-05",
+    "to": "PA-OC-08",
+    "type": "must",
+    "curve": -18,
+    "timing": "Reliability outcome uses a 2-week rolling window (up to 3 iterations) once build is operational.",
+    "prerequisite": "Build pipeline operational and producing repeatable artifacts.",
+    "decisions": [
+      {
+        "id": "PA-D-10",
+        "decision_type": "TYPE 1",
+        "text": "Config-as-code enforcement policy — must be decided by PA-OC-08 exit so PA-OC-09 can start.",
+        "required_by": "PA-OC-08 exit"
+      }
+    ],
+    "granular": [
+      "§9: 90%+ success targets for build/deploy/drift before advancing."
+    ]
+  },
+  {
+    "id": "e-06-08",
+    "from": "PA-OC-06",
+    "to": "PA-OC-08",
+    "type": "must",
+    "curve": 12,
+    "timing": "Same validation window as other pipelines; deploy success rate measured over 2 weeks.",
+    "prerequisite": "Deploy pipeline operational including rollback trust.",
+    "decisions": [
+      {
+        "id": "PA-D-10",
+        "decision_type": "TYPE 1",
+        "text": "Enforcement policy alignment before leaving reliability gate.",
+        "required_by": "PA-OC-08 exit"
+      }
+    ]
+  },
+  {
+    "id": "e-07-08",
+    "from": "PA-OC-07",
+    "to": "PA-OC-08",
+    "type": "must",
+    "curve": -12,
+    "timing": "Drift must meet accuracy/false-positive targets during the same validation period.",
+    "prerequisite": "Scheduled drift job, fetch from live servers, alerting paths live.",
+    "decisions": [
+      {
+        "id": "PA-D-10",
+        "decision_type": "TYPE 1",
+        "text": "Enforcement policy inputs (escalation expectations).",
+        "required_by": "PA-OC-08 exit"
+      }
+    ],
+    "cross_cutting": "PA-CW-04 (Visibility Infrastructure): when VI SDLC ingestion is available, pipeline events should emit for CFR/DORA (should)."
+  },
+  {
+    "id": "e-08-09",
+    "from": "PA-OC-08",
+    "to": "PA-OC-09",
+    "type": "must",
+    "curve": 0,
+    "timing": "PA-OC-09 entry requires PA-OC-08 complete AND PA-D-10 approved (WBS §4 PA-OC-09 dependencies) — explicit gate missing from §3 graph alone.",
+    "prerequisite": "90%+ reliability (or iteration policy exhausted), rollback trusted, dashboard operational.",
+    "decisions": [
+      {
+        "id": "PA-D-10",
+        "decision_type": "TYPE 1",
+        "text": "Config-as-code enforcement policy (pipeline-only path, exceptions).",
+        "required_by": "Before PA-OC-09 entry (also listed PA-OC-08 exit)"
+      }
+    ],
+    "cross_cutting": "PA-CW-05 (Incident Response): IRP updated after PA-OC-08 and before enforcement (must per §8).",
+    "granular": [
+      "Type 1: organizational commitment; no auto-default per §5."
+    ]
+  },
+  {
+    "id": "e-08-10",
+    "from": "PA-OC-08",
+    "to": "PA-OC-10",
+    "type": "contingent",
+    "curve": -55,
+    "timing": "Activates only if validation fails after max 3 cycles; manual processes stay available until resolved.",
+    "prerequisite": "Contingent: reliability below threshold after iteration policy exhausted.",
+    "decisions": [],
+    "granular": [
+      "Fallback is planned recovery, not ad-hoc failure response."
+    ]
+  },
+  {
+    "id": "e-09-11",
+    "from": "PA-OC-09",
+    "to": "PA-OC-11",
+    "type": "contingent",
+    "curve": 55,
+    "timing": "Triggers after PA-OC-09 success and a leadership decision to extend the framework beyond NGINX.",
+    "prerequisite": "End-to-end NGINX framework proven; config landscape from PA-OC-02 informs PA-OC-11.1 prioritization.",
+    "decisions": [
+      {
+        "id": "(Leadership)",
+        "decision_type": "TYPE 1",
+        "text": "Strategic commitment to replicate pipeline pattern to additional config types (one-way door for funding/roadmap).",
+        "required_by": "After PA-OC-09"
+      },
+      {
+        "id": "PA-D-04",
+        "decision_type": "TYPE 2",
+        "text": "Ordering among non-NGINX config types (feeds replication sequencing).",
+        "required_by": "Informed by PA-OC-02; reaffirmed at replication"
+      }
+    ],
+    "granular": [
+      "Out of scope reminder: application deployment (Caley) remains separate (PA-D-14 resolved)."
+    ]
+  }
+]
+</script>
+
 
 <script>
 // Week-to-date mapping (week 1 starts 3/16/2026)
@@ -859,10 +1220,16 @@ function showTooltip(e, oc) {
 }
 
 function moveTooltip(e) {
-  let x = e.clientX + 16;
-  let y = e.clientY + 16;
-  if (x + 380 > window.innerWidth) x = e.clientX - 396;
-  if (y + 300 > window.innerHeight) y = e.clientY - 200;
+  let x, y;
+  if (e && typeof e.clientX === 'number' && typeof e.clientY === 'number') {
+    x = e.clientX + 16;
+    y = e.clientY + 16;
+    if (x + 380 > window.innerWidth) x = e.clientX - 396;
+    if (y + 300 > window.innerHeight) y = e.clientY - 200;
+  } else {
+    x = 24;
+    y = 80;
+  }
   tooltipEl.style.left = x + 'px';
   tooltipEl.style.top = y + 'px';
 }
@@ -904,114 +1271,258 @@ function showTriggerTooltip(e, oc) {
   moveTooltip(e);
 }
 
-// Dependency graph (SVG)
+// Dependency graph (SVG) — edges match PA-WBS.md §3 with §4–§9 gates, decisions (Type 1/2), and PA-CW-XX notes in hovers
 const svg = document.getElementById('depGraph');
+const NODE_R = 22;
+
 const nodes = {
-  'PA-OC-00': { x: 60, y: 60, color: '#9B59B6' },
-  'PA-OC-01': { x: 180, y: 60, color: '#3498DB' },
-  'PA-OC-02': { x: 310, y: 60, color: '#3498DB' },
-  'PA-OC-03': { x: 440, y: 60, color: '#3498DB' },
-  'PA-OC-04': { x: 580, y: 60, color: '#3498DB' },
-  'PA-OC-05': { x: 720, y: 60, color: '#3498DB' },
-  'PA-OC-06': { x: 720, y: 180, color: '#3498DB' },
-  'PA-OC-07': { x: 580, y: 180, color: '#3498DB' },
-  'PA-OC-08': { x: 870, y: 120, color: '#76BE43' },
-  'PA-OC-09': { x: 1020, y: 120, color: '#76BE43' },
-  'PA-OC-10': { x: 870, y: 280, color: '#E67E22' },
-  'PA-OC-11': { x: 1020, y: 280, color: '#E67E22' },
+  'PA-OC-00': { x: 70, y: 95, color: '#9B59B6' },
+  'PA-OC-01': { x: 195, y: 95, color: '#3498DB' },
+  'PA-OC-02': { x: 320, y: 95, color: '#3498DB' },
+  'PA-OC-03': { x: 445, y: 95, color: '#3498DB' },
+  'PA-OC-04': { x: 575, y: 95, color: '#3498DB' },
+  'PA-OC-05': { x: 705, y: 95, color: '#3498DB' },
+  'PA-OC-07': { x: 575, y: 255, color: '#3498DB' },
+  'PA-OC-06': { x: 705, y: 255, color: '#3498DB' },
+  'PA-OC-08': { x: 875, y: 175, color: '#76BE43' },
+  'PA-OC-09': { x: 1045, y: 175, color: '#76BE43' },
+  'PA-OC-10': { x: 875, y: 395, color: '#E67E22' },
+  'PA-OC-11': { x: 1045, y: 395, color: '#E67E22' },
 };
 
-const edges = [
-  { from: 'PA-OC-00', to: 'PA-OC-01', type: 'must' },
-  { from: 'PA-OC-01', to: 'PA-OC-02', type: 'must' },
-  { from: 'PA-OC-02', to: 'PA-OC-03', type: 'must' },
-  { from: 'PA-OC-03', to: 'PA-OC-04', type: 'must' },
-  { from: 'PA-OC-04', to: 'PA-OC-05', type: 'must' },
-  { from: 'PA-OC-04', to: 'PA-OC-07', type: 'must' },
-  { from: 'PA-OC-03', to: 'PA-OC-06', type: 'must' },
-  { from: 'PA-OC-05', to: 'PA-OC-06', type: 'should' },
-  { from: 'PA-OC-05', to: 'PA-OC-08', type: 'must' },
-  { from: 'PA-OC-06', to: 'PA-OC-08', type: 'must' },
-  { from: 'PA-OC-07', to: 'PA-OC-08', type: 'must' },
-  { from: 'PA-OC-08', to: 'PA-OC-09', type: 'must' },
-  { from: 'PA-OC-08', to: 'PA-OC-10', type: 'contingent' },
-  { from: 'PA-OC-09', to: 'PA-OC-11', type: 'contingent' },
-];
+/**
+ * @typedef {{ id: string, t: string, text: string, by: string }} DepDecision
+ * @typedef {{ id: string, from: string, to: string, type: 'must'|'should'|'contingent', curve?: number, timing: string, prerequisite: string, decisions: DepDecision[], crossCutting?: string, granular?: string[] }} DepEdge
+ */
+
+/** Normalize dependency_edges from pa-outcomes.json (decision_type, cross_cutting) for tooltip code (t, crossCutting). */
+function normalizePaDepFromJson(edges) {
+  return (edges || []).map(e => ({
+    id: e.id,
+    from: e.from,
+    to: e.to,
+    type: e.type,
+    curve: e.curve,
+    timing: e.timing,
+    prerequisite: e.prerequisite,
+    decisions: (e.decisions || []).map(d => ({
+      id: d.id,
+      t: d.decision_type || d.t,
+      text: d.text,
+      by: d.required_by || d.by
+    })),
+    granular: e.granular,
+    crossCutting: e.cross_cutting || e.crossCutting
+  }));
+}
 
 const edgeColors = { must: '#2B2B2B', should: '#76BE43', contingent: '#E67E22' };
-const edgeDash = { must: '', should: '', contingent: '6,4' };
+const edgeDash = { must: '', should: '4,3', contingent: '8,5' };
 
-// Arrowhead defs
-const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-['must','should','contingent'].forEach(type => {
-  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-  marker.setAttribute('id', `arrow-${type}`);
-  marker.setAttribute('viewBox', '0 0 10 10');
-  marker.setAttribute('refX', '28'); marker.setAttribute('refY', '5');
-  marker.setAttribute('markerWidth', '6'); marker.setAttribute('markerHeight', '6');
-  marker.setAttribute('orient', 'auto-start-reverse');
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
-  path.setAttribute('fill', edgeColors[type]);
-  marker.appendChild(path);
-  defs.appendChild(marker);
-});
-svg.insertBefore(defs, svg.firstChild);
+function trimLine(x1, y1, x2, y2, r) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len, uy = dy / len;
+  return { sx: x1 + ux * r, sy: y1 + uy * r, ex: x2 - ux * r, ey: y2 - uy * r };
+}
 
-// Draw edges
-edges.forEach(e => {
-  const f = nodes[e.from], t = nodes[e.to];
-  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  line.setAttribute('x1', f.x); line.setAttribute('y1', f.y);
-  line.setAttribute('x2', t.x); line.setAttribute('y2', t.y);
-  line.setAttribute('stroke', edgeColors[e.type]);
-  line.setAttribute('stroke-width', e.type === 'must' ? '2' : '1.5');
-  if (edgeDash[e.type]) line.setAttribute('stroke-dasharray', edgeDash[e.type]);
-  line.setAttribute('opacity', '0.5');
-  line.setAttribute('marker-end', `url(#arrow-${e.type})`);
-  svg.appendChild(line);
-});
+function quadPath(sx, sy, ex, ey, curve) {
+  const mx = (sx + ex) / 2, my = (sy + ey) / 2;
+  const dx = ex - sx, dy = ey - sy;
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len, ny = dx / len;
+  const cx = mx + nx * (curve || 0), cy = my + ny * (curve || 0);
+  return `M ${sx} ${sy} Q ${cx} ${cy} ${ex} ${ey}`;
+}
 
-// Draw nodes
+function showDepEdgeTooltip(e, edge) {
+  const typeLabel = edge.type === 'must' ? 'Must (hard prerequisite)' : edge.type === 'should' ? 'Should (recommended sequence)' : 'Contingent (trigger only)';
+  let html = `<div class="tt-title">${edge.from} → ${edge.to}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Link type:</span> ${typeLabel}</div>`;
+  html += `<div class="tt-row"><span class="tt-label">Timing:</span> ${edge.timing}</div>`;
+  html += `<div style="margin-top:8px;font-size:11px;color:#ddd;line-height:1.45;"><strong style="color:#76BE43">Prerequisite / effect:</strong> ${edge.prerequisite}</div>`;
+  if (edge.granular && edge.granular.length) {
+    html += `<div class="tt-deps"><span class="tt-label">Granular notes:</span><ul style="margin:6px 0 0 16px;padding:0;font-size:11px;color:#ccc;line-height:1.45;">`;
+    edge.granular.forEach(g => { html += `<li>${g}</li>`; });
+    html += `</ul></div>`;
+  }
+  if (edge.decisions && edge.decisions.length) {
+    html += `<div class="tt-deps"><span class="tt-label">Decisions ahead:</span>`;
+    edge.decisions.forEach(d => {
+      const isT1 = d.t === 'TYPE 1';
+      const isBlock = d.t === 'BLOCKER';
+      const badge = isT1
+        ? '<span style="color:#E74C3C;font-weight:700">TYPE 1</span>'
+        : isBlock
+          ? '<span style="color:#E65100;font-weight:700">BLOCKER</span>'
+          : '<span style="color:#76BE43;font-weight:700">TYPE 2</span>';
+      const border = isT1 ? '#E74C3C' : isBlock ? '#E65100' : '#76BE43';
+      html += `<div style="margin:8px 0 0 0;padding:8px 10px;background:#333;border-radius:4px;border-left:3px solid ${border};font-size:11px;line-height:1.45;">${badge} <strong>${d.id}</strong> — ${d.text}<div style="color:#999;margin-top:4px;">Required by: ${d.by}</div></div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<div class="tt-deps"><span class="tt-label">Decisions ahead:</span> <span style="font-size:11px;color:#aaa">None tied only to this link; see adjacent edges or outcome tooltips.</span></div>`;
+  }
+  const cc = edge.crossCutting || edge.cross_cutting;
+  if (cc) {
+    html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid #444;font-size:11px;color:#ccc;line-height:1.45;"><strong style="color:#76BE43">Cross-workstream:</strong> ${cc}</div>`;
+  }
+  tooltipEl.innerHTML = html;
+  tooltipEl.style.maxWidth = '440px';
+  tooltipEl.classList.add('show');
+  if (e.type === 'focus' && e.target && typeof e.target.getBoundingClientRect === 'function') {
+    const r = e.target.getBoundingClientRect();
+    let lx = r.right + 12;
+    let ty = r.top + r.height / 2 - 40;
+    const tw = 440;
+    if (lx + tw > window.innerWidth - 8) lx = Math.max(8, r.left - tw - 12);
+    if (ty < 8) ty = 8;
+    if (ty + 320 > window.innerHeight) ty = window.innerHeight - 328;
+    tooltipEl.style.left = lx + 'px';
+    tooltipEl.style.top = ty + 'px';
+  } else {
+    moveTooltip(e);
+  }
+}
+
 const shortNames = {
-  'PA-OC-00':'Infra POC',
-  'PA-OC-01':'Access & Security','PA-OC-02':'Config Inventory','PA-OC-03':'Migration Path',
-  'PA-OC-04':'Configs in VCS','PA-OC-05':'Build Pipeline','PA-OC-06':'Deploy Pipeline',
-  'PA-OC-07':'Drift Detection','PA-OC-08':'Reliability','PA-OC-09':'Enforcement',
-  'PA-OC-10':'Fallback','PA-OC-11':'Pattern Replication'
+  'PA-OC-00': 'Infra POC',
+  'PA-OC-01': 'Access & Security', 'PA-OC-02': 'Config Inventory', 'PA-OC-03': 'Migration Path',
+  'PA-OC-04': 'Configs in VCS', 'PA-OC-05': 'Build Pipeline', 'PA-OC-06': 'Deploy Pipeline',
+  'PA-OC-07': 'Drift Detection', 'PA-OC-08': 'Reliability', 'PA-OC-09': 'Enforcement',
+  'PA-OC-10': 'Fallback', 'PA-OC-11': 'Pattern Replication'
 };
 
-Object.entries(nodes).forEach(([id, n]) => {
-  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+function buildPaDepGraph(depEdges) {
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y);
-  circle.setAttribute('r', '22');
-  circle.setAttribute('fill', n.color);
-  circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '2');
-  g.appendChild(circle);
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  ['must', 'should', 'contingent'].forEach(type => {
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker.setAttribute('id', `arrow-${type}`);
+    marker.setAttribute('viewBox', '0 0 10 10');
+    marker.setAttribute('refX', '9');
+    marker.setAttribute('refY', '5');
+    marker.setAttribute('markerWidth', '7');
+    marker.setAttribute('markerHeight', '7');
+    marker.setAttribute('orient', 'auto');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
+    path.setAttribute('fill', edgeColors[type]);
+    marker.appendChild(path);
+    defs.appendChild(marker);
+  });
+  svg.insertBefore(defs, svg.firstChild);
 
-  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  text.setAttribute('x', n.x); text.setAttribute('y', n.y + 4);
-  text.setAttribute('text-anchor', 'middle');
-  text.setAttribute('fill', 'white');
-  text.setAttribute('font-size', '9');
-  text.setAttribute('font-weight', '700');
-  text.setAttribute('font-family', 'Arial');
-  const mid = /^PA-OC-(\d+)$/.exec(id);
-  text.textContent = mid ? mid[1] : id;
-  g.appendChild(text);
+  const edgeLayerBelow = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  edgeLayerBelow.setAttribute('class', 'dep-edges-visible');
+  svg.appendChild(edgeLayerBelow);
 
-  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  label.setAttribute('x', n.x); label.setAttribute('y', n.y + 38);
-  label.setAttribute('text-anchor', 'middle');
-  label.setAttribute('fill', '#555');
-  label.setAttribute('font-size', '8');
-  label.setAttribute('font-family', 'Arial');
-  label.textContent = shortNames[id] || id;
-  g.appendChild(label);
+  const hitPaths = [];
+  depEdges.forEach(edge => {
+    const f = nodes[edge.from], t = nodes[edge.to];
+    if (!f || !t) return;
+    const { sx, sy, ex, ey } = trimLine(f.x, f.y, t.x, t.y, NODE_R);
+    const d = quadPath(sx, sy, ex, ey, edge.curve);
+    const visible = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    visible.setAttribute('d', d);
+    visible.setAttribute('fill', 'none');
+    visible.setAttribute('stroke', edgeColors[edge.type]);
+    visible.setAttribute('stroke-width', edge.type === 'must' ? '2.2' : '1.8');
+    if (edgeDash[edge.type]) visible.setAttribute('stroke-dasharray', edgeDash[edge.type]);
+    visible.setAttribute('opacity', '0.72');
+    visible.setAttribute('marker-end', `url(#arrow-${edge.type})`);
+    visible.setAttribute('pointer-events', 'none');
+    edgeLayerBelow.appendChild(visible);
+    hitPaths.push({ d, edge });
+  });
 
-  svg.appendChild(g);
+  const nodeLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  nodeLayer.setAttribute('class', 'dep-nodes');
+  svg.appendChild(nodeLayer);
+
+  const edgeLayerHit = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  edgeLayerHit.setAttribute('class', 'dep-edges-hit');
+  svg.appendChild(edgeLayerHit);
+
+  hitPaths.forEach(({ d, edge }) => {
+    const hit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    hit.setAttribute('d', d);
+    hit.setAttribute('class', 'dep-edge-hit');
+    hit.setAttribute('tabindex', '0');
+    hit.setAttribute('aria-label', `${edge.from} to ${edge.to}, ${edge.type} dependency`);
+    hit.addEventListener('mouseenter', (ev) => showDepEdgeTooltip(ev, edge));
+    hit.addEventListener('mousemove', moveTooltip);
+    hit.addEventListener('mouseleave', hideTooltip);
+    hit.addEventListener('focus', (ev) => showDepEdgeTooltip(ev, edge));
+    hit.addEventListener('blur', hideTooltip);
+    edgeLayerHit.appendChild(hit);
+  });
+
+  Object.entries(nodes).forEach(([id, n]) => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y);
+    circle.setAttribute('r', String(NODE_R));
+    circle.setAttribute('fill', n.color);
+    circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '2');
+    g.appendChild(circle);
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', n.x); text.setAttribute('y', n.y + 4);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('fill', 'white');
+    text.setAttribute('font-size', '9');
+    text.setAttribute('font-weight', '700');
+    text.setAttribute('font-family', 'Arial');
+    const mid = /^PA-OC-(\d+)$/.exec(id);
+    text.textContent = mid ? mid[1] : id;
+    g.appendChild(text);
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', n.x); label.setAttribute('y', n.y + 38);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('fill', '#555');
+    label.setAttribute('font-size', '8');
+    label.setAttribute('font-family', 'Arial');
+    label.textContent = shortNames[id] || id;
+    g.appendChild(label);
+    nodeLayer.appendChild(g);
+  });
+}
+
+async function initPaDependencyGraph() {
+  let raw = [];
+  try {
+    const res = await fetch(new URL('pa-outcomes.json', document.URL), { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.dependency_edges) && data.dependency_edges.length) {
+        raw = data.dependency_edges;
+      }
+    }
+  } catch (err) {}
+  if (!raw.length) {
+    const el = document.getElementById('pa-dependency-edges-fallback');
+    if (el && el.textContent.trim()) {
+      try { raw = JSON.parse(el.textContent); } catch (e2) {}
+    }
+  }
+  const depEdgesNorm = normalizePaDepFromJson(raw);
+  if (!depEdgesNorm.length) {
+    const msg = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    msg.setAttribute('x', '40');
+    msg.setAttribute('y', '260');
+    msg.setAttribute('fill', '#888');
+    msg.setAttribute('font-size', '11');
+    msg.setAttribute('font-family', 'Arial');
+    msg.textContent = 'Could not load dependency_edges (pa-outcomes.json or #pa-dependency-edges-fallback). Use same-folder HTTP server or deployed package.';
+    svg.appendChild(msg);
+    return;
+  }
+  buildPaDepGraph(depEdgesNorm);
+}
+
+initPaDependencyGraph();
+  nodeLayer.appendChild(g);
 });
 </script>
 <script>

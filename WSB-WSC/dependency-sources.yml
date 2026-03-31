@@ -1,0 +1,23 @@
+# Canonical machine-readable dependency graphs (Outcome Map "Dependency Flow").
+# Consumed by planning HTML via fetch(); see .github/workflows/deploy-capability-map.yml for deploy packaging.
+# Field shapes: see .cursor/skills/wbs-update-pattern (dependency_edges schema).
+
+pa_pipeline_automation:
+  json_path: WSA/PA/pa-outcomes.json
+  schema_version: 2
+  edges_field: dependency_edges
+  planning_html: WSA/PA/PA-Outcome-map.html
+  wbs_markdown: WSA/PA/PA-WBS.md
+
+wsb_wsc_combined_outcome_map:
+  json_path: WSB-WSC/wsb-wsc-outcome-dependencies.json
+  schema_version: 1
+  edges_field: dependency_edges
+  planning_html: WSB-WSC/WSB-WSC-Outcome-Map.html
+  notes: "O/E/T activity IDs (O1…T6), not WB-OC-xx epics."
+
+vi_wm_registries:
+  vi_json: WSA/VI/vi-outcomes.json
+  wm_json: WSA/WM/wm-outcomes.json
+  edges_field: dependency_edges
+  status: "Populate when VI/WM outcome maps gain interactive Dependency Flow."

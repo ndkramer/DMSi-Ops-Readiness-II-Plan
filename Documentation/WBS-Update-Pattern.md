@@ -87,6 +87,18 @@ flowchart TD
 
 Date format everywhere is **mm-dd-yyyy** (e.g. `03-17-2026`). The same run date is used for WBS archive, JSON archive, and report filename.
 
+### Outcome-map dependency edges (JSON)
+
+Interactive **Dependency Flow** diagrams load edge metadata from JSON (timing, prerequisites, Type 1/2 decisions, cross-workstream text). **Authoritative files:**
+
+| Artifact | JSON path | Field |
+|----------|-----------|--------|
+| PA Outcome Map | `WSA/PA/pa-outcomes.json` | `dependency_edges` (`schema_version` ≥ 2) |
+| WSB–WSC combined map | `WSB-WSC/wsb-wsc-outcome-dependencies.json` | `dependency_edges` |
+| Catalog (paths for CI/docs) | `WSB-WSC/dependency-sources.yml` | — |
+
+When WBS dependency or decision text changes, update the **JSON first**, then align `PA-WBS.md` §3 Mermaid (or equivalent) and the **embedded fallback** `<script type="application/json" id="…-dependency-edges-fallback">` inside each Outcome Map HTML so `file://` viewing still works. See `.cursor/skills/wbs-update-pattern` and `.github/workflows/deploy-capability-map.yml`.
+
 ---
 
 ## Step 1: Run the prep script

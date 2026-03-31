@@ -8,6 +8,11 @@
 # Optional: AWS_REGION (defaults to us-east-2 for capability-map Lambda)
 #
 # Path filters: a push must change at least one listed path (empty commits do not trigger).
+#
+# Dependency graph JSON (Outcome maps load these at runtime):
+#   WSA/PA/pa-outcomes.json  → dependency_edges
+#   WSB-WSC/wsb-wsc-outcome-dependencies.json  → dependency_edges
+# Catalog: WSB-WSC/dependency-sources.yml
 
 name: Deploy Capability Map to Lambda
 
@@ -26,6 +31,9 @@ on:
       - 'WSA/'
       - 'WSB-WSC/WB/'
       - 'WSB-WSC/'
+      - 'WSB-WSC/wsb-wsc-outcome-dependencies.json'
+      - 'WSB-WSC/dependency-sources.yml'
+      - 'WSA/PA/pa-outcomes.json'
       - '.github/workflows/deploy-capability-map.yml'
   workflow_dispatch:
 
@@ -54,6 +62,7 @@ jobs:
             Project-Plan/project-milestones.json
           zip -r deploy.zip WSA/WM WSA/VI WSA/PA WSB-WSC/WB
           zip -j -g deploy.zip WSB-WSC/WSB-WSC-Outcome-Map.html
+          zip -j -g deploy.zip WSB-WSC/wsb-wsc-outcome-dependencies.json WSB-WSC/dependency-sources.yml
           echo "Package size: $(du -h deploy.zip | cut -f1)"
 
       - name: Configure AWS credentials

@@ -24,6 +24,10 @@ An outcome-based model addresses this by organizing work around **what you need 
 
 Every piece of work must trace to a measurable outcome. If it doesn't, it either belongs somewhere else or shouldn't be done.
 
+### Machine-readable dependency graphs
+
+For tooling, CI packaging, and consistent Outcome Map behavior, **typed outcome/activity dependencies** (must / should / contingent) with timing and decision metadata are stored as **`dependency_edges`** in JSON. **Pipeline Automation:** `WSA/PA/pa-outcomes.json`. **WSB–WSC combined activity map (O/E/T):** `WSB-WSC/wsb-wsc-outcome-dependencies.json`. **Index of paths:** `WSB-WSC/dependency-sources.yml`. Planning HTML fetches these files at runtime (with an embedded JSON fallback for offline `file://` use).
+
 ---
 
 ## 2. Outcome Categories

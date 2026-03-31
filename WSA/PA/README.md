@@ -7,7 +7,7 @@ Normative planning for the **Pipeline Automation** capability (NGINX config pipe
 | Artifact | Purpose |
 |----------|---------|
 | **`PA-WBS.md`** | Outcome-based **Work Breakdown Structure** — success criteria, deliverables, dependencies, risks, decisions, Jira mapping (human-readable). |
-| **`pa-outcomes.json`** | Optional **structured** outcome IDs ↔ Jira Epic keys for scripts and reconciliation; **keep in sync** with `PA-WBS.md` §10 when epics change. |
+| **`pa-outcomes.json`** | **Structured** outcome IDs ↔ Jira Epic keys (`schema_version` ≥ 2); **`dependency_edges`** is the canonical store for `PA-Outcome-map.html` Dependency Flow (timing, Type 1/2, PA-CW-XX). **Keep in sync** with `PA-WBS.md` §3–§9 when edges or decisions change; refresh the HTML’s `#pa-dependency-edges-fallback` block after editing JSON. |
 | **`PA-Outcome-map.html`** | Visual timeline and outcome bands. |
 | **`PA-kanban.html`** | Per-outcome boards; **Jira-backed** via embedded export snapshot. |
 | **`PA-Constraint-vs-Outcome-Map.html`** | Stage-gate vs outcome model comparison. |

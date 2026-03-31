@@ -13,6 +13,8 @@ Normative planning for the **DMSi Customer Support Transformation** (outcome-bas
 | **`WB-Outcome-Map.html`** | Visual timeline (program-month grid). |
 | **`WB-kanban.html`** | Per-outcome boards (WBS-derived deliverables; not yet Jira-backed). |
 
+**Parent folder (WSB + WSC combined planning):** **`../WSB-WSC-Outcome-Map.html`** loads **`../wsb-wsc-outcome-dependencies.json`** (`dependency_edges` for Operational / Environmental / Technological activities). Catalog of all dependency JSON paths: **`../dependency-sources.yml`**.
+
 ## Source material
 
 - **Implementation plan (Word):** `WSB-WSC/WSB/Customer Support Implementation Plan.docx`

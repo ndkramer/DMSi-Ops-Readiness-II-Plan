@@ -1,0 +1,274 @@
+{
+  "schema_version": 1,
+  "capability": "WSB-WSC",
+  "artifact": "WSB-WSC-Outcome-Map.html",
+  "map_type": "activity_dependency_flow",
+  "activity_ids": [
+    "O1",
+    "O2",
+    "O3",
+    "O4",
+    "E1",
+    "E2",
+    "E3",
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6"
+  ],
+  "wbs_markdown": "WSB-WSC/Outcome_Based_Project_Model.md",
+  "notes": "Canonical machine-readable dependency_edges for WSB-WSC combined outcome map (Operational / Environmental / Technological). Keep in sync with WSB-WSC-Outcome-map.html; edit this JSON first, then refresh embedded fallback in HTML if present.",
+  "dependency_edges": [
+    {
+      "id": "w-e-o1-o2",
+      "from": "O1",
+      "to": "O2",
+      "type": "must",
+      "curve": 0,
+      "timing": "O1 completes S1–S2 window on timeline; O2 starts S2 and needs segmentation/entitlement outputs plus E1 role labels.",
+      "prerequisite": "Operating model socialization requires data pull, segmentation, and entitlement rules from O1.",
+      "decisions": [
+        {
+          "id": "D-02",
+          "decision_type": "TYPE 1",
+          "text": "Enterprise vs. Commercial segmentation model and entitlement rules.",
+          "required_by": "WSB Stage 2 / before SLA definitions"
+        },
+        {
+          "id": "B-01",
+          "decision_type": "BLOCKER",
+          "text": "Incident vs. Case vs. Ticket taxonomy — must resolve before service level definitions (feeds E1/O2).",
+          "required_by": "WSB Stage 1 Foundation"
+        }
+      ],
+      "granular": [
+        "Maps to activity deps: O2 depends on O1 in swimlane data."
+      ]
+    },
+    {
+      "id": "w-e-o2-o3",
+      "from": "O2",
+      "to": "O3",
+      "type": "must",
+      "curve": 0,
+      "timing": "O3 runs S4–S5 after O2 socialization iterations; tooling for test environments typically depends on T4 progress.",
+      "prerequisite": "Controlled testing requires agreed operating model from O2.",
+      "decisions": [],
+      "granular": [
+        "Prereq note: O3 also lists T4 (tooling configured for testing) — see T4→O3 contingent link."
+      ]
+    },
+    {
+      "id": "w-e-o3-o4",
+      "from": "O3",
+      "to": "O4",
+      "type": "must",
+      "curve": 0,
+      "timing": "Institutionalization follows successful model testing (O3).",
+      "prerequisite": "Validated tiered framework, pod routing, and SLA behavior before full rollout.",
+      "decisions": []
+    },
+    {
+      "id": "w-e-e1-e2",
+      "from": "E1",
+      "to": "E2",
+      "type": "must",
+      "curve": 0,
+      "timing": "Tiger team alignment (E2) follows ratified roles, labels, and taxonomy work in E1.",
+      "prerequisite": "Shared definitions for incidents, severity, roles, and communication accountability.",
+      "decisions": [
+        {
+          "id": "B-01",
+          "decision_type": "BLOCKER",
+          "text": "Incident vs. Case vs. Ticket taxonomy.",
+          "required_by": "Before E1 can fully close / WSB Stage 1"
+        }
+      ]
+    },
+    {
+      "id": "w-e-t1-t2",
+      "from": "T1",
+      "to": "T2",
+      "type": "must",
+      "curve": 0,
+      "timing": "RFP/evaluation (T2) starts after capability audit (T1) documents gaps and priorities.",
+      "prerequisite": "Requirements documented from T1 before vendor/options analysis.",
+      "decisions": [
+        {
+          "id": "B-02",
+          "decision_type": "BLOCKER",
+          "text": "WSC requirements must incorporate all stakeholder/persona priorities.",
+          "required_by": "WSC Stage 1 Requirements"
+        }
+      ]
+    },
+    {
+      "id": "w-e-t2-t3",
+      "from": "T2",
+      "to": "T3",
+      "type": "must",
+      "curve": 0,
+      "timing": "OpSec, compliance, and contracting follow down-selected path from T2.",
+      "prerequisite": "Evaluation complete with a recommendation and leadership alignment.",
+      "decisions": [
+        {
+          "id": "D-01",
+          "decision_type": "TYPE 1",
+          "text": "Enhance 360, adopt new platform (Zendesk/Freshdesk/JSM class), or hybrid.",
+          "required_by": "WSC Stage 3 Implementation Plan"
+        }
+      ]
+    },
+    {
+      "id": "w-e-t3-t4",
+      "from": "T3",
+      "to": "T4",
+      "type": "must",
+      "curve": 0,
+      "timing": "Deployment/development begins after contracting and security gates.",
+      "prerequisite": "Budget sign-off and vendor contracts in place.",
+      "decisions": []
+    },
+    {
+      "id": "w-e-t4-t5",
+      "from": "T4",
+      "to": "T5",
+      "type": "must",
+      "curve": 0,
+      "timing": "Operationalizing follows phased deployment (T4).",
+      "prerequisite": "Production-ready rollout and training complete.",
+      "decisions": []
+    },
+    {
+      "id": "w-e-t5-t6",
+      "from": "T5",
+      "to": "T6",
+      "type": "must",
+      "curve": 0,
+      "timing": "Enhancements/iterations (T6) assume stable live tooling from T5; E3 runs in parallel refinement loop.",
+      "prerequisite": "Tooling live for full case lifecycle before automation/AI layering.",
+      "decisions": []
+    },
+    {
+      "id": "w-e-o1-e1",
+      "from": "O1",
+      "to": "E1",
+      "type": "must",
+      "curve": -35,
+      "timing": "Environmental definitions need segmentation/entitlement context from O1 (S1 overlap).",
+      "prerequisite": "Data and entitlement model informs role and label definitions.",
+      "decisions": [
+        {
+          "id": "D-02",
+          "decision_type": "TYPE 1",
+          "text": "Segmentation and entitlement rules.",
+          "required_by": "WSB Stage 2"
+        }
+      ],
+      "cross_cutting": "X-01 (panel): WSC Stage 0 aligns with WSB Stage 1 outputs for incident management requirements."
+    },
+    {
+      "id": "w-e-e1-o2",
+      "from": "E1",
+      "to": "O2",
+      "type": "should",
+      "curve": 40,
+      "timing": "Recommended: ratify E1 before heavy O2 socialization; some O2 prep may proceed with risk acceptance.",
+      "prerequisite": "Role/taxonomy clarity strongly reduces rework in operating model iterations.",
+      "decisions": [],
+      "granular": [
+        "Should dependency — parallel socialization possible with explicit stakeholder risk."
+      ]
+    },
+    {
+      "id": "w-e-o1-t1",
+      "from": "O1",
+      "to": "T1",
+      "type": "must",
+      "curve": 45,
+      "timing": "T1 audit must reflect what the operating model needs from tooling (S0–S1 overlap).",
+      "prerequisite": "O1 outputs define capability targets for gap analysis.",
+      "decisions": [
+        {
+          "id": "B-02",
+          "decision_type": "BLOCKER",
+          "text": "Stakeholder/persona coverage in requirements.",
+          "required_by": "T1 / WSC Stage 1"
+        }
+      ],
+      "cross_cutting": "X-01: tooling requirements grounded in WSB operating model design."
+    },
+    {
+      "id": "w-e-e1-t1",
+      "from": "E1",
+      "to": "T1",
+      "type": "must",
+      "curve": -30,
+      "timing": "T1 needs E1 role and workflow definitions to score current vs needed capabilities.",
+      "prerequisite": "People/process requirements from environmental track feed the audit.",
+      "decisions": []
+    },
+    {
+      "id": "w-e-e2-t4",
+      "from": "E2",
+      "to": "T4",
+      "type": "should",
+      "curve": 0,
+      "timing": "Deployment runs smoother when tiger team alignment (E2) precedes large-scale rollout.",
+      "prerequisite": "Cross-functional alignment on direction before major config/migration work.",
+      "decisions": [],
+      "granular": [
+        "Should — can compress with risk acceptance if leadership drives sequencing."
+      ],
+      "cross_cutting": "X-02: WSB routing/SLA configuration waits on WSC path decision (see D-01)."
+    },
+    {
+      "id": "w-e-o4-e3",
+      "from": "O4",
+      "to": "E3",
+      "type": "must",
+      "curve": 0,
+      "timing": "Data read on results (E3) needs live operating model (O4) for meaningful metrics.",
+      "prerequisite": "Institutionalized model producing pod and incident metrics.",
+      "decisions": []
+    },
+    {
+      "id": "w-e-t5-e3",
+      "from": "T5",
+      "to": "E3",
+      "type": "must",
+      "curve": 0,
+      "timing": "E3 iterative refinement requires tooling live (T5) and dashboards.",
+      "prerequisite": "Production tooling supporting case lifecycle and reporting.",
+      "decisions": []
+    },
+    {
+      "id": "w-e-e3-t6",
+      "from": "E3",
+      "to": "T6",
+      "type": "should",
+      "curve": 0,
+      "timing": "Enhancements benefit from data-driven feedback loop from E3.",
+      "prerequisite": "Operational metrics informing automation and AI priorities.",
+      "decisions": [],
+      "granular": [
+        "Should — enhancement backlog can start from T5 with less E3 signal if needed."
+      ]
+    },
+    {
+      "id": "w-e-t4-o3",
+      "from": "T4",
+      "to": "O3",
+      "type": "contingent",
+      "curve": -50,
+      "timing": "Contingent: O3 prerequisite “tooling configured for testing” — activated when test/pilot environments depend on T4 deliverables.",
+      "prerequisite": "Without deploy-phase tooling, operating model testing may be limited or delayed.",
+      "decisions": [],
+      "granular": [
+        "Maps to O3 prereqs in swimlane data: tooling configured for testing (WSC dependency)."
+      ]
+    }
+  ]
+}

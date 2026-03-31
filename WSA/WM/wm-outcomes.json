@@ -1,9 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "capability": "WM",
   "wbs_markdown": "WM-WBS.md",
   "jira": {
-    "notes": "Populate capability_issue_key and outcomes[] when WM-WBS.md §9 Jira mapping is finalized (mirror PA/pa-outcomes.json)."
+    "notes": "Populate capability_issue_key and outcomes[] when WM-WBS.md §9 Jira mapping is finalized (mirror PA/pa-outcomes.json). Optional dependency_edges[]: same model as PA-Outcome-map.html depEdges; align with WM-WBS.md must/should dependencies and WM decision register (TYPE 1/2). See .cursor/skills/wbs-update-pattern."
   },
-  "outcomes": []
+  "outcomes": [],
+  "dependency_edges": []
 }
