@@ -1,0 +1,12 @@
+{
+  "name": "dmsi-op-readiness-ii-plan",
+  "private": true,
+  "description": "DMSI operational readiness planning repo. Planning CLI: dynamo-os-planning-toolkit (see Scripts/README.md).",
+  "scripts": {
+    "plan:validate": "dynamo-plan config validate",
+    "plan:paths": "dynamo-plan paths list"
+  },
+  "devDependencies": {
+    "dynamo-os-planning-toolkit": "file:../dynamo-os/planning-toolkit"
+  }
+}

@@ -1,6 +1,6 @@
 # WBS Update Pattern (with JSON Archive and Jira-Import)
 
-This document describes the reusable process for updating capability WBS documents and the associated Jira-import JSON, including archiving, regeneration, and reporting. Prep script: `Scripts/wbs-load-prep.js`.
+This document describes the reusable process for updating capability WBS documents and the associated Jira-import JSON, including archiving, regeneration, and reporting. Prep: **`dynamo-plan wbs prep`** (or `Scripts/wbs-load-prep.js`, which forwards to the **dynamo-os** planning toolkit); paths and `{Prefix}` come from **`dynamo-os.config.cjs`**.
 
 ## Cursor skill (trigger by phrase)
 
@@ -83,7 +83,7 @@ flowchart TD
 | `{Folder}/Output/` | Current Jira-import JSON: `{Prefix}-WBS-Jira-Import.json`. Canonical artifact for Jira upload. |
 | `{Folder}/Output/Archive/` | Date-stamped JSON snapshots: `{Prefix}-WBS-Jira-Import-mm-dd-yyyy.json`. |
 | `{Folder}/Update-Reports/` | Load reports: `WBS-Load-mm-dd-yyyy.md`. |
-| `{Folder}/{Prefix}-WBS.md` | Current WBS (`WSA/PA/PA-WBS.md`, `WSA/VI/VI-WBS.md`, `WSA/WM/WM-WBS.md`, `WSB-WSC/WB/WB-WBS.md`). Optional registries: `WSA/PA/pa-outcomes.json`, `WSA/VI/vi-outcomes.json`, `WSA/WM/wm-outcomes.json`, `WSB-WSC/WB/wb-outcomes.json` (populate when outcome ↔ Jira mapping is stable). **PA/VI/WM** on disk live under **`WSA/{PA,VI,WM}/`**; **WB** is **`WSB-WSC/WB/`**. `node Scripts/wbs-load-prep.js <capability>` resolves via `Scripts/wbs-capability-folder.js`. |
+| `{Folder}/{Prefix}-WBS.md` | Current WBS (`WSA/PA/PA-WBS.md`, `WSA/VI/VI-WBS.md`, `WSA/WM/WM-WBS.md`, `WSB-WSC/WB/WB-WBS.md`). Optional registries: `WSA/PA/pa-outcomes.json`, `WSA/VI/vi-outcomes.json`, `WSA/WM/wm-outcomes.json`, `WSB-WSC/WB/wb-outcomes.json` (populate when outcome ↔ Jira mapping is stable). **PA/VI/WM** on disk live under **`WSA/{PA,VI,WM}/`**; **WB** is **`WSB-WSC/WB/`**. Capability folders are resolved from **`dynamo-os.config.cjs`** (`diskPath`, `filePrefix`). |
 
 Date format everywhere is **mm-dd-yyyy** (e.g. `03-17-2026`). The same run date is used for WBS archive, JSON archive, and report filename.
 
@@ -106,8 +106,10 @@ When WBS dependency or decision text changes, update the **JSON first**, then al
 **Command (from project root):**
 
 ```bash
-node Scripts/wbs-load-prep.js <capability>
+dynamo-plan wbs prep <capability>
 ```
+
+Or `node ../dynamo-os/planning-toolkit/bin/cli.js wbs prep <capability>` / `node Scripts/wbs-load-prep.js <capability>`.
 
 **Examples:** `PA`, `VI`, `WM`, `WB` (JSON archive is skipped if no `Output` JSON exists).
 
@@ -117,7 +119,7 @@ node Scripts/wbs-load-prep.js <capability>
 2. **Archive JSON** — If `{Folder}/Output/{Prefix}-WBS-Jira-Import.json` exists, copies it to `{Folder}/Output/Archive/{Prefix}-WBS-Jira-Import-mm-dd-yyyy.json` (creates `Output/Archive` if needed). If the file does not exist, this step is skipped without error.
 3. **Create report stub** — Creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with:
    - **Summary:** Paths to archived WBS and (when applicable) archived Jira import JSON.
-   - **Change summary table:** At the top, a table with counts for **Work items**, **Risks**, **Decisions**, **Questions** (rows) and **Added**, **Deleted**, **Updated** (columns). Initial values are 0; after regenerating the JSON you can run `node Scripts/wbs-load-report-counts.js <capability> <dateStamp>` to compute counts by diffing archived vs current Jira-import JSON.
+   - **Change summary table:** At the top, a table with counts for **Work items**, **Risks**, **Decisions**, **Questions** (rows) and **Added**, **Deleted**, **Updated** (columns). Initial values are 0; after regenerating the JSON run **`dynamo-plan wbs report-counts <capability> <dateStamp>`** (or `node Scripts/wbs-load-report-counts.js …`) to compute counts by diffing archived vs current Jira-import JSON.
    - **Input files processed:** A section that must be filled for each file in Input: filename, what was extracted (e.g. outcomes, phases, risks, decisions, timeline), and what WBS changes were made or how content was mapped to existing keys. The stub lists the files in scope (from the Input folder at run time).
    - Placeholder sections for outcome map changes, risks/decisions/questions, keys added/updated/removed, other changes.
    - **Next steps:** Regenerate WBS and regenerate Jira import JSON (see below).
@@ -131,7 +133,7 @@ node Scripts/wbs-load-prep.js <capability>
   - Document and key structure (outcome IDs, deliverable IDs, risk/decision/question IDs per capability rules, e.g. `.cursor/rules/pa.mdc`).
   - Section order, outcome map table, per-outcome template, Risks table (with Type 1/Type 2 where applicable), Decisions table, Open Questions.
 - **Fill in** the WBS-Load report: always complete the **Input files processed** section with a per-file summary (filename, what was extracted, what WBS changes or mappings resulted); then outcome map / constraint map changes, risks/decisions/questions changes, keys added/updated/removed, other substantial changes.
-- **After filling the report**, run `node Scripts/wbs-move-input-to-archive.js <capability> <dateStamp>` to move all files from Input/ to Input/Archive/{dateStamp}/ (use the same dateStamp as the report, e.g. from the report filename `WBS-Load-mm-dd-yyyy.md`).
+- **After filling the report**, run **`dynamo-plan wbs archive-input <capability> <dateStamp>`** (or `node Scripts/wbs-move-input-to-archive.js …`) to move all files from Input/ to Input/Archive/{dateStamp}/ (use the same dateStamp as the report, e.g. from the report filename `WBS-Load-mm-dd-yyyy.md`).
 
 ---
 
@@ -152,10 +154,10 @@ No schema change unless a separate delta format is introduced later.
 After regenerating the Jira import JSON, update the report’s **Change summary** table with real counts (work items, risks, decisions, questions × added / deleted / updated). From the project root:
 
 ```bash
-node Scripts/wbs-load-report-counts.js <capability> <dateStamp>
+dynamo-plan wbs report-counts <capability> <dateStamp>
 ```
 
-Example: `node Scripts/wbs-load-report-counts.js PA 03-17-2026`. The script diffs `Output/Archive/{Prefix}-WBS-Jira-Import-{dateStamp}.json` (before) vs `Output/{Prefix}-WBS-Jira-Import.json` (after) and overwrites the table in the report.
+Example: `dynamo-plan wbs report-counts PA 03-17-2026` (after `npm link` in **dynamo-os/planning-toolkit**), or `node ../dynamo-os/planning-toolkit/bin/cli.js wbs report-counts PA 03-17-2026`. The command diffs `Output/Archive/{Prefix}-WBS-Jira-Import-{dateStamp}.json` (before) vs `Output/{Prefix}-WBS-Jira-Import.json` (after) and overwrites the table in the report. **`{Prefix}`** comes from **`dynamo-os.config.cjs`** (`filePrefix`).
 
 ---
 

@@ -9,13 +9,14 @@ This document gives JQL queries and the export-script approach for retrieving al
 - **Stories** → **Sub-tasks** (parent = Story key).
 - **Action items** live under a **separate** action-item root (e.g. WSA-509 for VI).
 
-Configured roots are in [Scripts/jira-export-pa.js](../Scripts/jira-export-pa.js) (`CAPABILITY_CONFIG`):
+Canonical roots live in **`dynamo-os.config.cjs`** per capability: **`jiraCapabilityRoot`**, **`jiraActionItemRoot`**. Example values (keep in sync with config):
 
 | Capability | Root key   | Action-item root |
 |-----------|------------|-------------------|
 | PA        | WSA-2656   | WSA-2657          |
 | VI        | WSA-508    | WSA-509           |
 | WM        | WSA-2881   | WSA-2882          |
+| WB        | (see config) | (see config)    |
 
 ## JQL limitation
 
@@ -56,32 +57,32 @@ key = WSA-508 OR parent = WSA-508 OR parent = WSA-509
 
 ### 3. Full tree (Epics, Stories, Sub-tasks, Action items)
 
-No single JQL returns the full tree. Use the repo’s export script, which runs multiple JQL queries and writes the full hierarchy to JSON.
+No single JQL returns the full tree. Use the **planning toolkit** (or **`Scripts/jira-export-pa.js`**, which forwards to it), which runs multiple JQL queries and writes the full hierarchy to JSON.
 
 **VI:**
 
 ```bash
-node Scripts/jira-export-pa.js VI WSA-508 WSA-509
+node ../dynamo-os/planning-toolkit/bin/cli.js jira export VI
+# or explicit keys:
+node ../dynamo-os/planning-toolkit/bin/cli.js jira export VI WSA-508 WSA-509
 ```
 
-**PA:** `node Scripts/jira-export-pa.js PA WSA-2656 WSA-2657`  
-**WM:** `node Scripts/jira-export-pa.js WM WSA-2881 WSA-2882`
+**PA / WM:** `… jira export PA` / `… jira export WM` (defaults from config), or pass keys like `… jira export PA WSA-2656 WSA-2657`. **Legacy:** `node Scripts/jira-export-pa.js …`
 
 Output: `{Capability}/Jira/{Prefix}-Jira-mm-dd-yyyy-json.json` (see [Jira-Export-Process.md](Jira-Export-Process.md)).
 
 ### 4. Delete all under root (leave root and action-item root)
 
-To **delete** all Epics, Stories, Sub-tasks, and Action Items under a capability (e.g. WSA-508) while keeping the root and action-item root, use [Scripts/jira-delete-under-root.js](../Scripts/jira-delete-under-root.js). Run with `--dry-run` first to see counts and confirm.
+To **delete** all Epics, Stories, Sub-tasks, and Action Items under a capability while keeping the root and action-item root, use **`dynamo-plan jira delete-under-root`** (or [Scripts/jira-delete-under-root.js](../Scripts/jira-delete-under-root.js), which forwards to the CLI). Run **`--dry-run`** first.
 
 **VI:**
 
 ```bash
-node Scripts/jira-delete-under-root.js VI --dry-run   # preview
-node Scripts/jira-delete-under-root.js VI             # delete
+node ../dynamo-os/planning-toolkit/bin/cli.js jira delete-under-root VI --dry-run   # preview
+node ../dynamo-os/planning-toolkit/bin/cli.js jira delete-under-root VI             # delete
 ```
 
-**PA:** `node Scripts/jira-delete-under-root.js PA`  
-**WM:** `node Scripts/jira-delete-under-root.js WM`
+**PA / WM:** same pattern with **`PA`** / **`WM`**. **Legacy:** `node Scripts/jira-delete-under-root.js …`
 
 ## Summary
 
@@ -89,12 +90,14 @@ node Scripts/jira-delete-under-root.js VI             # delete
 |------------------------------------|---------------------------------------------------------------------------------|
 | Root + Epics under WSA-508         | `key = WSA-508 OR parent = WSA-508`                                            |
 | Root + Epics + VI action items    | `key = WSA-508 OR parent = WSA-508 OR parent = WSA-509`                         |
-| Full tree (all types)              | No single JQL; use **export script**: `node Scripts/jira-export-pa.js VI WSA-508 WSA-509` |
+| Full tree (all types)              | No single JQL; use **`dynamo-plan jira export`** (defaults from **`dynamo-os.config.cjs`**) or `node Scripts/jira-export-pa.js …` |
 
 If your Jira has an app (e.g. JQL Search Extensions) that adds recursive hierarchy functions, you may be able to use something like `issue in childIssuesOf("WSA-508")` in the UI; that is not standard JQL.
 
 ## See also
 
-- [Jira-Export-Process.md](Jira-Export-Process.md) — export script usage and output
-- [Scripts/jira-export-pa.js](../Scripts/jira-export-pa.js) — export implementation (multiple `parent = …` JQL calls)
-- [Scripts/jira-delete-under-root.js](../Scripts/jira-delete-under-root.js) — delete all work under a root (use `--dry-run` first)
+- [Jira-Export-Process.md](Jira-Export-Process.md) — export usage and output
+- [dynamo-os.config.cjs](../dynamo-os.config.cjs) — `jiraCapabilityRoot` / `jiraActionItemRoot` per capability
+- **dynamo-os/planning-toolkit** — `jira export`, `jira delete-under-root`, etc.; [Scripts/README.md](../Scripts/README.md)
+- [Scripts/jira-export-pa.js](../Scripts/jira-export-pa.js) — thin wrapper → CLI (multiple `parent = …` JQL calls in toolkit)
+- [Scripts/jira-delete-under-root.js](../Scripts/jira-delete-under-root.js) — thin wrapper → CLI (use `--dry-run` first)

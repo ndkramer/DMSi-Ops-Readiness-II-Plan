@@ -54,7 +54,7 @@ When creating or updating **Outcome Map** HTML that includes a **Dependency Flow
 
 **JSON registries:** **`WSA/PA/pa-outcomes.json`** — Jira keys (`PA-WBS.md` §10) **and** canonical **`dependency_edges`** for `PA-Outcome-map.html`. **`WSA/VI/vi-outcomes.json`**, **`WSA/WM/wm-outcomes.json`**, **`WSB-WSC/WB/wb-outcomes.json`** — outcome ↔ Jira when WBS §9/§11 is keyed; **`dependency_edges`** optional (`schema_version` ≥ 2) until those maps ship interactive Dependency Flow. **WSB–WSC combined activity map:** dependencies live in **`WSB-WSC/wsb-wsc-outcome-dependencies.json`**, not only in WB folder JSON.
 
-**Jira-import target JSON (manual or generator):** `{Capability}/Output/{Prefix}-WBS-Jira-Import.json` for PA, VI, WM; for **WB** the folder is **`WSB-WSC/WB/`** (run `wbs-load-prep.js WB` — see `Scripts/wbs-capability-folder.js`).
+**Jira-import target JSON (manual or generator):** `{Capability}/Output/{Prefix}-WBS-Jira-Import.json` for PA, VI, WM; for **WB** the folder is **`WSB-WSC/WB/`** (run **`dynamo-plan wbs prep WB`** or `node Scripts/wbs-load-prep.js WB` — paths come from **`dynamo-os.config.cjs`** via **dynamo-os/planning-toolkit**).
 
 ---
 
@@ -68,13 +68,15 @@ From the user’s message, determine **PA**, **VI**, **WM**, or **WB**. If uncle
 
 ### 2. Run the prep script
 
-From the **project root**:
+From the **project root** (either form runs the same logic; **`dynamo-os.config.cjs`** supplies `diskPath` / `filePrefix`):
 
 ```bash
-node Scripts/wbs-load-prep.js <capability>
+node ../dynamo-os/planning-toolkit/bin/cli.js wbs prep <capability>
 ```
 
-Example: `node Scripts/wbs-load-prep.js PA`
+Or: `node Scripts/wbs-load-prep.js <capability>` (wrapper; needs sibling **dynamo-os** or **`DYNAMO_PLAN_CLI`**).
+
+Example: `dynamo-plan wbs prep PA` (after `npm link` in **dynamo-os/planning-toolkit**)
 
 This archives the current WBS to `{Folder}/Archive/{Prefix}-WBS-mm-dd-yyyy.md` (PA, VI, WM, WB), archives `{Folder}/Output/{Prefix}-WBS-Jira-Import.json` to `{Folder}/Output/Archive/...` (if present), and creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with a stub. Note the run date (mm-dd-yyyy) for step 4.
 
@@ -88,17 +90,25 @@ This archives the current WBS to `{Folder}/Archive/{Prefix}-WBS-mm-dd-yyyy.md` (
 - **VI / WM / WB:** When Jira mapping in the WBS stabilizes, update **`vi-outcomes.json`** / **`wm-outcomes.json`** / **`wb-outcomes.json`** to match. If the capability gains an Outcome Map HTML with **Dependency Flow**, populate **`dependency_edges`** and extend **`dependency-sources.yml`**; use **`schema_version` ≥ 2** for VI/WM.
 - **Fill the WBS-Load report**: per-file “Input files processed” summaries (filename → extracted content → WBS edits or “mapped to existing keys”). Do not leave this section generic.
 
+### 3b. Refresh Change summary counts (after Jira-import JSON is updated)
+
+```bash
+node ../dynamo-os/planning-toolkit/bin/cli.js wbs report-counts <capability> <dateStamp>
+```
+
+Or: `node Scripts/wbs-load-report-counts.js …` / `dynamo-plan wbs report-counts …`. Use the same **dateStamp** as the WBS-Load report (mm-dd-yyyy).
+
 ### 4. Move processed Input to Archive
 
 ```bash
-node Scripts/wbs-move-input-to-archive.js <capability> <dateStamp>
+node ../dynamo-os/planning-toolkit/bin/cli.js wbs archive-input <capability> <dateStamp>
 ```
 
-Use the same **dateStamp** as the WBS-Load report (mm-dd-yyyy).
+Or: `node Scripts/wbs-move-input-to-archive.js …` / `dynamo-plan wbs archive-input …`. Use the same **dateStamp** as the WBS-Load report (mm-dd-yyyy).
 
 ### 5. Jira import JSON (manual reminder)
 
-After regeneration, remind the user to update `{Capability}/Output/{Prefix}-WBS-Jira-Import.json` from the new WBS if that file is maintained manually. Preserve schema (`metadata`, `work_items`, `action_items`) and WBS keys. **WM:** `node Scripts/wm-wsb-to-jira-import.js` regenerates `WSA/WM/Output/WM-WBS-Jira-Import.json` from embedded structure (re-sync with `WSA/WM/WM-WBS.md` when that script’s data is updated).
+After regeneration, remind the user to update `{Capability}/Output/{Prefix}-WBS-Jira-Import.json` from the new WBS if that file is maintained manually. Preserve schema (`metadata`, `work_items`, `action_items`) and WBS keys. **WM:** `node Scripts/wm-wsb-to-jira-import.js` writes **`{filePrefix}-WBS-Jira-Import.json`** under **`capabilities.WM`** from **`dynamo-os.config.cjs`** (via **`Scripts/planning-path-context.js`** when the toolkit is available; re-sync embedded data with **`WSA/WM/WM-WBS.md`** when that script’s arrays are updated). To **create issues in Jira** from that JSON, use **`dynamo-plan jira import-wm`** (or **`node Scripts/jira-import-wm.js`**) — **`--dry-run`** first; see [Scripts/README.md](../../../Scripts/README.md).
 
 ### Reference (Pattern A)
 
@@ -120,7 +130,8 @@ Use this when the user wants **planning artifacts** (`WSA/PA/PA-WBS.md`, `WSA/PA
 ### Steps (checklist)
 
 1. **Refresh Jira data (PA)**  
-   - Run `node Scripts/jira-export-pa.js` from project root (needs `JIRA_URL`, `JIRA_USERNAME`, `JIRA_API_TOKEN` in env or `.cursor/.env`), **or** rebuild kanban-only from the latest export: `node Scripts/jira-kanban-status-from-export.js` (no API call).  
+   - Run **`node ../dynamo-os/planning-toolkit/bin/cli.js jira export`** from project root (or **`dynamo-plan jira export`** after `npm link`; needs `JIRA_URL`, `JIRA_USERNAME`, `JIRA_API_TOKEN` via **`jira.envFile`** or env). **`node Scripts/jira-export-pa.js`** forwards to the same CLI.  
+   - **Or** rebuild kanban-only from the latest dated export: **`node ../dynamo-os/planning-toolkit/bin/cli.js jira kanban-rebuild PA`** (or **`node Scripts/jira-kanban-status-from-export.js`**) — no Jira API call.  
    - Outputs include **dated** `WSA/PA/Jira/PA-Jira-mm-dd-yyyy-json.json` (retain multiple dated files), `WSA/PA/Jira/pa-kanban-jira-status.json`, and `WSA/PA/Jira/pa-kanban-jira-status.js` (embedded snapshot for `file://`).
 
 2. **Read the WBS** (`WSA/PA/PA-WBS.md`) — especially **Systems of record and planning views**, outcome table, and any POC / Jira language. Decide:  
@@ -143,8 +154,8 @@ Use this when the user wants **planning artifacts** (`WSA/PA/PA-WBS.md`, `WSA/PA
    - **Intro** paragraph: Jira keys, POC epic, `[POC]`, action-items epic, legacy epic note—match WBS/pa.mdc.  
    - **`outcomeData`**: Remove or empty planning-only rows when Jira owns that work (e.g. `POC.deliverables: []` with a **short comment** in the script pointing to the WBS change log).  
    - **POC board**: Ensure **`[POC]`** stories under **WSA-3758** appear from `by_epic_key` / export (see `POC_PIPELINE_STORY_KEY` and `findPocPipelineStoryRow` if present). Avoid **`var` inside functions** where a later `const` with the same name exists in the same function (hoisting bug).  
-   - **Kanban JSON**: `Scripts/jira-export-pa.js` attaches **`subtasks[]`** to each Story in `buildKanbanJiraStatusJson` (Sub-tasks indexed by parent). Cards show **progress** (done/total, segments or bar, %) and **Subtask checklist** from export; WBS-only subtasks remain as local checklist when no Jira rows.  
-   - After script changes, **re-run** export or `jira-kanban-status-from-export.js` and commit updated `pa-kanban-jira-status.*`.
+   - **Kanban JSON**: the toolkit’s **`buildKanbanJiraStatusJson`** (invoked by **`jira export`** / **`jira kanban-rebuild`**) attaches **`subtasks[]`** to each Story (Sub-tasks indexed by parent). Cards show **progress** (done/total, segments or bar, %) and **Subtask checklist** from export; WBS-only subtasks remain as local checklist when no Jira rows.  
+   - After script changes, **re-run** **`dynamo-plan jira export`** or **`dynamo-plan jira kanban-rebuild PA`** (or the **`Scripts/jira-*.js`** wrappers) and commit updated `pa-kanban-jira-status.*`.
 
 6. **Validate**  
    - Open `WSA/PA/PA-kanban.html` in a browser: outcome grid renders (no silent JS syntax errors).  
@@ -163,7 +174,7 @@ Use this when the user wants **planning artifacts** (`WSA/PA/PA-WBS.md`, `WSA/PA
 | WSB–WSC dependency JSON / catalog | `WSB-WSC/wsb-wsc-outcome-dependencies.json`, `WSB-WSC/dependency-sources.yml` |
 | Maps | `WSA/PA/PA-Outcome-map.html` (fetch + `#pa-dependency-edges-fallback`), `WSB-WSC/WSB-WSC-Outcome-Map.html` (fetch + `#wsb-dependency-edges-fallback`) |
 | Kanban UI | `WSA/PA/PA-kanban.html` |
-| Jira export / kanban data | `Scripts/jira-export-pa.js`, `Scripts/jira-kanban-status-from-export.js`, `WSA/PA/Jira/pa-kanban-jira-status.json`, `WSA/PA/Jira/pa-kanban-jira-status.js`, dated `WSA/PA/Jira/PA-Jira-mm-dd-yyyy-json.json` |
+| Jira export / kanban data | **`dynamo-plan jira export`** / **`jira kanban-rebuild`** (or `Scripts/jira-export-pa.js`, `Scripts/jira-kanban-status-from-export.js`), `WSA/PA/Jira/pa-kanban-jira-status.json`, `WSA/PA/Jira/pa-kanban-jira-status.js`, dated `WSA/PA/Jira/PA-Jira-mm-dd-yyyy-json.json` |
 | Deploy (when deps or map change) | `.github/workflows/deploy-capability-map.yml` |
 | Rules / docs | `.cursor/rules/pa.mdc`, `WSA/PA/Jira/README.md`, `WSA/PA/README.md`, `Documentation/WBS-Update-Pattern.md` (optional) |
 
@@ -174,7 +185,7 @@ If **Input** contains stakeholder docs that **change outcomes** while **Jira** a
 ### VI, WM, and WB — Jira alignment (same discipline, fewer automated scripts)
 
 - **Normative:** `WSA/VI/VI-WBS.md`, `WSA/WM/WM-WBS.md`, `WSB-WSC/WB/WB-WBS.md`, outcome maps, kanban HTML.
-- **Dated exports:** keep multiple **`WSA/VI/Jira/VI-Jira-mm-dd-yyyy-json.json`**, **`WSA/WM/Jira/WM-Jira-mm-dd-yyyy-json.json`**, **`WSB-WSC/WB/Jira/WB-Jira-mm-dd-yyyy-json.json`** (same retention rule as **`WSA/PA/Jira/PA-Jira-*.json`**). **WB:** after keys exist in **`wb-outcomes.json`**, run **`node Scripts/jira-export-wb.js`** (or **`node Scripts/jira-export-pa.js WB <capabilityKey> <actionEpicKey>`**). The shared exporter writes the dated JSON under **`WSB-WSC/WB/Jira/`**; it does **not** emit PA-style kanban status files for non-PA capabilities.
+- **Dated exports:** keep multiple **`WSA/VI/Jira/VI-Jira-mm-dd-yyyy-json.json`**, **`WSA/WM/Jira/WM-Jira-mm-dd-yyyy-json.json`**, **`WSB-WSC/WB/Jira/WB-Jira-mm-dd-yyyy-json.json`** (same retention rule as **`WSA/PA/Jira/PA-Jira-*.json`**). **WB:** after keys exist in **`wb-outcomes.json`**, run **`dynamo-plan jira export WB`** (or **`node Scripts/jira-export-wb.js`**, which spawns the CLI). The shared exporter writes the dated JSON under **`WSB-WSC/WB/Jira/`**; it does **not** emit PA-style kanban status files for non-PA capabilities.
 - **Target-state JSON:** `WSA/VI/Output/VI-WBS-Jira-Import.json`, `WSA/WM/Output/WM-WBS-Jira-Import.json`, `WSB-WSC/WB/Output/WB-WBS-Jira-Import.json`.
 - Full **Pattern B** checklist above is PA-specific; for VI/WM/WB, reconcile exports vs WBS manually and refresh HTML narratives until kanban is wired to Jira (WB-kanban is WBS-static today).
 - **WSB–WSC combined outcome map** (`WSB-WSC-Outcome-Map.html`): treat **`wsb-wsc-outcome-dependencies.json`** like PA’s `dependency_edges` — JSON first, then HTML fallback; not a substitute for **`WB-WBS.md`** WB-OC epics.
@@ -187,4 +198,5 @@ If **Input** contains stakeholder docs that **change outcomes** while **Jira** a
 - Dependency catalog: [WSB-WSC/dependency-sources.yml](../../../WSB-WSC/dependency-sources.yml)  
 - Folders: [PA/README.md](../../../WSA/PA/README.md), [VI/README.md](../../../WSA/VI/README.md), [WM/README.md](../../../WSA/WM/README.md), [WSB-WSC/WB/README.md](../../../WSB-WSC/WB/README.md)  
 - Jira: [PA/Jira/README.md](../../../WSA/PA/Jira/README.md), [VI/Jira/README.md](../../../WSA/VI/Jira/README.md), [WM/Jira/README.md](../../../WSA/WM/Jira/README.md), [WSB-WSC/WB/Jira/README.md](../../../WSB-WSC/WB/Jira/README.md)  
-- Rules: [.cursor/rules/pa.mdc](../../rules/pa.mdc), [.cursor/rules/vi.mdc](../../rules/vi.mdc), [.cursor/rules/wm.mdc](../../rules/wm.mdc), [.cursor/rules/wb.mdc](../../rules/wb.mdc)
+- Rules: [.cursor/rules/pa.mdc](../../rules/pa.mdc), [.cursor/rules/vi.mdc](../../rules/vi.mdc), [.cursor/rules/wm.mdc](../../rules/wm.mdc), [.cursor/rules/wb.mdc](../../rules/wb.mdc)  
+- Jira toolkit commands (export, delete, WM import/link, etc.): [.cursor/skills/jira-export/SKILL.md](../jira-export/SKILL.md), [Scripts/README.md](../../../Scripts/README.md)

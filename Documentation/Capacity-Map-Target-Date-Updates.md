@@ -76,7 +76,15 @@ flowchart LR
 
 ## How to run it
 
-**From the project root:**
+**From the project root** (preferred):
+
+```bash
+node ../dynamo-os/planning-toolkit/bin/cli.js capability-map sync-dates
+```
+
+Or: **`dynamo-plan capability-map sync-dates`** (after `npm link`). **`Capability-map/sync-stage-dates-from-outcome-maps.js`** forwards to the same CLI. Paths and **`capabilityMap`** settings live in **`dynamo-os.config.cjs`**.
+
+**Legacy:**
 
 ```bash
 node Capability-map/sync-stage-dates-from-outcome-maps.js
@@ -84,8 +92,7 @@ node Capability-map/sync-stage-dates-from-outcome-maps.js
 
 **Requirements:**
 
-- Node.js (no extra npm packages; uses only `fs` and `path`).
-- Project root = directory that contains the `Capability-map`, `WM`, `VI`, `PA`, and `WSB-WSC` folders.
+- Node.js. Planning repo root = directory that contains **`dynamo-os.config.cjs`**, **`Capability-map`**, **`WSA`** (PA/VI/WM), and **`WSB-WSC`** as configured.
 
 **Example output:**
 

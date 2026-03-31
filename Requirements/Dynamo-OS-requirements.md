@@ -2,7 +2,7 @@
 
 **Purpose:** Give the **Dynamo-OS** repository maintainers everything needed to bootstrap the tooling repo and align with the first consumer. You can copy this file into the Dynamo-OS repo as **`requirements.md`** (or `docs/requirements.md`). Keep a **link back** to the full PRD in the consumer repo when both exist.
 
-**Full product requirements (canonical):** [Dynamo-os-prd.md](./Dynamo-os-prd.md) in **DMSI-Op-Readiness-II-Plan** (same `Requirements/` folder as this file). **GitHub location (target):** Dynamo organization account — use **`https://github.com/<dynamo-org>/<dms-planning-repo>`** once the repo is created or transferred; path to PRD: `Requirements/Dynamo-os-prd.md`. *Replace placeholders when the owner provides the final org, repo name, and default branch.*
+**Full product requirements (canonical):** [Dynamo-os-prd.md](./Dynamo-os-prd.md) in **DMSI-Op-Readiness-II-Plan** (same `Requirements/` folder as this file). **GitHub location (target):** **Dynamo** organization account — **`https://github.com/<dynamo-org>/<dms-planning-repo>`** after **transfer at end of project** (final cutover). Until then the canonical clone may remain on the current remote; replace placeholders when the move is done. PRD path in repo: `Requirements/Dynamo-os-prd.md`.
 
 ---
 
@@ -29,14 +29,15 @@
 
 ## 3. First consumer (reference implementation)
 
-- **Repository:** **DMSI-Op-Readiness-II-Plan** — hosted under the **Dynamo GitHub org/account** (not the prior personal or legacy remote). **Canonical remote (TBD):** `https://github.com/<dynamo-org>/<dms-planning-repo>.git` — fill in when the transfer or new repo is ready.
-- **AWS:** CI deploys the capability-map **Lambda** into the **Dynamo AWS account**. **Function name, region, IAM role/OIDC, and GitHub Actions secrets** will be supplied when cut over; until then, local workflow files may still reference placeholder secret names.
+- **Repository:** **DMSI-Op-Readiness-II-Plan** — **intended home** is the **Dynamo GitHub org/account**. **Timing:** repository **transfer (or new repo + push) is planned for the end of this project**, not before Dynamo-OS work begins. **After cutover, canonical remote (TBD):** `https://github.com/<dynamo-org>/<dms-planning-repo>.git` — fill in org/repo when the move is executed; update this file and the PRD.
+- **AWS:** CI should deploy the capability-map **Lambda** into the **Dynamo AWS account**, typically in the **same final cutover phase** as the GitHub move (or immediately after), when **function name, region, IAM/OIDC to the new GitHub repo, and Actions secrets** are set.
 - **Paths to study** (relative to that repo root):
 
 | Concern | Location |
 |---------|----------|
-| Capability path resolution (until config exists) | `Scripts/wbs-capability-folder.js` |
-| Jira export / delete / import / link | `Scripts/jira-export-pa.js`, `jira-export-wb.js`, `jira-delete-*.js`, `jira-import-wm.js`, `jira-link-wm-action-items.js` |
+| Capability paths | **`dynamo-os.config.cjs`** + **`Scripts/planning-path-context.js`**; legacy fallback **`Scripts/wbs-capability-folder.js`** |
+| npm wiring | Root **`package.json`** → **`dynamo-os-planning-toolkit`** (`npm install`, then **`npm run plan:validate`**) |
+| Jira export / delete / import / link | **Toolkit:** `dynamo-os/planning-toolkit` → `dynamo-plan jira …`; **DMSI wrappers:** `Scripts/jira-export-pa.js`, `jira-export-wb.js`, `jira-delete-*.js`, `jira-import-wm.js`, `jira-link-wm-action-items.js` |
 | WBS load prep / archive / report counts | `Scripts/wbs-load-prep.js`, `wbs-move-input-to-archive.js`, `wbs-load-report-counts.js` |
 | Kanban status from Jira export | `Scripts/jira-kanban-status-from-export.js` |
 | Gantt JSON build | `Project-Plan/build-gantt-data.js` |
@@ -63,6 +64,12 @@ Start small; evolve with DMSI. Conceptual fields:
 
 ---
 
+## 4a. Code migration approach (summary)
+
+Port from DMSI using a **strangler**: **config + path resolution first**, then **WBS scripts**, then **gantt + capability-map sync**, then **Jira** (pluggable), then **Lambda handler**. Use **`npm link`** or **`file:`** dependency while iterating; keep **thin `Scripts/` shims** in DMSI until parity is proven; add **`docs/CODE-MAPPING.md`** in Dynamo-OS. Full detail: [Dynamo-os-prd.md](./Dynamo-os-prd.md) § **Code migration approach (DMSI → Dynamo-OS)**.
+
+---
+
 ## 5. Deliverables for the Dynamo-OS repo (bootstrap checklist)
 
 - [ ] `package.json` with `bin` → CLI entrypoint; MIT or org license; Node LTS range documented
@@ -78,7 +85,7 @@ Start small; evolve with DMSI. Conceptual fields:
 
 ## 6. Information only the product owner can supply (if missing)
 
-- **Dynamo GitHub:** organization or owner slug, repository name for DMSI-Op-Readiness-II-Plan, default branch, and whether the repo is transferred or newly created
+- **Dynamo GitHub:** organization or owner slug, repository name for DMSI-Op-Readiness-II-Plan, default branch, and transfer date / method — **scheduled for end of project**
 - **Dynamo AWS:** account ID (if needed for docs), region for Lambda, **function name(s)**, OIDC trust to GitHub vs access keys, and the exact **GitHub Actions secret names** for deploy
 - **npm scope** and registry (npmjs org vs GitHub Packages)
 - **Final package name** (`dynamo-os` vs `@one80labs/dynamo-os`)

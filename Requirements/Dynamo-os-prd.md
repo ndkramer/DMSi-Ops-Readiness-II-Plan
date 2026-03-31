@@ -1,7 +1,8 @@
 # Dynamo-OS — Product requirements (PRD)
 
 **Status:** Draft (aligned to internal planning)  
-**Last updated:** 2026-03-26 (Dynamo GitHub/AWS target; workstreams-at-root; Git/S3/SSM + PR; Jira exit; Lambda phasing)  
+**Planning toolkit strangler (DMSI consumer):** **Complete** — see [dynamo-os/planning-toolkit/docs/CODE-MAPPING.md](../../dynamo-os/planning-toolkit/docs/CODE-MAPPING.md) (sibling clone) and repo **`package.json`** (`npm install` wires **`dynamo-plan`**).  
+**Last updated:** 2026-04-03 (strangler completion note; Lambda binary assets; root `package.json`; org/AWS cutover still end-of-project)  
 **Audience:** Owners of planning repos (e.g. DMSI-Op-Readiness-II-Plan) and the future **Dynamo-OS** tooling repository.
 
 ## Purpose
@@ -12,8 +13,8 @@ Split **reusable tooling** (WBS lifecycle, map sync, Gantt data build, Lambda st
 
 ### Repository and cloud hosting (target)
 
-- **GitHub:** This planning repo is intended to live under the **Dynamo** GitHub organization (or equivalent Dynamo-owned account), not under prior personal or legacy remotes. **Canonical URL and `org/repo` slug are TBD** — record them here and in [Dynamo-OS-requirements.md](./Dynamo-OS-requirements.md) when the repository is created or transferred.
-- **AWS:** GitHub Actions deploys the static **capability-map Lambda** (and any follow-on functions) into the **Dynamo AWS account**. **Lambda function name, region, IAM/OIDC to GitHub, and secret names/values are TBD** — the owner will provide them at cutover; workflow files in `.github/workflows/` should be updated to match.
+- **GitHub:** **DMSI-Op-Readiness-II-Plan** will move to the **Dynamo** GitHub organization (or equivalent Dynamo-owned account) **at the end of this project** as a **final cutover** step — not a prerequisite for starting Dynamo-OS development. Until then, work may continue on the **current** remote; record the **canonical** `https://github.com/<dynamo-org>/<repo>` here and in [Dynamo-OS-requirements.md](./Dynamo-OS-requirements.md) when the transfer (or new repo + push) is executed. Update local `git remote`, branch protections, and any Confluence/bookmarks that point at the old URL.
+- **AWS:** GitHub Actions should deploy the static **capability-map Lambda** (and any follow-on functions) into the **Dynamo AWS account**. **Plan this cutover for the same end-of-project window as the GitHub move** (or slightly after), when **Lambda function name, region, IAM/OIDC to the new GitHub repo, and secret names/values** are provided; update `.github/workflows/` and GitHub repo secrets to match.
 
 ---
 
@@ -128,7 +129,7 @@ flowchart LR
   cli -->|reads writes| cmap
 ```
 
-- **Dynamo-OS repo:** Node libraries, CLI, tests, README; optional **template** Cursor skill/rule markdown for copying into project repos.
+- **Dynamo-OS repo:** Node libraries, CLI, tests, README; **`planning-toolkit/project-template/`** for copying a minimal planning repo layout; optional **template** Cursor skill/rule markdown for copying into project repos.
 
 - **Each project repo:** Workstream folder(s) (e.g. **`WSA/`**, **`WSB-WSC/`**), **`Documentation/`**, **`Requirements/`**, **`Capability-Map/`** (or `Capability-map/`), **`Project-Plan/`**, plus **`.cursor/`**, **`.github/`**, **`dynamo-os.config`**.
 
@@ -140,13 +141,44 @@ Parameterize all of the following with **project config** (no hardcoded capabili
 
 | Area | Current location (this repo) | Notes |
 |------|------------------------------|--------|
-| Jira export / delete / import / link | `Scripts/jira-export-pa.js`, `jira-export-wb.js`, `jira-delete-under-root.js`, `jira-delete-issue-tree.js`, `jira-import-wm.js`, `jira-link-wm-action-items.js` | Shared HTTP/auth; env from `.cursor/.env` |
+| Jira export / delete / import / link | **Engine:** `dynamo-os/planning-toolkit` → `dynamo-plan jira …` (`export`, `kanban-rebuild`, `delete-under-root`, `delete-tree`, `import-wm`, `link-wm-action-items`). **DMSI:** thin `Scripts/jira-*.js` wrappers + `dynamo-os.config.cjs` | Shared HTTP/auth; env from `jira.envFile` (e.g. `.cursor/.env`) |
 | Capability paths | `Scripts/wbs-capability-folder.js` | Replace with config-driven resolution (remove WB-only special case) |
 | WBS load lifecycle | `Scripts/wbs-load-prep.js`, `wbs-move-input-to-archive.js`, `wbs-load-report-counts.js` | Generic once paths come from config |
 | Kanban status from export | `Scripts/jira-kanban-status-from-export.js` | Generalize beyond PA-default paths |
 | Gantt data build | `Project-Plan/build-gantt-data.js` | Move engine to Dynamo-OS; **WBS list + base year** in config |
 | Capability map date sync | `Capability-map/sync-stage-dates-from-outcome-maps.js` | Move engine; **HTML paths + stage mapping + year** in config |
-| Lambda handler | `Capability-map/index.mjs` | Generic static server; package with project HTML/JSON per deploy docs |
+| Lambda handler | `Capability-map/index.mjs` (sync **`dynamo-os/planning-toolkit/lambda/static-handler/index.mjs`**) | Generic static server; package with project HTML/JSON per deploy docs |
+
+---
+
+## Code migration approach (DMSI → Dynamo-OS)
+
+Use a **strangler** pattern: move **one vertical slice** at a time so DMSI keeps working. Do **not** delete a script in DMSI until the Dynamo-OS replacement is verified against **real `dynamo-os.config`** (compare outputs on a branch).
+
+**Recommended port order**
+
+1. **`dynamo-os.config` schema + loader** in Dynamo-OS (validate / print paths).
+2. **Path resolution** from config (replaces `wbs-capability-folder.js` behavior).
+3. **WBS load lifecycle** — `wbs-load-prep`, `wbs-move-input-to-archive`, `wbs-load-report-counts`.
+4. **Gantt data build** and **capability-map sync** — inputs entirely from config.
+5. **Jira** scripts — keep in a **pluggable** module (transitional); port when ready.
+6. **Lambda handler** (`index.mjs`) — small; expose for consumers to bundle.
+
+**Moving files physically**
+
+- Copy sources into Dynamo-OS with a clear layout (e.g. `src/cli`, `src/wbs`, `src/jira`, `src/lambda`).
+- First substantial PR in Dynamo-OS should include **`docs/CODE-MAPPING.md`** (or README section): old DMSI path → new module path.
+- Preserving **git history** across repos (subtree, patches) is optional; do not block the first port on it.
+
+**Wiring DMSI during transition**
+
+- Use **`npm link`** or **`"dynamo-os": "file:../Dynamo-OS"`** until the API stabilizes; then **publish** and **pin semver** in DMSI `package.json`.
+- Keep **thin shims** under `Scripts/*.js` that delegate to `npx dynamo-os …` (or `require('dynamo-os')`) so docs and muscle memory stay stable until you remove shims.
+
+**Quality bar**
+
+- **Tests** in Dynamo-OS use **fixtures** (minimal config + temp dirs), not the full DMSI tree.
+- **No** hardcoded `WSA/` or Jira keys in library code — only config, env, or test fixtures.
 
 ---
 
@@ -154,9 +186,9 @@ Parameterize all of the following with **project config** (no hardcoded capabili
 
 - All **content** under the standard layout (WBS, outcomes JSON, exports, per-capability and portfolio HTML, prose naming the engagement).
 
-- **CI:** e.g. `.github/workflows/deploy-capability-map.yml` stays per project; steps invoke **`npx dynamo-os package-lambda`** (or documented `zip` layout) using **paths from config**.
+- **CI:** `.github/workflows/deploy-capability-map.yml` stays per project. **Today** the deploy uses an explicit **`zip`** layout in the workflow (documented in **Capability-map/README-Lambda-Deploy.md**). A future **`dynamo-plan lambda package`** (or **`npx dynamo-os package-lambda`**) could wrap the same steps; not required for the completed strangler.
 
-- **Cursor:** `.cursor/skills/` and `.cursor/rules/` stay **per project** (wording and paths). Dynamo-OS may ship templates. **Documentation/WBS-Update-Pattern.md** may split: generic in Dynamo-OS, examples in the project.
+- **Cursor:** `.cursor/skills/` and `.cursor/rules/` stay **per project**. **dynamo-os/planning-toolkit/project-template/** ships minimal **`.cursor/env.example`** for new repos; full skills/rules still live in each program repo. **Documentation/WBS-Update-Pattern.md** may still split later: generic narrative in Dynamo-OS, DMSI examples here.
 
 ---
 
@@ -178,11 +210,13 @@ Consumed by the CLI from the **project repo root**. Schema can evolve; start min
 
 ## Migration sequence
 
-1. **Bootstrap Dynamo-OS repo:** `package.json`, `bin`, shared Jira client + env loader, first CLI command (e.g. `jira export`) wired to config; publish `0.1.0` or use `npm link`.
+Follow **Code migration approach (DMSI → Dynamo-OS)** above for how to port slices and keep DMSI runnable.
+
+1. **Bootstrap Dynamo-OS repo:** `package.json`, `bin`, shared Jira client + env loader, first CLI command (e.g. `jira export` or `config validate`) wired to config; publish `0.1.0` or use `npm link`.
 
 2. **Add config to DMSI** and route **one** workflow (e.g. Jira export) through the CLI to validate wiring.
 
-3. **Port** remaining `Scripts/`, `Project-Plan/build-gantt-data.js`, and `Capability-map/sync-…` into Dynamo-OS; replace or thin-wrap local scripts with `npx dynamo-os …` as needed.
+3. **Port** remaining `Scripts/`, `Project-Plan/build-gantt-data.js`, and `Capability-map/sync-…` into Dynamo-OS — **done** for DMSI: thin wrappers + **`dynamo-plan`** (`CODE-MAPPING.md`). Optional **`npx dynamo-plan`** after **`npm install`** at repo root (see **`package.json`**).
 
 4. **Update Cursor artifacts in the project repo:** `.cursor/skills/` **and** `.cursor/rules/` — see **Cursor rules (per project repo)** below. Keep skills and rules consistent with each other and with `dynamo-os.config` / CLI commands.
 
@@ -192,20 +226,22 @@ Consumed by the CLI from the **project repo root**. Schema can evolve; start min
 
 7. **New project repo:** Scaffold from a template with the **same top-level pattern** (workstream roots + `Documentation`, `Requirements`, `Capability-Map`, `Project-Plan`), capability stubs, sample `dynamo-os.config`, and Cursor templates (skills **and** rules).
 
+8. **Final cutover (end of project):** **Transfer** (or recreate and push) **DMSI-Op-Readiness-II-Plan** to the **Dynamo GitHub** org; point **GitHub Actions** OIDC or secrets at the **Dynamo AWS** account and Lambda; update this PRD and [Dynamo-OS-requirements.md](./Dynamo-OS-requirements.md) with final URLs and identifiers; refresh bookmarks and integrations.
+
 ---
 
 ## Post-restructure checklist (DMSI)
 
 Use this after moving folders so tooling, CI, and docs stay trustworthy.
 
-- **Scripts:** Confirm `Scripts/wbs-capability-folder.js` (and any hardcoded paths) match **`WSA/…`** and **`WSB-WSC/WB`**; run `node Scripts/wbs-load-prep.js PA` (dry check paths), Jira export dry run if applicable.
-- **Build / sync:** `node Project-Plan/build-gantt-data.js`; `node Capability-map/sync-stage-dates-from-outcome-maps.js`; fix any path errors.
+- **Scripts / config:** **`dynamo-os.config.cjs`** is the source of truth for capability paths; **`Scripts/planning-path-context.js`** resolves the toolkit when present, with **`wbs-capability-folder.js`** as legacy fallback. Run **`npm run plan:validate`** (or **`dynamo-plan config validate`**) after restructure.
+- **Build / sync:** **`dynamo-plan gantt build`** / **`dynamo-plan capability-map sync-dates`** (or the **`Scripts/*` / `Project-Plan/build-gantt-data.js`** shims); fix any path errors.
 - **Static HTML:** Open `Project-Plan/Combined-Outcome-Gantt.html` and spot-check links to outcome maps; open capability maps and kanban files.
 - **GitHub Actions:** `.github/workflows/deploy-capability-map.yml` — `paths:` filters include **`WSA/`** (and other zips paths match disk); local `zip` command matches CI.
 - **Documentation:** Update [Documentation/Project-Structure.md](Documentation/Project-Structure.md), [Documentation/Capacity-Map-Target-Date-Updates.md](Documentation/Capacity-Map-Target-Date-Updates.md) (remove references to `WM/`, `VI/`, `PA/` at repo root), and any runbooks that cite old paths.
 - **Cursor rules:** Audit `.cursor/rules/*.mdc` — **`globs`** must match the real workstream/capability paths (e.g. `WSA/PA/**`); body text must reference current paths and commands. After Dynamo-OS CLI lands, replace `node Scripts/...` examples with `npx dynamo-os ...` where applicable; align **project-plan.mdc** with `Project-Plan/` and `Capability-map/` links; keep **Jira** language consistent with the **Jira direction** (transitional adapter, not permanent SoT). **Evaluate** whether to add **folder-scoped** rules (see PRD § Cursor rules → Evaluating additional folder-scoped rules).
 - **Archive / historical:** Old `Update-Reports/*.md` may reference previous paths — either leave as historical or add a one-line note that paths were pre-restructure.
-- **`dynamo-os.config`:** When introduced, becomes the single source of truth for workstream/capability paths; until then, **`wbs-capability-folder.js`** is the de facto map.
+- **`dynamo-os.config`:** Single source of truth for workstream/capability paths; **`wbs-capability-folder.js`** remains only as a **fallback** when the toolkit is not on disk.
 
 ---
 
@@ -306,11 +342,12 @@ Cursor loads rules from **`.cursor/rules/*.mdc`** at the **repository root**. �
 
 - [ ] Create Dynamo-OS repo: `package.json`, bin CLI, shared modules (Jira adapter **pluggable / removable**), README  
 - [ ] Define `dynamo-os.config` schema (capabilities, paths, optional Jira adapter block, gantt, capabilityMapSync)  
-- [ ] Move Scripts + `build-gantt-data.js` + `sync-stage-dates-from-outcome-maps.js` into Dynamo-OS; generalize via config  
+- [ ] Move Scripts + `build-gantt-data.js` + `sync-stage-dates-from-outcome-maps.js` into Dynamo-OS; generalize via config; maintain **`docs/CODE-MAPPING.md`** (DMSI path → Dynamo-OS module) during the strangler  
 - [ ] Wire DMSI: config, CLI entrypoints, deploy workflow  
 - [ ] Update `.cursor/skills/` and **`.cursor/rules/*.mdc`** (globs, paths, CLI commands, Jira transitional wording); **evaluate folder-scoped rules** (Capability-map, Project-Plan, Documentation, Requirements, Scripts, `.github`, `WSB-WSC` outside `WB`) and document add/split/none decision; skills/README; optional template skills + **template rules** in Dynamo-OS  
 - [ ] Add second project repo template (same layout + minimal config)  
-- [ ] Document canonical tree; workstreams at repo root (`WSA`, `WSB-WSC`); per-capability `Jira`, `Output` (+ `Output/Archive`), `Archive`, `Input`, `Update-Reports`; Option A root `Project-Plan`; post-restructure checklist; Lambda phasing
+- [ ] Document canonical tree; workstreams at repo root (`WSA`, `WSB-WSC`); per-capability `Jira`, `Output` (+ `Output/Archive`), `Archive`, `Input`, `Update-Reports`; Option A root `Project-Plan`; post-restructure checklist; Lambda phasing  
+- [ ] **End of project:** Move **DMSI-Op-Readiness-II-Plan** to **Dynamo GitHub**; cut over **Lambda/CI** to **Dynamo AWS**; update docs with final org/repo URLs and secrets/OIDC
 
 ---
 

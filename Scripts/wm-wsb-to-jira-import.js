@@ -1,18 +1,40 @@
 #!/usr/bin/env node
 /**
- * Generates WM-WBS-Jira-Import.json from the WM-WBS outcome structure.
- * Capability root in Jira: WSA-2881 (Work Management).
- * Output: WSA/WM/Output/WM-WBS-Jira-Import.json
+ * Generates {filePrefix}-WBS-Jira-Import.json from the embedded WM outcome structure.
+ * Paths and Jira roots default from dynamo-os.config.cjs (capabilities.WM) when the
+ * planning toolkit is resolvable; otherwise falls back to legacy WSA/WM and WSA-2881/82.
  *
  * Usage: node Scripts/wm-wsb-to-jira-import.js
  */
 
 const fs = require('fs');
 const path = require('path');
-const { getCapabilityFolder } = require('./wbs-capability-folder');
+const { resolvePlanningContext } = require('./planning-path-context');
 
-const ROOT_KEY = 'WSA-2881';
-const ACTION_ITEM_ROOT_KEY = 'WSA-2882';
+function loadWmPlanningPaths() {
+  const ctx = resolvePlanningContext();
+  if (ctx && ctx.config.capabilities && ctx.config.capabilities.WM) {
+    const wm = ctx.config.capabilities.WM;
+    return {
+      wmDir: ctx.getCapabilityFolder('WM'),
+      rootKey: wm.jiraCapabilityRoot || 'WSA-2881',
+      actionItemRootKey: wm.jiraActionItemRoot || 'WSA-2882',
+      filePrefix: wm.filePrefix || 'WM',
+    };
+  }
+  const { getCapabilityFolder } = require('./wbs-capability-folder');
+  return {
+    wmDir: getCapabilityFolder('WM'),
+    rootKey: 'WSA-2881',
+    actionItemRootKey: 'WSA-2882',
+    filePrefix: 'WM',
+  };
+}
+
+const _wmPaths = loadWmPlanningPaths();
+const ROOT_KEY = _wmPaths.rootKey;
+const ACTION_ITEM_ROOT_KEY = _wmPaths.actionItemRootKey;
+const WM_FILE_PREFIX = _wmPaths.filePrefix;
 const LABELS = 'work-management';
 const COMPONENT = 'Work Management';
 const DEFAULT_OWNER = 'Dynamo + Bryan + Andy';
@@ -333,21 +355,21 @@ const payload = {
       grand_total: epicCount + storyCount + subtaskCount + actionItems.length
     },
     import_order: [
-      '1. Import all items with issue_type = Epic (parent = WSA-2881)',
+      `1. Import all items with issue_type = Epic (parent = ${ROOT_KEY})`,
       '2. Import all items with issue_type = Story (parent = their Epic summary)',
       '3. Import all items with issue_type = Sub-task (parent = their Story summary)',
-      '4. Import Action Items -- link to WSA-2882 (action item root)'
-    ]
+      `4. Import Action Items -- link to ${ACTION_ITEM_ROOT_KEY} (action item root)`,
+    ],
   },
   work_items: workItems,
   action_items: actionItems
 };
 
-const outDir = path.join(getCapabilityFolder('WM'), 'Output');
+const outDir = path.join(_wmPaths.wmDir, 'Output');
 if (!fs.existsSync(outDir)) {
   fs.mkdirSync(outDir, { recursive: true });
 }
-const outPath = path.join(outDir, 'WM-WBS-Jira-Import.json');
+const outPath = path.join(outDir, `${WM_FILE_PREFIX}-WBS-Jira-Import.json`);
 fs.writeFileSync(outPath, JSON.stringify(payload, null, 2), 'utf8');
 console.log('Wrote', outPath);
 console.log('Counts: %d Epics, %d Stories, %d Sub-tasks, %d Action Items', epicCount, storyCount, subtaskCount, actionItems.length);

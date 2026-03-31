@@ -1,156 +1,53 @@
 #!/usr/bin/env node
 /**
- * WBS Load Prep: archive current WBS and Jira-import JSON, create WBS-Load report stub.
+ * WBS Load Prep — forwards to dynamo-os planning toolkit (`dynamo-plan wbs prep`).
  *
- * Part of the WBS update pattern. Run before reviewing Input and regenerating the WBS.
- * - Copies current WBS to {Folder}/Archive/... ({Prefix}-WBS-mm-dd-yyyy.md for PA, VI, WM, WB)
- * - If present, copies Output Jira-import JSON to {Folder}/Output/Archive/{Prefix}-WBS-Jira-Import-mm-dd-yyyy.json
- * - Creates {Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md with stub sections (including archived JSON path)
+ * Resolves CLI in order:
+ * 1. DYNAMO_PLAN_CLI — absolute path to planning-toolkit/bin/cli.js
+ * 2. Sibling repo: <this-repo-parent>/dynamo-os/planning-toolkit/bin/cli.js
  *
- * Run from project root: node Scripts/wbs-load-prep.js <capability>
- * Example: node Scripts/wbs-load-prep.js PA
- *
- * Capability: folder name and prefix (e.g. PA, VI, WM). **WB** resolves to **WSB-WSC/WB** (see wbs-capability-folder.js). Uses same date for all archives in one run.
+ * From project root: node Scripts/wbs-load-prep.js <capability>
  */
 
 const fs = require('fs');
 const path = require('path');
-const { getCapabilityFolder, capabilityFolderDisplay } = require('./wbs-capability-folder');
-
-function getDateStamp() {
-  const d = new Date();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  const yyyy = d.getFullYear();
-  return `${mm}-${dd}-${yyyy}`;
-}
-
-function ensureDir(dirPath) {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }
-}
-
-/** Canonical WBS: {PA|VI|WM|WB}-WBS.md. Jira target-state JSON: {Prefix}-WBS-Jira-Import.json */
-function getWbsArchiveNames(prefix) {
-  return { wbsFileName: `${prefix}-WBS.md`, archiveStem: `${prefix}-WBS` };
-}
-
-function run(capability) {
-  const prefix = capability;
-  const folderPath = getCapabilityFolder(capability);
-  const folderLabel = capabilityFolderDisplay(capability);
-  const dateStamp = getDateStamp();
-
-  if (!fs.existsSync(folderPath)) {
-    console.error(`Capability folder not found: ${folderPath}`);
-    process.exit(1);
-  }
-
-  const { wbsFileName, archiveStem } = getWbsArchiveNames(prefix);
-  const wbsPath = path.join(folderPath, wbsFileName);
-  const archiveDir = path.join(folderPath, 'Archive');
-  const archivedWbsName = `${archiveStem}-${dateStamp}.md`;
-  const archivedWbsPath = path.join(archiveDir, archivedWbsName);
-
-  const jsonName = `${prefix}-WBS-Jira-Import.json`;
-  const jsonPath = path.join(folderPath, 'Output', jsonName);
-  const outputArchiveDir = path.join(folderPath, 'Output', 'Archive');
-  const archivedJsonName = `${prefix}-WBS-Jira-Import-${dateStamp}.json`;
-  const archivedJsonPath = path.join(outputArchiveDir, archivedJsonName);
-
-  const updateReportsDir = path.join(folderPath, 'Update-Reports');
-  const reportName = `WBS-Load-${dateStamp}.md`;
-  const reportPath = path.join(updateReportsDir, reportName);
-
-  let jsonArchived = null;
-
-  // 1. Archive WBS
-  if (!fs.existsSync(wbsPath)) {
-    console.error(`WBS not found: ${wbsPath}`);
-    process.exit(1);
-  }
-  ensureDir(archiveDir);
-  fs.copyFileSync(wbsPath, archivedWbsPath);
-  console.log(`Archived WBS: ${folderLabel}/Archive/${archivedWbsName}`);
-
-  // 2. Archive Jira-import JSON if present
-  if (fs.existsSync(jsonPath)) {
-    ensureDir(outputArchiveDir);
-    fs.copyFileSync(jsonPath, archivedJsonPath);
-    jsonArchived = `${folderLabel}/Output/Archive/${archivedJsonName}`;
-    console.log(`Archived Jira import JSON: ${jsonArchived}`);
-  } else {
-    console.log(`No Jira import JSON at ${folderLabel}/Output/${jsonName}; skip archive.`);
-  }
-
-  // 3. Create WBS-Load report stub
-  ensureDir(updateReportsDir);
-  const reportStub = `# WBS Load Report: ${capability} — ${dateStamp}
-
-## Summary
-
-- **WBS archived:** \`${folderLabel}/Archive/${archivedWbsName}\`
-${jsonArchived ? `- **Jira import JSON archived:** \`${jsonArchived}\`` : '- **Jira import JSON:** not present for this capability (no archive created).'}
-- **Report generated:** ${new Date().toISOString().slice(0, 10)}
-
-## Change summary
-
-Counts are relative to the archived JSON for this run. Fill after regenerating WBS/JSON, or run \`node Scripts/wbs-load-report-counts.js ${capability} ${dateStamp}\` to compute from current JSON.
-
-| Category    | Added | Deleted | Updated |
-|-------------|-------|---------|---------|
-| Work items  | 0     | 0       | 0       |
-| Risks       | 0     | 0       | 0       |
-| Decisions   | 0     | 0       | 0       |
-| Questions   | 0     | 0       | 0       |
-
-## Input files processed
-
-For **each file** in \`${folderLabel}/Input/\`: list the filename; briefly state what was extracted (e.g. outcomes, phases, risks, decisions, timeline, tables); state what WBS changes were made (e.g. "Added PA-OC-X", "Updated PA-R-X2") or "Mapped to existing PA-OC-01 through PA-OC-09; no WBS edit." Do not leave this section generic; the user must see that each Input file was read and processed.
-${(function () {
-    const inputDir = path.join(folderPath, 'Input');
-    if (!fs.existsSync(inputDir)) return '\n(No Input folder or no files listed.)';
-    const onlyFiles = fs.readdirSync(inputDir).filter((f) => {
-      if (f.startsWith('.')) return false;
-      const full = path.join(inputDir, f);
-      return fs.statSync(full).isFile();
-    });
-    if (onlyFiles.length === 0) return '\n(Input folder is empty or contains no files.)';
-    return '\n\n**Files in scope for this run:** ' + onlyFiles.join(', ');
-  })()}
-
-## Outcome map / constraint map changes
-
-(After reviewing Input vs current WBS and maps, document material changes here.)
-
-## Risks, decisions, questions
-
-(Note any changes to Risks (with Type 1/Type 2 where applicable), Decisions, Open Questions.)
-
-## Keys added / updated / removed
-
-(Note WBS key changes: outcomes, deliverables, risks, decisions, questions.)
-
-## Other substantial changes
-
-(Any other material updates from this load.)
-
-## Next steps
-
-- **Regenerate WBS** from Input and current maps; preserve structure and key conventions.
-- **Regenerate Jira import JSON** from the updated WBS (manual step until a generator exists). Update \`${folderLabel}/Output/${jsonName}\` so it reflects current work_items and action_items keyed by WBS IDs; this file is used by the future Jira upload process.
-`;
-
-  fs.writeFileSync(reportPath, reportStub, 'utf8');
-  console.log(`Created report stub: ${folderLabel}/Update-Reports/${reportName}`);
-}
+const { spawnSync } = require('child_process');
 
 const capability = process.argv[2];
 if (!capability) {
   console.error('Usage: node Scripts/wbs-load-prep.js <capability>');
   console.error('Example: node Scripts/wbs-load-prep.js PA');
+  console.error('Or: dynamo-plan wbs prep PA');
   process.exit(1);
 }
 
-run(capability);
+const projectRoot = path.resolve(__dirname, '..');
+
+function resolveCliPath() {
+  const env = process.env.DYNAMO_PLAN_CLI;
+  if (env && fs.existsSync(env)) return path.resolve(env);
+  const sibling = path.join(projectRoot, '..', 'dynamo-os', 'planning-toolkit', 'bin', 'cli.js');
+  if (fs.existsSync(sibling)) return sibling;
+  return null;
+}
+
+const cli = resolveCliPath();
+if (!cli) {
+  console.error(
+    'Could not find dynamo-plan CLI. Install sibling repo dynamo-os next to this project, or set DYNAMO_PLAN_CLI to planning-toolkit/bin/cli.js'
+  );
+  process.exit(1);
+}
+
+const result = spawnSync(
+  process.execPath,
+  [cli, 'wbs', 'prep', capability, '--cwd', projectRoot],
+  { stdio: 'inherit', env: process.env }
+);
+
+if (result.error) {
+  console.error(result.error.message || result.error);
+  process.exit(1);
+}
+
+process.exit(result.status === null ? 1 : result.status);

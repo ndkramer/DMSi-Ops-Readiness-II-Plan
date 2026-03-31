@@ -9,13 +9,21 @@ This document describes the **reusable process** that generates `Combined-Outcom
    - `WSA/VI/VI-WBS.md` — Visibility Infrastructure
    - `WSA/PA/PA-WBS.md` — Pipeline Automation
 
-2. **Build script**: `Project-Plan/build-gantt-data.js` reads those files, parses the **Outcome Map** table in each, computes capability start/end dates, and writes **`Project-Plan/gantt-data.json`**.
+2. **Build**: The **dynamo-os** planning toolkit command **`dynamo-plan gantt build`** reads those WBS files (paths and **`gantt.baseYear`** come from **`dynamo-os.config.cjs`** at the repo root). **`Project-Plan/build-gantt-data.js`** is a thin wrapper that invokes that CLI.
 
 3. **Gantt HTML**: `Project-Plan/Combined-Outcome-Gantt.html` loads `gantt-data.json` and renders the timeline, summary cards, and swim lanes. If the JSON is missing (e.g. opening via `file://` without a server), it falls back to embedded default data.
 
 ## How to Run the Build
 
-From the **repository root**:
+From the **repository root** (preferred):
+
+```bash
+node ../dynamo-os/planning-toolkit/bin/cli.js gantt build
+```
+
+Or after `npm link` in **dynamo-os/planning-toolkit**: **`dynamo-plan gantt build`**.
+
+**Legacy wrapper:**
 
 ```bash
 node Project-Plan/build-gantt-data.js
@@ -26,8 +34,10 @@ This updates `Project-Plan/gantt-data.json` only.
 To also **inline** the JSON into the HTML (so the Gantt works when opened as a local file without a web server):
 
 ```bash
-node Project-Plan/build-gantt-data.js --inline
+node ../dynamo-os/planning-toolkit/bin/cli.js gantt build --inline
 ```
+
+Or: `node Project-Plan/build-gantt-data.js --inline`
 
 After `--inline`, opening `Combined-Outcome-Gantt.html` directly in a browser will use the inlined data and not require `fetch('gantt-data.json')`.
 
@@ -51,13 +61,13 @@ Dates are ISO date strings (`YYYY-MM-DD`). The HTML converts them to `Date` for 
 - **VI**: Outcome Map uses `[TBD -- Weeks X-Y]` or explicit ranges (e.g. "March 9 - April 20"). Start date: Mar 1, 2026; week numbers are converted to dates.
 - **PA**: Outcome Map uses `[TBD -- Weeks X-Y]`. Start date: Mar 16, 2026. Durations are scaled by ~1.5× (conservative staffing).
 - **Conditional** outcomes (no scheduled dates) are excluded from capability start/end calculation.
-- **Milestones** (M2, M3, M4) are fixed in the script; they are not read from the WBS.
+- **Milestones** (M2, M3, M4) are fixed in the toolkit for the plan year (**`gantt.baseYear`** in **`dynamo-os.config.cjs`**); they are not read from the WBS.
 
 ## File Locations
 
 | File | Purpose |
 |------|---------|
-| `Project-Plan/build-gantt-data.js` | Build script: parse WBS → write gantt-data.json (optional --inline) |
+| `dynamo-os/planning-toolkit` + **`dynamo-plan gantt build`** | Engine; `Project-Plan/build-gantt-data.js` forwards to the CLI |
 | `Project-Plan/gantt-data.json` | Generated; consumed by Combined-Outcome-Gantt.html |
 | `Project-Plan/Combined-Outcome-Gantt.html` | Combined Gantt view; loads gantt-data.json or window.GANTT_DATA |
 | `Requirements/project-plan-build-prompt.md` | Full build and date-calculation rules |
