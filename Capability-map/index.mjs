@@ -98,6 +98,24 @@ function headerGet(headers, name) {
   return '';
 }
 
+/**
+ * Confluence iframes are often sandboxed with an opaque origin; fetches to the Lambda URL are then
+ * cross-origin. Without these headers the browser hides the response → client sees "Failed to fetch".
+ */
+function corsHeadersForGithubProxy(extra = {}) {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, X-GitHub-Token, Accept, X-GitHub-Api-Version, Authorization',
+    'Access-Control-Max-Age': '3600',
+    ...extra,
+  };
+}
+
+function isGithubProxyPath(rawPath) {
+  return rawPath === '/github-proxy/graphql' || rawPath.startsWith('/github-api/');
+}
+
 /** Only allow proxying to REST paths we need for org projects + issues (open proxy hardening). */
 function isAllowedGithubRestPath(path) {
   if (!path || path.includes('..')) return false;
@@ -115,15 +133,27 @@ async function handleGithubGraphqlProxy(event) {
   try {
     payload = JSON.parse(getRequestBody(event) || '{}');
   } catch {
-    return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'Invalid JSON body' }) };
+    return {
+      statusCode: 400,
+      headers: corsHeadersForGithubProxy({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ message: 'Invalid JSON body' }),
+    };
   }
   const token = ghTok || payload.github_token;
   if (!token || typeof token !== 'string') {
-    return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'Missing X-GitHub-Token header or github_token in body' }) };
+    return {
+      statusCode: 400,
+      headers: corsHeadersForGithubProxy({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ message: 'Missing X-GitHub-Token header or github_token in body' }),
+    };
   }
   const { query, variables } = payload;
   if (!query || typeof query !== 'string') {
-    return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'Missing query' }) };
+    return {
+      statusCode: 400,
+      headers: corsHeadersForGithubProxy({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ message: 'Missing query' }),
+    };
   }
   const forwardBody = JSON.stringify({ query, variables: variables ?? null });
   const res = await fetch('https://api.github.com/graphql', {
@@ -136,10 +166,10 @@ async function handleGithubGraphqlProxy(event) {
     body: forwardBody,
   });
   const text = await res.text();
-  const outHeaders = {
+  const outHeaders = corsHeadersForGithubProxy({
     'Content-Type': res.headers.get('content-type') || 'application/json',
     'Cache-Control': 'no-store',
-  };
+  });
   return { statusCode: res.status, headers: outHeaders, body: text };
 }
 
@@ -147,11 +177,19 @@ async function handleGithubRestProxy(event) {
   const rawPath = event.rawPath || '/';
   const restPath = rawPath.replace(/^\/github-api/, '') || '/';
   if (!isAllowedGithubRestPath(restPath)) {
-    return { statusCode: 400, headers: { 'Content-Type': 'text/plain' }, body: 'Disallowed GitHub API path' };
+    return {
+      statusCode: 400,
+      headers: corsHeadersForGithubProxy({ 'Content-Type': 'text/plain' }),
+      body: 'Disallowed GitHub API path',
+    };
   }
   const ghTok = headerGet(event.headers, 'x-github-token');
   if (!ghTok) {
-    return { statusCode: 400, headers: { 'Content-Type': 'text/plain' }, body: 'Missing X-GitHub-Token header' };
+    return {
+      statusCode: 400,
+      headers: corsHeadersForGithubProxy({ 'Content-Type': 'text/plain' }),
+      body: 'Missing X-GitHub-Token header',
+    };
   }
   const method = (event.requestContext?.http?.method || event.httpMethod || 'GET').toUpperCase();
   const qs = event.rawQueryString ? `?${event.rawQueryString}` : '';
@@ -170,26 +208,41 @@ async function handleGithubRestProxy(event) {
   }
   const res = await fetch(url, init);
   const text = await res.text();
-  const outHeaders = {
+  const outHeaders = corsHeadersForGithubProxy({
     'Content-Type': res.headers.get('content-type') || 'application/json',
     'Cache-Control': 'no-store',
-  };
+  });
   const link = res.headers.get('link');
   if (link) outHeaders.Link = link;
   return { statusCode: res.status, headers: outHeaders, body: text };
 }
 
 export const handler = async (event) => {
+  const rawPath = event.rawPath || '/';
+  const method = (event.requestContext?.http?.method || event.httpMethod || 'GET').toUpperCase();
+  const proxyPath = isGithubProxyPath(rawPath);
+
+  if (method === 'OPTIONS' && proxyPath) {
+    if (!isAllowed(event)) {
+      return {
+        statusCode: 403,
+        headers: corsHeadersForGithubProxy({ 'Content-Type': 'text/plain; charset=utf-8' }),
+        body: 'Forbidden',
+      };
+    }
+    return { statusCode: 204, headers: corsHeadersForGithubProxy(), body: '' };
+  }
+
   if (!isAllowed(event)) {
+    const denyHeaders = proxyPath
+      ? corsHeadersForGithubProxy({ 'Content-Type': 'text/html; charset=utf-8' })
+      : { 'Content-Type': 'text/html; charset=utf-8' };
     return {
       statusCode: 403,
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      headers: denyHeaders,
       body: '<!DOCTYPE html><html><body><h1>Access denied</h1><p>This page is only available when opened from an allowed referrer or with a valid token.</p></body></html>',
     };
   }
-
-  const rawPath = event.rawPath || '/';
-  const method = (event.requestContext?.http?.method || event.httpMethod || 'GET').toUpperCase();
 
   if (rawPath === '/github-proxy/graphql' && method === 'POST') {
     return handleGithubGraphqlProxy(event);
