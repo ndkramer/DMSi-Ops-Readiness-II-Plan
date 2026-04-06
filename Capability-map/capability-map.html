@@ -591,7 +591,11 @@
   }
 
   /* ── Tab bar ── */
+  /* Stack above .tab-panel / .main: later DOM siblings paint on top by default, so without z-index
+     the Workstream A dropdown visually overlaps the content below but clicks hit the cards underneath. */
   .tab-bar {
+    position: relative;
+    z-index: 40;
     max-width: 1600px; margin: 0 auto; padding: 0 32px;
     display: flex; gap: 0; border-bottom: 2px solid var(--border);
     background: var(--bg);
@@ -654,7 +658,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
-    z-index: 100;
+    z-index: 110;
   }
   .tab-dropdown.is-open { display: block; }
   .tab-dropdown-item {
@@ -2801,6 +2805,35 @@ function toggleTabAMenu(ev) {
 }
 
 /**
+ * Opens an absolute http(s) URL in a new browsing context when possible.
+ * Confluence iframes or sandboxed embeds may block window.open; tries top window and a synthetic &lt;a target="_blank"&gt; next.
+ */
+function openExternalLink(url) {
+  if (!url || typeof url !== 'string') return;
+  try {
+    var w = window.open(url, '_blank', 'noopener,noreferrer');
+    if (w) return;
+  } catch (e1) { /* ignore */ }
+  try {
+    if (window.top && window.top !== window) {
+      var w2 = window.top.open(url, '_blank', 'noopener,noreferrer');
+      if (w2) return;
+    }
+  } catch (e2) { /* cross-origin top */ }
+  try {
+    var a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.referrerPolicy = 'no-referrer';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (e3) { /* ignore */ }
+}
+
+/**
  * DMSi Confluence wiki targets for the Workstream A hamburger menu.
  * Same URL shape as other space pages: /wiki/spaces/DMSi/pages/{pageId}/{Title+With+Pluses}.
  * (Lambda ?token= on the map URL is for same-origin artifact fetches; wiki access uses normal Atlassian login.)
@@ -2817,20 +2850,20 @@ function onTabAMenuMilestones(e) {
   e.stopPropagation();
   closeTabAMenu();
   if (CONFLUENCE_WIKI_MILESTONES && /^https?:\/\//i.test(CONFLUENCE_WIKI_MILESTONES)) {
-    window.open(CONFLUENCE_WIKI_MILESTONES, '_blank', 'noopener,noreferrer');
+    openExternalLink(CONFLUENCE_WIKI_MILESTONES);
     return;
   }
   var milestonesUrl = new URL('Milestones/milestone_capability_xref.html', window.location.href);
   var tok = getPageToken();
   if (tok) milestonesUrl.searchParams.set('token', tok);
-  window.open(milestonesUrl.href, '_blank', 'noopener,noreferrer');
+  openExternalLink(milestonesUrl.href);
 }
 
 /** Opens the Project Plan Confluence page (embedded Gantt is configured on that page). */
 function onTabAMenuProjectPlan(e) {
   e.stopPropagation();
   closeTabAMenu();
-  window.open(CONFLUENCE_WIKI_PROJECT_PLAN, '_blank', 'noopener,noreferrer');
+  openExternalLink(CONFLUENCE_WIKI_PROJECT_PLAN);
 }
 
 // Tab switching
