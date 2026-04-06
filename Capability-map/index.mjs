@@ -15,7 +15,8 @@
  *
  * GitHub API proxy (same-origin; avoids Confluence iframe CSP blocking api.github.com):
  *   POST /github-proxy/graphql  — JSON body { query, variables, github_token }; forwards to api.github.com/graphql
- *   GET|POST /github-api/...    — path must start with /orgs/, /repos/, or /projects/; pass GitHub PAT in X-GitHub-Token
+ *   GET|POST /github-api/...    — path must start with /orgs/, /repos/, or /projects/; pass GitHub PAT in X-GitHub-Token;
+ *                                 query string is forwarded minus Lambda gate params (token, github_token, github_proxy)
  */
 import { readFileSync } from 'fs';
 import { dirname, extname, resolve, relative, sep } from 'path';
@@ -116,6 +117,18 @@ function isGithubProxyPath(rawPath) {
   return rawPath === '/github-proxy/graphql' || rawPath.startsWith('/github-api/');
 }
 
+/** Strip Lambda/page gate params so they are not forwarded to api.github.com (noise; avoids leaking gate token in upstream logs). */
+const GITHUB_REST_QUERY_STRIP = new Set(['token', 'github_token', 'github_proxy']);
+
+function sanitizeGithubRestQueryString(rawQueryString) {
+  if (!rawQueryString) return '';
+  const sp = new URLSearchParams(rawQueryString);
+  for (const k of [...sp.keys()]) {
+    if (GITHUB_REST_QUERY_STRIP.has(k.toLowerCase())) sp.delete(k);
+  }
+  return sp.toString();
+}
+
 /** Only allow proxying to REST paths we need for org projects + issues (open proxy hardening). */
 function isAllowedGithubRestPath(path) {
   if (!path || path.includes('..')) return false;
@@ -192,7 +205,8 @@ async function handleGithubRestProxy(event) {
     };
   }
   const method = (event.requestContext?.http?.method || event.httpMethod || 'GET').toUpperCase();
-  const qs = event.rawQueryString ? `?${event.rawQueryString}` : '';
+  const cleanQs = sanitizeGithubRestQueryString(event.rawQueryString || '');
+  const qs = cleanQs ? `?${cleanQs}` : '';
   const url = `https://api.github.com${restPath}${qs}`;
   const headers = {
     Authorization: `Bearer ${ghTok}`,

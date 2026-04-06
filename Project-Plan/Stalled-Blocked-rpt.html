@@ -829,10 +829,11 @@
       return 'Could not read organization “' + CONFIG.orgLogin + '”. Verify the org name, token, and (if the org uses SAML SSO) that you authorized this token for the org.';
     }
     var nodes = json.data.organization.projectsV2 && json.data.organization.projectsV2.nodes;
-    if (!nodes || !nodes.length) {
+    var visible = (nodes || []).filter(function (n) { return n != null && n.number != null; });
+    if (!visible.length) {
       return 'This token does not see any GitHub Projects (new) for this org. For a fine-grained PAT: Organization permissions → Projects → Read-only, and approve SSO for the org if required. For a classic project board, use a classic PAT with the “project” scope, or rely on this page’s automatic classic fallback (Refresh again).';
     }
-    var desc = nodes.map(function (n) { return '#' + n.number + ' “' + n.title + '”'; }).join('; ');
+    var desc = visible.map(function (n) { return '#' + n.number + ' “' + (n.title || '') + '”'; }).join('; ');
     return 'GitHub Projects (new) visible to this token: ' + desc + '. If #' + CONFIG.projectNumber + ' is missing here, that number may not be a “new” project, or your token cannot see it.';
   }
 
