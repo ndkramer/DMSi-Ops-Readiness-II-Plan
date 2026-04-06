@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stalled / Blocked — GitHub Project Report</title>
+<!--
+  Loads items from an organization GitHub Project (Projects v2) that are Issues or Pull Requests
+  with a label named exactly "Stalled" or "Blocked" (case-insensitive).
+
+  GitHub does not issue a token scoped to a single Project only. Use a Personal Access Token (PAT)
+  on your user account with read access to the org project and repos whose issues appear on the board.
+
+  Pass token: ?github_token=... (trusted embeds only) or use "Set GitHub token" (session memory).
+
+  Classic PAT scopes: read:project, read:org, repo (if issues live in private repos).
+  Fine-grained: Organization Projects (read) + Issues/Meta (read) on relevant repos — see in-page help.
+-->
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f7f7f7;
+    color: #2B2B2B;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: #2B2B2B;
+    color: #fff;
+    padding: 20px 32px 24px;
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    color: #aaa;
+    margin-top: 6px;
+    line-height: 1.45;
+    max-width: 560px;
+  }
+  .header .brand { color: #76BE43; font-weight: 700; font-size: 15px; letter-spacing: 0.5px; }
+
+  .toolbar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 32px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  .toolbar button {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #2B2B2B;
+    cursor: pointer;
+  }
+  .toolbar button:hover { background: #f1f5f9; }
+  .toolbar button.primary {
+    background: #76BE43;
+    border-color: #5fa336;
+    color: #fff;
+  }
+  .toolbar button.primary:hover { filter: brightness(1.05); }
+  .token-hint {
+    font-size: 12px;
+    color: #64748b;
+  }
+  .token-hint code { font-size: 11px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; }
+
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8px 32px 48px;
+  }
+
+  .status-msg {
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+  }
+  .status-msg.error { border-color: #fecaca; background: #fef2f2; color: #991b1b; white-space: pre-wrap; }
+  .status-msg.info { border-color: #bae6fd; background: #f0f9ff; color: #0369a1; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .work-card {
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 14px 16px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: box-shadow 0.15s, border-color 0.15s;
+    display: block;
+    width: 100%;
+    color: inherit;
+  }
+  .work-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-color: #76BE43;
+  }
+  .work-card:focus {
+    outline: 2px solid #76BE43;
+    outline-offset: 2px;
+  }
+
+  .work-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .work-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .issue-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+  }
+  .issue-icon.pr { color: #1a7f37; }
+  .issue-icon.closed { color: #656d76; }
+
+  .repo-ref {
+    font-size: 12px;
+    color: #656d76;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .avatar-stack {
+    display: flex;
+    flex-direction: row-reverse;
+    flex-shrink: 0;
+  }
+  .avatar-stack img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    margin-left: -8px;
+    object-fit: cover;
+  }
+  .avatar-stack img:last-child { margin-left: 0; }
+
+  .work-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1f2328;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .label-tags {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .label-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    text-transform: capitalize;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: #fff;
+    border-radius: 12px;
+    max-width: 720px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    border: 1px solid #d0d7de;
+    max-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid #d0d7de;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .modal-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #1f2328;
+  }
+  .modal-close {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f6f8fa;
+    border-radius: 8px;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: #656d76;
+  }
+  .modal-close:hover { background: #eaeef2; color: #1f2328; }
+
+  .modal-meta {
+    font-size: 13px;
+    color: #656d76;
+    margin-top: 8px;
+  }
+  .modal-meta a { color: #0969da; text-decoration: none; }
+  .modal-meta a:hover { text-decoration: underline; }
+
+  .modal-body {
+    padding: 20px 22px 24px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #1f2328;
+  }
+  .modal-section {
+    margin-bottom: 18px;
+  }
+  .modal-section h3 {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #656d76;
+    margin-bottom: 8px;
+  }
+  .modal-body pre.body-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 12px;
+    background: #f6f8fa;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid #d0d7de;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+  .modal-assignees {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .modal-assignees a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #0969da;
+    font-size: 14px;
+  }
+  .modal-assignees img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: #656d76;
+    font-size: 15px;
+  }
+
+  .token-help {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px 20px;
+  }
+  .token-help details {
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #1f2328;
+  }
+  .token-help summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: #0969da;
+  }
+  .token-help summary:hover { text-decoration: underline; }
+  .token-help .help-inner { margin-top: 12px; padding-top: 12px; border-top: 1px solid #d8dee4; }
+  .token-help ol { margin: 8px 0 8px 1.25em; }
+  .token-help li { margin: 6px 0; }
+  .token-help a { color: #0969da; }
+  .token-help code { font-size: 11px; background: #f6f8fa; padding: 2px 6px; border-radius: 4px; }
+
+  @media (max-width: 600px) {
+    .header { padding: 16px 16px 20px; }
+    .toolbar, .main, .token-help { padding-left: 16px; padding-right: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div>
+      <h1>Stalled / Blocked</h1>
+      <p class="subtitle">Work items on <strong id="projectTitleLabel">GitHub Project</strong> with labels <strong>Stalled</strong> or <strong>Blocked</strong> (org <span id="orgLabel"></span>).</p>
+    </div>
+    <div class="brand">DYNAMO</div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button type="button" class="primary" id="btnRefresh">Refresh from GitHub</button>
+  <button type="button" id="btnToken">Set GitHub token…</button>
+  <span class="token-hint" id="tokenStatus">No token — set token or add <code>?github_token=…</code> to the URL.</span>
+</div>
+
+<div class="token-help">
+  <details>
+    <summary>How do I get a GitHub token for this report?</summary>
+    <div class="help-inner">
+      <p><strong>There is no separate “project token.”</strong> This page uses the GitHub API as <em>you</em>. Create a <strong>Personal Access Token</strong> under your GitHub login with permission to read the organization project and the repositories whose issues show up on that project.</p>
+      <p><strong>Fine-grained token (recommended)</strong></p>
+      <ol>
+        <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token</a>.</li>
+        <li>Under <strong>Resource owner</strong>, select your organization (e.g. DynamoLLC-Hub) if the project is org-owned.</li>
+        <li><strong>Repository access:</strong> include every repo that contributes issues to the project, or “All repositories” if your org allows it.</li>
+        <li><strong>Permissions:</strong> Repository → <strong>Issues</strong> (Read), <strong>Metadata</strong> (Read). Organization → <strong>Projects</strong> (Read) (read-only).</li>
+        <li>Generate the token and copy it once; paste it here via <strong>Set GitHub token</strong> (or use <code>?github_token=…</code> only in trusted environments).</li>
+      </ol>
+      <p><strong>Classic token (alternative)</strong></p>
+      <ol>
+        <li><a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener noreferrer">Generate new token (classic)</a>.</li>
+        <li>Enable scopes: <code>read:project</code> (or full <code>project</code> for classic boards), <code>read:org</code>, and <code>repo</code> if issues are in <strong>private</strong> repositories.</li>
+      </ol>
+      <p>If you see <strong>“Project #1 not found”</strong> or similar: the board may be a <strong>classic</strong> project (this page now falls back to that API) or your token may lack <strong>Organization → Projects (Read)</strong>. If the org uses <strong>SAML SSO</strong>, open the token in GitHub → <strong>Configure SSO</strong> and authorize it for <strong>DynamoLLC-Hub</strong>.</p>
+      <p>If you see <strong>“Failed to fetch”</strong> inside Confluence or another iframe: the embedder may block <code>api.github.com</code>. Use the report on your <strong>Lambda function URL</strong> (latest deploy): GitHub calls are proxied through the same host. Keep your usual Lambda <code>?token=…</code> on the URL if your site requires it.</p>
+      <p>Official guide: <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener noreferrer">Managing personal access tokens</a>.</p>
+    </div>
+  </details>
+</div>
+
+<div class="main">
+  <div id="messageBox" class="status-msg info" style="display: none;"></div>
+  <div id="cardGrid" class="card-grid"></div>
+  <div id="emptyState" class="empty-state" style="display: none;">No stalled or blocked items found on this project.</div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 id="modalTitle">—</h2>
+        <div class="modal-meta" id="modalMeta"></div>
+      </div>
+      <button type="button" class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var CONFIG = {
+    orgLogin: 'DynamoLLC-Hub',
+    projectNumber: 1,
+    /** Match label names case-insensitively (exact name). */
+    labelNames: ['stalled', 'blocked']
+  };
+
+  var GRAPHQL = [
+    'query OrgProjectItems($org: String!, $projectNumber: Int!, $cursor: String) {',
+    '  organization(login: $org) {',
+    '    projectV2(number: $projectNumber) {',
+    '      title',
+    '      items(first: 50, after: $cursor) {',
+    '        pageInfo { hasNextPage endCursor }',
+    '        nodes {',
+    '          id',
+    '          content {',
+    '            __typename',
+    '            ... on Issue {',
+    '              title',
+    '              number',
+    '              url',
+    '              state',
+    '              body',
+    '              createdAt',
+    '              updatedAt',
+    '              repository { name nameWithOwner url }',
+    '              labels(first: 30) { nodes { name color } }',
+    '              assignees(first: 10) { nodes { login avatarUrl url } }',
+    '            }',
+    '            ... on PullRequest {',
+    '              title',
+    '              number',
+    '              url',
+    '              state',
+    '              body',
+    '              createdAt',
+    '              updatedAt',
+    '              repository { name nameWithOwner url }',
+    '              labels(first: 30) { nodes { name color } }',
+    '              assignees(first: 10) { nodes { login avatarUrl url } }',
+    '            }',
+    '            ... on DraftIssue {',
+    '              title',
+    '              body',
+    '              assignees(first: 10) { nodes { login avatarUrl url } }',
+    '            }',
+    '          }',
+    '        }',
+    '      }',
+    '    }',
+    '  }',
+    '}'
+  ].join('\n');
+
+  var githubToken = null;
+  var lastItems = [];
+
+  function getTokenFromQuery() {
+    try {
+      var q = new URLSearchParams(window.location.search || '');
+      var t = q.get('github_token') || q.get('gh_token');
+      return t ? String(t).trim() : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function setMessage(text, type) {
+    var el = document.getElementById('messageBox');
+    if (!text) {
+      el.style.display = 'none';
+      el.textContent = '';
+      return;
+    }
+    el.style.display = 'block';
+    el.textContent = text;
+    el.className = 'status-msg ' + (type || 'info');
+  }
+
+  function updateTokenUi() {
+    var fromQ = getTokenFromQuery();
+    var active = githubToken || fromQ;
+    var status = document.getElementById('tokenStatus');
+    if (active) {
+      status.textContent = githubToken ? 'Using token from this session.' : 'Using token from URL query (handle with care).';
+    } else {
+      status.textContent = 'No token — set token or add ?github_token=… to the URL.';
+    }
+  }
+
+  function effectiveToken() {
+    return githubToken || getTokenFromQuery();
+  }
+
+  function labelMatchesStalledBlocked(labels) {
+    if (!labels || !labels.length) return false;
+    var set = {};
+    CONFIG.labelNames.forEach(function (n) { set[n.toLowerCase()] = true; });
+    for (var i = 0; i < labels.length; i++) {
+      var name = (labels[i].name || '').toLowerCase();
+      if (set[name]) return true;
+    }
+    return false;
+  }
+
+  function normalizeItem(node) {
+    var c = node.content;
+    if (!c) return null;
+    if (c.__typename === 'DraftIssue') {
+      return null;
+    }
+    if (c.__typename !== 'Issue' && c.__typename !== 'PullRequest') return null;
+    var labels = (c.labels && c.labels.nodes) ? c.labels.nodes : [];
+    if (!labelMatchesStalledBlocked(labels)) return null;
+    return {
+      typename: c.__typename,
+      title: c.title,
+      number: c.number,
+      url: c.url,
+      state: c.state,
+      body: c.body || '',
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+      repository: c.repository,
+      labels: labels,
+      assignees: (c.assignees && c.assignees.nodes) ? c.assignees.nodes : []
+    };
+  }
+
+  function parseGithubNextUrl(linkHeader) {
+    if (!linkHeader) return null;
+    var parts = linkHeader.split(',');
+    for (var i = 0; i < parts.length; i++) {
+      var m = parts[i].trim().match(/^<([^>]+)>;\s*rel="next"$/);
+      if (m) return m[1];
+    }
+    return null;
+  }
+
+  function restHeaders(token) {
+    return {
+      'Authorization': 'Bearer ' + token,
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+  }
+
+  /** When hosted on Lambda Function URL, call GitHub through same-origin proxy (Confluence CSP blocks api.github.com). */
+  function useGithubProxy() {
+    try {
+      if (window.location.protocol === 'file:') return false;
+      var h = (window.location.hostname || '').toLowerCase();
+      return h.indexOf('lambda-url') >= 0 || h.endsWith('.on.aws');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /** Repeat Lambda gate ?token= on proxy URLs when this HTML was opened with it (CONFLUENCE_TOKEN). */
+  function withLambdaGate(url) {
+    try {
+      var q = new URLSearchParams(window.location.search || '');
+      var t = q.get('token');
+      if (!t) return url;
+      var sep = url.indexOf('?') >= 0 ? '&' : '?';
+      return url + sep + 'token=' + encodeURIComponent(t);
+    } catch (e) {
+      return url;
+    }
+  }
+
+  function githubGraphqlFetch(token, query, variables) {
+    var url = useGithubProxy()
+      ? withLambdaGate((window.location.origin || '') + '/github-proxy/graphql')
+      : 'https://api.github.com/graphql';
+    var headers = { 'Content-Type': 'application/json' };
+    var body;
+    if (useGithubProxy()) {
+      body = JSON.stringify({ query: query, variables: variables, github_token: token });
+    } else {
+      headers['Authorization'] = 'Bearer ' + token;
+      body = JSON.stringify({ query: query, variables: variables });
+    }
+    return fetch(url, { method: 'POST', headers: headers, body: body });
+  }
+
+  async function githubRestFetch(absUrl, token) {
+    if (!useGithubProxy()) {
+      return fetch(absUrl, { headers: restHeaders(token) });
+    }
+    try {
+      var parsed = new URL(absUrl);
+      if (parsed.hostname !== 'api.github.com') {
+        return fetch(absUrl, { headers: restHeaders(token) });
+      }
+      var path = parsed.pathname + (parsed.search || '');
+      var h = {
+        'X-GitHub-Token': token,
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      };
+      var proxyUrl = withLambdaGate((window.location.origin || '') + '/github-api' + path);
+      return fetch(proxyUrl, { headers: h });
+    } catch (e) {
+      return fetch(absUrl, { headers: restHeaders(token) });
+    }
+  }
+
+  /** Map REST issue or pull to the same shape as GraphQL fragments (normalizeItem). */
+  function mapRestIssueOrPR(issue, contentUrl) {
+    var parts = contentUrl.match(/repos\/([^/]+)\/([^/]+)\/(issues|pulls)\/(\d+)/);
+    if (!parts) return null;
+    var isPull = parts[3] === 'pulls';
+    var typename = isPull ? 'PullRequest' : 'Issue';
+    var stateUpper = String(issue.state || 'open').toUpperCase();
+    if (isPull && issue.merged === true) stateUpper = 'MERGED';
+    var labelArr = Array.isArray(issue.labels) ? issue.labels : (issue.labels && issue.labels.nodes) || [];
+    var assignArr = Array.isArray(issue.assignees) ? issue.assignees : (issue.assignees && issue.assignees.nodes) || [];
+    return {
+      __typename: typename,
+      title: issue.title,
+      number: issue.number,
+      url: issue.html_url,
+      state: stateUpper,
+      body: issue.body || '',
+      createdAt: issue.created_at,
+      updatedAt: issue.updated_at,
+      repository: {
+        name: parts[2],
+        nameWithOwner: parts[1] + '/' + parts[2],
+        url: 'https://github.com/' + parts[1] + '/' + parts[2]
+      },
+      labels: {
+        nodes: labelArr.map(function (l) {
+          return { name: l.name, color: l.color };
+        })
+      },
+      assignees: {
+        nodes: assignArr.map(function (a) {
+          return { login: a.login, avatarUrl: a.avatar_url, url: a.html_url };
+        })
+      }
+    };
+  }
+
+  async function findClassicOrgProject(token) {
+    var url = 'https://api.github.com/orgs/' + encodeURIComponent(CONFIG.orgLogin) + '/projects?per_page=100&state=all';
+    var fallback = null;
+    while (url) {
+      var res = await githubRestFetch(url, token);
+      if (res.status === 404 || res.status === 403 || res.status === 401) return null;
+      if (!res.ok) return null;
+      var arr = await res.json();
+      if (!Array.isArray(arr)) return null;
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i].number !== CONFIG.projectNumber) continue;
+        if (arr[i].state === 'open') return arr[i];
+        fallback = arr[i];
+      }
+      url = parseGithubNextUrl(res.headers.get('Link'));
+    }
+    return fallback;
+  }
+
+  async function collectClassicProjectCardContentUrls(projectNumericId, token) {
+    var list = [];
+    var seen = {};
+    var colRes = await githubRestFetch('https://api.github.com/projects/' + projectNumericId + '/columns', token);
+    if (!colRes.ok) return list;
+    var columns = await colRes.json();
+    if (!Array.isArray(columns)) return list;
+    for (var c = 0; c < columns.length; c++) {
+      var cardUrl = columns[c].cards_url;
+      while (cardUrl) {
+        var cr = await githubRestFetch(cardUrl, token);
+        if (!cr.ok) break;
+        var cards = await cr.json();
+        if (!Array.isArray(cards)) break;
+        for (var i = 0; i < cards.length; i++) {
+          var cu = cards[i].content_url;
+          if (cu && !seen[cu]) {
+            seen[cu] = true;
+            list.push(cu);
+          }
+        }
+        cardUrl = parseGithubNextUrl(cr.headers.get('Link'));
+      }
+    }
+    return list;
+  }
+
+  async function fetchRestContentForCardUrl(contentUrl, token) {
+    var res = await githubRestFetch(contentUrl, token);
+    if (!res.ok) return null;
+    var data = await res.json();
+    return mapRestIssueOrPR(data, contentUrl);
+  }
+
+  /** Classic org project board (columns/cards) — used when GraphQL projectV2 is null. */
+  async function fetchAllItemsClassic(token) {
+    var project = await findClassicOrgProject(token);
+    if (!project) return { used: false, projectTitle: null, nodes: [] };
+    var contentUrls = await collectClassicProjectCardContentUrls(project.id, token);
+    var nodes = [];
+    for (var i = 0; i < contentUrls.length; i++) {
+      var content = await fetchRestContentForCardUrl(contentUrls[i], token);
+      if (!content) continue;
+      nodes.push({ content: content });
+    }
+    return { used: true, projectTitle: project.name, nodes: nodes };
+  }
+
+  async function fetchProjectsV2ListHint(token) {
+    var query = 'query($org:String!){organization(login:$org){projectsV2(first:30){nodes{number title}}}}';
+    var res = await githubGraphqlFetch(token, query, { org: CONFIG.orgLogin });
+    var json = await res.json();
+    if (json.errors || !json.data || !json.data.organization) {
+      return 'Could not read organization “' + CONFIG.orgLogin + '”. Verify the org name, token, and (if the org uses SAML SSO) that you authorized this token for the org.';
+    }
+    var nodes = json.data.organization.projectsV2 && json.data.organization.projectsV2.nodes;
+    if (!nodes || !nodes.length) {
+      return 'This token does not see any GitHub Projects (new) for this org. For a fine-grained PAT: Organization permissions → Projects → Read-only, and approve SSO for the org if required. For a classic project board, use a classic PAT with the “project” scope, or rely on this page’s automatic classic fallback (Refresh again).';
+    }
+    var desc = nodes.map(function (n) { return '#' + n.number + ' “' + n.title + '”'; }).join('; ');
+    return 'GitHub Projects (new) visible to this token: ' + desc + '. If #' + CONFIG.projectNumber + ' is missing here, that number may not be a “new” project, or your token cannot see it.';
+  }
+
+  async function fetchAllItemsV2(token) {
+    var allNodes = [];
+    var cursor = null;
+    var hasNext = true;
+    var projectTitle = null;
+
+    while (hasNext) {
+      var res = await githubGraphqlFetch(token, GRAPHQL, {
+        org: CONFIG.orgLogin,
+        projectNumber: CONFIG.projectNumber,
+        cursor: cursor
+      });
+
+      var json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.message || 'HTTP ' + res.status);
+      }
+      if (json.errors && json.errors.length) {
+        throw new Error(json.errors.map(function (e) { return e.message; }).join('; '));
+      }
+      var org = json.data && json.data.organization;
+      if (!org) {
+        throw new Error('Organization not found or not accessible: ' + CONFIG.orgLogin);
+      }
+      var proj = org.projectV2;
+      if (!proj) {
+        return { projectTitle: null, nodes: [], projectMissing: true };
+      }
+      projectTitle = proj.title || projectTitle;
+      var conn = proj.items;
+      if (!conn || !conn.nodes) break;
+      conn.nodes.forEach(function (n) { allNodes.push(n); });
+      hasNext = conn.pageInfo && conn.pageInfo.hasNextPage;
+      cursor = conn.pageInfo && conn.pageInfo.endCursor;
+      if (!hasNext) break;
+    }
+
+    return { projectTitle: projectTitle, nodes: allNodes, projectMissing: false };
+  }
+
+  async function fetchAllItems(token) {
+    var v2 = await fetchAllItemsV2(token);
+    if (!v2.projectMissing) {
+      return { projectTitle: v2.projectTitle, nodes: v2.nodes, source: 'v2' };
+    }
+    var classic = await fetchAllItemsClassic(token);
+    if (classic.used) {
+      return { projectTitle: classic.projectTitle, nodes: classic.nodes, source: 'classic' };
+    }
+    var hint = await fetchProjectsV2ListHint(token);
+    throw new Error('Could not open org project #' + CONFIG.projectNumber + ' via GitHub Projects (new) or classic boards.\n\n' + hint);
+  }
+
+  function renderCards(items) {
+    var grid = document.getElementById('cardGrid');
+    var empty = document.getElementById('emptyState');
+    grid.innerHTML = '';
+
+    if (!items.length) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    items.forEach(function (item, idx) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'work-card';
+      btn.setAttribute('data-index', String(idx));
+
+      var top = document.createElement('div');
+      top.className = 'work-card-top';
+
+      var meta = document.createElement('div');
+      meta.className = 'work-card-meta';
+
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'issue-icon' + (item.typename === 'PullRequest' ? ' pr' : '') + (item.state === 'CLOSED' || item.state === 'MERGED' ? ' closed' : ''));
+      svg.setAttribute('viewBox', '0 0 16 16');
+      svg.setAttribute('width', '18');
+      svg.setAttribute('height', '18');
+      svg.setAttribute('aria-hidden', 'true');
+      if (item.typename === 'PullRequest') {
+        var prColor = (item.state === 'OPEN') ? '#1a7f37' : '#656d76';
+        /* Octicons-style pull-request (16px) */
+        svg.innerHTML = '<path fill="' + prColor + '" d="M1.5 3.25A2.25 2.25 0 1 1 3 5.372v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854v4.792a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1-.177-.427ZM8.75 4.5a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5Zm-6.5 6.75a.75.75 0 1 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/>';
+      } else {
+        var fill = (item.state === 'CLOSED') ? '#656d76' : '#1a7f37';
+        svg.innerHTML = '<path fill="' + fill + '" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path fill="' + fill + '" fill-rule="evenodd" d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0Z"/>';
+      }
+      meta.appendChild(svg);
+
+      var ref = document.createElement('span');
+      ref.className = 'repo-ref';
+      var r = item.repository;
+      ref.textContent = r ? (r.name + ' #' + item.number) : ('#' + item.number);
+      meta.appendChild(ref);
+
+      top.appendChild(meta);
+
+      if (item.assignees.length) {
+        var stack = document.createElement('div');
+        stack.className = 'avatar-stack';
+        item.assignees.forEach(function (a) {
+          var img = document.createElement('img');
+          img.src = a.avatarUrl;
+          img.alt = '';
+          img.title = a.login;
+          stack.appendChild(img);
+        });
+        top.appendChild(stack);
+      }
+
+      btn.appendChild(top);
+
+      var titleEl = document.createElement('div');
+      titleEl.className = 'work-card-title';
+      titleEl.textContent = item.title;
+      btn.appendChild(titleEl);
+
+      var tags = document.createElement('div');
+      tags.className = 'label-tags';
+      item.labels.forEach(function (lab) {
+        var n = (lab.name || '').toLowerCase();
+        if (CONFIG.labelNames.indexOf(n) < 0) return;
+        var span = document.createElement('span');
+        span.className = 'label-tag';
+        span.textContent = lab.name;
+        span.style.background = '#' + (lab.color || 'd4d4d4');
+        span.style.color = parseInt((lab.color || '000000'), 16) > 0xbbbbbb ? '#1f2328' : '#fff';
+        tags.appendChild(span);
+      });
+      if (tags.children.length) btn.appendChild(tags);
+
+      btn.addEventListener('click', function () { openModal(item); });
+      grid.appendChild(btn);
+    });
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function openModal(item) {
+    var overlay = document.getElementById('modalOverlay');
+    document.getElementById('modalTitle').textContent = item.title;
+
+    var r = item.repository;
+    var metaHtml = '';
+    if (r) {
+      metaHtml += '<a href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(r.nameWithOwner) + '</a> · ';
+    }
+    metaHtml += '#' + item.number + ' · ' + item.typename + ' · ' + item.state;
+    metaHtml += ' · <a href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">Open on GitHub</a>';
+    document.getElementById('modalMeta').innerHTML = metaHtml;
+
+    var bodyHtml = '';
+    bodyHtml += '<div class="modal-section"><h3>Assignees</h3>';
+    if (item.assignees.length) {
+      bodyHtml += '<div class="modal-assignees">';
+      item.assignees.forEach(function (a) {
+        bodyHtml += '<a href="' + esc(a.url) + '" target="_blank" rel="noopener noreferrer"><img src="' + esc(a.avatarUrl) + '" alt="">' + esc(a.login) + '</a>';
+      });
+      bodyHtml += '</div>';
+    } else {
+      bodyHtml += '<p>None</p>';
+    }
+    bodyHtml += '</div>';
+
+    bodyHtml += '<div class="modal-section"><h3>Labels</h3><p>';
+    if (item.labels.length) {
+      bodyHtml += item.labels.map(function (l) { return esc(l.name); }).join(', ');
+    } else {
+      bodyHtml += '—';
+    }
+    bodyHtml += '</p></div>';
+
+    if (item.createdAt) {
+      bodyHtml += '<div class="modal-section"><h3>Created</h3><p>' + esc(item.createdAt) + '</p></div>';
+    }
+    if (item.updatedAt) {
+      bodyHtml += '<div class="modal-section"><h3>Updated</h3><p>' + esc(item.updatedAt) + '</p></div>';
+    }
+
+    bodyHtml += '<div class="modal-section"><h3>Description / body</h3><pre class="body-text">' + esc(item.body || '(No description)') + '</pre></div>';
+
+    document.getElementById('modalBody').innerHTML = bodyHtml;
+    overlay.classList.add('open');
+    document.getElementById('modalClose').focus();
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  async function refresh() {
+    var token = effectiveToken();
+    if (!token) {
+      setMessage('Add a GitHub token via “Set GitHub token” or ?github_token= in the URL (see HTML comment for required scopes).', 'error');
+      updateTokenUi();
+      return;
+    }
+
+    setMessage('Loading from GitHub…', 'info');
+    document.getElementById('cardGrid').innerHTML = '';
+    document.getElementById('emptyState').style.display = 'none';
+
+    try {
+      var result = await fetchAllItems(token);
+      if (result.projectTitle) {
+        document.getElementById('projectTitleLabel').textContent = result.projectTitle;
+      }
+      var items = [];
+      result.nodes.forEach(function (n) {
+        var it = normalizeItem(n);
+        if (it) items.push(it);
+      });
+      items.sort(function (a, b) {
+        return (b.updatedAt || '').localeCompare(a.updatedAt || '');
+      });
+      lastItems = items;
+      setMessage(items.length ? ('Showing ' + items.length + ' item(s) with Stalled or Blocked labels.') : '', items.length ? 'info' : '');
+      if (!items.length) setMessage('No issues or pull requests on this project carry the labels Stalled or Blocked.', 'info');
+      renderCards(items);
+    } catch (err) {
+      console.error(err);
+      var msg = String(err.message || err);
+      if (err && (err.message === 'Failed to fetch' || err.name === 'TypeError')) {
+        msg = 'Failed to reach GitHub (network or browser security).\n\n' +
+          'If this page is embedded (e.g. in Confluence), the parent site often blocks requests to api.github.com. ' +
+          'Open the same report URL in a new tab, or deploy the latest Lambda (it proxies GitHub through your function URL when the host ends with .on.aws).\n\n' +
+          'If you use Lambda ?token= for access, keep it on the URL so /github-proxy requests are allowed.';
+      }
+      setMessage(msg, 'error');
+      renderCards([]);
+    }
+    updateTokenUi();
+  }
+
+  document.getElementById('orgLabel').textContent = CONFIG.orgLogin;
+  document.getElementById('btnRefresh').addEventListener('click', refresh);
+  document.getElementById('btnToken').addEventListener('click', function () {
+    var t = window.prompt('Paste GitHub Personal Access Token (not stored on disk; session only):');
+    if (t && t.trim()) {
+      githubToken = t.trim();
+      updateTokenUi();
+      refresh();
+    }
+  });
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalOverlay').addEventListener('click', function (e) {
+    if (e.target.id === 'modalOverlay') closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  updateTokenUi();
+  if (effectiveToken()) refresh();
+})();
+</script>
+</body>
+</html>

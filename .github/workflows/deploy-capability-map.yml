@@ -28,6 +28,7 @@ on:
       - 'Capability-map/Milestones/**'
       - 'Capability-map/milestones.html'
       - 'Project-Plan/Combined-Outcome-Gantt.html'
+      - 'Project-Plan/Stalled-Blocked-rpt.html'
       - 'Project-Plan/gantt-data.json'
       - 'Project-Plan/project-milestones.json'
       - 'WSA/'
@@ -55,11 +56,12 @@ jobs:
           zip -r ../deploy.zip index.mjs capability-map.html capability-map-dmsi.html capability-map-state.json capability-map-artifacts-dmsi.json milestones.html Milestones
           cd ../Project-Plan
           # Root of zip: legacy Lambda URLs …/Combined-Outcome-Gantt.html
-          zip -g ../deploy.zip Combined-Outcome-Gantt.html gantt-data.json project-milestones.json
+          zip -g ../deploy.zip Combined-Outcome-Gantt.html Stalled-Blocked-rpt.html gantt-data.json project-milestones.json
           cd ..
           # Repo-style paths: …/Project-Plan/Combined-Outcome-Gantt.html (Confluence / bookmarks)
           zip -g deploy.zip \
             Project-Plan/Combined-Outcome-Gantt.html \
+            Project-Plan/Stalled-Blocked-rpt.html \
             Project-Plan/gantt-data.json \
             Project-Plan/project-milestones.json
           zip -r deploy.zip WSA/WM WSA/VI WSA/PA WSB-WSC/WB

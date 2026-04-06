@@ -10,6 +10,10 @@
  *
  *   LAMBDA_INDEX — Filename served for GET / (default: capability-map.html for DMSI;
  *                 set to index.html for greenfield sites)
+ *
+ * GitHub API proxy (same-origin; avoids Confluence iframe CSP blocking api.github.com):
+ *   POST /github-proxy/graphql  — JSON body { query, variables, github_token }; forwards to api.github.com/graphql
+ *   GET|POST /github-api/...    — path must start with /orgs/, /repos/, or /projects/; pass GitHub PAT in X-GitHub-Token
  */
 import { readFileSync } from 'fs';
 import { dirname, extname, resolve, relative, sep } from 'path';
@@ -71,6 +75,108 @@ function safeBundlePath(relativePath) {
   return full;
 }
 
+function getRequestBody(event) {
+  let b = event.body || '';
+  if (event.isBase64Encoded && b) {
+    try {
+      b = Buffer.from(b, 'base64').toString('utf8');
+    } catch {
+      return '';
+    }
+  }
+  return b;
+}
+
+function headerGet(headers, name) {
+  if (!headers) return '';
+  const lower = name.toLowerCase();
+  for (const k of Object.keys(headers)) {
+    if (k.toLowerCase() === lower) return headers[k] || '';
+  }
+  return '';
+}
+
+/** Only allow proxying to REST paths we need for org projects + issues (open proxy hardening). */
+function isAllowedGithubRestPath(path) {
+  if (!path || path.includes('..')) return false;
+  return (
+    /^\/orgs\/[^/]+/.test(path) ||
+    /^\/repos\/[^/]+\/[^/]+/.test(path) ||
+    /^\/projects\/\d+/.test(path) ||
+    /^\/projects\/columns\/\d+/.test(path)
+  );
+}
+
+async function handleGithubGraphqlProxy(event) {
+  const ghTok = headerGet(event.headers, 'x-github-token');
+  let payload;
+  try {
+    payload = JSON.parse(getRequestBody(event) || '{}');
+  } catch {
+    return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'Invalid JSON body' }) };
+  }
+  const token = ghTok || payload.github_token;
+  if (!token || typeof token !== 'string') {
+    return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'Missing X-GitHub-Token header or github_token in body' }) };
+  }
+  const { query, variables } = payload;
+  if (!query || typeof query !== 'string') {
+    return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'Missing query' }) };
+  }
+  const forwardBody = JSON.stringify({ query, variables: variables ?? null });
+  const res = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      'User-Agent': 'DMSI-Lambda-GitHub-Proxy',
+    },
+    body: forwardBody,
+  });
+  const text = await res.text();
+  const outHeaders = {
+    'Content-Type': res.headers.get('content-type') || 'application/json',
+    'Cache-Control': 'no-store',
+  };
+  return { statusCode: res.status, headers: outHeaders, body: text };
+}
+
+async function handleGithubRestProxy(event) {
+  const rawPath = event.rawPath || '/';
+  const restPath = rawPath.replace(/^\/github-api/, '') || '/';
+  if (!isAllowedGithubRestPath(restPath)) {
+    return { statusCode: 400, headers: { 'Content-Type': 'text/plain' }, body: 'Disallowed GitHub API path' };
+  }
+  const ghTok = headerGet(event.headers, 'x-github-token');
+  if (!ghTok) {
+    return { statusCode: 400, headers: { 'Content-Type': 'text/plain' }, body: 'Missing X-GitHub-Token header' };
+  }
+  const method = (event.requestContext?.http?.method || event.httpMethod || 'GET').toUpperCase();
+  const qs = event.rawQueryString ? `?${event.rawQueryString}` : '';
+  const url = `https://api.github.com${restPath}${qs}`;
+  const headers = {
+    Authorization: `Bearer ${ghTok}`,
+    Accept: headerGet(event.headers, 'accept') || 'application/vnd.github+json',
+    'X-GitHub-Api-Version': headerGet(event.headers, 'x-github-api-version') || '2022-11-28',
+    'User-Agent': 'DMSI-Lambda-GitHub-Proxy',
+  };
+  const init = { method, headers };
+  if (method === 'POST' || method === 'PATCH' || method === 'PUT') {
+    init.body = getRequestBody(event);
+    const ct = headerGet(event.headers, 'content-type');
+    if (ct) init.headers['Content-Type'] = ct;
+  }
+  const res = await fetch(url, init);
+  const text = await res.text();
+  const outHeaders = {
+    'Content-Type': res.headers.get('content-type') || 'application/json',
+    'Cache-Control': 'no-store',
+  };
+  const link = res.headers.get('link');
+  if (link) outHeaders.Link = link;
+  return { statusCode: res.status, headers: outHeaders, body: text };
+}
+
 export const handler = async (event) => {
   if (!isAllowed(event)) {
     return {
@@ -81,6 +187,14 @@ export const handler = async (event) => {
   }
 
   const rawPath = event.rawPath || '/';
+  const method = (event.requestContext?.http?.method || event.httpMethod || 'GET').toUpperCase();
+
+  if (rawPath === '/github-proxy/graphql' && method === 'POST') {
+    return handleGithubGraphqlProxy(event);
+  }
+  if (rawPath.startsWith('/github-api/')) {
+    return handleGithubRestProxy(event);
+  }
   const logicalPath = rawPath === '/' ? `/${indexFile()}` : rawPath;
   const ext = extname(logicalPath);
   const contentType = CONTENT_TYPES[ext] || 'text/plain; charset=utf-8';
