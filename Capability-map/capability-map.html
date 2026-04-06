@@ -607,6 +607,70 @@
   .tab-btn.active { color: var(--text); border-bottom-color: var(--green-primary); }
   .tab-btn.active[data-tab="tab-bc"] { border-bottom-color: var(--orange-primary); }
   .tab-btn.active[data-tab="tab-d"] { border-bottom-color: var(--slate-primary); }
+  /* Workstream A: hamburger + tab label (siblings; no nested buttons) */
+  .tab-item-ws-a {
+    display: inline-flex;
+    align-items: stretch;
+    position: relative;
+    margin-bottom: -2px;
+  }
+  /* Same bottom-indicator box model as .tab-btn so the green bar aligns with Workstream A tab */
+  .tab-item-ws-a .tab-hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    margin: 0;
+    margin-bottom: -2px;
+    box-sizing: border-box;
+  }
+  .tab-item-ws-a .tab-hamburger-btn:hover {
+    color: var(--text-dim);
+    background: var(--surface);
+  }
+  .tab-item-ws-a:has(.tab-btn.active) .tab-hamburger-btn {
+    color: var(--text);
+    border-bottom: 3px solid var(--green-primary);
+  }
+  .tab-item-ws-a .tab-btn { padding-left: 6px; }
+  .tab-hamburger-icon { display: block; }
+  .tab-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    min-width: 180px;
+    padding: 6px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    z-index: 100;
+  }
+  .tab-dropdown.is-open { display: block; }
+  .tab-dropdown-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tab-dropdown-item:hover { background: var(--surface2); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
 
@@ -901,7 +965,16 @@
 </div>
 
 <div class="tab-bar">
-  <button class="tab-btn active" data-tab="tab-a" onclick="switchTab('tab-a')">Workstream A</button>
+  <div class="tab-item-ws-a">
+    <button type="button" class="tab-hamburger-btn" id="tabAHamburger" aria-label="Workstream A menu" aria-expanded="false" aria-haspopup="true" onclick="event.stopPropagation(); toggleTabAMenu(event)">
+      <svg class="tab-hamburger-icon" width="18" height="14" viewBox="0 0 18 14" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M1 1h16M1 7h16M1 13h16"/></svg>
+    </button>
+    <button type="button" class="tab-btn active" data-tab="tab-a" onclick="switchTab('tab-a')">Workstream A</button>
+    <div class="tab-dropdown" id="tabAMenu" role="menu" aria-labelledby="tabAHamburger">
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuMilestones(event)">Milestones</button>
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuProjectPlan(event)">Project Plan</button>
+    </div>
+  </div>
   <button class="tab-btn" data-tab="tab-bc" onclick="switchTab('tab-bc')">Workstream B &amp; C</button>
   <button class="tab-btn" data-tab="tab-d" onclick="switchTab('tab-d')">Workstream D</button>
 </div>
@@ -2584,7 +2657,14 @@ function handleModalClick(e) {
 }
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeSprintModal();
+  if (e.key === 'Escape') {
+    closeTabAMenu();
+    closeSprintModal();
+  }
+});
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.tab-item-ws-a')) closeTabAMenu();
 });
 
 function renderAll() {
@@ -2700,8 +2780,45 @@ function updateSummaryVersionLabel() {
 updateSummaryVersionLabel();
 loadState();
 
+function closeTabAMenu() {
+  var d = document.getElementById('tabAMenu');
+  var btn = document.getElementById('tabAHamburger');
+  if (d) d.classList.remove('is-open');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+function toggleTabAMenu(ev) {
+  if (ev) ev.stopPropagation();
+  var d = document.getElementById('tabAMenu');
+  var btn = document.getElementById('tabAHamburger');
+  if (!d || !btn) return;
+  if (d.classList.contains('is-open')) {
+    closeTabAMenu();
+  } else {
+    d.classList.add('is-open');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+}
+
+/** Opens Milestones cross-reference page relative to this HTML file. */
+function onTabAMenuMilestones(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  var milestonesUrl = new URL('Milestones/milestone_capability_xref.html', window.location.href);
+  window.open(milestonesUrl.href, '_blank', 'noopener,noreferrer');
+}
+
+/** Opens combined outcome Gantt (repo root Project-Plan) relative to this HTML file. */
+function onTabAMenuProjectPlan(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  var planUrl = new URL('../Project-Plan/Combined-Outcome-Gantt.html', window.location.href);
+  window.open(planUrl.href, '_blank', 'noopener,noreferrer');
+}
+
 // Tab switching
 function switchTab(tabId) {
+  closeTabAMenu();
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');

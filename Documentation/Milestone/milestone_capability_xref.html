@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMSi Phase 2: Milestone–Capability Cross-Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F3F5F7;
+  --surface: #FFFFFF;
+  --surface2: #EEF1F5;
+  --surface3: #E4E9EF;
+  --border: #D1D9E0;
+  --border-light: #B8C4CE;
+  --text: #1A2A3A;
+  --text-dim: #4A6070;
+  --text-muted: #8A9DB0;
+  --accent: #2563EB;
+  --green: #5A9E28;
+  --radius: 8px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; font-size:14px; }
+
+/* ── Header ── */
+.page-header {
+  background:#1B2A4A;
+  border-bottom:3px solid #76BE43;
+  padding:20px 32px;
+  display:flex; align-items:center; justify-content:space-between; gap:20px;
+}
+.header-brand { display:flex; align-items:center; gap:14px; }
+.header-logo {
+  width:38px; height:38px; background:#76BE43; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-weight:800; font-size:17px; color:#1B2A4A; flex-shrink:0;
+}
+.header-eyebrow { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:#76BE43; margin-bottom:3px; }
+.header-title { font-family:'Syne',sans-serif; font-size:21px; font-weight:700; color:#FFFFFF; }
+.header-meta { font-size:11px; color:rgba(255,255,255,0.5); text-align:right; line-height:1.7; }
+
+/* ── Legend ── */
+.legend-bar {
+  background:var(--surface2);
+  border-bottom:1px solid var(--border);
+  padding:10px 32px;
+  display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+}
+.legend-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); white-space:nowrap; }
+.legend-items { display:flex; gap:18px; flex-wrap:wrap; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim); }
+.legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+/* ── Main ── */
+.main { padding:28px 32px 72px; overflow-x:auto; }
+
+/* ── Matrix ── */
+.matrix-wrap { min-width:1080px; }
+.matrix-table { width:100%; border-collapse:collapse; table-layout:fixed; }
+.col-cap { width:210px; }
+
+/* Milestone header */
+.th-milestone {
+  background:var(--surface2);
+  border:1px solid var(--border);
+  padding:14px 10px 12px;
+  text-align:center; vertical-align:top;
+}
+.milestone-id {
+  font-family:'Syne',sans-serif; font-size:17px; font-weight:800;
+  color:#2563EB; display:block; margin-bottom:3px;
+}
+.milestone-name { font-size:11px; font-weight:600; color:var(--text); display:block; line-height:1.3; margin-bottom:5px; }
+.milestone-target {
+  font-size:10px; color:var(--text-dim);
+  background:var(--bg); padding:2px 8px; border-radius:10px; border:1px solid var(--border);
+  display:inline-block;
+}
+
+/* Capability header */
+.th-cap {
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:12px 14px;
+  text-align:left; vertical-align:middle;
+  position:sticky; left:0; z-index:2;
+}
+.ws-badge {
+  font-size:9px; font-weight:700; letter-spacing:0.8px; padding:2px 7px;
+  border-radius:4px; text-transform:uppercase; display:inline-block; margin-bottom:5px;
+}
+.cap-name { font-size:13px; font-weight:600; color:var(--text); display:block; }
+.cap-sub { font-size:10px; color:var(--text-muted); display:block; margin-top:2px; }
+
+/* Data cells */
+.td-cell {
+  border:1px solid var(--border);
+  padding:8px 7px; vertical-align:middle; text-align:center;
+  background:var(--bg); transition:background 0.15s;
+}
+.td-cell:hover { background:var(--surface); }
+.td-cell.filled { background:var(--surface2); }
+.td-cell.filled:hover { background:var(--surface3); }
+
+/* Stage badge */
+.stage-badge {
+  display:inline-flex; flex-direction:column; align-items:center; gap:3px;
+  padding:7px 8px; border-radius:7px; border:1px solid;
+  cursor:default; width:100%; transition:transform 0.15s, box-shadow 0.15s;
+  position:relative;
+}
+.stage-badge:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,0.35); }
+.stage-num { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; }
+.stage-short { font-size:9px; font-weight:500; line-height:1.3; opacity:0.82; }
+
+/* Empty dot */
+.cell-dot { display:block; width:6px; height:6px; border-radius:50%; background:var(--border); margin:0 auto; opacity:0.35; }
+
+/* WS section row */
+.ws-row td {
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:5px 14px;
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-muted);
+}
+
+/* Tooltip */
+.tooltip {
+  display:none; position:fixed; z-index:200; max-width:290px;
+  background:var(--surface3); border:1px solid var(--border-light);
+  border-radius:10px; padding:13px 15px;
+  box-shadow:0 10px 28px rgba(0,0,0,0.45); pointer-events:none;
+}
+.tooltip.show { display:block; }
+.tip-cap { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-muted); margin-bottom:4px; }
+.tip-name { font-size:13px; font-weight:600; color:var(--text); line-height:1.4; margin-bottom:6px; }
+.tip-deliverable { font-size:11px; color:var(--text-dim); line-height:1.55; font-style:italic; }
+.tip-m { font-size:10px; font-weight:600; color:#2563EB; margin-top:7px; text-transform:uppercase; letter-spacing:0.5px; }
+
+/* Divider */
+.divider { border:none; border-top:1px solid var(--border); margin:32px 0; }
+
+/* Outcomes */
+.outcomes-title {
+  font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+  text-transform:uppercase; letter-spacing:2px; color:var(--text-muted); margin-bottom:16px;
+}
+.outcomes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:12px; }
+.outcome-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px; border-top:3px solid #2563EB;
+}
+.oc-id { font-family:'Syne',sans-serif; font-size:19px; font-weight:800; color:#2563EB; }
+.oc-name { font-size:12px; font-weight:600; color:var(--text); margin:2px 0 6px; }
+.oc-target {
+  font-size:10px; color:var(--text-muted);
+  background:var(--bg); padding:2px 8px; border-radius:10px; display:inline-block; margin-bottom:10px;
+}
+.oc-text { font-size:12px; color:var(--text-dim); line-height:1.65; }
+
+/* Notes */
+.notes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px; margin-top:32px; }
+.note-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:14px 16px; border-left:3px solid var(--accent);
+}
+.note-title { font-size:11px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
+.note-text { font-size:12px; color:var(--text-dim); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-brand">
+    <div class="header-logo">D</div>
+    <div>
+      <div class="header-eyebrow">Dynamo Consulting × DMSi</div>
+      <div class="header-title">Milestone–Capability Cross-Reference</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    Phase 2 · Operational Readiness Program<br>
+    M1–M7 · Months 1–18
+  </div>
+</header>
+
+<div class="legend-bar">
+  <span class="legend-label">Workstreams</span>
+  <div class="legend-items" id="legend"></div>
+</div>
+
+<div class="main">
+  <div class="matrix-wrap">
+    <table class="matrix-table" id="matrix"></table>
+  </div>
+
+  <hr class="divider">
+
+  <div class="outcomes-title">Milestone Outcomes</div>
+  <div class="outcomes-grid" id="outcomes"></div>
+
+  <div class="notes-grid" id="notes"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+/* ═══════════════════════════════════════════ DATA ═════════════════════════════════════════════ */
+
+const milestones = [
+  { id:'M1', name:'Kickoff', target:'Month 1',
+    outcome:'SOW executed. Engagement Kickoff scheduled.' },
+  { id:'M2', name:'Early Assessment', target:'Month 2',
+    outcome:'Visibility and prioritization system for how engineering capacity is used and where it is consumed by preventable work. Tribal knowledge capture is underway to reduce knowledge silos and critical dependencies.' },
+  { id:'M3', name:'Foundation', target:'Month 4',
+    outcome:'Top 10 DMSi customers start to experience differentiated service. DMSi leadership has actionable dashboards visualizing engineering and customer support health. The technical foundation for reliable configuration deployment is in place. Observability design for A2W is complete. TierPoint evaluation identifies potential cost reduction targeting 10% minimum (~$1M/year). Data-supported evidence for how Frameworks can drive growth beyond building materials.' },
+  { id:'M4', name:'Operationalize Intelligence', target:'Month 8',
+    outcome:'Configuration-related incidents are reduced from baseline. Support resolves cases faster, organized by product expertise. AI-assisted alert correlation and noise reduction. Foundation for cross-functional trust with defined accountability, ownership, and escalation. Data-driven visibility into customer churn signals and a decision on the monitoring platform.' },
+  { id:'M5', name:'Support Excellence', target:'Month 12',
+    outcome:'Target: 30% fewer escalations to engineering. Engineering reinvestment into planned work. Proactive communication by support to customers when there is a problem. Modern support platform implemented to enable AI-assisted customer support services and automation.' },
+  { id:'M6', name:'Release Management', target:'Month 16',
+    outcome:'Deployments no longer require heroics or key-person availability. Engineering code deployments are automated, reliable, and routine with automated rollback capabilities.' },
+  { id:'M7', name:'Completion', target:'Month 18',
+    outcome:'Engineering operating at industry standards with a continuous improvement learning loop. DMSi can confidently benchmark against industry and peers. Operational foundation in place to support 40% growth without a linear headcount increase. Results tied to North Star metrics across all 5 workstreams.' }
+];
+
+const workstreams = {
+  A: { label:'WS-A: Platform Reliability', color:'#76BE43' },
+  B: { label:'WS-B: Support Operating Model', color:'#2563EB' },
+  C: { label:'WS-C: Tooling Strategy', color:'#ef6c00' },
+  D: { label:'WS-D: Strategic Visibility', color:'#8B5CF6' }
+};
+
+const capabilities = [
+  {
+    id:'wm', ws:'A', name:'Work Management', sub:'S0–S5', color:'#76BE43',
+    stages:{
+      M2:[{ num:'S3–4', name:'System Configured → Team Using the System',
+            del:'Engineering work management and prioritization process designed and implemented' }]
+    }
+  },
+  {
+    id:'vi', ws:'A', name:'Visibility Infrastructure', sub:'S0–S9 (combined)', color:'#26a69a',
+    stages:{
+      M2:[
+        { num:'S0', name:'Foundation and Plan Alignment',
+          del:'Baseline metrics collected from existing tooling (CheckMK, Elastic, PagerDuty); A2W/Frameworks telemetry strategy begun; current state documentation' }
+      ],
+      M3:[{ num:'S1', name:'Telemetry Strategy Validated',
+            del:'A2W/Frameworks telemetry strategy complete; Observability documented' }],
+      M5:[{ num:'S8', name:'Proactive Operations Capability',
+            del:'Monitoring operational (MTTD ≤10 min)' }]
+    }
+  },
+  {
+    id:'pa', ws:'A', name:'Pipeline Automation', sub:'S0–S8', color:'#f9a825',
+    stages:{
+      M2:[{ num:'S0', name:'Access and Process Knowledge',
+            del:'Deployment mapping begun (ride-alongs)' }],
+      M3:[{ num:'S1–4', name:'Config Inventory → Config Pipeline Operational',
+            del:'Code-as-Config pipeline built (ready to deploy); Deployment mapping & documentation complete' }],
+      M4:[{ num:'S5', name:'Config-as-Code Operational',
+            del:'Code-as-Config operational (≥80% compliance, 4 weeks)' }],
+      M5:[{ num:'S7', name:'CI/CD Pipeline for Application Code',
+            del:'CI/CD pipeline built' }],
+      M6:[{ num:'S8', name:'Development Team Adoption',
+            del:'CI/CD operational (≥80% compliance, 4 weeks); Change Failure Rate ≤15%; Scripted deployments standard' }]
+    }
+  },
+  {
+    id:'ls', ws:'A', name:'Learning System', sub:'S0–S6', color:'#9333ea',
+    stages:{
+      M3:[{ num:'S1', name:'Platform Selected & Implementation Planned',
+            del:'Observability documented; monitoring platform scoped' }],
+      M4:[{ num:'S1–2', name:'Platform Selected → Observability Platform Operational',
+            del:'PagerDuty AIOps configured and deployed; Monitoring platform decision complete' }],
+      M7:[{ num:'S6', name:'Continuous Improvement Cycle Operating',
+            del:'Automated remediation deployed for top incident types; DORA metrics tracked, visible, and improving' }]
+    }
+  },
+  {
+    id:'som', ws:'B', name:'Support Operating Model', sub:'S0–S5', color:'#3949ab',
+    stages:{
+      M3:[{ num:'S2', name:'Service Level Definitions Complete',
+            del:'Tiered service designed for top customers' }],
+      M4:[{ num:'S4–5', name:'Product Pods Active → Triad Coordination',
+            del:'Product pods live and meeting bi-weekly' }],
+      M5:[{ num:'S5', name:'Triad Coordination Operational',
+            del:'Customer Support operating model fully operational' }]
+    }
+  },
+  {
+    id:'ts', ws:'C', name:'Tooling Strategy', sub:'S0–S5', color:'#ef6c00',
+    stages:{
+      M4:[{ num:'S3+', name:'Implementation Plan Approved',
+            del:'Monitoring platform decision complete (WS-C Stage 3 is critical gate for WS-B Stages 3–4)' }],
+      M5:[{ num:'S4–5', name:'Deployment Complete → Optimization Active',
+            del:'Modern support platform implemented' }]
+    }
+  },
+  {
+    id:'sv', ws:'D', name:'Strategic Visibility', sub:'S0–S4', color:'#8B5CF6',
+    stages:{
+      M2:[{ num:'S1', name:'Engineering Scorecard Live',
+            del:'Engineering Scorecard operational' }],
+      M3:[{ num:'S2', name:'Support Scorecard Live',
+            del:'Support Scorecard operational' }],
+      M4:[{ num:'S3–4', name:'Executive Dashboard → Self-Service Adoption',
+            del:'Actionable Executive metrics operational; Workstream D, Strategic Visibility, complete' }]
+    }
+  }
+];
+
+const notes = [
+  { title:'Capability Model Update', text:'Proactive Detection has been merged into Visibility Infrastructure as a single 10-stage capability (S0–S9). The M5 MTTD ≤10 min deliverable now maps to Visibility Infrastructure Stage 8 (Proactive Operations Capability), previously Proactive Detection Stage 6.' },
+  { title:'WS-C Critical Gate', text:'Workstream C Stage 3 (Implementation Plan Approved) is a blocking gate for WS-B Stages 3–4. Tool selection must happen before tiered service configuration. If the WS-C decision slips, M4 support operating model work is at risk.' },
+  { title:'WS-D Completion at M4', text:'Workstream D, Strategic Visibility, is explicitly complete at M4. This is a hard M4 dependency — the milestone deliverable includes "Workstream D complete" as an exit criterion.' },
+  { title:'Dev Team Dependencies', text:'Visibility Infrastructure Stage 5 (Application Telemetry) and Pipeline Automation Stages 6–8 have explicit development team dependencies. These stages cannot advance on engineering effort alone and require active dev team engagement.' }
+];
+
+/* ═══════════════════════════════════════ RENDER ══════════════════════════════════════════════ */
+
+// Legend
+const legendEl = document.getElementById('legend');
+Object.values(workstreams).forEach(w => {
+  legendEl.innerHTML += `<div class="legend-item">
+    <span class="legend-dot" style="background:${w.color}"></span>
+    <span>${w.label}</span>
+  </div>`;
+});
+
+// Matrix
+const matrix = document.getElementById('matrix');
+
+// Header row
+let thead = `<thead><tr>
+  <th class="th-cap col-cap" style="background:var(--bg);border:1px solid var(--border);"></th>`;
+milestones.forEach(m => {
+  thead += `<th class="th-milestone">
+    <span class="milestone-id">${m.id}</span>
+    <span class="milestone-name">${m.name}</span>
+    <span class="milestone-target">${m.target}</span>
+  </th>`;
+});
+thead += '</tr></thead>';
+
+// Body rows
+let tbody = '<tbody>';
+let lastWs = null;
+
+capabilities.forEach(cap => {
+  if (cap.ws !== lastWs) {
+    lastWs = cap.ws;
+    const w = workstreams[cap.ws];
+    tbody += `<tr class="ws-row"><td colspan="${milestones.length + 1}">
+      <span style="color:${w.color}">${w.label}</span>
+    </td></tr>`;
+  }
+
+  tbody += `<tr>
+    <td class="th-cap" style="border-left:3px solid ${cap.color}; background:var(--surface);">
+      <span class="ws-badge" style="background:${cap.color}20; color:${cap.color}; border:1px solid ${cap.color}40;">WS-${cap.ws}</span>
+      <span class="cap-name">${cap.name}</span>
+      <span class="cap-sub">${cap.sub}</span>
+    </td>`;
+
+  milestones.forEach(m => {
+    const stages = cap.stages[m.id];
+    if (stages && stages.length) {
+      tbody += `<td class="td-cell filled">`;
+      stages.forEach(s => {
+        const safeData = JSON.stringify({ cap: cap.name, m: m.id, mn: m.name, ...s }).replace(/'/g,"&#39;");
+        tbody += `<div class="stage-badge"
+          style="background:${cap.color}18; border-color:${cap.color}50; color:${cap.color};"
+          data-tip='${safeData}'
+          onmouseenter="showTip(event,this)"
+          onmouseleave="hideTip()">
+          <span class="stage-num">${s.num}</span>
+          <span class="stage-short">${trunc(s.name, 30)}</span>
+        </div>`;
+      });
+      tbody += `</td>`;
+    } else {
+      tbody += `<td class="td-cell"><span class="cell-dot"></span></td>`;
+    }
+  });
+
+  tbody += '</tr>';
+});
+
+tbody += '</tbody>';
+matrix.innerHTML = thead + tbody;
+
+// Outcomes
+const outcomesEl = document.getElementById('outcomes');
+milestones.forEach(m => {
+  outcomesEl.innerHTML += `<div class="outcome-card">
+    <div class="oc-id">${m.id}</div>
+    <div class="oc-name">${m.name}</div>
+    <span class="oc-target">${m.target}</span>
+    <div class="oc-text">${m.outcome}</div>
+  </div>`;
+});
+
+// Notes
+const notesEl = document.getElementById('notes');
+notes.forEach(n => {
+  notesEl.innerHTML += `<div class="note-card">
+    <div class="note-title">${n.title}</div>
+    <div class="note-text">${n.text}</div>
+  </div>`;
+});
+
+/* ═══════════════════════════════════════ TOOLTIP ═════════════════════════════════════════════ */
+
+const tip = document.getElementById('tooltip');
+
+function showTip(e, el) {
+  const d = JSON.parse(el.dataset.tip);
+  tip.innerHTML = `
+    <div class="tip-cap">${d.cap}</div>
+    <div class="tip-name">Stage ${d.num}: ${d.name}</div>
+    <div class="tip-deliverable">${d.del}</div>
+    <div class="tip-m">↳ ${d.m}: ${d.mn}</div>
+  `;
+  tip.classList.add('show');
+  moveTip(e);
+}
+function hideTip() { tip.classList.remove('show'); }
+function moveTip(e) {
+  const tw = 290, th = 130;
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + tw > window.innerWidth - 8) x = e.clientX - tw - 14;
+  if (y + th > window.innerHeight - 8) y = e.clientY - th - 14;
+  tip.style.left = x + 'px';
+  tip.style.top = y + 'px';
+}
+document.addEventListener('mousemove', e => { if (tip.classList.contains('show')) moveTip(e); });
+
+function trunc(s, n) { return s.length > n ? s.slice(0, n) + '…' : s; }
+</script>
+</body>
+</html>
