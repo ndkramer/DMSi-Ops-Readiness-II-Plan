@@ -26,6 +26,7 @@ on:
       - 'Capability-map/capability-map-artifacts-dmsi.json'
       - 'Capability-map/index.mjs'
       - 'Capability-map/Milestones/**'
+      - 'Capability-map/milestones.html'
       - 'Project-Plan/Combined-Outcome-Gantt.html'
       - 'Project-Plan/gantt-data.json'
       - 'Project-Plan/project-milestones.json'
@@ -51,7 +52,7 @@ jobs:
       - name: Create deployment package
         run: |
           cd Capability-map
-          zip -r ../deploy.zip index.mjs capability-map.html capability-map-dmsi.html capability-map-state.json capability-map-artifacts-dmsi.json Milestones
+          zip -r ../deploy.zip index.mjs capability-map.html capability-map-dmsi.html capability-map-state.json capability-map-artifacts-dmsi.json milestones.html Milestones
           cd ../Project-Plan
           # Root of zip: legacy Lambda URLs …/Combined-Outcome-Gantt.html
           zip -g ../deploy.zip Combined-Outcome-Gantt.html gantt-data.json project-milestones.json
