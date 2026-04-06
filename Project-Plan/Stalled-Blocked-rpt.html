@@ -389,7 +389,7 @@
         <li>Enable scopes: <code>read:project</code> (or full <code>project</code> for classic boards), <code>read:org</code>, and <code>repo</code> if issues are in <strong>private</strong> repositories.</li>
       </ol>
       <p>If you see <strong>“Project #1 not found”</strong> or similar: the board may be a <strong>classic</strong> project (this page now falls back to that API) or your token may lack <strong>Organization → Projects (Read)</strong>. If the org uses <strong>SAML SSO</strong>, open the token in GitHub → <strong>Configure SSO</strong> and authorize it for <strong>DynamoLLC-Hub</strong>.</p>
-      <p>If you see <strong>“Failed to fetch”</strong> inside Confluence or another iframe: the embedder may block <code>api.github.com</code>. Use the report on your <strong>Lambda function URL</strong> (latest deploy): GitHub calls are proxied through the same host. Keep your usual Lambda <code>?token=…</code> on the URL if your site requires it.</p>
+      <p>If you see <strong>“Failed to fetch”</strong> or <strong>403</strong>: embedders may block <code>api.github.com</code>, or Lambda may reject requests without the <strong>gate</strong> token. Use both: <code>?token=…</code> (same value as the Capability Map / Confluence iframe) <strong>and</strong> <code>&amp;github_token=…</code> (GitHub PAT). Force proxy with <code>&amp;github_proxy=1</code> if needed.</p>
       <p>Official guide: <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener noreferrer">Managing personal access tokens</a>.</p>
     </div>
   </details>
@@ -503,9 +503,22 @@
     var active = githubToken || fromQ;
     var status = document.getElementById('tokenStatus');
     if (active) {
-      status.textContent = githubToken ? 'Using token from this session.' : 'Using token from URL query (handle with care).';
+      var base = githubToken ? 'GitHub: session.' : 'GitHub: URL query (handle with care).';
+      if (useGithubProxy()) {
+        try {
+          var q = new URLSearchParams(window.location.search || '');
+          if (!q.get('token')) {
+            base += ' Lambda gate: add ?token=… if your site uses CONFLUENCE_TOKEN (required for /github-proxy).';
+          } else {
+            base += ' Lambda gate: token present.';
+          }
+        } catch (e) {
+          base += ' Use ?token=… with proxy if Lambda requires it.';
+        }
+      }
+      status.textContent = base;
     } else {
-      status.textContent = 'No token — set token or add ?github_token=… to the URL.';
+      status.textContent = 'No GitHub token — use Set GitHub token or ?github_token=…';
     }
   }
 
@@ -570,10 +583,43 @@
   function useGithubProxy() {
     try {
       if (window.location.protocol === 'file:') return false;
+      var q = new URLSearchParams(window.location.search || '');
+      if (q.get('github_proxy') === '0') return false;
+      if (q.get('github_proxy') === '1') return true;
       var h = (window.location.hostname || '').toLowerCase();
-      return h.indexOf('lambda-url') >= 0 || h.endsWith('.on.aws');
+      return h.indexOf('lambda-url') >= 0 || h.endsWith('.on.aws') || h.indexOf('.lambda-url.') >= 0;
     } catch (e) {
       return false;
+    }
+  }
+
+  /**
+   * Parse JSON from GitHub or Lambda proxy. Lambda returns HTML (403) when ?token= gate is missing — give a clear error.
+   */
+  async function parseGithubJsonResponse(res, context) {
+    var text = await res.text();
+    var trimmed = (text || '').trim();
+    if (!trimmed) {
+      throw new Error((context || 'Request') + ': empty body (HTTP ' + res.status + ').');
+    }
+    if (trimmed.charAt(0) === '<') {
+      if (res.status === 403) {
+        throw new Error(
+          'Lambda returned 403 (HTML). This deployment often requires the same gate token as the Capability Map.\n\n' +
+            'Add to this page’s URL: ?token=YOUR_LAMBDA_TOKEN (and keep github_token= for GitHub). Example:\n' +
+            '…/Stalled-Blocked-rpt.html?token=…&github_token=…'
+        );
+      }
+      throw new Error(
+        (context || 'Request') +
+          ' returned HTML instead of JSON (HTTP ' + res.status +
+          '). Deploy the latest Lambda (index.mjs with /github-proxy), or open the report in a new tab outside the iframe.'
+      );
+    }
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      throw new Error((context || 'Request') + ': bad JSON (HTTP ' + res.status + '). ' + (e.message || ''));
     }
   }
 
@@ -671,7 +717,13 @@
       var res = await githubRestFetch(url, token);
       if (res.status === 404 || res.status === 403 || res.status === 401) return null;
       if (!res.ok) return null;
-      var arr = await res.json();
+      var arr;
+      try {
+        arr = await parseGithubJsonResponse(res, 'Org projects list');
+      } catch (e) {
+        console.warn(e);
+        return null;
+      }
       if (!Array.isArray(arr)) return null;
       for (var i = 0; i < arr.length; i++) {
         if (arr[i].number !== CONFIG.projectNumber) continue;
@@ -688,14 +740,26 @@
     var seen = {};
     var colRes = await githubRestFetch('https://api.github.com/projects/' + projectNumericId + '/columns', token);
     if (!colRes.ok) return list;
-    var columns = await colRes.json();
+    var columns;
+    try {
+      columns = await parseGithubJsonResponse(colRes, 'Project columns');
+    } catch (e) {
+      console.warn(e);
+      return list;
+    }
     if (!Array.isArray(columns)) return list;
     for (var c = 0; c < columns.length; c++) {
       var cardUrl = columns[c].cards_url;
       while (cardUrl) {
         var cr = await githubRestFetch(cardUrl, token);
         if (!cr.ok) break;
-        var cards = await cr.json();
+        var cards;
+        try {
+          cards = await parseGithubJsonResponse(cr, 'Project cards');
+        } catch (e) {
+          console.warn(e);
+          break;
+        }
         if (!Array.isArray(cards)) break;
         for (var i = 0; i < cards.length; i++) {
           var cu = cards[i].content_url;
@@ -713,8 +777,13 @@
   async function fetchRestContentForCardUrl(contentUrl, token) {
     var res = await githubRestFetch(contentUrl, token);
     if (!res.ok) return null;
-    var data = await res.json();
-    return mapRestIssueOrPR(data, contentUrl);
+    try {
+      var data = await parseGithubJsonResponse(res, 'Issue/PR');
+      return mapRestIssueOrPR(data, contentUrl);
+    } catch (e) {
+      console.warn(e);
+      return null;
+    }
   }
 
   /** Classic org project board (columns/cards) — used when GraphQL projectV2 is null. */
@@ -734,7 +803,7 @@
   async function fetchProjectsV2ListHint(token) {
     var query = 'query($org:String!){organization(login:$org){projectsV2(first:30){nodes{number title}}}}';
     var res = await githubGraphqlFetch(token, query, { org: CONFIG.orgLogin });
-    var json = await res.json();
+    var json = await parseGithubJsonResponse(res, 'GitHub GraphQL (hint query)');
     if (json.errors || !json.data || !json.data.organization) {
       return 'Could not read organization “' + CONFIG.orgLogin + '”. Verify the org name, token, and (if the org uses SAML SSO) that you authorized this token for the org.';
     }
@@ -759,7 +828,7 @@
         cursor: cursor
       });
 
-      var json = await res.json();
+      var json = await parseGithubJsonResponse(res, 'GitHub GraphQL');
       if (!res.ok) {
         throw new Error(json.message || 'HTTP ' + res.status);
       }
@@ -977,10 +1046,10 @@
       console.error(err);
       var msg = String(err.message || err);
       if (err && (err.message === 'Failed to fetch' || err.name === 'TypeError')) {
-        msg = 'Failed to reach GitHub (network or browser security).\n\n' +
-          'If this page is embedded (e.g. in Confluence), the parent site often blocks requests to api.github.com. ' +
-          'Open the same report URL in a new tab, or deploy the latest Lambda (it proxies GitHub through your function URL when the host ends with .on.aws).\n\n' +
-          'If you use Lambda ?token= for access, keep it on the URL so /github-proxy requests are allowed.';
+        msg = 'Failed to reach the server (network, CSP, or blocked request).\n\n' +
+          '1) If the Capability Map uses ?token= for Lambda, add the same token to this page: ?token=…&github_token=…\n' +
+          '2) Deploy latest Lambda (GitHub proxy). Host should be *.lambda-url.*.on.aws — or add &github_proxy=1 to force proxy.\n' +
+          '3) In Confluence, try opening the iframe URL in a new tab to rule out embed restrictions.';
       }
       setMessage(msg, 'error');
       renderCards([]);
