@@ -2800,20 +2800,37 @@ function toggleTabAMenu(ev) {
   }
 }
 
-/** Opens Milestones cross-reference page relative to this HTML file. */
+/**
+ * DMSi Confluence wiki targets for the Workstream A hamburger menu.
+ * Same URL shape as other space pages: /wiki/spaces/DMSi/pages/{pageId}/{Title+With+Pluses}.
+ * (Lambda ?token= on the map URL is for same-origin artifact fetches; wiki access uses normal Atlassian login.)
+ */
+var CONFLUENCE_WIKI_PROJECT_PLAN = 'https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2227044353/Project+Plan';
+
+/**
+ * DMSi Confluence wiki — Milestones page (sibling of Project Plan). If cleared, menu falls back to bundled Milestones/milestone_capability_xref.html with optional ?token=.
+ */
+var CONFLUENCE_WIKI_MILESTONES = 'https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2241691649/Milestones';
+
+/** Opens Milestones: Confluence page when CONFLUENCE_WIKI_MILESTONES is set; otherwise bundled cross-ref with optional token. */
 function onTabAMenuMilestones(e) {
   e.stopPropagation();
   closeTabAMenu();
+  if (CONFLUENCE_WIKI_MILESTONES && /^https?:\/\//i.test(CONFLUENCE_WIKI_MILESTONES)) {
+    window.open(CONFLUENCE_WIKI_MILESTONES, '_blank', 'noopener,noreferrer');
+    return;
+  }
   var milestonesUrl = new URL('Milestones/milestone_capability_xref.html', window.location.href);
+  var tok = getPageToken();
+  if (tok) milestonesUrl.searchParams.set('token', tok);
   window.open(milestonesUrl.href, '_blank', 'noopener,noreferrer');
 }
 
-/** Opens combined outcome Gantt (repo root Project-Plan) relative to this HTML file. */
+/** Opens the Project Plan Confluence page (embedded Gantt is configured on that page). */
 function onTabAMenuProjectPlan(e) {
   e.stopPropagation();
   closeTabAMenu();
-  var planUrl = new URL('../Project-Plan/Combined-Outcome-Gantt.html', window.location.href);
-  window.open(planUrl.href, '_blank', 'noopener,noreferrer');
+  window.open(CONFLUENCE_WIKI_PROJECT_PLAN, '_blank', 'noopener,noreferrer');
 }
 
 // Tab switching
