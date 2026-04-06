@@ -977,6 +977,8 @@
     <div class="tab-dropdown" id="tabAMenu" role="menu" aria-labelledby="tabAHamburger">
       <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuMilestones(event)">Milestones</button>
       <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuProjectPlan(event)">Project Plan</button>
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuBoard(event)">Board</button>
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuStalledBlocked(event)">Stalled/Blocked</button>
     </div>
   </div>
   <button class="tab-btn" data-tab="tab-bc" onclick="switchTab('tab-bc')">Workstream B &amp; C</button>
@@ -2845,6 +2847,12 @@ var CONFLUENCE_WIKI_PROJECT_PLAN = 'https://godynamo.atlassian.net/wiki/spaces/D
  */
 var CONFLUENCE_WIKI_MILESTONES = 'https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2241691649/Milestones';
 
+/** GitHub org project (Projects classic / new) for the Workstream A hamburger → Board. */
+var GITHUB_ORG_PROJECT_BOARD = 'https://github.com/orgs/DynamoLLC-Hub/projects/1';
+
+/** GitHub project view — Stalled/Blocked (field layout encoded in query). */
+var GITHUB_ORG_PROJECT_STALLED_BLOCKED_VIEW = 'https://github.com/orgs/DynamoLLC-Hub/projects/1/views/10?visibleFields=%5B%22Title%22%2C%22Assignees%22%2C%22Labels%22%2C%22Status%22%2C%22Linked+pull+requests%22%2C%22Sub-issues+progress%22%5D';
+
 /** Opens Milestones: Confluence page when CONFLUENCE_WIKI_MILESTONES is set; otherwise bundled cross-ref with optional token. */
 function onTabAMenuMilestones(e) {
   e.stopPropagation();
@@ -2864,6 +2872,20 @@ function onTabAMenuProjectPlan(e) {
   e.stopPropagation();
   closeTabAMenu();
   openExternalLink(CONFLUENCE_WIKI_PROJECT_PLAN);
+}
+
+/** Opens the GitHub org project board in a new tab. */
+function onTabAMenuBoard(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  openExternalLink(GITHUB_ORG_PROJECT_BOARD);
+}
+
+/** Opens the GitHub project Stalled/Blocked view in a new tab. */
+function onTabAMenuStalledBlocked(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  openExternalLink(GITHUB_ORG_PROJECT_STALLED_BLOCKED_VIEW);
 }
 
 // Tab switching
