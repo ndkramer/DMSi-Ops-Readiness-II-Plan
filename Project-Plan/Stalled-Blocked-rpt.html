@@ -390,6 +390,7 @@
       </ol>
       <p>If you see <strong>“Project #1 not found”</strong> or similar: the board may be a <strong>classic</strong> project (this page now falls back to that API) or your token may lack <strong>Organization → Projects (Read)</strong>. If the org uses <strong>SAML SSO</strong>, open the token in GitHub → <strong>Configure SSO</strong> and authorize it for <strong>DynamoLLC-Hub</strong>.</p>
       <p>If you see <strong>“Failed to fetch”</strong> or <strong>403</strong>: embedders may block <code>api.github.com</code>, or Lambda may reject requests without the <strong>gate</strong> token. Use both: <code>?token=…</code> (same value as the Capability Map / Confluence iframe) <strong>and</strong> <code>&amp;github_token=…</code> (GitHub PAT). Force proxy with <code>&amp;github_proxy=1</code> if needed.</p>
+      <p><strong>Confluence iframe:</strong> sandboxed frames can make <code>location.origin</code> the string <code>null</code>, which breaks API URLs. This page derives the Lambda host from <code>location.href</code> to fix that. Prefer <strong>not</strong> putting a GitHub PAT in the URL (use <strong>Set GitHub token</strong>); revoke any PAT that was ever pasted into a URL, chat, or ticket.</p>
       <p>Official guide: <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener noreferrer">Managing personal access tokens</a>.</p>
     </div>
   </details>
@@ -623,6 +624,25 @@
     }
   }
 
+  /**
+   * Confluence (and other) sandboxed iframes often set location.origin to the string "null".
+   * Building proxy URLs with that produces invalid requests → "Failed to fetch". Prefer href.
+   */
+  function safePageOrigin() {
+    try {
+      var href = window.location.href;
+      if (href && href.indexOf('http') === 0) {
+        var u = new URL(href);
+        if (u.origin && u.origin !== 'null') return u.origin;
+      }
+    } catch (e) { /* ignore */ }
+    try {
+      var o = window.location.origin;
+      if (o && o !== 'null') return o;
+    } catch (e2) { /* ignore */ }
+    return '';
+  }
+
   /** Repeat Lambda gate ?token= on proxy URLs when this HTML was opened with it (CONFLUENCE_TOKEN). */
   function withLambdaGate(url) {
     try {
@@ -637,8 +657,9 @@
   }
 
   function githubGraphqlFetch(token, query, variables) {
+    var origin = safePageOrigin();
     var url = useGithubProxy()
-      ? withLambdaGate((window.location.origin || '') + '/github-proxy/graphql')
+      ? withLambdaGate((origin || '') + '/github-proxy/graphql')
       : 'https://api.github.com/graphql';
     var headers = { 'Content-Type': 'application/json' };
     var body;
@@ -666,7 +687,7 @@
         'Accept': 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28'
       };
-      var proxyUrl = withLambdaGate((window.location.origin || '') + '/github-api' + path);
+      var proxyUrl = withLambdaGate((safePageOrigin() || '') + '/github-api' + path);
       return fetch(proxyUrl, { headers: h });
     } catch (e) {
       return fetch(absUrl, { headers: restHeaders(token) });
