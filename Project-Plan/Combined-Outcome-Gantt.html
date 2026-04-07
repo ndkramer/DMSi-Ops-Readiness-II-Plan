@@ -212,6 +212,10 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     z-index: 10;
   }
+  .gantt-bar.gantt-bar-stall { box-shadow: inset 0 0 0 3px #E67E22; }
+  .gantt-bar.gantt-bar-stall:hover { box-shadow: inset 0 0 0 3px #E67E22, 0 4px 12px rgba(0,0,0,0.25); }
+  .gantt-bar.gantt-bar-block { box-shadow: inset 0 0 0 3px #E74C3C; }
+  .gantt-bar.gantt-bar-block:hover { box-shadow: inset 0 0 0 3px #E74C3C, 0 4px 12px rgba(0,0,0,0.25); }
 
   .bar-wm { background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%); }
   .bar-vi { background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%); }
@@ -380,6 +384,8 @@
   <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg, #E67E22, #D35400)"></div> Pipeline Automation (PP)</div>
   <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #E74C3C;opacity:0.6"></div> Milestone</div>
   <div class="legend-item"><div style="width:0;height:14px;border-left:3px solid #76BE43;opacity:0.7"></div> As of last save</div>
+  <div class="legend-item"><div style="width:14px;height:14px;border-radius:3px;box-shadow:inset 0 0 0 3px #E67E22;background:transparent"></div> Stalled issue(s) on outcome map</div>
+  <div class="legend-item"><div style="width:14px;height:14px;border-radius:3px;box-shadow:inset 0 0 0 3px #E74C3C;background:transparent"></div> Blocked issue(s) on outcome map</div>
 </div>
 
 <div class="container">
@@ -523,6 +529,7 @@ function renderTimeline(capabilities, milestones) {
     bar.style.left = dateToPct(cap.start) + '%';
     bar.style.width = (dateToPct(cap.end) - dateToPct(cap.start)) + '%';
     bar.textContent = cap.id + ' -- ' + cap.outcomes + ' outcomes';
+    bar.dataset.capId = cap.id;
     bar.addEventListener('mouseenter', (e) => showTooltip(e, cap));
     bar.addEventListener('mousemove', moveTooltip);
     bar.addEventListener('mouseleave', hideTooltip);
@@ -575,6 +582,28 @@ function initGantt(data) {
   renderTimeline(capabilities, milestones);
 }
 
+/** Outcome-level Stalled/Blocked from Project-Plan/outcome-stall-overlay.json (see Scripts/sync-outcome-stall-overlay.js). */
+function applyCombinedStallOverlay(byOutcome) {
+  if (!byOutcome || typeof byOutcome !== 'object') return;
+  const prefixes = { WM: 'WM-OC-', VI: 'VI-OC-', PP: 'PA-OC-' };
+  document.querySelectorAll('.gantt-bar[data-cap-id]').forEach((bar) => {
+    const capId = bar.getAttribute('data-cap-id');
+    const pre = prefixes[capId];
+    bar.classList.remove('gantt-bar-stall', 'gantt-bar-block');
+    if (!pre) return;
+    let blocked = false;
+    let stalled = false;
+    Object.keys(byOutcome).forEach((k) => {
+      if (!k.startsWith(pre)) return;
+      const ent = byOutcome[k];
+      if (ent && ent.blocked && ent.blocked.length) blocked = true;
+      if (ent && ent.stalled && ent.stalled.length) stalled = true;
+    });
+    if (blocked) bar.classList.add('gantt-bar-block');
+    else if (stalled) bar.classList.add('gantt-bar-stall');
+  });
+}
+
 (function loadGanttData() {
   const token = new URLSearchParams(window.location.search).get('token');
   function fetchUrl(path) {
@@ -583,10 +612,18 @@ function initGantt(data) {
     return path + sep + 'token=' + encodeURIComponent(token);
   }
 
+  function afterGantt(data) {
+    initGantt(data);
+    fetch(fetchUrl('outcome-stall-overlay.json'), { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((d) => applyCombinedStallOverlay(d && d.byOutcome))
+      .catch(() => {});
+  }
+
   if (window.GANTT_DATA) {
     const d = window.GANTT_DATA;
     if (!d.milestones || !d.milestones.length) d.milestones = FALLBACK_MILESTONES;
-    initGantt(d);
+    afterGantt(d);
     return;
   }
   fetch(fetchUrl('gantt-data.json'))
@@ -603,9 +640,9 @@ function initGantt(data) {
           return data;
         })
     )
-    .then(initGantt)
+    .then(afterGantt)
     .catch(() => {
-      initGantt({ capabilities: FALLBACK_CAPABILITIES, milestones: FALLBACK_MILESTONES });
+      afterGantt({ capabilities: FALLBACK_CAPABILITIES, milestones: FALLBACK_MILESTONES });
     });
 })();
 

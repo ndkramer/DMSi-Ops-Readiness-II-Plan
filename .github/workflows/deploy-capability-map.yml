@@ -33,6 +33,8 @@ on:
       - 'Project-Plan/Stalled-Blocked-rpt.html'
       - 'Project-Plan/gantt-data.json'
       - 'Project-Plan/project-milestones.json'
+      - 'Project-Plan/outcome-stall-overlay.json'
+      - 'Scripts/sync-outcome-stall-overlay.js'
       - 'WSA/'
       - 'WSB-WSC/WB/'
       - 'WSB-WSC/'
@@ -70,7 +72,7 @@ jobs:
           zip -r ../deploy.zip index.mjs capability-map.html capability-map-dmsi.html capability-map-state.json capability-map-artifacts-dmsi.json milestones.html Milestones
           cd ../Project-Plan
           # Root of zip: legacy Lambda URLs …/Combined-Outcome-Gantt.html
-          zip -g ../deploy.zip Combined-Outcome-Gantt.html Stalled-Blocked-rpt.html gantt-data.json project-milestones.json
+          zip -g ../deploy.zip Combined-Outcome-Gantt.html Stalled-Blocked-rpt.html gantt-data.json project-milestones.json outcome-stall-overlay.json
           if [ -f Stalled-Blocked-github-token.local.json ]; then
             zip -g ../deploy.zip Stalled-Blocked-github-token.local.json
           fi
@@ -80,7 +82,8 @@ jobs:
             Project-Plan/Combined-Outcome-Gantt.html \
             Project-Plan/Stalled-Blocked-rpt.html \
             Project-Plan/gantt-data.json \
-            Project-Plan/project-milestones.json
+            Project-Plan/project-milestones.json \
+            Project-Plan/outcome-stall-overlay.json
           if [ -f Project-Plan/Stalled-Blocked-github-token.local.json ]; then
             zip -g deploy.zip Project-Plan/Stalled-Blocked-github-token.local.json
           fi

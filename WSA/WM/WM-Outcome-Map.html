@@ -149,6 +149,28 @@
   .bar-complete { position: relative; }
   .bar-complete::after { content: '\2713'; position: absolute; top: 2px; right: 22px; font-size: 9px; color: white; font-weight: 700; }
 
+  /* Stalled / Blocked overlay (Project-Plan/outcome-stall-overlay.json) */
+  .outcome-bar.bar-stalled { box-shadow: inset 0 0 0 2px #E67E22; }
+  .outcome-bar.bar-blocked { box-shadow: inset 0 0 0 2px #E74C3C; }
+  .stall-badge {
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    padding: 2px 4px;
+    border-radius: 3px;
+    line-height: 1;
+    z-index: 15;
+    color: #fff;
+    pointer-events: none;
+  }
+  .stall-badge.stall-stalled { background: #E67E22; }
+  .stall-badge.stall-blocked { background: #E74C3C; }
+
   .plus-btn {
     position: absolute;
     right: 2px;
@@ -382,6 +404,8 @@
   <div class="legend-item"><div class="legend-line should" style="border-color:#76BE43"></div> should dependency</div>
   <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #2B2B2B;opacity:0.5"></div> As of last save</div>
   <div class="legend-item"><div style="width:2px;height:14px;background:#E74C3C;opacity:0.5"></div> Deadline</div>
+  <div class="legend-item"><span class="stall-badge stall-stalled" style="position:static;transform:none">Stalled</span> GitHub Stalled</div>
+  <div class="legend-item"><span class="stall-badge stall-blocked" style="position:static;transform:none">Blocked</span> GitHub Blocked</div>
 </div>
 
 <div class="container">
@@ -521,6 +545,11 @@
 <!-- Tooltip -->
 <div class="tooltip" id="tooltip"></div>
 
+<!-- Mirror of Project-Plan/outcome-stall-overlay.json for file:// opens; refresh after running Scripts/sync-outcome-stall-overlay.js -->
+<script type="application/json" id="outcome-stall-overlay-fallback">
+{"byOutcome":{}}
+</script>
+
 <script>
 // Outcome data
 // Grid: 18 columns = Weeks 1-18 (Week 1 = Feb 16, 2026)
@@ -603,6 +632,7 @@ outcomes.forEach((oc, idx) => {
   bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
   bar.style.position = 'relative';
   bar.dataset.idx = idx;
+  bar.dataset.ocId = oc.id;
 
   const barText = document.createElement('span');
   barText.textContent = oc.id;
@@ -624,6 +654,57 @@ outcomes.forEach((oc, idx) => {
   lane.appendChild(track);
   lanesEl.appendChild(lane);
 });
+
+/** Stalled/Blocked: ../../Project-Plan/outcome-stall-overlay.json (regenerate: node Scripts/sync-outcome-stall-overlay.js). */
+const STALL_OVERLAY_URL = '../../Project-Plan/outcome-stall-overlay.json';
+let outcomeStallByOutcome = {};
+
+function parseStallOverlayFallback() {
+  const el = document.getElementById('outcome-stall-overlay-fallback');
+  if (!el || !el.textContent) return { byOutcome: {} };
+  try {
+    const data = JSON.parse(el.textContent.trim());
+    return data && data.byOutcome ? data : { byOutcome: {} };
+  } catch (e) {
+    return { byOutcome: {} };
+  }
+}
+
+function loadOutcomeStallOverlay() {
+  return fetch(STALL_OVERLAY_URL, { cache: 'no-store' })
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((data) => (data && data.byOutcome ? data : { byOutcome: {} }))
+    .catch(() => parseStallOverlayFallback());
+}
+
+function applyStallOverlayToOutcomeBars(data) {
+  const by = (data && data.byOutcome) || {};
+  outcomeStallByOutcome = by;
+  document.querySelectorAll('.outcome-bar[data-oc-id]').forEach((bar) => {
+    const id = bar.getAttribute('data-oc-id');
+    bar.querySelectorAll('.stall-badge').forEach((n) => n.remove());
+    bar.classList.remove('bar-stalled', 'bar-blocked');
+    const ent = by[id];
+    if (!ent) return;
+    const hasB = ent.blocked && ent.blocked.length;
+    const hasS = ent.stalled && ent.stalled.length;
+    if (hasB) {
+      bar.classList.add('bar-blocked');
+      const badge = document.createElement('span');
+      badge.className = 'stall-badge stall-blocked';
+      badge.textContent = 'Blocked';
+      bar.insertBefore(badge, bar.firstChild);
+    } else if (hasS) {
+      bar.classList.add('bar-stalled');
+      const badge = document.createElement('span');
+      badge.className = 'stall-badge stall-stalled';
+      badge.textContent = 'Stalled';
+      bar.insertBefore(badge, bar.firstChild);
+    }
+  });
+}
+
+loadOutcomeStallOverlay().then(applyStallOverlayToOutcomeBars);
 
 /** Program milestones: ../../Project-Plan/project-milestones.json. Week 1 = Feb 16, 2026; 18-week grid. */
 const FALLBACK_PROJECT_MILESTONES = [
@@ -705,6 +786,14 @@ timelineEl.appendChild(deadlineTag);
 // Tooltip
 const tooltipEl = document.getElementById('tooltip');
 
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 function showTooltip(e, oc) {
   let html = `<div class="tt-title">${oc.id}: ${oc.name}</div>`;
   html += `<div class="tt-row"><span class="tt-label">Category:</span> ${oc.cat}</div>`;
@@ -714,6 +803,23 @@ function showTooltip(e, oc) {
   if (oc.risk) html += `<div class="tt-row"><span class="tt-label tt-risk">Key Risks:</span> ${oc.risk}</div>`;
   if (oc.deps.length) {
     html += `<div class="tt-deps"><span class="tt-label">Depends on:</span> ${oc.deps.join(', ')}</div>`;
+  }
+  const st = outcomeStallByOutcome[oc.id];
+  if (st) {
+    if (st.blocked && st.blocked.length) {
+      html += `<div class="tt-row"><span class="tt-label tt-risk">Blocked (GitHub):</span></div>`;
+      st.blocked.forEach((it) => {
+        const ref = it.repository && it.repository.nameWithOwner ? `${escapeHtml(it.repository.nameWithOwner)} #${it.number}` : `#${it.number}`;
+        html += `<div class="tt-row" style="font-size:11px"><a href="${escapeHtml(it.url)}" target="_blank" rel="noopener noreferrer" style="color:#76BE43">${ref}</a> — ${escapeHtml(it.title)}</div>`;
+      });
+    }
+    if (st.stalled && st.stalled.length) {
+      html += `<div class="tt-row"><span class="tt-label" style="color:#E67E22">Stalled (GitHub):</span></div>`;
+      st.stalled.forEach((it) => {
+        const ref = it.repository && it.repository.nameWithOwner ? `${escapeHtml(it.repository.nameWithOwner)} #${it.number}` : `#${it.number}`;
+        html += `<div class="tt-row" style="font-size:11px"><a href="${escapeHtml(it.url)}" target="_blank" rel="noopener noreferrer" style="color:#76BE43">${ref}</a> — ${escapeHtml(it.title)}</div>`;
+      });
+    }
   }
   html += `<div style="margin-top:8px;font-size:11px;color:#ccc;line-height:1.4">${oc.detail}</div>`;
   tooltipEl.innerHTML = html;

@@ -170,6 +170,27 @@
   .bar-conditional { background: #E67E22; border: 2px dashed #D35400; }
   .bar-poc { background: #9B59B6; }
 
+  .outcome-bar.bar-stalled { box-shadow: inset 0 0 0 2px #E67E22; }
+  .outcome-bar.bar-blocked { box-shadow: inset 0 0 0 2px #E74C3C; }
+  .stall-badge {
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    padding: 2px 4px;
+    border-radius: 3px;
+    line-height: 1;
+    z-index: 15;
+    color: #fff;
+    pointer-events: none;
+  }
+  .stall-badge.stall-stalled { background: #E67E22; }
+  .stall-badge.stall-blocked { background: #E74C3C; }
+
   .milestone-line {
     position: absolute;
     top: 0;
@@ -434,6 +455,8 @@
   <div class="legend-item"><div class="legend-line should"></div> should dependency</div>
   <div class="legend-item"><div class="legend-line contingent"></div> contingent</div>
   <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #2B2B2B;opacity:0.5;"></div> As of last save</div>
+  <div class="legend-item"><span class="stall-badge stall-stalled" style="position:static;transform:none">Stalled</span> GitHub Stalled</div>
+  <div class="legend-item"><span class="stall-badge stall-blocked" style="position:static;transform:none">Blocked</span> GitHub Blocked</div>
 </div>
 
 <div class="container">
@@ -632,6 +655,10 @@
 
 <!-- Tooltip -->
 <div class="tooltip" id="tooltip"></div>
+
+<script type="application/json" id="outcome-stall-overlay-fallback">
+{"byOutcome":{}}
+</script>
 
 <script type="application/json" id="pa-dependency-edges-fallback">
 [
@@ -1096,8 +1123,12 @@ outcomes.forEach((oc, idx) => {
     const bar = document.createElement('div');
     bar.className = `outcome-bar ${barClass[oc.cat]}`;
     bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
-    bar.textContent = oc.id;
+    bar.style.position = 'relative';
     bar.dataset.idx = idx;
+    bar.dataset.ocId = oc.id;
+    const barLbl = document.createElement('span');
+    barLbl.textContent = oc.id;
+    bar.appendChild(barLbl);
 
     bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
     bar.addEventListener('mousemove', (e) => moveTooltip(e));
@@ -1127,6 +1158,56 @@ outcomes.forEach((oc, idx) => {
   lane.appendChild(track);
   lanesEl.appendChild(lane);
 });
+
+const STALL_OVERLAY_URL = '../../Project-Plan/outcome-stall-overlay.json';
+let outcomeStallByOutcome = {};
+
+function parseStallOverlayFallback() {
+  const el = document.getElementById('outcome-stall-overlay-fallback');
+  if (!el || !el.textContent) return { byOutcome: {} };
+  try {
+    const data = JSON.parse(el.textContent.trim());
+    return data && data.byOutcome ? data : { byOutcome: {} };
+  } catch (e) {
+    return { byOutcome: {} };
+  }
+}
+
+function loadOutcomeStallOverlay() {
+  return fetch(STALL_OVERLAY_URL, { cache: 'no-store' })
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((data) => (data && data.byOutcome ? data : { byOutcome: {} }))
+    .catch(() => parseStallOverlayFallback());
+}
+
+function applyStallOverlayToOutcomeBars(data) {
+  const by = (data && data.byOutcome) || {};
+  outcomeStallByOutcome = by;
+  document.querySelectorAll('.outcome-bar[data-oc-id]').forEach((bar) => {
+    const id = bar.getAttribute('data-oc-id');
+    bar.querySelectorAll('.stall-badge').forEach((n) => n.remove());
+    bar.classList.remove('bar-stalled', 'bar-blocked');
+    const ent = by[id];
+    if (!ent) return;
+    const hasB = ent.blocked && ent.blocked.length;
+    const hasS = ent.stalled && ent.stalled.length;
+    if (hasB) {
+      bar.classList.add('bar-blocked');
+      const badge = document.createElement('span');
+      badge.className = 'stall-badge stall-blocked';
+      badge.textContent = 'Blocked';
+      bar.insertBefore(badge, bar.firstChild);
+    } else if (hasS) {
+      bar.classList.add('bar-stalled');
+      const badge = document.createElement('span');
+      badge.className = 'stall-badge stall-stalled';
+      badge.textContent = 'Stalled';
+      bar.insertBefore(badge, bar.firstChild);
+    }
+  });
+}
+
+loadOutcomeStallOverlay().then(applyStallOverlayToOutcomeBars);
 
 /** Program milestones: ../../Project-Plan/project-milestones.json (fallback mirrors that file). */
 const FALLBACK_PROJECT_MILESTONES = [
@@ -1201,6 +1282,35 @@ function formatAsOfTag(d) {
 // Tooltip
 const tooltipEl = document.getElementById('tooltip');
 
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function githubStallTooltipExtra(ocId) {
+  let html = '';
+  const st = outcomeStallByOutcome[ocId];
+  if (!st) return html;
+  if (st.blocked && st.blocked.length) {
+    html += `<div class="tt-row"><span class="tt-label tt-risk">Blocked (GitHub):</span></div>`;
+    st.blocked.forEach((it) => {
+      const ref = it.repository && it.repository.nameWithOwner ? `${escapeHtml(it.repository.nameWithOwner)} #${it.number}` : `#${it.number}`;
+      html += `<div class="tt-row" style="font-size:11px"><a href="${escapeHtml(it.url)}" target="_blank" rel="noopener noreferrer" style="color:#76BE43">${ref}</a> — ${escapeHtml(it.title)}</div>`;
+    });
+  }
+  if (st.stalled && st.stalled.length) {
+    html += `<div class="tt-row"><span class="tt-label" style="color:#E67E22">Stalled (GitHub):</span></div>`;
+    st.stalled.forEach((it) => {
+      const ref = it.repository && it.repository.nameWithOwner ? `${escapeHtml(it.repository.nameWithOwner)} #${it.number}` : `#${it.number}`;
+      html += `<div class="tt-row" style="font-size:11px"><a href="${escapeHtml(it.url)}" target="_blank" rel="noopener noreferrer" style="color:#76BE43">${ref}</a> — ${escapeHtml(it.title)}</div>`;
+    });
+  }
+  return html;
+}
+
 function showTooltip(e, oc) {
   tooltipEl.style.maxWidth = '380px';
   let html = `<div class="tt-title">${oc.id}: ${oc.name}</div>`;
@@ -1213,6 +1323,7 @@ function showTooltip(e, oc) {
   if (oc.deps.length) {
     html += `<div class="tt-deps"><span class="tt-label">Depends on:</span> ${oc.deps.join(', ')}</div>`;
   }
+  html += githubStallTooltipExtra(oc.id);
   html += `<div style="margin-top:8px;font-size:11px;color:#ccc;line-height:1.4">${oc.detail}</div>`;
   tooltipEl.innerHTML = html;
   tooltipEl.classList.add('show');
@@ -1263,6 +1374,7 @@ function showTriggerTooltip(e, oc) {
   html += `<div style="margin:8px 0;"><span style="color:#76BE43;font-weight:700;font-size:11px;">What triggers it:</span><div style="font-size:11px;color:#ccc;margin-top:3px;line-height:1.5;">${td.what_triggers}</div></div>`;
   html += `<div style="margin:8px 0;"><span style="color:#76BE43;font-weight:700;font-size:11px;">What work it starts:</span><div style="font-size:11px;color:#ccc;margin-top:3px;line-height:1.5;">${td.what_work}</div></div>`;
   html += `<div style="margin:8px 0;"><span style="color:#76BE43;font-weight:700;font-size:11px;">What outcome it produces:</span><div style="font-size:11px;color:#ccc;margin-top:3px;line-height:1.5;">${td.what_outcome}</div></div>`;
+  html += githubStallTooltipExtra(oc.id);
   html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid #444;font-size:10px;color:#999;font-style:italic;line-height:1.4;">${td.note}</div>`;
 
   tooltipEl.innerHTML = html;
