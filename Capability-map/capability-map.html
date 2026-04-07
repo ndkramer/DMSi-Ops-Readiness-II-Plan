@@ -2850,8 +2850,8 @@ var CONFLUENCE_WIKI_MILESTONES = 'https://godynamo.atlassian.net/wiki/spaces/DMS
 /** GitHub org project (Projects classic / new) for the Workstream A hamburger → Board. */
 var GITHUB_ORG_PROJECT_BOARD = 'https://github.com/orgs/DynamoLLC-Hub/projects/1';
 
-/** GitHub project view — Stalled/Blocked (field layout encoded in query). */
-var GITHUB_ORG_PROJECT_STALLED_BLOCKED_VIEW = 'https://github.com/orgs/DynamoLLC-Hub/projects/1/views/10?visibleFields=%5B%22Title%22%2C%22Assignees%22%2C%22Labels%22%2C%22Status%22%2C%22Linked+pull+requests%22%2C%22Sub-issues+progress%22%5D';
+/** Lambda-hosted Stalled/Blocked report (?token= matches Capability Map gate; set GitHub PAT in the report UI, not in repo). */
+var GITHUB_ORG_PROJECT_STALLED_BLOCKED_VIEW = 'https://cu4m4deubhxq7m4y6dtminfsnu0jgttt.lambda-url.us-east-2.on.aws/Project-Plan/Stalled-Blocked-rpt.html?token=494180393f81b480384482af9ab6148f19ebf8a3204ddc8b';
 
 /** Opens Milestones: Confluence page when CONFLUENCE_WIKI_MILESTONES is set; otherwise bundled cross-ref with optional token. */
 function onTabAMenuMilestones(e) {
@@ -2881,7 +2881,7 @@ function onTabAMenuBoard(e) {
   openExternalLink(GITHUB_ORG_PROJECT_BOARD);
 }
 
-/** Opens the GitHub project Stalled/Blocked view in a new tab. */
+/** Opens the Stalled/Blocked report (Lambda) in a new tab. */
 function onTabAMenuStalledBlocked(e) {
   e.stopPropagation();
   closeTabAMenu();
