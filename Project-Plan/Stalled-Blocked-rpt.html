@@ -17,6 +17,8 @@
 
   Outcome maps use Project-Plan/github-stall-live.js for live GitHub data when a PAT is available (same token rules as this page); otherwise outcome-stall-overlay.json. Optional regenerate: GITHUB_TOKEN=… node Scripts/sync-outcome-stall-overlay.js.
 
+  Deep link (opens the same detail modal as clicking a card): ?repo=owner/repo&issue=N, or ?issue_url=https://github.com/…/issues/N. Maps copy ?token= / ?github_token= onto the link. After open, repo/issue/issue_url are removed from the address bar via replaceState.
+
   Classic PAT scopes: read:project, read:org, repo (if issues live in private repos).
   Fine-grained: Organization Projects (read) + Issues/Meta (read) on relevant repos — see in-page help.
 -->
@@ -1024,13 +1026,16 @@
   }
 
   function openModal(item) {
+    var assignees = item.assignees || [];
+    var labels = item.labels || [];
     var overlay = document.getElementById('modalOverlay');
     document.getElementById('modalTitle').textContent = item.title;
 
     var r = item.repository;
     var metaHtml = '';
     if (r) {
-      metaHtml += '<a href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(r.nameWithOwner) + '</a> · ';
+      var repoHref = r.url || (r.nameWithOwner ? 'https://github.com/' + r.nameWithOwner : '');
+      metaHtml += '<a href="' + esc(repoHref) + '" target="_blank" rel="noopener noreferrer">' + esc(r.nameWithOwner || '') + '</a> · ';
     }
     metaHtml += '#' + item.number + ' · ' + item.typename + ' · ' + item.state;
     metaHtml += ' · <a href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">Open on GitHub</a>';
@@ -1038,9 +1043,9 @@
 
     var bodyHtml = '';
     bodyHtml += '<div class="modal-section"><h3>Assignees</h3>';
-    if (item.assignees.length) {
+    if (assignees.length) {
       bodyHtml += '<div class="modal-assignees">';
-      item.assignees.forEach(function (a) {
+      assignees.forEach(function (a) {
         bodyHtml += '<a href="' + esc(a.url) + '" target="_blank" rel="noopener noreferrer"><img src="' + esc(a.avatarUrl) + '" alt="">' + esc(a.login) + '</a>';
       });
       bodyHtml += '</div>';
@@ -1050,8 +1055,8 @@
     bodyHtml += '</div>';
 
     bodyHtml += '<div class="modal-section"><h3>Labels</h3><p>';
-    if (item.labels.length) {
-      bodyHtml += item.labels.map(function (l) { return esc(l.name); }).join(', ');
+    if (labels.length) {
+      bodyHtml += labels.map(function (l) { return esc(l.name); }).join(', ');
     } else {
       bodyHtml += '—';
     }
@@ -1069,6 +1074,50 @@
     document.getElementById('modalBody').innerHTML = bodyHtml;
     overlay.classList.add('open');
     document.getElementById('modalClose').focus();
+  }
+
+  /** If URL has ?repo=&issue= or ?issue_url=, open the matching card modal after data load (outcome map deep links). */
+  function tryOpenFocusedIssueFromQuery() {
+    var q = new URLSearchParams(window.location.search || '');
+    var repo = q.get('repo');
+    var issueUrl = q.get('issue_url');
+    var numStr = q.get('issue');
+    if (!lastItems || !lastItems.length) return;
+    if (!repo && !issueUrl && !numStr) return;
+    var found = null;
+    if (repo && numStr) {
+      var n = parseInt(numStr, 10);
+      if (!isNaN(n)) {
+        for (var i = 0; i < lastItems.length; i++) {
+          var it = lastItems[i];
+          var r = it.repository;
+          var nwo = r && r.nameWithOwner;
+          if (nwo === repo && (it.number === n || String(it.number) === numStr)) {
+            found = it;
+            break;
+          }
+        }
+      }
+    }
+    if (!found && issueUrl) {
+      for (var j = 0; j < lastItems.length; j++) {
+        if (lastItems[j].url === issueUrl) {
+          found = lastItems[j];
+          break;
+        }
+      }
+    }
+    if (!found) return;
+    openModal(found);
+    try {
+      var u = new URL(window.location.href);
+      u.searchParams.delete('repo');
+      u.searchParams.delete('issue');
+      u.searchParams.delete('issue_url');
+      window.history.replaceState({}, '', u.pathname + u.search + u.hash);
+    } catch (e) {
+      /* ignore */
+    }
   }
 
   function closeModal() {
@@ -1106,6 +1155,7 @@
       setMessage(items.length ? ('Showing ' + items.length + ' item(s) with Stalled or Blocked labels.') : '', items.length ? 'info' : '');
       if (!items.length) setMessage('No issues or pull requests on this project carry the labels Stalled or Blocked.', 'info');
       renderCards(items);
+      tryOpenFocusedIssueFromQuery();
     } catch (err) {
       console.error(err);
       var msg = String(err.message || err);

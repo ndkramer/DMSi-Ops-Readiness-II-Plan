@@ -314,10 +314,47 @@
     });
   }
 
+  /**
+   * Build href to Stalled-Blocked-rpt.html with deep-link query params (repo/issue or issue_url) and token passthrough from the current page.
+   * @param {{ number?: number, url?: string, repository?: { nameWithOwner?: string } }} entry
+   * @param {string} reportPath - e.g. '../../Project-Plan/Stalled-Blocked-rpt.html'
+   * @returns {string}
+   */
+  function buildStalledBlockedReportUrl(entry, reportPath) {
+    reportPath = reportPath || 'Stalled-Blocked-rpt.html';
+    var p = new URLSearchParams();
+    try {
+      var cur = new URLSearchParams(
+        typeof global.location !== 'undefined' && global.location.search ? global.location.search : ''
+      );
+      var tok = cur.get('token');
+      var gh = cur.get('github_token') || cur.get('gh_token');
+      if (tok) p.set('token', tok);
+      if (gh) p.set('github_token', gh);
+    } catch (e) {
+      /* ignore */
+    }
+    if (entry) {
+      var repo = entry.repository && entry.repository.nameWithOwner;
+      var num = entry.number;
+      if (repo && num != null && String(num) !== '') {
+        p.set('repo', repo);
+        p.set('issue', String(num));
+      } else if (entry.url) {
+        p.set('issue_url', entry.url);
+      }
+    }
+    var qs = p.toString();
+    if (!qs) return reportPath;
+    var sep = reportPath.indexOf('?') >= 0 ? '&' : '?';
+    return reportPath + sep + qs;
+  }
+
   global.GithubStallLive = {
     CONFIG: CONFIG,
     resolveGithubToken: resolveGithubToken,
     fetchStallByOutcomeMap: fetchStallByOutcomeMap,
+    buildStalledBlockedReportUrl: buildStalledBlockedReportUrl,
     GITHUB_PAT_STORAGE_KEY: GITHUB_PAT_STORAGE_KEY
   };
 })(typeof window !== 'undefined' ? window : this);

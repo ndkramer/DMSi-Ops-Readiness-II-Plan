@@ -166,9 +166,15 @@
     font-weight: 800;
     line-height: 1;
     z-index: 15;
-    pointer-events: none;
+    pointer-events: auto;
     box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
     flex-shrink: 0;
+  }
+  a.stall-marker {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    box-sizing: border-box;
   }
   .stall-marker.stall-stalled { background: #F1C40F; color: #2B2B2B; }
   .stall-marker.stall-blocked { background: #E74C3C; color: #fff; }
@@ -850,7 +856,15 @@ outcomes.forEach((oc, idx) => {
 });
 
 const STALL_OVERLAY_URL = '../../Project-Plan/outcome-stall-overlay.json';
+const STALLED_BLOCKED_REPORT = '../../Project-Plan/Stalled-Blocked-rpt.html';
 let outcomeStallByOutcome = {};
+
+function stallMarkerReportHref(entry) {
+  if (window.GithubStallLive && typeof window.GithubStallLive.buildStalledBlockedReportUrl === 'function') {
+    return window.GithubStallLive.buildStalledBlockedReportUrl(entry, STALLED_BLOCKED_REPORT);
+  }
+  return STALLED_BLOCKED_REPORT;
+}
 
 function parseStallOverlayFallback() {
   const el = document.getElementById('outcome-stall-overlay-fallback');
@@ -898,16 +912,22 @@ function applyStallOverlayToOutcomeBars(data) {
     const hasB = ent.blocked && ent.blocked.length;
     const hasS = ent.stalled && ent.stalled.length;
     if (hasB) {
-      const m = document.createElement('span');
+      const m = document.createElement('a');
       m.className = 'stall-marker stall-blocked';
+      m.href = stallMarkerReportHref(ent.blocked[0]);
       m.textContent = 'B';
-      m.setAttribute('title', 'Blocked on GitHub');
+      m.setAttribute('title', 'Blocked on GitHub — open on Stalled/Blocked report');
+      m.setAttribute('aria-label', 'Open blocked work item on Stalled Blocked report');
+      m.addEventListener('click', (e) => e.stopPropagation());
       bar.appendChild(m);
     } else if (hasS) {
-      const m = document.createElement('span');
+      const m = document.createElement('a');
       m.className = 'stall-marker stall-stalled';
+      m.href = stallMarkerReportHref(ent.stalled[0]);
       m.textContent = 'S';
-      m.setAttribute('title', 'Stalled on GitHub');
+      m.setAttribute('title', 'Stalled on GitHub — open on Stalled/Blocked report');
+      m.setAttribute('aria-label', 'Open stalled work item on Stalled Blocked report');
+      m.addEventListener('click', (e) => e.stopPropagation());
       bar.appendChild(m);
     }
   });
