@@ -12,7 +12,8 @@
   on your user account with read access to the org project and repos whose issues appear on the board.
 
   Token resolution (first match wins): ?github_token= / ?gh_token= (URL), then localStorage (after "Set GitHub token"),
-  then optional same-origin file Stalled-Blocked-github-token.local.json (see .example; gitignored; works when hosted, not file://).
+  Optional same-origin JSON: Stalled-Blocked-github-token.local.json (preferred; gitignored) or .example fallback when hosted.
+  Browsers do not load these files when you open the report as file:// — use “Set GitHub token” or a local web server.
 
   Classic PAT scopes: read:project, read:org, repo (if issues live in private repos).
   Fine-grained: Organization Projects (read) + Issues/Meta (read) on relevant repos — see in-page help.
@@ -531,7 +532,7 @@
         ? 'GitHub: URL query (handle with care).'
         : fromStore
           ? 'GitHub: saved in this browser (localStorage).'
-          : 'GitHub: from Stalled-Blocked-github-token.local.json.';
+          : 'GitHub: from token JSON file next to this page.';
       if (useGithubProxy()) {
         try {
           var q = new URLSearchParams(window.location.search || '');
@@ -554,28 +555,60 @@
     return getTokenFromQuery() || getStoredGithubToken() || fileLoadedToken;
   }
 
+  /** Placeholder shipped in .example — do not treat as a real PAT. */
+  var EXAMPLE_TOKEN_PLACEHOLDER = 'PASTE_YOUR_GITHUB_PAT_HERE_CLASSIC_OR_FINE_GRAINED';
+
+  function tokenFromJsonObject(data) {
+    var raw = data && (data.github_token || data.gh_token || data.token);
+    return raw ? String(raw).trim() : '';
+  }
+
   /**
-   * Loads PAT from same-directory JSON when page is served over HTTP(S) (e.g. Lambda).
-   * Skipped for file:// (sibling fetch is unreliable) and when URL or localStorage already supplies a token.
+   * Loads PAT from same-directory JSON when page is served over HTTP(S) (e.g. Lambda or python -m http.server).
+   * Tries Stalled-Blocked-github-token.local.json first, then Stalled-Blocked-github-token.local.json.example.
+   * Skipped for file:// (browsers block fetches). Skipped when URL or localStorage already supplies a token.
    */
   async function tryLoadGithubTokenFromFile() {
     if (getTokenFromQuery()) return;
     if (getStoredGithubToken()) return;
     try {
       if (window.location.protocol === 'file:') return;
-      var u = new URL('Stalled-Blocked-github-token.local.json', window.location.href);
-      var res = await fetch(u.href, { cache: 'no-store' });
-      if (!res.ok) return;
-      var data = await res.json();
-      var raw = data && (data.github_token || data.gh_token || data.token);
-      var t = raw ? String(raw).trim() : '';
-      if (!t) return;
-      fileLoadedToken = t;
-      updateTokenUi();
-      refresh();
+      var names = [
+        'Stalled-Blocked-github-token.local.json',
+        'Stalled-Blocked-github-token.local.json.example'
+      ];
+      for (var i = 0; i < names.length; i++) {
+        var u = new URL(names[i], window.location.href);
+        var res = await fetch(u.href, { cache: 'no-store' });
+        if (!res.ok) continue;
+        var data = await res.json();
+        var t = tokenFromJsonObject(data);
+        if (!t || t === EXAMPLE_TOKEN_PLACEHOLDER) continue;
+        fileLoadedToken = t;
+        updateTokenUi();
+        refresh();
+        return;
+      }
     } catch (e) {
       /* missing file, network, or invalid JSON */
     }
+  }
+
+  /** Opening the HTML from disk (file://) cannot load a sibling JSON file; explain once when no token yet. */
+  function showFileProtocolTokenHint() {
+    if (effectiveToken()) return;
+    try {
+      if (window.location.protocol !== 'file:') return;
+    } catch (e) {
+      return;
+    }
+    setMessage(
+      'Opened as a local file (file://…): the browser will not load a token from a JSON file next to this page. ' +
+        'Click “Set GitHub token” once (saved in this browser), or run a web server in this folder ' +
+        '(e.g. python3 -m http.server) and open the report at http://localhost:…/Stalled-Blocked-rpt.html. ' +
+        'Prefer the filename Stalled-Blocked-github-token.local.json (copy from the .example file).',
+      'info'
+    );
   }
 
   function labelMatchesStalledBlocked(labels) {
@@ -1160,7 +1193,11 @@
   });
 
   updateTokenUi();
-  if (effectiveToken()) refresh();
+  if (effectiveToken()) {
+    refresh();
+  } else {
+    showFileProtocolTokenHint();
+  }
   tryLoadGithubTokenFromFile();
 })();
 </script>
