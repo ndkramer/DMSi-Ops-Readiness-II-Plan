@@ -11,7 +11,8 @@
   GitHub does not issue a token scoped to a single Project only. Use a Personal Access Token (PAT)
   on your user account with read access to the org project and repos whose issues appear on the board.
 
-  Pass token: ?github_token=... (trusted embeds only) or use "Set GitHub token" (session memory).
+  Token resolution (first match wins): ?github_token= / ?gh_token= (URL), then localStorage (after "Set GitHub token"),
+  then optional same-origin file Stalled-Blocked-github-token.local.json (see .example; gitignored; works when hosted, not file://).
 
   Classic PAT scopes: read:project, read:org, repo (if issues live in private repos).
   Fine-grained: Organization Projects (read) + Issues/Meta (read) on relevant repos — see in-page help.
@@ -367,6 +368,7 @@
 <div class="toolbar">
   <button type="button" class="primary" id="btnRefresh">Refresh from GitHub</button>
   <button type="button" id="btnToken">Set GitHub token…</button>
+  <button type="button" id="btnForgetToken" title="Remove token from this browser">Forget saved token</button>
   <span class="token-hint" id="tokenStatus">No token — set token or add <code>?github_token=…</code> to the URL.</span>
 </div>
 
@@ -381,7 +383,7 @@
         <li>Under <strong>Resource owner</strong>, select your organization (e.g. DynamoLLC-Hub) if the project is org-owned.</li>
         <li><strong>Repository access:</strong> include every repo that contributes issues to the project, or “All repositories” if your org allows it.</li>
         <li><strong>Permissions:</strong> Repository → <strong>Issues</strong> (Read), <strong>Metadata</strong> (Read). Organization → <strong>Projects</strong> (Read) (read-only).</li>
-        <li>Generate the token and copy it once; paste it here via <strong>Set GitHub token</strong> (or use <code>?github_token=…</code> only in trusted environments).</li>
+        <li>Generate the token and copy it once; paste it via <strong>Set GitHub token</strong> (stored in this browser until you click <strong>Forget saved token</strong>), or add a <code>Stalled-Blocked-github-token.local.json</code> next to this HTML on the server (see the <code>.example</code> file in the repo; do not commit the real file). Or use <code>?github_token=…</code> only in trusted environments.</li>
       </ol>
       <p><strong>Classic token (alternative)</strong></p>
       <ol>
@@ -474,8 +476,28 @@
     '}'
   ].join('\n');
 
-  var githubToken = null;
+  /** Set when Stalled-Blocked-github-token.local.json loads (only if no URL token and no localStorage PAT). */
+  var fileLoadedToken = null;
   var lastItems = [];
+
+  /** localStorage key for PAT; survives reloads. Not used for kanban boards (project-plan rule applies elsewhere). */
+  var GITHUB_PAT_STORAGE_KEY = 'dmsiStalledBlockedGithubPat';
+
+  function getStoredGithubToken() {
+    try {
+      var t = localStorage.getItem(GITHUB_PAT_STORAGE_KEY);
+      return t ? String(t).trim() : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function setStoredGithubToken(t) {
+    try {
+      if (t && String(t).trim()) localStorage.setItem(GITHUB_PAT_STORAGE_KEY, String(t).trim());
+      else localStorage.removeItem(GITHUB_PAT_STORAGE_KEY);
+    } catch (e) { /* private mode, blocked storage */ }
+  }
 
   function getTokenFromQuery() {
     try {
@@ -501,10 +523,15 @@
 
   function updateTokenUi() {
     var fromQ = getTokenFromQuery();
-    var active = githubToken || fromQ;
+    var fromStore = getStoredGithubToken();
+    var active = effectiveToken();
     var status = document.getElementById('tokenStatus');
     if (active) {
-      var base = githubToken ? 'GitHub: session.' : 'GitHub: URL query (handle with care).';
+      var base = fromQ
+        ? 'GitHub: URL query (handle with care).'
+        : fromStore
+          ? 'GitHub: saved in this browser (localStorage).'
+          : 'GitHub: from Stalled-Blocked-github-token.local.json.';
       if (useGithubProxy()) {
         try {
           var q = new URLSearchParams(window.location.search || '');
@@ -524,7 +551,31 @@
   }
 
   function effectiveToken() {
-    return githubToken || getTokenFromQuery();
+    return getTokenFromQuery() || getStoredGithubToken() || fileLoadedToken;
+  }
+
+  /**
+   * Loads PAT from same-directory JSON when page is served over HTTP(S) (e.g. Lambda).
+   * Skipped for file:// (sibling fetch is unreliable) and when URL or localStorage already supplies a token.
+   */
+  async function tryLoadGithubTokenFromFile() {
+    if (getTokenFromQuery()) return;
+    if (getStoredGithubToken()) return;
+    try {
+      if (window.location.protocol === 'file:') return;
+      var u = new URL('Stalled-Blocked-github-token.local.json', window.location.href);
+      var res = await fetch(u.href, { cache: 'no-store' });
+      if (!res.ok) return;
+      var data = await res.json();
+      var raw = data && (data.github_token || data.gh_token || data.token);
+      var t = raw ? String(raw).trim() : '';
+      if (!t) return;
+      fileLoadedToken = t;
+      updateTokenUi();
+      refresh();
+    } catch (e) {
+      /* missing file, network, or invalid JSON */
+    }
   }
 
   function labelMatchesStalledBlocked(labels) {
@@ -1082,12 +1133,23 @@
   document.getElementById('orgLabel').textContent = CONFIG.orgLogin;
   document.getElementById('btnRefresh').addEventListener('click', refresh);
   document.getElementById('btnToken').addEventListener('click', function () {
-    var t = window.prompt('Paste GitHub Personal Access Token (not stored on disk; session only):');
+    var t = window.prompt(
+      'Paste GitHub Personal Access Token (saved in this browser until you click Forget saved token):'
+    );
     if (t && t.trim()) {
-      githubToken = t.trim();
+      setStoredGithubToken(t.trim());
+      fileLoadedToken = null;
       updateTokenUi();
       refresh();
     }
+  });
+  document.getElementById('btnForgetToken').addEventListener('click', function () {
+    setStoredGithubToken('');
+    fileLoadedToken = null;
+    updateTokenUi();
+    setMessage('Saved token cleared. Set a token again, use the URL, or deploy Stalled-Blocked-github-token.local.json.', 'info');
+    document.getElementById('cardGrid').innerHTML = '';
+    document.getElementById('emptyState').style.display = 'none';
   });
   document.getElementById('modalClose').addEventListener('click', closeModal);
   document.getElementById('modalOverlay').addEventListener('click', function (e) {
@@ -1099,6 +1161,7 @@
 
   updateTokenUi();
   if (effectiveToken()) refresh();
+  tryLoadGithubTokenFromFile();
 })();
 </script>
 </body>
