@@ -11,9 +11,9 @@
   GitHub does not issue a token scoped to a single Project only. Use a Personal Access Token (PAT)
   on your user account with read access to the org project and repos whose issues appear on the board.
 
-  Token resolution (first match wins): ?github_token= / ?gh_token= (URL), then localStorage (after "Set GitHub token"),
+  Token resolution (first match wins): ?github_token= / ?gh_token= (URL), then localStorage (if previously set), then same-origin JSON.
   Optional same-origin JSON: Stalled-Blocked-github-token.local.json (preferred; gitignored) or .example fallback when hosted.
-  Browsers do not load these files when you open the report as file:// — use “Set GitHub token” or a local web server.
+  Browsers do not load JSON when you open the report as file:// — use ?github_token= or a local web server.
 
   Classic PAT scopes: read:project, read:org, repo (if issues live in private repos).
   Fine-grained: Organization Projects (read) + Issues/Meta (read) on relevant repos — see in-page help.
@@ -82,12 +82,6 @@
     color: #fff;
   }
   .toolbar button.primary:hover { filter: brightness(1.05); }
-  .token-hint {
-    font-size: 12px;
-    color: #64748b;
-  }
-  .token-hint code { font-size: 11px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; }
-
   .main {
     max-width: 1200px;
     margin: 0 auto;
@@ -368,9 +362,6 @@
 
 <div class="toolbar">
   <button type="button" class="primary" id="btnRefresh">Refresh from GitHub</button>
-  <button type="button" id="btnToken">Set GitHub token…</button>
-  <button type="button" id="btnForgetToken" title="Remove token from this browser">Forget saved token</button>
-  <span class="token-hint" id="tokenStatus">No token — set token or add <code>?github_token=…</code> to the URL.</span>
 </div>
 
 <div class="token-help">
@@ -384,7 +375,7 @@
         <li>Under <strong>Resource owner</strong>, select your organization (e.g. DynamoLLC-Hub) if the project is org-owned.</li>
         <li><strong>Repository access:</strong> include every repo that contributes issues to the project, or “All repositories” if your org allows it.</li>
         <li><strong>Permissions:</strong> Repository → <strong>Issues</strong> (Read), <strong>Metadata</strong> (Read). Organization → <strong>Projects</strong> (Read) (read-only).</li>
-        <li>Generate the token and copy it once; paste it via <strong>Set GitHub token</strong> (stored in this browser until you click <strong>Forget saved token</strong>), or add a <code>Stalled-Blocked-github-token.local.json</code> next to this HTML on the server (see the <code>.example</code> file in the repo; do not commit the real file). Or use <code>?github_token=…</code> only in trusted environments.</li>
+        <li>Supply the token with <code>?github_token=…</code> (trusted environments only), or deploy <code>Stalled-Blocked-github-token.local.json</code> next to this HTML (see the <code>.example</code> file; do not commit secrets), or the GitHub Actions secret <code>STALLED_BLOCKED_GITHUB_PAT</code> so the deploy zip includes that JSON on Lambda.</li>
       </ol>
       <p><strong>Classic token (alternative)</strong></p>
       <ol>
@@ -393,7 +384,7 @@
       </ol>
       <p>If you see <strong>“Project #1 not found”</strong> or similar: the board may be a <strong>classic</strong> project (this page now falls back to that API) or your token may lack <strong>Organization → Projects (Read)</strong>. If the org uses <strong>SAML SSO</strong>, open the token in GitHub → <strong>Configure SSO</strong> and authorize it for <strong>DynamoLLC-Hub</strong>.</p>
       <p>If you see <strong>“Failed to fetch”</strong> or <strong>403</strong>: embedders may block <code>api.github.com</code>, or Lambda may reject requests without the <strong>gate</strong> token. Use both: <code>?token=…</code> (same value as the Capability Map / Confluence iframe) <strong>and</strong> <code>&amp;github_token=…</code> (GitHub PAT). Force proxy with <code>&amp;github_proxy=1</code> if needed.</p>
-      <p><strong>Confluence iframe:</strong> sandboxed frames can make <code>location.origin</code> the string <code>null</code> (this page uses <code>location.href</code> for the Lambda host). Those frames also treat calls to your Lambda as <strong>cross-origin</strong>, so the Lambda must return CORS headers on <code>/github-proxy</code> and <code>/github-api</code> — deploy the latest <code>index.mjs</code>. Prefer <strong>Set GitHub token</strong> over putting a PAT in the URL; revoke any leaked PAT.</p>
+      <p><strong>Confluence iframe:</strong> sandboxed frames can make <code>location.origin</code> the string <code>null</code> (this page uses <code>location.href</code> for the Lambda host). Those frames also treat calls to your Lambda as <strong>cross-origin</strong>, so the Lambda must return CORS headers on <code>/github-proxy</code> and <code>/github-api</code> — deploy the latest <code>index.mjs</code>. Avoid putting a PAT in bookmarked URLs; revoke any leaked PAT.</p>
       <p>Official guide: <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener noreferrer">Managing personal access tokens</a>.</p>
     </div>
   </details>
@@ -481,7 +472,7 @@
   var fileLoadedToken = null;
   var lastItems = [];
 
-  /** localStorage key for PAT; survives reloads. Not used for kanban boards (project-plan rule applies elsewhere). */
+  /** Legacy localStorage PAT (no UI to set/clear; remove via browser site data if needed). */
   var GITHUB_PAT_STORAGE_KEY = 'dmsiStalledBlockedGithubPat';
 
   function getStoredGithubToken() {
@@ -491,13 +482,6 @@
     } catch (e) {
       return null;
     }
-  }
-
-  function setStoredGithubToken(t) {
-    try {
-      if (t && String(t).trim()) localStorage.setItem(GITHUB_PAT_STORAGE_KEY, String(t).trim());
-      else localStorage.removeItem(GITHUB_PAT_STORAGE_KEY);
-    } catch (e) { /* private mode, blocked storage */ }
   }
 
   function getTokenFromQuery() {
@@ -520,35 +504,6 @@
     el.style.display = 'block';
     el.textContent = text;
     el.className = 'status-msg ' + (type || 'info');
-  }
-
-  function updateTokenUi() {
-    var fromQ = getTokenFromQuery();
-    var fromStore = getStoredGithubToken();
-    var active = effectiveToken();
-    var status = document.getElementById('tokenStatus');
-    if (active) {
-      var base = fromQ
-        ? 'GitHub: URL query (handle with care).'
-        : fromStore
-          ? 'GitHub: saved in this browser (localStorage).'
-          : 'GitHub: from token JSON file next to this page.';
-      if (useGithubProxy()) {
-        try {
-          var q = new URLSearchParams(window.location.search || '');
-          if (!q.get('token')) {
-            base += ' Lambda gate: add ?token=… if your site uses CONFLUENCE_TOKEN (required for /github-proxy).';
-          } else {
-            base += ' Lambda gate: token present.';
-          }
-        } catch (e) {
-          base += ' Use ?token=… with proxy if Lambda requires it.';
-        }
-      }
-      status.textContent = base;
-    } else {
-      status.textContent = 'No GitHub token — use Set GitHub token or ?github_token=…';
-    }
   }
 
   function effectiveToken() {
@@ -584,9 +539,8 @@
         var data = await res.json();
         var t = tokenFromJsonObject(data);
         if (!t || t === EXAMPLE_TOKEN_PLACEHOLDER) continue;
-        fileLoadedToken = t;
-        updateTokenUi();
-        refresh();
+      fileLoadedToken = t;
+      refresh();
         return;
       }
     } catch (e) {
@@ -604,9 +558,9 @@
     }
     setMessage(
       'Opened as a local file (file://…): the browser will not load a token from a JSON file next to this page. ' +
-        'Click “Set GitHub token” once (saved in this browser), or run a web server in this folder ' +
-        '(e.g. python3 -m http.server) and open the report at http://localhost:…/Stalled-Blocked-rpt.html. ' +
-        'Prefer the filename Stalled-Blocked-github-token.local.json (copy from the .example file).',
+        'Add ?github_token=… to the URL (trusted environments only), run a web server in this folder ' +
+        '(e.g. python3 -m http.server) and open http://localhost:…/Stalled-Blocked-rpt.html with ' +
+        'Stalled-Blocked-github-token.local.json beside the HTML, or clear site data if an old saved token remains.',
       'info'
     );
   }
@@ -1122,8 +1076,10 @@
   async function refresh() {
     var token = effectiveToken();
     if (!token) {
-      setMessage('Add a GitHub token via “Set GitHub token” or ?github_token= in the URL (see HTML comment for required scopes).', 'error');
-      updateTokenUi();
+      setMessage(
+        'No GitHub token: add ?github_token= to the URL, deploy Stalled-Blocked-github-token.local.json with this page, or set the STALLED_BLOCKED_GITHUB_PAT deploy secret (see HTML comment for required scopes).',
+        'error'
+      );
       return;
     }
 
@@ -1160,30 +1116,10 @@
       setMessage(msg, 'error');
       renderCards([]);
     }
-    updateTokenUi();
   }
 
   document.getElementById('orgLabel').textContent = CONFIG.orgLogin;
   document.getElementById('btnRefresh').addEventListener('click', refresh);
-  document.getElementById('btnToken').addEventListener('click', function () {
-    var t = window.prompt(
-      'Paste GitHub Personal Access Token (saved in this browser until you click Forget saved token):'
-    );
-    if (t && t.trim()) {
-      setStoredGithubToken(t.trim());
-      fileLoadedToken = null;
-      updateTokenUi();
-      refresh();
-    }
-  });
-  document.getElementById('btnForgetToken').addEventListener('click', function () {
-    setStoredGithubToken('');
-    fileLoadedToken = null;
-    updateTokenUi();
-    setMessage('Saved token cleared. Set a token again, use the URL, or deploy Stalled-Blocked-github-token.local.json.', 'info');
-    document.getElementById('cardGrid').innerHTML = '';
-    document.getElementById('emptyState').style.display = 'none';
-  });
   document.getElementById('modalClose').addEventListener('click', closeModal);
   document.getElementById('modalOverlay').addEventListener('click', function (e) {
     if (e.target.id === 'modalOverlay') closeModal();
@@ -1192,7 +1128,6 @@
     if (e.key === 'Escape') closeModal();
   });
 
-  updateTokenUi();
   if (effectiveToken()) {
     refresh();
   } else {

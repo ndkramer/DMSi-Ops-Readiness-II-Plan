@@ -58,7 +58,7 @@ jobs:
           STALLED_BLOCKED_GITHUB_PAT: ${{ secrets.STALLED_BLOCKED_GITHUB_PAT }}
         run: |
           if [ -z "${STALLED_BLOCKED_GITHUB_PAT:-}" ]; then
-            echo "No STALLED_BLOCKED_GITHUB_PAT — Stalled-Blocked report on Lambda needs this secret, or use Set GitHub token in the browser."
+            echo "No STALLED_BLOCKED_GITHUB_PAT — deploy JSON token file for Stalled-Blocked-rpt on Lambda, or use ?github_token= in the URL."
             exit 0
           fi
           node -e "const fs=require('fs');const t=process.env.STALLED_BLOCKED_GITHUB_PAT;if(!t)process.exit(0);fs.writeFileSync('Project-Plan/Stalled-Blocked-github-token.local.json',JSON.stringify({github_token:t}));"
