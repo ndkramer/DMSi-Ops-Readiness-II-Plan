@@ -112,19 +112,78 @@
   @media (max-width: 960px) {
     .board { grid-template-columns: 1fr; }
   }
-  .board-column h2 {
+  .board-column h2,
+  .board-column .col-board-heading {
     font-size: 13px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.45px;
     color: #1f2328;
-    margin-bottom: 12px;
+    margin: 0 0 12px 0;
     padding-bottom: 8px;
     border-bottom: 3px solid #d0d7de;
   }
-  .board-column.col-stalled h2 { border-bottom-color: #F1C40F; }
-  .board-column.col-blocked h2 { border-bottom-color: #E74C3C; }
+  .board-column.col-stalled .col-board-heading { border-bottom-color: #F1C40F; }
+  .board-column.col-blocked .col-board-heading { border-bottom-color: #E74C3C; }
   .board-column.col-cleared h2 { border-bottom-color: #76BE43; }
+
+  /** Hover / keyboard focus shows definition under Stalled & Blocked headers */
+  .col-head-group {
+    position: relative;
+    margin-bottom: 12px;
+    cursor: help;
+  }
+  .col-head-group .col-board-heading {
+    margin-bottom: 0;
+  }
+  .col-head-group:focus {
+    outline: none;
+  }
+  .col-head-group:focus-visible {
+    outline: 2px solid #0969da;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .col-tooltip {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: calc(100% + 6px);
+    width: min(380px, calc(100vw - 48px));
+    max-height: min(70vh, 480px);
+    overflow-y: auto;
+    z-index: 300;
+    padding: 14px 16px;
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 10px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-transform: none;
+    letter-spacing: normal;
+    color: #1f2328;
+    text-align: left;
+  }
+  .col-tooltip p {
+    margin: 0 0 10px 0;
+  }
+  .col-tooltip p:last-child {
+    margin-bottom: 0;
+  }
+  .col-tooltip ul {
+    margin: 6px 0 0 1.1em;
+    padding: 0;
+  }
+  .col-tooltip li {
+    margin: 4px 0;
+  }
+  .col-head-group:hover .col-tooltip,
+  .col-head-group:focus .col-tooltip,
+  .col-head-group:focus-within .col-tooltip {
+    display: block;
+  }
 
   .column-cards {
     display: flex;
@@ -422,11 +481,36 @@
   <div id="messageBox" class="status-msg info" style="display: none;"></div>
   <div id="board" class="board" style="display: none;">
     <section class="board-column col-stalled" aria-labelledby="colStalledTitle">
-      <h2 id="colStalledTitle">Stalled</h2>
+      <div class="col-head-group" tabindex="0" aria-describedby="colStalledTooltip">
+        <h2 id="colStalledTitle" class="col-board-heading"><span id="colStalledTitleText">Stalled (0)</span></h2>
+        <div class="col-tooltip" id="colStalledTooltip" role="tooltip">
+          <p>A work item is <strong>stalled</strong> when progress has slowed or paused, but the delay does not yet impact the sprint commitment, outcome, or delivery timeline.</p>
+          <p><strong>Key characteristics</strong></p>
+          <ul>
+            <li>The item is not moving forward, but the sprint target is not yet at risk.</li>
+            <li>A resolution is expected within the current sprint.</li>
+            <li>Escalation is required.</li>
+            <li>Stalled items should be monitored closely and escalated to Blocked if not resolved before the sprint target is threatened.</li>
+          </ul>
+        </div>
+      </div>
       <div id="columnStalled" class="column-cards"></div>
     </section>
     <section class="board-column col-blocked" aria-labelledby="colBlockedTitle">
-      <h2 id="colBlockedTitle">Blocked</h2>
+      <div class="col-head-group" tabindex="0" aria-describedby="colBlockedTooltip">
+        <h2 id="colBlockedTitle" class="col-board-heading"><span id="colBlockedTitleText">Blocked (0)</span></h2>
+        <div class="col-tooltip" id="colBlockedTooltip" role="tooltip">
+          <p>A work item is <strong>blocked</strong> when an unresolved dependency, decision, or external factor prevents forward progress and directly threatens the sprint outcome and/or delivery timeline.</p>
+          <p><strong>Key characteristics</strong></p>
+          <ul>
+            <li>The item cannot move forward without external action.</li>
+            <li>The delay will impact the project commitments, outcome delivery, invoicing, or milestone timelines.</li>
+            <li>Blocked status is reserved for critical situations only.</li>
+            <li>Blocked items require immediate escalation to a named resolution owner, with a due date.</li>
+            <li>Block status should apply only to items outside the team&rsquo;s direct control.</li>
+          </ul>
+        </div>
+      </div>
       <div id="columnBlocked" class="column-cards"></div>
     </section>
     <section class="board-column col-cleared" aria-labelledby="colClearedTitle">
@@ -1086,8 +1170,8 @@
       else stalled.push(it);
     });
 
-    document.getElementById('colStalledTitle').textContent = 'Stalled (' + stalled.length + ')';
-    document.getElementById('colBlockedTitle').textContent = 'Blocked (' + blocked.length + ')';
+    document.getElementById('colStalledTitleText').textContent = 'Stalled (' + stalled.length + ')';
+    document.getElementById('colBlockedTitleText').textContent = 'Blocked (' + blocked.length + ')';
     document.getElementById('colClearedTitle').textContent = 'Cleared (' + cleared.length + ')';
 
     stalled.forEach(function (item) { appendWorkCard(colStalled, item); });
