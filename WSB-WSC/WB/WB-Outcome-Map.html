@@ -264,6 +264,7 @@
   <div class="legend-item"><div class="legend-line should" style="border-color:#76BE43"></div> should</div>
   <div class="legend-item"><span class="stall-marker stall-stalled legend-sample" aria-hidden="true">S</span> GitHub Stalled</div>
   <div class="legend-item"><span class="stall-marker stall-blocked legend-sample" aria-hidden="true">B</span> GitHub Blocked</div>
+  <div class="legend-item" style="font-size:11px;color:#666;max-width:520px;line-height:1.35">S/B load live from GitHub when a PAT is set; else <code>outcome-stall-overlay.json</code>.</div>
 </div>
 
 <div class="container">
@@ -330,6 +331,7 @@
 <script type="application/json" id="outcome-stall-overlay-fallback">
 {"byOutcome":{}}
 </script>
+<script src="../../Project-Plan/github-stall-live.js"></script>
 
 <script>
 // 18 columns = program months M1–M18 (indicative; calendar TBD in WB-WBS)
@@ -427,11 +429,28 @@ function parseStallOverlayFallback() {
   }
 }
 
-function loadOutcomeStallOverlay() {
+function loadOutcomeStallOverlayFromFile() {
   return fetch(STALL_OVERLAY_URL, { cache: 'no-store' })
     .then((r) => (r.ok ? r.json() : Promise.reject()))
     .then((data) => (data && data.byOutcome ? data : { byOutcome: {} }))
     .catch(() => parseStallOverlayFallback());
+}
+
+function loadOutcomeStallOverlay() {
+  let tokenFileUrl = null;
+  try {
+    tokenFileUrl = new URL('../../Project-Plan/Stalled-Blocked-github-token.local.json', window.location.href).href;
+  } catch (e) { /* ignore */ }
+  if (!window.GithubStallLive) return loadOutcomeStallOverlayFromFile();
+  return window.GithubStallLive.resolveGithubToken({ tokenFileUrl: tokenFileUrl }).then((token) => {
+    if (!token) return loadOutcomeStallOverlayFromFile();
+    return window.GithubStallLive.fetchStallByOutcomeMap(token)
+      .then((byOutcome) => ({ byOutcome: byOutcome || {} }))
+      .catch((err) => {
+        console.warn('WB Outcome Map: live GitHub stall data failed, using committed JSON.', err);
+        return loadOutcomeStallOverlayFromFile();
+      });
+  });
 }
 
 function applyStallOverlayToOutcomeBars(data) {

@@ -15,8 +15,7 @@
   Optional same-origin JSON: Stalled-Blocked-github-token.local.json (preferred; gitignored) or .example fallback when hosted.
   Browsers do not load JSON when you open the report as file:// — use ?github_token= or a local web server.
 
-  Outcome maps read committed Project-Plan/outcome-stall-overlay.json for Stalled/Blocked badges; regenerate with:
-  GITHUB_TOKEN=… node Scripts/sync-outcome-stall-overlay.js (issues need wm-oc-03 style labels or [WM-OC-03] title prefix).
+  Outcome maps use Project-Plan/github-stall-live.js for live GitHub data when a PAT is available (same token rules as this page); otherwise outcome-stall-overlay.json. Optional regenerate: GITHUB_TOKEN=… node Scripts/sync-outcome-stall-overlay.js.
 
   Classic PAT scopes: read:project, read:org, repo (if issues live in private repos).
   Fine-grained: Organization Projects (read) + Issues/Meta (read) on relevant repos — see in-page help.

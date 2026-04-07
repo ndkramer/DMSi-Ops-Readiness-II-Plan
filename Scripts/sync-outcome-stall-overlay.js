@@ -60,7 +60,8 @@ query OrgProjectItems($org: String!, $projectNumber: Int!, $cursor: String) {
 
 const PREFIX_MAP = { wm: 'WM', vi: 'VI', pa: 'PA', wb: 'WB' };
 const LABEL_OC_RE = /^(wm|vi|pa|wb)-oc-(\d+)(\.\d+)?$/i;
-const TITLE_BRACKET_RE = /^\s*\[([A-Za-z]{2}-OC-\d+(?:\.\d+)?)\]\s*/;
+/** Any [WM-OC-03] or [WM-OC-03.1] substring in title (not only at start). */
+const TITLE_BRACKET_RE = /\[([A-Za-z]{2}-OC-\d+(?:\.\d+)?)\]/g;
 
 function labelMatchesStalledBlocked(labelNodes) {
   const want = {};
@@ -98,11 +99,15 @@ function outcomeIdsFromLabels(labelNodes) {
 }
 
 function outcomeIdsFromTitle(title) {
-  const m = (title || '').match(TITLE_BRACKET_RE);
-  if (!m) return new Set();
-  const rolled = rollupOutcomeId(m[1]);
-  if (!rolled || !/^(WM|VI|PA|WB)-OC-\d+$/.test(rolled)) return new Set();
-  return new Set([rolled]);
+  const out = new Set();
+  const t = title || '';
+  TITLE_BRACKET_RE.lastIndex = 0;
+  let m;
+  while ((m = TITLE_BRACKET_RE.exec(t)) !== null) {
+    const rolled = rollupOutcomeId(m[1]);
+    if (rolled && /^(WM|VI|PA|WB)-OC-\d+$/.test(rolled)) out.add(rolled);
+  }
+  return out;
 }
 
 function collectOutcomeIds(labelNodes, title) {

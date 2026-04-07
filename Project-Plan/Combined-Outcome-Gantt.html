@@ -414,6 +414,7 @@
 <!-- Tooltip -->
 <div class="tooltip" id="tooltip"></div>
 
+<script src="github-stall-live.js"></script>
 <script>
 // Timeline spans Feb 1 2026 to Nov 1 2026 (or from gantt-data.json)
 let TIMELINE_START = new Date(2026, 1, 1);
@@ -582,7 +583,7 @@ function initGantt(data) {
   renderTimeline(capabilities, milestones);
 }
 
-/** Outcome-level Stalled/Blocked from Project-Plan/outcome-stall-overlay.json (see Scripts/sync-outcome-stall-overlay.js). */
+/** Outcome-level Stalled/Blocked: live GitHub when PAT available, else outcome-stall-overlay.json. */
 function applyCombinedStallOverlay(byOutcome) {
   if (!byOutcome || typeof byOutcome !== 'object') return;
   const prefixes = { WM: 'WM-OC-', VI: 'VI-OC-', PP: 'PA-OC-' };
@@ -612,12 +613,35 @@ function applyCombinedStallOverlay(byOutcome) {
     return path + sep + 'token=' + encodeURIComponent(token);
   }
 
-  function afterGantt(data) {
-    initGantt(data);
+  function applyStallFromJson() {
     fetch(fetchUrl('outcome-stall-overlay.json'), { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d) => applyCombinedStallOverlay(d && d.byOutcome))
       .catch(() => {});
+  }
+
+  function afterGantt(data) {
+    initGantt(data);
+    var tokenFileUrl = null;
+    try {
+      tokenFileUrl = new URL('Stalled-Blocked-github-token.local.json', window.location.href).href;
+    } catch (e) { /* ignore */ }
+    if (!window.GithubStallLive) {
+      applyStallFromJson();
+      return;
+    }
+    window.GithubStallLive.resolveGithubToken({ tokenFileUrl: tokenFileUrl }).then(function (tok) {
+      if (!tok) {
+        applyStallFromJson();
+        return;
+      }
+      window.GithubStallLive.fetchStallByOutcomeMap(tok).then(function (by) {
+        applyCombinedStallOverlay(by || {});
+      }).catch(function (err) {
+        console.warn('Combined Gantt: live GitHub stall data failed, using JSON.', err);
+        applyStallFromJson();
+      });
+    });
   }
 
   if (window.GANTT_DATA) {

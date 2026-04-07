@@ -1,5 +1,5 @@
 {
-  "_documentation": "Maps outcome IDs (WM-OC-03, VI-OC-01, …) to GitHub issues with Stalled or Blocked labels. Regenerate: GITHUB_TOKEN=ghp_... node Scripts/sync-outcome-stall-overlay.mjs. Issues must carry wm-oc-03 style labels or [WM-OC-03] title prefix (see script header).",
+  "_documentation": "Optional offline snapshot. Outcome maps and Combined Gantt load stall/blocked live from GitHub when a PAT is available (Project-Plan/github-stall-live.js: URL ?github_token=, localStorage, or Stalled-Blocked-github-token.local.json on deploy). If live fails or no token, they fall back to this file. Regenerate: GITHUB_TOKEN=... node Scripts/sync-outcome-stall-overlay.js. Mapping: wm-oc-03 labels and/or [WM-OC-03] in title; org DynamoLLC-Hub project #1.",
   "generatedAt": null,
   "byOutcome": {}
 }

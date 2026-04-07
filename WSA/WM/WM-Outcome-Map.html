@@ -412,6 +412,7 @@
   <div class="legend-item"><div style="width:2px;height:14px;background:#E74C3C;opacity:0.5"></div> Deadline</div>
   <div class="legend-item"><span class="stall-marker stall-stalled legend-sample" aria-hidden="true">S</span> GitHub Stalled</div>
   <div class="legend-item"><span class="stall-marker stall-blocked legend-sample" aria-hidden="true">B</span> GitHub Blocked</div>
+  <div class="legend-item" style="font-size:11px;color:#666;max-width:520px;line-height:1.35">S/B refresh live from the org project when a GitHub PAT is available (same as Stalled/Blocked report: <code>?github_token=</code>, localStorage, or deployed token JSON). Otherwise this page uses committed <code>outcome-stall-overlay.json</code> / offline fallback.</div>
 </div>
 
 <div class="container">
@@ -555,6 +556,7 @@
 <script type="application/json" id="outcome-stall-overlay-fallback">
 {"byOutcome":{}}
 </script>
+<script src="../../Project-Plan/github-stall-live.js"></script>
 
 <script>
 // Outcome data
@@ -661,7 +663,7 @@ outcomes.forEach((oc, idx) => {
   lanesEl.appendChild(lane);
 });
 
-/** Stalled/Blocked: ../../Project-Plan/outcome-stall-overlay.json (regenerate: node Scripts/sync-outcome-stall-overlay.js). */
+/** Stalled/Blocked: live GitHub org project when PAT available (see Project-Plan/github-stall-live.js); else outcome-stall-overlay.json / #outcome-stall-overlay-fallback. */
 const STALL_OVERLAY_URL = '../../Project-Plan/outcome-stall-overlay.json';
 let outcomeStallByOutcome = {};
 
@@ -676,11 +678,28 @@ function parseStallOverlayFallback() {
   }
 }
 
-function loadOutcomeStallOverlay() {
+function loadOutcomeStallOverlayFromFile() {
   return fetch(STALL_OVERLAY_URL, { cache: 'no-store' })
     .then((r) => (r.ok ? r.json() : Promise.reject()))
     .then((data) => (data && data.byOutcome ? data : { byOutcome: {} }))
     .catch(() => parseStallOverlayFallback());
+}
+
+function loadOutcomeStallOverlay() {
+  let tokenFileUrl = null;
+  try {
+    tokenFileUrl = new URL('../../Project-Plan/Stalled-Blocked-github-token.local.json', window.location.href).href;
+  } catch (e) { /* ignore */ }
+  if (!window.GithubStallLive) return loadOutcomeStallOverlayFromFile();
+  return window.GithubStallLive.resolveGithubToken({ tokenFileUrl: tokenFileUrl }).then((token) => {
+    if (!token) return loadOutcomeStallOverlayFromFile();
+    return window.GithubStallLive.fetchStallByOutcomeMap(token)
+      .then((byOutcome) => ({ byOutcome: byOutcome || {} }))
+      .catch((err) => {
+        console.warn('WM Outcome Map: live GitHub stall data failed, using committed JSON.', err);
+        return loadOutcomeStallOverlayFromFile();
+      });
+  });
 }
 
 function applyStallOverlayToOutcomeBars(data) {
