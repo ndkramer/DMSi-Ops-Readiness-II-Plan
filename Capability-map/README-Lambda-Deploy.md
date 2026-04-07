@@ -23,6 +23,12 @@ Add these **secrets**:
 | `AWS_SECRET_ACCESS_KEY` | IAM user secret key                  |
 | `LAMBDA_FUNCTION_NAME`  | Exact name of your Lambda function   |
 
+Optional **secret** (for [Stalled-Blocked report](../Project-Plan/Stalled-Blocked-rpt.html) on Lambda without `?github_token=`):
+
+| Secret | Description |
+|--------|----------------|
+| `STALLED_BLOCKED_GITHUB_PAT` | GitHub PAT with read access to the org project and issues. At deploy time the workflow writes `Project-Plan/Stalled-Blocked-github-token.local.json` into the Lambda zip only (file stays gitignored in the repo). If unset, use **Set GitHub token** in the browser on that page. |
+
 Optional **variable** (defaults to `us-east-1` if unset):
 
 | Variable     | Description    |
