@@ -6,7 +6,7 @@
 <title>Stalled / Blocked — GitHub Project Report</title>
 <!--
   Loads items from an organization GitHub Project (Projects v2) that are Issues or Pull Requests
-  with a label named exactly "Stalled" or "Blocked" (case-insensitive).
+  with a label named "Stalled", "Blocked", or "Cleared" (case-insensitive). Items appear in the matching column; if several apply, priority is Cleared, then Blocked, then Stalled.
 
   GitHub does not issue a token scoped to a single Project only. Use a Personal Access Token (PAT)
   on your user account with read access to the org project and repos whose issues appear on the board.
@@ -103,10 +103,34 @@
   .status-msg.error { border-color: #fecaca; background: #fef2f2; color: #991b1b; white-space: pre-wrap; }
   .status-msg.info { border-color: #bae6fd; background: #f0f9ff; color: #0369a1; }
 
-  .card-grid {
+  .board {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 960px) {
+    .board { grid-template-columns: 1fr; }
+  }
+  .board-column h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.45px;
+    color: #1f2328;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #d0d7de;
+  }
+  .board-column.col-stalled h2 { border-bottom-color: #F1C40F; }
+  .board-column.col-blocked h2 { border-bottom-color: #E74C3C; }
+  .board-column.col-cleared h2 { border-bottom-color: #76BE43; }
+
+  .column-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 8px;
   }
 
   .work-card {
@@ -358,7 +382,7 @@
   <div class="header-inner">
     <div>
       <h1>Stalled / Blocked</h1>
-      <p class="subtitle">Work items on <strong id="projectTitleLabel">GitHub Project</strong> with labels <strong>Stalled</strong> or <strong>Blocked</strong> (org <span id="orgLabel"></span>).</p>
+      <p class="subtitle">Work items on <strong id="projectTitleLabel">GitHub Project</strong> with labels <strong>Stalled</strong>, <strong>Blocked</strong>, or <strong>Cleared</strong> (org <span id="orgLabel"></span>). Three columns match those labels (case-insensitive).</p>
     </div>
     <div class="brand">DYNAMO</div>
   </div>
@@ -396,8 +420,21 @@
 
 <div class="main">
   <div id="messageBox" class="status-msg info" style="display: none;"></div>
-  <div id="cardGrid" class="card-grid"></div>
-  <div id="emptyState" class="empty-state" style="display: none;">No stalled or blocked items found on this project.</div>
+  <div id="board" class="board" style="display: none;">
+    <section class="board-column col-stalled" aria-labelledby="colStalledTitle">
+      <h2 id="colStalledTitle">Stalled</h2>
+      <div id="columnStalled" class="column-cards"></div>
+    </section>
+    <section class="board-column col-blocked" aria-labelledby="colBlockedTitle">
+      <h2 id="colBlockedTitle">Blocked</h2>
+      <div id="columnBlocked" class="column-cards"></div>
+    </section>
+    <section class="board-column col-cleared" aria-labelledby="colClearedTitle">
+      <h2 id="colClearedTitle">Cleared</h2>
+      <div id="columnCleared" class="column-cards"></div>
+    </section>
+  </div>
+  <div id="emptyState" class="empty-state" style="display: none;">No items with Stalled, Blocked, or Cleared labels found on this project.</div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -420,8 +457,8 @@
   var CONFIG = {
     orgLogin: 'DynamoLLC-Hub',
     projectNumber: 1,
-    /** Match label names case-insensitively (exact name). */
-    labelNames: ['stalled', 'blocked']
+    /** Match label names case-insensitively (exact name). Any of these includes the item in the report. */
+    labelNames: ['stalled', 'blocked', 'cleared']
   };
 
   var GRAPHQL = [
@@ -580,6 +617,19 @@
     return false;
   }
 
+  /** Which board column: Cleared wins over Blocked over Stalled when multiple labels exist. */
+  function reportColumnFromLabels(labels) {
+    if (!labels || !labels.length) return 'stalled';
+    var has = {};
+    for (var i = 0; i < labels.length; i++) {
+      has[(labels[i].name || '').toLowerCase()] = true;
+    }
+    if (has.cleared) return 'cleared';
+    if (has.blocked) return 'blocked';
+    if (has.stalled) return 'stalled';
+    return 'stalled';
+  }
+
   function normalizeItem(node) {
     var c = node.content;
     if (!c) return null;
@@ -600,7 +650,8 @@
       updatedAt: c.updatedAt,
       repository: c.repository,
       labels: labels,
-      assignees: (c.assignees && c.assignees.nodes) ? c.assignees.nodes : []
+      assignees: (c.assignees && c.assignees.nodes) ? c.assignees.nodes : [],
+      column: reportColumnFromLabels(labels)
     };
   }
 
@@ -932,90 +983,116 @@
     throw new Error('Could not open org project #' + CONFIG.projectNumber + ' via GitHub Projects (new) or classic boards.\n\n' + hint);
   }
 
+  function appendWorkCard(container, item) {
+    var assignees = item.assignees || [];
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'work-card';
+
+    var top = document.createElement('div');
+    top.className = 'work-card-top';
+
+    var meta = document.createElement('div');
+    meta.className = 'work-card-meta';
+
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'issue-icon' + (item.typename === 'PullRequest' ? ' pr' : '') + (item.state === 'CLOSED' || item.state === 'MERGED' ? ' closed' : ''));
+    svg.setAttribute('viewBox', '0 0 16 16');
+    svg.setAttribute('width', '18');
+    svg.setAttribute('height', '18');
+    svg.setAttribute('aria-hidden', 'true');
+    if (item.typename === 'PullRequest') {
+      var prColor = (item.state === 'OPEN') ? '#1a7f37' : '#656d76';
+      svg.innerHTML = '<path fill="' + prColor + '" d="M1.5 3.25A2.25 2.25 0 1 1 3 5.372v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854v4.792a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1-.177-.427ZM8.75 4.5a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5Zm-6.5 6.75a.75.75 0 1 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/>';
+    } else {
+      var fill = (item.state === 'CLOSED') ? '#656d76' : '#1a7f37';
+      svg.innerHTML = '<path fill="' + fill + '" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path fill="' + fill + '" fill-rule="evenodd" d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0Z"/>';
+    }
+    meta.appendChild(svg);
+
+    var ref = document.createElement('span');
+    ref.className = 'repo-ref';
+    var r = item.repository;
+    ref.textContent = r ? (r.name + ' #' + item.number) : ('#' + item.number);
+    meta.appendChild(ref);
+
+    top.appendChild(meta);
+
+    if (assignees.length) {
+      var stack = document.createElement('div');
+      stack.className = 'avatar-stack';
+      assignees.forEach(function (a) {
+        var img = document.createElement('img');
+        img.src = a.avatarUrl;
+        img.alt = '';
+        img.title = a.login;
+        stack.appendChild(img);
+      });
+      top.appendChild(stack);
+    }
+
+    btn.appendChild(top);
+
+    var titleEl = document.createElement('div');
+    titleEl.className = 'work-card-title';
+    titleEl.textContent = item.title;
+    btn.appendChild(titleEl);
+
+    var labelSet = {};
+    CONFIG.labelNames.forEach(function (n) { labelSet[n] = true; });
+    var tags = document.createElement('div');
+    tags.className = 'label-tags';
+    (item.labels || []).forEach(function (lab) {
+      var n = (lab.name || '').toLowerCase();
+      if (!labelSet[n]) return;
+      var span = document.createElement('span');
+      span.className = 'label-tag';
+      span.textContent = lab.name;
+      span.style.background = '#' + (lab.color || 'd4d4d4');
+      span.style.color = parseInt((lab.color || '000000'), 16) > 0xbbbbbb ? '#1f2328' : '#fff';
+      tags.appendChild(span);
+    });
+    if (tags.children.length) btn.appendChild(tags);
+
+    btn.addEventListener('click', function () { openModal(item); });
+    container.appendChild(btn);
+  }
+
   function renderCards(items) {
-    var grid = document.getElementById('cardGrid');
+    var board = document.getElementById('board');
+    var colStalled = document.getElementById('columnStalled');
+    var colBlocked = document.getElementById('columnBlocked');
+    var colCleared = document.getElementById('columnCleared');
     var empty = document.getElementById('emptyState');
-    grid.innerHTML = '';
+    colStalled.innerHTML = '';
+    colBlocked.innerHTML = '';
+    colCleared.innerHTML = '';
 
     if (!items.length) {
+      board.style.display = 'none';
       empty.style.display = 'block';
       return;
     }
+    board.style.display = 'grid';
     empty.style.display = 'none';
 
-    items.forEach(function (item, idx) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'work-card';
-      btn.setAttribute('data-index', String(idx));
-
-      var top = document.createElement('div');
-      top.className = 'work-card-top';
-
-      var meta = document.createElement('div');
-      meta.className = 'work-card-meta';
-
-      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.setAttribute('class', 'issue-icon' + (item.typename === 'PullRequest' ? ' pr' : '') + (item.state === 'CLOSED' || item.state === 'MERGED' ? ' closed' : ''));
-      svg.setAttribute('viewBox', '0 0 16 16');
-      svg.setAttribute('width', '18');
-      svg.setAttribute('height', '18');
-      svg.setAttribute('aria-hidden', 'true');
-      if (item.typename === 'PullRequest') {
-        var prColor = (item.state === 'OPEN') ? '#1a7f37' : '#656d76';
-        /* Octicons-style pull-request (16px) */
-        svg.innerHTML = '<path fill="' + prColor + '" d="M1.5 3.25A2.25 2.25 0 1 1 3 5.372v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854v4.792a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1-.177-.427ZM8.75 4.5a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5Zm-6.5 6.75a.75.75 0 1 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"/>';
-      } else {
-        var fill = (item.state === 'CLOSED') ? '#656d76' : '#1a7f37';
-        svg.innerHTML = '<path fill="' + fill + '" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path fill="' + fill + '" fill-rule="evenodd" d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0Z"/>';
-      }
-      meta.appendChild(svg);
-
-      var ref = document.createElement('span');
-      ref.className = 'repo-ref';
-      var r = item.repository;
-      ref.textContent = r ? (r.name + ' #' + item.number) : ('#' + item.number);
-      meta.appendChild(ref);
-
-      top.appendChild(meta);
-
-      if (item.assignees.length) {
-        var stack = document.createElement('div');
-        stack.className = 'avatar-stack';
-        item.assignees.forEach(function (a) {
-          var img = document.createElement('img');
-          img.src = a.avatarUrl;
-          img.alt = '';
-          img.title = a.login;
-          stack.appendChild(img);
-        });
-        top.appendChild(stack);
-      }
-
-      btn.appendChild(top);
-
-      var titleEl = document.createElement('div');
-      titleEl.className = 'work-card-title';
-      titleEl.textContent = item.title;
-      btn.appendChild(titleEl);
-
-      var tags = document.createElement('div');
-      tags.className = 'label-tags';
-      item.labels.forEach(function (lab) {
-        var n = (lab.name || '').toLowerCase();
-        if (CONFIG.labelNames.indexOf(n) < 0) return;
-        var span = document.createElement('span');
-        span.className = 'label-tag';
-        span.textContent = lab.name;
-        span.style.background = '#' + (lab.color || 'd4d4d4');
-        span.style.color = parseInt((lab.color || '000000'), 16) > 0xbbbbbb ? '#1f2328' : '#fff';
-        tags.appendChild(span);
-      });
-      if (tags.children.length) btn.appendChild(tags);
-
-      btn.addEventListener('click', function () { openModal(item); });
-      grid.appendChild(btn);
+    var stalled = [];
+    var blocked = [];
+    var cleared = [];
+    items.forEach(function (it) {
+      var c = it.column || reportColumnFromLabels(it.labels);
+      if (c === 'cleared') cleared.push(it);
+      else if (c === 'blocked') blocked.push(it);
+      else stalled.push(it);
     });
+
+    document.getElementById('colStalledTitle').textContent = 'Stalled (' + stalled.length + ')';
+    document.getElementById('colBlockedTitle').textContent = 'Blocked (' + blocked.length + ')';
+    document.getElementById('colClearedTitle').textContent = 'Cleared (' + cleared.length + ')';
+
+    stalled.forEach(function (item) { appendWorkCard(colStalled, item); });
+    blocked.forEach(function (item) { appendWorkCard(colBlocked, item); });
+    cleared.forEach(function (item) { appendWorkCard(colCleared, item); });
   }
 
   function esc(s) {
@@ -1135,7 +1212,10 @@
     }
 
     setMessage('Loading from GitHub…', 'info');
-    document.getElementById('cardGrid').innerHTML = '';
+    document.getElementById('board').style.display = 'none';
+    document.getElementById('columnStalled').innerHTML = '';
+    document.getElementById('columnBlocked').innerHTML = '';
+    document.getElementById('columnCleared').innerHTML = '';
     document.getElementById('emptyState').style.display = 'none';
 
     try {
@@ -1152,8 +1232,30 @@
         return (b.updatedAt || '').localeCompare(a.updatedAt || '');
       });
       lastItems = items;
-      setMessage(items.length ? ('Showing ' + items.length + ' item(s) with Stalled or Blocked labels.') : '', items.length ? 'info' : '');
-      if (!items.length) setMessage('No issues or pull requests on this project carry the labels Stalled or Blocked.', 'info');
+      if (items.length) {
+        var byCol = { stalled: 0, blocked: 0, cleared: 0 };
+        items.forEach(function (it) {
+          var c = it.column || reportColumnFromLabels(it.labels);
+          if (byCol[c] != null) byCol[c]++;
+        });
+        setMessage(
+          'Showing ' +
+            items.length +
+            ' item(s): Stalled ' +
+            byCol.stalled +
+            ', Blocked ' +
+            byCol.blocked +
+            ', Cleared ' +
+            byCol.cleared +
+            '.',
+          'info'
+        );
+      } else {
+        setMessage('', '');
+      }
+      if (!items.length) {
+        setMessage('No issues or pull requests on this project carry the labels Stalled, Blocked, or Cleared.', 'info');
+      }
       renderCards(items);
       tryOpenFocusedIssueFromQuery();
     } catch (err) {
