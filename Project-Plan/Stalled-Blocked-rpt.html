@@ -1186,6 +1186,24 @@
     return d.innerHTML;
   }
 
+  /** GitHub ISO timestamps → mm/dd/yyyy and 12-hour clock in the browser’s local timezone. */
+  function formatModalDateTime(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso);
+    var datePart = new Intl.DateTimeFormat('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric'
+    }).format(d);
+    var timePart = new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }).format(d);
+    return datePart + ', ' + timePart + ' (local time)';
+  }
+
   function openModal(item) {
     var assignees = item.assignees || [];
     var labels = item.labels || [];
@@ -1224,10 +1242,10 @@
     bodyHtml += '</p></div>';
 
     if (item.createdAt) {
-      bodyHtml += '<div class="modal-section"><h3>Created</h3><p>' + esc(item.createdAt) + '</p></div>';
+      bodyHtml += '<div class="modal-section"><h3>Created</h3><p>' + esc(formatModalDateTime(item.createdAt)) + '</p></div>';
     }
     if (item.updatedAt) {
-      bodyHtml += '<div class="modal-section"><h3>Updated</h3><p>' + esc(item.updatedAt) + '</p></div>';
+      bodyHtml += '<div class="modal-section"><h3>Updated</h3><p>' + esc(formatModalDateTime(item.updatedAt)) + '</p></div>';
     }
 
     bodyHtml += '<div class="modal-section"><h3>Description / body</h3><pre class="body-text">' + esc(item.body || '(No description)') + '</pre></div>';
