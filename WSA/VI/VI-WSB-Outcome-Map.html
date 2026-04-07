@@ -151,26 +151,32 @@
   .bar-conditional { background: #E67E22; border: 2px dashed #D35400; }
   .bar-validation { background: repeating-linear-gradient(45deg, #76BE43, #76BE43 4px, #5DA832 4px, #5DA832 8px); }
 
-  .outcome-bar.bar-stalled { box-shadow: inset 0 0 0 2px #E67E22; }
-  .outcome-bar.bar-blocked { box-shadow: inset 0 0 0 2px #E74C3C; }
-  .stall-badge {
+  .stall-marker {
     position: absolute;
-    left: 4px;
+    right: 26px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 7px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
     font-weight: 800;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    padding: 2px 4px;
-    border-radius: 3px;
     line-height: 1;
     z-index: 15;
-    color: #fff;
     pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
+    flex-shrink: 0;
   }
-  .stall-badge.stall-stalled { background: #E67E22; }
-  .stall-badge.stall-blocked { background: #E74C3C; }
+  .stall-marker.stall-stalled { background: #F1C40F; color: #2B2B2B; }
+  .stall-marker.stall-blocked { background: #E74C3C; color: #fff; }
+  .legend-bar .stall-marker.legend-sample {
+    position: static;
+    transform: none;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+  }
 
   .plus-btn {
     position: absolute;
@@ -439,8 +445,8 @@
   <div class="legend-item"><div class="legend-line contingent"></div> contingent</div>
   <div class="legend-item"><div style="width:2px;height:14px;background:#E74C3C;opacity:0.5"></div> Milestone</div>
   <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #2B2B2B;opacity:0.5"></div> As of last save</div>
-  <div class="legend-item"><span class="stall-badge stall-stalled" style="position:static;transform:none">Stalled</span> GitHub Stalled</div>
-  <div class="legend-item"><span class="stall-badge stall-blocked" style="position:static;transform:none">Blocked</span> GitHub Blocked</div>
+  <div class="legend-item"><span class="stall-marker stall-stalled legend-sample" aria-hidden="true">S</span> GitHub Stalled</div>
+  <div class="legend-item"><span class="stall-marker stall-blocked legend-sample" aria-hidden="true">B</span> GitHub Blocked</div>
 </div>
 
 <div class="container">
@@ -867,24 +873,23 @@ function applyStallOverlayToOutcomeBars(data) {
   outcomeStallByOutcome = by;
   document.querySelectorAll('.outcome-bar[data-oc-id]').forEach((bar) => {
     const id = bar.getAttribute('data-oc-id');
-    bar.querySelectorAll('.stall-badge').forEach((n) => n.remove());
-    bar.classList.remove('bar-stalled', 'bar-blocked');
+    bar.querySelectorAll('.stall-marker').forEach((n) => n.remove());
     const ent = by[id];
     if (!ent) return;
     const hasB = ent.blocked && ent.blocked.length;
     const hasS = ent.stalled && ent.stalled.length;
     if (hasB) {
-      bar.classList.add('bar-blocked');
-      const badge = document.createElement('span');
-      badge.className = 'stall-badge stall-blocked';
-      badge.textContent = 'Blocked';
-      bar.insertBefore(badge, bar.firstChild);
+      const m = document.createElement('span');
+      m.className = 'stall-marker stall-blocked';
+      m.textContent = 'B';
+      m.setAttribute('title', 'Blocked on GitHub');
+      bar.appendChild(m);
     } else if (hasS) {
-      bar.classList.add('bar-stalled');
-      const badge = document.createElement('span');
-      badge.className = 'stall-badge stall-stalled';
-      badge.textContent = 'Stalled';
-      bar.insertBefore(badge, bar.firstChild);
+      const m = document.createElement('span');
+      m.className = 'stall-marker stall-stalled';
+      m.textContent = 'S';
+      m.setAttribute('title', 'Stalled on GitHub');
+      bar.appendChild(m);
     }
   });
 }
