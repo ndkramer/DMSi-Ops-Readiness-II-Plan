@@ -8,6 +8,8 @@
   Loads items from an organization GitHub Project (Projects v2) that are Issues or Pull Requests
   with a label named "Stalled", "Blocked", or "Cleared" (case-insensitive). Items appear in the matching column; if several apply, priority is Cleared, then Blocked, then Stalled.
 
+  Tab "360 Tickets": issues/PRs with label "360" (case-insensitive exact name). Columns Backlog / Advancing / Done follow the project’s Status single-select (field name "Status" or "GitHub Status"). Classic project boards use the card’s column name the same way. If Status is missing, CLOSED/MERGED → Done, otherwise Backlog.
+
   GitHub does not issue a token scoped to a single Project only. Use a Personal Access Token (PAT)
   on your user account with read access to the org project and repos whose issues appear on the board.
 
@@ -58,6 +60,79 @@
     max-width: 560px;
   }
   .header .brand { color: #76BE43; font-weight: 700; font-size: 15px; letter-spacing: 0.5px; }
+
+  /** Report views: Stalled & Blocked board vs. 360 Tickets board. Matches Project-Plan tab styling. */
+  .tab-bar-wrap {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 16px;
+    padding-bottom: 0;
+  }
+  .tab-bar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+  .tab-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+  .tab-btn {
+    padding: 12px 28px 10px 0;
+    margin-right: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    color: #888;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    letter-spacing: 0.3px;
+  }
+  .tab-btn:hover {
+    color: #ccc;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px 4px 0 0;
+  }
+  .tab-btn.active {
+    color: #76BE43;
+    border-bottom-color: #76BE43;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .under-construction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 360px;
+    color: #656d76;
+    text-align: center;
+    padding: 48px 24px;
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    margin-top: 8px;
+  }
+  .under-construction .uc-icon {
+    font-size: 44px;
+    margin-bottom: 14px;
+    opacity: 0.45;
+  }
+  .under-construction h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2328;
+    margin-bottom: 8px;
+  }
+  .under-construction p {
+    font-size: 14px;
+    line-height: 1.55;
+    max-width: 420px;
+  }
 
   .toolbar {
     max-width: 1200px;
@@ -126,6 +201,11 @@
   .board-column.col-stalled .col-board-heading { border-bottom-color: #F1C40F; }
   .board-column.col-blocked .col-board-heading { border-bottom-color: #E74C3C; }
   .board-column.col-cleared h2 { border-bottom-color: #76BE43; }
+
+  /** 360 Tickets board — align with planning kanban accent colors */
+  .board-column.col-360-backlog .col-board-heading { border-bottom-color: #3498DB; }
+  .board-column.col-360-advancing .col-board-heading { border-bottom-color: #76BE43; }
+  .board-column.col-360-done .col-board-heading { border-bottom-color: #999; }
 
   /** Hover / keyboard focus shows definition under Stalled & Blocked headers */
   .col-head-group {
@@ -431,6 +511,7 @@
 
   @media (max-width: 600px) {
     .header { padding: 16px 16px 20px; }
+    .tab-bar-inner { padding-left: 16px; padding-right: 16px; }
     .toolbar, .main, .token-help { padding-left: 16px; padding-right: 16px; }
   }
 </style>
@@ -445,7 +526,17 @@
     </div>
     <div class="brand">DYNAMO</div>
   </div>
+  <div class="tab-bar-wrap">
+    <div class="tab-bar-inner">
+      <div class="tab-bar" role="tablist" aria-label="Report sections">
+        <button type="button" class="tab-btn active" id="tabStalledBlocked" role="tab" aria-selected="true" aria-controls="panelStalledBlocked">Stalled &amp; Blocked</button>
+        <button type="button" class="tab-btn" id="tab360Tickets" role="tab" aria-selected="false" aria-controls="panel360Tickets">360 Tickets</button>
+      </div>
+    </div>
+  </div>
 </header>
+
+<div class="tab-content active" id="panelStalledBlocked" role="tabpanel" aria-labelledby="tabStalledBlocked">
 
 <div class="toolbar">
   <button type="button" class="primary" id="btnRefresh">Refresh from GitHub</button>
@@ -521,6 +612,32 @@
   <div id="emptyState" class="empty-state" style="display: none;">No items with Stalled, Blocked, or Cleared labels found on this project.</div>
 </div>
 
+</div>
+
+<div class="tab-content" id="panel360Tickets" role="tabpanel" aria-labelledby="tab360Tickets" hidden>
+  <div class="toolbar">
+    <button type="button" class="primary" id="btnRefresh360">Refresh from GitHub</button>
+  </div>
+  <div class="main">
+    <div id="messageBox360" class="status-msg info" style="display: none;"></div>
+    <div id="board360" class="board" style="display: none;">
+      <section class="board-column col-360-backlog" aria-labelledby="col360BacklogTitle">
+        <h2 id="col360BacklogTitle" class="col-board-heading"><span id="col360BacklogTitleText">Backlog (0)</span></h2>
+        <div id="column360Backlog" class="column-cards"></div>
+      </section>
+      <section class="board-column col-360-advancing" aria-labelledby="col360AdvancingTitle">
+        <h2 id="col360AdvancingTitle" class="col-board-heading"><span id="col360AdvancingTitleText">Advancing (0)</span></h2>
+        <div id="column360Advancing" class="column-cards"></div>
+      </section>
+      <section class="board-column col-360-done" aria-labelledby="col360DoneTitle">
+        <h2 id="col360DoneTitle" class="col-board-heading"><span id="col360DoneTitleText">Done (0)</span></h2>
+        <div id="column360Done" class="column-cards"></div>
+      </section>
+    </div>
+    <div id="emptyState360" class="empty-state" style="display: none;">No issues or pull requests on this project have the label <strong>360</strong>.</div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <div class="modal-header">
@@ -542,7 +659,9 @@
     orgLogin: 'DynamoLLC-Hub',
     projectNumber: 1,
     /** Match label names case-insensitively (exact name). Any of these includes the item in the report. */
-    labelNames: ['stalled', 'blocked', 'cleared']
+    labelNames: ['stalled', 'blocked', 'cleared'],
+    /** 360 Tickets tab: exact label match, case-insensitive. */
+    label360: '360'
   };
 
   var GRAPHQL = [
@@ -554,6 +673,19 @@
     '        pageInfo { hasNextPage endCursor }',
     '        nodes {',
     '          id',
+    '          fieldValues(first: 24) {',
+    '            nodes {',
+    '              __typename',
+    '              ... on ProjectV2ItemFieldSingleSelectValue {',
+    '                name',
+    '                field {',
+    '                  ... on ProjectV2SingleSelectField {',
+    '                    name',
+    '                  }',
+    '                }',
+    '              }',
+    '            }',
+    '          }',
     '          content {',
     '            __typename',
     '            ... on Issue {',
@@ -596,6 +728,7 @@
   /** Set when Stalled-Blocked-github-token.local.json loads (only if no URL token and no localStorage PAT). */
   var fileLoadedToken = null;
   var lastItems = [];
+  var lastItems360 = [];
 
   /** Legacy localStorage PAT (no UI to set/clear; remove via browser site data if needed). */
   var GITHUB_PAT_STORAGE_KEY = 'dmsiStalledBlockedGithubPat';
@@ -621,6 +754,20 @@
 
   function setMessage(text, type) {
     var el = document.getElementById('messageBox');
+    if (!text) {
+      el.style.display = 'none';
+      el.textContent = '';
+      return;
+    }
+    el.style.display = 'block';
+    el.textContent = text;
+    el.className = 'status-msg ' + (type || 'info');
+  }
+
+  /** Status line above the 360 Tickets board (same pattern as messageBox). */
+  function setMessage360(text, type) {
+    var el = document.getElementById('messageBox360');
+    if (!el) return;
     if (!text) {
       el.style.display = 'none';
       el.textContent = '';
@@ -736,6 +883,109 @@
       labels: labels,
       assignees: (c.assignees && c.assignees.nodes) ? c.assignees.nodes : [],
       column: reportColumnFromLabels(labels)
+    };
+  }
+
+  function labelMatches360(labels) {
+    if (!labels || !labels.length) return false;
+    var want = String(CONFIG.label360 || '360').toLowerCase();
+    for (var i = 0; i < labels.length; i++) {
+      if (String(labels[i].name || '').toLowerCase() === want) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Reads the GitHub Project (new) Status single-select: field name "Status" or "GitHub Status" (case-insensitive).
+   */
+  function projectStatusOptionFromNode(node) {
+    var fv = node && node.fieldValues && node.fieldValues.nodes;
+    if (!fv || !fv.length) return '';
+    for (var i = 0; i < fv.length; i++) {
+      var n = fv[i];
+      if (!n || n.__typename !== 'ProjectV2ItemFieldSingleSelectValue') continue;
+      var fname = String((n.field && n.field.name) || '').trim().toLowerCase();
+      if (fname === 'status' || fname === 'github status') {
+        return String(n.name || '').trim();
+      }
+    }
+    return '';
+  }
+
+  /**
+   * Map Status option or classic column name → backlog | advancing | done.
+   * If status text is empty, uses issue/PR state: CLOSED/MERGED → done, else backlog.
+   */
+  function mapStatusTextToColumn360(statusText, issueState) {
+    var t = String(statusText || '')
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!t) {
+      var st = String(issueState || '').toUpperCase();
+      if (st === 'CLOSED' || st === 'MERGED') return 'done';
+      return 'backlog';
+    }
+    if (
+      t === 'done' ||
+      t === 'closed' ||
+      t === 'complete' ||
+      t === 'completed' ||
+      t === 'finished' ||
+      t === 'shipped'
+    ) {
+      return 'done';
+    }
+    if (
+      t.indexOf('progress') >= 0 ||
+      t === 'advancing' ||
+      t.indexOf('review') >= 0 ||
+      t === 'ready' ||
+      t === 'doing' ||
+      t === 'active'
+    ) {
+      return 'advancing';
+    }
+    if (
+      t.indexOf('backlog') >= 0 ||
+      t === 'todo' ||
+      t === 'pending' ||
+      t === 'new' ||
+      t.indexOf('triage') >= 0 ||
+      t === 'untriaged' ||
+      t.indexOf('not started') >= 0
+    ) {
+      return 'backlog';
+    }
+    return 'backlog';
+  }
+
+  function normalize360Item(node) {
+    var c = node.content;
+    if (!c) return null;
+    if (c.__typename === 'DraftIssue') {
+      return null;
+    }
+    if (c.__typename !== 'Issue' && c.__typename !== 'PullRequest') return null;
+    var labels = (c.labels && c.labels.nodes) ? c.labels.nodes : [];
+    if (!labelMatches360(labels)) return null;
+    var statusOpt = projectStatusOptionFromNode(node);
+    var classicCol = node.classicColumnName != null ? String(node.classicColumnName) : '';
+    var statusText = statusOpt || classicCol || '';
+    var col = mapStatusTextToColumn360(statusText, c.state);
+    return {
+      typename: c.__typename,
+      title: c.title,
+      number: c.number,
+      url: c.url,
+      state: c.state,
+      body: c.body || '',
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+      repository: c.repository,
+      labels: labels,
+      assignees: (c.assignees && c.assignees.nodes) ? c.assignees.nodes : [],
+      column: col
     };
   }
 
@@ -933,7 +1183,8 @@
     return fallback;
   }
 
-  async function collectClassicProjectCardContentUrls(projectNumericId, token) {
+  /** Classic project: issue/PR URL plus column name (used as workflow status for the 360 board). */
+  async function collectClassicProjectCardRows(projectNumericId, token) {
     var list = [];
     var seen = {};
     var colRes = await githubRestFetch('https://api.github.com/projects/' + projectNumericId + '/columns', token);
@@ -947,6 +1198,7 @@
     }
     if (!Array.isArray(columns)) return list;
     for (var c = 0; c < columns.length; c++) {
+      var colName = columns[c].name || '';
       var cardUrl = columns[c].cards_url;
       while (cardUrl) {
         var cr = await githubRestFetch(cardUrl, token);
@@ -963,7 +1215,7 @@
           var cu = cards[i].content_url;
           if (cu && !seen[cu]) {
             seen[cu] = true;
-            list.push(cu);
+            list.push({ contentUrl: cu, columnName: colName });
           }
         }
         cardUrl = parseGithubNextUrl(cr.headers.get('Link'));
@@ -988,12 +1240,12 @@
   async function fetchAllItemsClassic(token) {
     var project = await findClassicOrgProject(token);
     if (!project) return { used: false, projectTitle: null, nodes: [] };
-    var contentUrls = await collectClassicProjectCardContentUrls(project.id, token);
+    var rows = await collectClassicProjectCardRows(project.id, token);
     var nodes = [];
-    for (var i = 0; i < contentUrls.length; i++) {
-      var content = await fetchRestContentForCardUrl(contentUrls[i], token);
+    for (var i = 0; i < rows.length; i++) {
+      var content = await fetchRestContentForCardUrl(rows[i].contentUrl, token);
       if (!content) continue;
-      nodes.push({ content: content });
+      nodes.push({ content: content, classicColumnName: rows[i].columnName });
     }
     return { used: true, projectTitle: project.name, nodes: nodes };
   }
@@ -1067,7 +1319,10 @@
     throw new Error('Could not open org project #' + CONFIG.projectNumber + ' via GitHub Projects (new) or classic boards.\n\n' + hint);
   }
 
-  function appendWorkCard(container, item) {
+  /**
+   * @param {string} [labelTagMode]  Omit or 'stall': only stalled/blocked/cleared tags. 'all': every label on the issue.
+   */
+  function appendWorkCard(container, item, labelTagMode) {
     var assignees = item.assignees || [];
     var btn = document.createElement('button');
     btn.type = 'button';
@@ -1122,20 +1377,31 @@
     titleEl.textContent = item.title;
     btn.appendChild(titleEl);
 
-    var labelSet = {};
-    CONFIG.labelNames.forEach(function (n) { labelSet[n] = true; });
     var tags = document.createElement('div');
     tags.className = 'label-tags';
-    (item.labels || []).forEach(function (lab) {
-      var n = (lab.name || '').toLowerCase();
-      if (!labelSet[n]) return;
-      var span = document.createElement('span');
-      span.className = 'label-tag';
-      span.textContent = lab.name;
-      span.style.background = '#' + (lab.color || 'd4d4d4');
-      span.style.color = parseInt((lab.color || '000000'), 16) > 0xbbbbbb ? '#1f2328' : '#fff';
-      tags.appendChild(span);
-    });
+    if (labelTagMode === 'all') {
+      (item.labels || []).forEach(function (lab) {
+        var span = document.createElement('span');
+        span.className = 'label-tag';
+        span.textContent = lab.name;
+        span.style.background = '#' + (lab.color || 'd4d4d4');
+        span.style.color = parseInt((lab.color || '000000'), 16) > 0xbbbbbb ? '#1f2328' : '#fff';
+        tags.appendChild(span);
+      });
+    } else {
+      var labelSet = {};
+      CONFIG.labelNames.forEach(function (n) { labelSet[n] = true; });
+      (item.labels || []).forEach(function (lab) {
+        var n = (lab.name || '').toLowerCase();
+        if (!labelSet[n]) return;
+        var span = document.createElement('span');
+        span.className = 'label-tag';
+        span.textContent = lab.name;
+        span.style.background = '#' + (lab.color || 'd4d4d4');
+        span.style.color = parseInt((lab.color || '000000'), 16) > 0xbbbbbb ? '#1f2328' : '#fff';
+        tags.appendChild(span);
+      });
+    }
     if (tags.children.length) btn.appendChild(tags);
 
     btn.addEventListener('click', function () { openModal(item); });
@@ -1177,6 +1443,44 @@
     stalled.forEach(function (item) { appendWorkCard(colStalled, item); });
     blocked.forEach(function (item) { appendWorkCard(colBlocked, item); });
     cleared.forEach(function (item) { appendWorkCard(colCleared, item); });
+  }
+
+  function renderCards360(items) {
+    var board = document.getElementById('board360');
+    var colB = document.getElementById('column360Backlog');
+    var colA = document.getElementById('column360Advancing');
+    var colD = document.getElementById('column360Done');
+    var empty = document.getElementById('emptyState360');
+    if (!board || !colB || !colA || !colD || !empty) return;
+    colB.innerHTML = '';
+    colA.innerHTML = '';
+    colD.innerHTML = '';
+
+    if (!items.length) {
+      board.style.display = 'none';
+      empty.style.display = 'block';
+      return;
+    }
+    board.style.display = 'grid';
+    empty.style.display = 'none';
+
+    var backlog = [];
+    var advancing = [];
+    var done = [];
+    items.forEach(function (it) {
+      var c = it.column || 'backlog';
+      if (c === 'done') done.push(it);
+      else if (c === 'advancing') advancing.push(it);
+      else backlog.push(it);
+    });
+
+    document.getElementById('col360BacklogTitleText').textContent = 'Backlog (' + backlog.length + ')';
+    document.getElementById('col360AdvancingTitleText').textContent = 'Advancing (' + advancing.length + ')';
+    document.getElementById('col360DoneTitleText').textContent = 'Done (' + done.length + ')';
+
+    backlog.forEach(function (item) { appendWorkCard(colB, item, 'all'); });
+    advancing.forEach(function (item) { appendWorkCard(colA, item, 'all'); });
+    done.forEach(function (item) { appendWorkCard(colD, item, 'all'); });
   }
 
   function esc(s) {
@@ -1261,14 +1565,15 @@
     var repo = q.get('repo');
     var issueUrl = q.get('issue_url');
     var numStr = q.get('issue');
-    if (!lastItems || !lastItems.length) return;
+    var pool = (lastItems || []).concat(lastItems360 || []);
+    if (!pool.length) return;
     if (!repo && !issueUrl && !numStr) return;
     var found = null;
     if (repo && numStr) {
       var n = parseInt(numStr, 10);
       if (!isNaN(n)) {
-        for (var i = 0; i < lastItems.length; i++) {
-          var it = lastItems[i];
+        for (var i = 0; i < pool.length; i++) {
+          var it = pool[i];
           var r = it.repository;
           var nwo = r && r.nameWithOwner;
           if (nwo === repo && (it.number === n || String(it.number) === numStr)) {
@@ -1279,9 +1584,9 @@
       }
     }
     if (!found && issueUrl) {
-      for (var j = 0; j < lastItems.length; j++) {
-        if (lastItems[j].url === issueUrl) {
-          found = lastItems[j];
+      for (var j = 0; j < pool.length; j++) {
+        if (pool[j].url === issueUrl) {
+          found = pool[j];
           break;
         }
       }
@@ -1310,15 +1615,32 @@
         'No GitHub token: add ?github_token= to the URL, deploy Stalled-Blocked-github-token.local.json with this page, or set the STALLED_BLOCKED_GITHUB_PAT deploy secret (see HTML comment for required scopes).',
         'error'
       );
+      setMessage360(
+        'No GitHub token: use the same token setup as the Stalled & Blocked tab (see help there).',
+        'error'
+      );
+      lastItems360 = [];
+      renderCards360([]);
       return;
     }
 
     setMessage('Loading from GitHub…', 'info');
+    setMessage360('Loading from GitHub…', 'info');
     document.getElementById('board').style.display = 'none';
     document.getElementById('columnStalled').innerHTML = '';
     document.getElementById('columnBlocked').innerHTML = '';
     document.getElementById('columnCleared').innerHTML = '';
     document.getElementById('emptyState').style.display = 'none';
+    var b360 = document.getElementById('board360');
+    if (b360) b360.style.display = 'none';
+    var colB = document.getElementById('column360Backlog');
+    var colA = document.getElementById('column360Advancing');
+    var colD = document.getElementById('column360Done');
+    if (colB) colB.innerHTML = '';
+    if (colA) colA.innerHTML = '';
+    if (colD) colD.innerHTML = '';
+    var es360 = document.getElementById('emptyState360');
+    if (es360) es360.style.display = 'none';
 
     try {
       var result = await fetchAllItems(token);
@@ -1326,14 +1648,21 @@
         document.getElementById('projectTitleLabel').textContent = result.projectTitle;
       }
       var items = [];
+      var items360 = [];
       result.nodes.forEach(function (n) {
         var it = normalizeItem(n);
         if (it) items.push(it);
+        var it360 = normalize360Item(n);
+        if (it360) items360.push(it360);
       });
       items.sort(function (a, b) {
         return (b.updatedAt || '').localeCompare(a.updatedAt || '');
       });
+      items360.sort(function (a, b) {
+        return (b.updatedAt || '').localeCompare(a.updatedAt || '');
+      });
       lastItems = items;
+      lastItems360 = items360;
       if (items.length) {
         var byCol = { stalled: 0, blocked: 0, cleared: 0 };
         items.forEach(function (it) {
@@ -1358,7 +1687,29 @@
       if (!items.length) {
         setMessage('No issues or pull requests on this project carry the labels Stalled, Blocked, or Cleared.', 'info');
       }
+      if (items360.length) {
+        var b = { backlog: 0, advancing: 0, done: 0 };
+        items360.forEach(function (it) {
+          var c = it.column || 'backlog';
+          if (b[c] != null) b[c]++;
+        });
+        setMessage360(
+          'Label 360: ' +
+            items360.length +
+            ' item(s) — Backlog ' +
+            b.backlog +
+            ', Advancing ' +
+            b.advancing +
+            ', Done ' +
+            b.done +
+            '. Columns use the project Status field (or classic column name).',
+          'info'
+        );
+      } else {
+        setMessage360('', '');
+      }
       renderCards(items);
+      renderCards360(items360);
       tryOpenFocusedIssueFromQuery();
     } catch (err) {
       console.error(err);
@@ -1370,12 +1721,37 @@
           '3) In Confluence, try opening the iframe URL in a new tab to rule out embed restrictions.';
       }
       setMessage(msg, 'error');
+      setMessage360(msg, 'error');
+      lastItems360 = [];
       renderCards([]);
+      renderCards360([]);
     }
   }
 
+  /** Switch between Stalled & Blocked board and 360 Tickets board; updates ARIA for screen readers. */
+  function switchReportTab(id) {
+    var panelStalled = document.getElementById('panelStalledBlocked');
+    var panel360 = document.getElementById('panel360Tickets');
+    var btnStalled = document.getElementById('tabStalledBlocked');
+    var btn360 = document.getElementById('tab360Tickets');
+    if (!panelStalled || !panel360 || !btnStalled || !btn360) return;
+    var show360 = id === '360';
+    panelStalled.classList.toggle('active', !show360);
+    panel360.classList.toggle('active', show360);
+    panelStalled.hidden = show360;
+    panel360.hidden = !show360;
+    btnStalled.classList.toggle('active', !show360);
+    btn360.classList.toggle('active', show360);
+    btnStalled.setAttribute('aria-selected', show360 ? 'false' : 'true');
+    btn360.setAttribute('aria-selected', show360 ? 'true' : 'false');
+  }
+
+  document.getElementById('tabStalledBlocked').addEventListener('click', function () { switchReportTab('stalled'); });
+  document.getElementById('tab360Tickets').addEventListener('click', function () { switchReportTab('360'); });
+
   document.getElementById('orgLabel').textContent = CONFIG.orgLogin;
   document.getElementById('btnRefresh').addEventListener('click', refresh);
+  document.getElementById('btnRefresh360').addEventListener('click', refresh);
   document.getElementById('modalClose').addEventListener('click', closeModal);
   document.getElementById('modalOverlay').addEventListener('click', function (e) {
     if (e.target.id === 'modalOverlay') closeModal();
@@ -1388,6 +1764,7 @@
     refresh();
   } else {
     showFileProtocolTokenHint();
+    setMessage360('Load data with a GitHub token (same setup as the Stalled & Blocked tab).', 'info');
   }
   tryLoadGithubTokenFromFile();
 })();
