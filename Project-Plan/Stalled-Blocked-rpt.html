@@ -1044,6 +1044,23 @@
           '). Deploy the latest Lambda (index.mjs with /github-proxy), or open the report in a new tab outside the iframe.'
       );
     }
+    var first = trimmed.charAt(0);
+    if (first !== '{' && first !== '[') {
+      var preview = trimmed.length > 140 ? trimmed.substring(0, 140) + '…' : trimmed;
+      var gateway =
+        res.status === 502 || res.status === 503 || res.status === 504
+          ? ' Often a temporary bad gateway or timeout from GitHub or the Lambda proxy — retry in a minute; if it persists, check Lambda logs, memory, and GitHub status.'
+          : '';
+      throw new Error(
+        (context || 'Request') +
+          ': expected JSON but got plain text (HTTP ' +
+          res.status +
+          ').' +
+          gateway +
+          ' Preview: ' +
+          preview
+      );
+    }
     try {
       return JSON.parse(text);
     } catch (e) {
@@ -1408,7 +1425,10 @@
     container.appendChild(btn);
   }
 
-  function renderCards(items) {
+  /**
+   * @param {'error'} [emptyMode]  If set and there are no items, hide the empty-state copy (used after a failed fetch so we do not imply “zero matching issues”).
+   */
+  function renderCards(items, emptyMode) {
     var board = document.getElementById('board');
     var colStalled = document.getElementById('columnStalled');
     var colBlocked = document.getElementById('columnBlocked');
@@ -1420,7 +1440,7 @@
 
     if (!items.length) {
       board.style.display = 'none';
-      empty.style.display = 'block';
+      empty.style.display = emptyMode === 'error' ? 'none' : 'block';
       return;
     }
     board.style.display = 'grid';
@@ -1445,7 +1465,10 @@
     cleared.forEach(function (item) { appendWorkCard(colCleared, item); });
   }
 
-  function renderCards360(items) {
+  /**
+   * @param {'error'} [emptyMode]  Same as renderCards — hide misleading “no label 360” when the load failed.
+   */
+  function renderCards360(items, emptyMode) {
     var board = document.getElementById('board360');
     var colB = document.getElementById('column360Backlog');
     var colA = document.getElementById('column360Advancing');
@@ -1458,7 +1481,7 @@
 
     if (!items.length) {
       board.style.display = 'none';
-      empty.style.display = 'block';
+      empty.style.display = emptyMode === 'error' ? 'none' : 'block';
       return;
     }
     board.style.display = 'grid';
@@ -1620,7 +1643,7 @@
         'error'
       );
       lastItems360 = [];
-      renderCards360([]);
+      renderCards360([], 'error');
       return;
     }
 
@@ -1723,8 +1746,8 @@
       setMessage(msg, 'error');
       setMessage360(msg, 'error');
       lastItems360 = [];
-      renderCards([]);
-      renderCards360([]);
+      renderCards([], 'error');
+      renderCards360([], 'error');
     }
   }
 
