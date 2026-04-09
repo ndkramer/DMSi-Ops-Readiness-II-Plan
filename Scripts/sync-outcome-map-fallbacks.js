@@ -1,12 +1,43 @@
 #!/usr/bin/env node
 /**
- * Copies *-outcomes.json into embedded #*-outcomes-fallback blocks in Outcome Map HTML
- * so file:// opens stay in sync after JSON edits.
+ * (1) Copies *-outcomes.json into embedded #*-outcomes-fallback blocks in Outcome Map HTML
+ *     so file:// opens stay in sync after JSON edits.
+ * (2) Re-inlines Project-Plan/outcome-map-from-json.js into the same HTML files when you
+ *     change the shared loader (keeps Outcome Maps self-contained for file://).
  */
 const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
+const loaderPath = path.join(root, 'Project-Plan/outcome-map-from-json.js');
+let loaderBody = fs.readFileSync(loaderPath, 'utf8').replace(/^\/\*\*[\s\S]*?\*\/\s*/, '').trim();
+const inlineLoader = `<script>
+/* Inlined from Project-Plan/outcome-map-from-json.js — edit that file then run this script. */
+${loaderBody}
+</script>`;
+
+const htmlWithLoader = [
+  'WSA/WM/WM-Outcome-Map.html',
+  'WSA/PA/PA-Outcome-map.html',
+  'WSA/VI/VI-WSB-Outcome-Map.html',
+  'WSB-WSC/WB/WB-Outcome-Map.html'
+];
+
+const loaderRe = /<script>\n\/\* Inlined from Project-Plan\/outcome-map-from-json\.js[\s\S]*?<\/script>/m;
+
+for (const htmlRel of htmlWithLoader) {
+  const htmlPath = path.join(root, htmlRel);
+  if (!fs.existsSync(htmlPath)) continue;
+  let html = fs.readFileSync(htmlPath, 'utf8');
+  if (!loaderRe.test(html)) {
+    console.warn('skip loader (no inlined block):', htmlRel);
+    continue;
+  }
+  html = html.replace(loaderRe, inlineLoader);
+  fs.writeFileSync(htmlPath, html);
+  console.log('ok loader', htmlRel);
+}
+
 const pairs = [
   { json: 'WSA/WM/wm-outcomes.json', html: 'WSA/WM/WM-Outcome-Map.html', id: 'wm-outcomes-fallback' },
   { json: 'WSA/VI/vi-outcomes.json', html: 'WSA/VI/VI-WSB-Outcome-Map.html', id: 'vi-outcomes-fallback' },
