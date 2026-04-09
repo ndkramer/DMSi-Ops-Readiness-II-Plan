@@ -441,11 +441,11 @@ const FALLBACK_CAPABILITIES = [
   { id: 'VI', name: 'Visibility Infrastructure & Proactive Detection', meta: '16 outcomes | PD AIOps active since Mar 1', barClass: 'bar-vi', start: new Date(2026, 2, 1), end: new Date(2026, 5, 11), link: '../WSA/VI/VI-WSB-Outcome-Map.html', outcomes: 16, detail: 'Dynatrace rollout, PagerDuty AIOps, host instrumentation, log migration, synthetic monitoring, application telemetry, alerting, proactive operations.' },
   { id: 'PP', name: 'Pipeline Automation', meta: '12 outcomes + POC | Starts with 2-week POC', barClass: 'bar-pp', start: new Date(2026, 2, 16), end: new Date(2026, 7, 21), link: '../WSA/PA/PA-Outcome-map.html', outcomes: 12, detail: 'NGINX config pipeline POC, foundation, config inventory, version control migration, build/deploy/drift pipelines, reliability validation, config-as-code enforcement.' }
 ];
-/** Inline fallback if project-milestones.json is missing or fetch fails (mirrors Project-Plan/project-milestones.json). */
+/** Inline fallback if project-milestones.json is missing or fetch fails (mirrors Capability-map/Milestones/project-milestones.json). */
 const FALLBACK_MILESTONES = [
-  { id: 'M2', date: '2026-03-28', label: 'M2: Mar 28' },
-  { id: 'M3', date: '2026-05-28', label: 'M3: May 28' },
-  { id: 'M4', date: '2026-10-27', label: 'M4: Oct 27' }
+  { id: 'M2', date: '2026-03-27', label: 'M2: March 27th' },
+  { id: 'M3', date: '2026-05-28', label: 'M3: May 28th' },
+  { id: 'M4', date: '2026-10-27', label: 'M4: Oct 27th' }
 ];
 
 function parseCapabilityDates(data) {
@@ -613,6 +613,33 @@ function applyCombinedStallOverlay(byOutcome) {
     return path + sep + 'token=' + encodeURIComponent(token);
   }
 
+  /** Repo layout vs Lambda zip: try paths in order (see Capability-map/Milestones/project-milestones.json). */
+  function milestoneFetchCandidates() {
+    const p = window.location.pathname || '';
+    if (p.indexOf('/Project-Plan/') !== -1 || /Project-Plan/i.test(p)) {
+      return [
+        '../Capability-map/Milestones/project-milestones.json',
+        '../Milestones/project-milestones.json',
+      ];
+    }
+    return [
+      'Milestones/project-milestones.json',
+      'Capability-map/Milestones/project-milestones.json',
+    ];
+  }
+
+  function fetchProjectMilestones() {
+    let chain = Promise.reject(new Error('milestone-fetch-start'));
+    milestoneFetchCandidates().forEach((u) => {
+      chain = chain.catch(() =>
+        fetch(fetchUrl(u), { cache: 'no-store' }).then((r) =>
+          r.ok ? r.json() : Promise.reject(new Error('not ok'))
+        )
+      );
+    });
+    return chain;
+  }
+
   function applyStallFromJson() {
     fetch(fetchUrl('outcome-stall-overlay.json'), { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
@@ -653,8 +680,7 @@ function applyCombinedStallOverlay(byOutcome) {
   fetch(fetchUrl('gantt-data.json'))
     .then(r => r.ok ? r.json() : Promise.reject(new Error('Not ok')))
     .then(data =>
-      fetch(fetchUrl('project-milestones.json'))
-        .then(r => r.ok ? r.json() : Promise.reject())
+      fetchProjectMilestones()
         .then(ms => {
           if (ms && ms.milestones && ms.milestones.length) data.milestones = ms.milestones;
           return data;

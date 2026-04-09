@@ -7,18 +7,18 @@
   "milestones": [
     {
       "id": "M2",
-      "date": "2026-03-28",
-      "label": "M2: Mar 28"
+      "date": "2026-03-27",
+      "label": "M2: March 27th"
     },
     {
       "id": "M3",
       "date": "2026-05-28",
-      "label": "M3: May 28"
+      "label": "M3: May 28th"
     },
     {
       "id": "M4",
       "date": "2026-10-27",
-      "label": "M4: Oct 27"
+      "label": "M4: Oct 27th"
     }
   ],
   "capabilities": [

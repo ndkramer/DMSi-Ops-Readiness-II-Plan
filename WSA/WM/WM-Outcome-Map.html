@@ -564,40 +564,214 @@
 </script>
 <script src="../../Project-Plan/github-stall-live.js"></script>
 
+<script src="../../Project-Plan/outcome-map-from-json.js"></script>
+<script type="application/json" id="wm-outcomes-fallback">
+{
+  "schema_version": 3,
+  "capability": "WM",
+  "wbs_markdown": "WM-WBS.md",
+  "jira": {
+    "notes": "Timeline rows and dependency_flow are canonical for WM-Outcome-Map.html; edit this file first, then refresh #wm-outcomes-fallback in the HTML when edge copy or layout changes. Populate capability_issue_key and jira_epic_key per outcome when WM-WBS.md §9 Jira mapping is finalized (mirror PA/pa-outcomes.json). Optional dependency_edges[]: same model as PA when WM uses rich dep tooltips."
+  },
+  "outcome_map": {
+    "grid_columns": 18,
+    "week_1_anchor": "2026-02-16",
+    "week_1_note": "Week 1 = Feb 16, 2026",
+    "column_labels": [
+      "Feb 16",
+      "Feb 23",
+      "Mar 2",
+      "Mar 9",
+      "Mar 16",
+      "Mar 23",
+      "Mar 30",
+      "Apr 6",
+      "Apr 13",
+      "Apr 20",
+      "Apr 27",
+      "May 4",
+      "May 11",
+      "May 18",
+      "May 25",
+      "Jun 1",
+      "Jun 8",
+      "Jun 15"
+    ],
+    "deadline_column": 15
+  },
+  "outcomes": [
+    {
+      "id": "WM-OC-01",
+      "title": "Current State Discovery Complete",
+      "start": 1,
+      "end": 2,
+      "cat": "Baseline",
+      "deps": [],
+      "risk": "WM-R-01, WM-R-02",
+      "deliverables": 4,
+      "milestone": "",
+      "status": "complete",
+      "date_range": "Wk 1-2 (Feb 16 - Feb 27)",
+      "detail": "COMPLETE. Discovery sessions, workflow mapping, 360 case evaluation (559 open cases), current state assessment. Foundation for everything that follows."
+    },
+    {
+      "id": "WM-OC-02",
+      "title": "Operating Model & Process Design",
+      "start": 2,
+      "end": 3,
+      "cat": "Baseline",
+      "deps": ["WM-OC-01"],
+      "risk": "WM-R-03, WM-R-04",
+      "deliverables": 6,
+      "milestone": "WM-M-2 (designed)",
+      "status": "complete",
+      "date_range": "Wk 2-3 (Feb 23 - Mar 6)",
+      "detail": "COMPLETE. Highest-leverage outcome. Workflow states, work categories, mixed pipeline handling, side-door capture, triage ceremony, WIP limits, capacity allocation, operating agreement."
+    },
+    {
+      "id": "WM-OC-03",
+      "title": "Tool Selected & System Configured",
+      "start": 3,
+      "end": 6,
+      "cat": "Baseline",
+      "deps": ["WM-OC-02"],
+      "risk": "WM-R-05, WM-R-06, WM-R-07",
+      "deliverables": 3,
+      "milestone": "",
+      "status": "",
+      "date_range": "Wk 3-6 (Mar 2 - Mar 28)",
+      "detail": "Fit-to-process tool evaluation against operating agreement requirements. Board configured to match agreed workflow. No over-configuration."
+    },
+    {
+      "id": "WM-OC-04",
+      "title": "Existing Queue Dispositioned",
+      "start": 4,
+      "end": 6,
+      "cat": "Baseline",
+      "deps": ["WM-OC-03"],
+      "risk": "WM-R-08",
+      "deliverables": 3,
+      "milestone": "",
+      "status": "",
+      "date_range": "Wk 4-6 (Mar 9 - Mar 27)",
+      "detail": "559 open 360 cases reviewed: still relevant (migrate), closeable (close), needs investigation (triage). Curated backlog, not bulk migration."
+    },
+    {
+      "id": "WM-OC-05",
+      "title": "Initial Adoption Validated",
+      "start": 5,
+      "end": 9,
+      "cat": "Iterative",
+      "deps": ["WM-OC-03", "WM-OC-04"],
+      "risk": "WM-R-09, WM-R-10, WM-R-11",
+      "deliverables": 5,
+      "milestone": "WM-M-2 (implemented)",
+      "status": "",
+      "date_range": "Wk 5-9 (Mar 16 - Apr 17)",
+      "detail": "Training wheels phase. One category (customer env config). Break-fix tagging + side-door capture from day one. Triage twice weekly. 4-week validation, max 2 cycles."
+    },
+    {
+      "id": "WM-OC-06",
+      "title": "Full Category Coverage & Reactive Visibility",
+      "start": 9,
+      "end": 14,
+      "cat": "Iterative",
+      "deps": ["WM-OC-05"],
+      "risk": "WM-R-12, WM-R-13",
+      "deliverables": 4,
+      "milestone": "WM-M-2 (Scorecard input)",
+      "status": "",
+      "date_range": "Wk 9-14 (Apr 13 - May 22)",
+      "detail": "Expand to all work categories. PagerDuty integration for reactive work. Commitment tiers. Triage cadence evaluation. 4-week validation, max 2 cycles."
+    },
+    {
+      "id": "WM-OC-07",
+      "title": "Board Accuracy Validated",
+      "start": 12,
+      "end": 16,
+      "cat": "Iterative",
+      "deps": ["WM-OC-06"],
+      "risk": "WM-R-14, WM-R-15",
+      "deliverables": 3,
+      "milestone": "",
+      "status": "",
+      "date_range": "Wk 12-16 (May 4 - Jun 5) PAST DEADLINE",
+      "detail": "Trust gate. Board freshness 90%+ sustained 3 consecutive weeks. No shadow spreadsheets. Stale item detection. Max 3 validation cycles. Extends ~1 week past end-of-May."
+    },
+    {
+      "id": "WM-OC-08",
+      "title": "Flow Metrics & Scorecard Operational",
+      "start": 10,
+      "end": 14,
+      "cat": "Baseline",
+      "deps": ["WM-OC-06", "WM-OC-07"],
+      "risk": "WM-R-16, WM-R-17",
+      "deliverables": 3,
+      "milestone": "WM-M-2 (Scorecard operational)",
+      "status": "",
+      "date_range": "Wk 10-14 (Apr 20 - May 22)",
+      "detail": "Can begin design during WM-OC-06 (should dep on WM-OC-07). Cycle time, throughput, queue depth. Reference estimates. Scorecard integration (Workstream D)."
+    },
+    {
+      "id": "WM-OC-09",
+      "title": "Prioritization Drives Execution",
+      "start": 14,
+      "end": 18,
+      "cat": "Baseline",
+      "deps": ["WM-OC-07", "WM-OC-08"],
+      "risk": "WM-R-18, WM-R-19",
+      "deliverables": 2,
+      "milestone": "",
+      "status": "",
+      "date_range": "Wk 14-18 (May 18 - Jun 19) PAST DEADLINE",
+      "detail": "Capstone. System governs, not just informs. Priority changes reflected in team behavior. Side-door ratio declining. Flow retrospective process established. Extends ~3 weeks past end-of-May."
+    }
+  ],
+  "dependency_flow": {
+    "nodes": {
+      "WM-OC-01": { "x": 80, "y": 80, "color": "#3498DB" },
+      "WM-OC-02": { "x": 220, "y": 80, "color": "#3498DB" },
+      "WM-OC-03": { "x": 380, "y": 80, "color": "#3498DB" },
+      "WM-OC-04": { "x": 380, "y": 200, "color": "#3498DB" },
+      "WM-OC-05": { "x": 540, "y": 140, "color": "#76BE43" },
+      "WM-OC-06": { "x": 680, "y": 140, "color": "#76BE43" },
+      "WM-OC-07": { "x": 820, "y": 140, "color": "#76BE43" },
+      "WM-OC-08": { "x": 820, "y": 260, "color": "#3498DB" },
+      "WM-OC-09": { "x": 980, "y": 200, "color": "#3498DB" }
+    },
+    "edges": [
+      { "from": "WM-OC-01", "to": "WM-OC-02", "type": "must" },
+      { "from": "WM-OC-02", "to": "WM-OC-03", "type": "must" },
+      { "from": "WM-OC-03", "to": "WM-OC-04", "type": "must" },
+      { "from": "WM-OC-03", "to": "WM-OC-05", "type": "must" },
+      { "from": "WM-OC-04", "to": "WM-OC-05", "type": "should" },
+      { "from": "WM-OC-05", "to": "WM-OC-06", "type": "must" },
+      { "from": "WM-OC-06", "to": "WM-OC-07", "type": "must" },
+      { "from": "WM-OC-06", "to": "WM-OC-08", "type": "should" },
+      { "from": "WM-OC-07", "to": "WM-OC-08", "type": "should" },
+      { "from": "WM-OC-07", "to": "WM-OC-09", "type": "must" },
+      { "from": "WM-OC-08", "to": "WM-OC-09", "type": "should" }
+    ],
+    "short_names": {
+      "WM-OC-01": "Discovery",
+      "WM-OC-02": "Operating Model",
+      "WM-OC-03": "Tool Config",
+      "WM-OC-04": "Queue Disposition",
+      "WM-OC-05": "Initial Adoption",
+      "WM-OC-06": "Full Coverage",
+      "WM-OC-07": "Board Accuracy",
+      "WM-OC-08": "Scorecard",
+      "WM-OC-09": "Prioritization"
+    }
+  },
+  "dependency_edges": []
+}
+</script>
+
 <script>
-// Outcome data
-// Grid: 18 columns = Weeks 1-18 (Week 1 = Feb 16, 2026)
-// 1 FTE Dynamo. DMSi part-time participation.
-// Deadline: End of May (Week 15). WM-OC-07 and WM-OC-09 extend past deadline.
-const outcomes = [
-  { id:'WM-OC-01', name:'Current State Discovery Complete', cat:'Baseline', start:1, end:2, deps:[], risk:'WM-R-01, WM-R-02', deliverables:4, milestone:'', status:'complete',
-    dateRange:'Wk 1-2 (Feb 16 - Feb 27)',
-    detail:'COMPLETE. Discovery sessions, workflow mapping, 360 case evaluation (559 open cases), current state assessment. Foundation for everything that follows.' },
-  { id:'WM-OC-02', name:'Operating Model & Process Design', cat:'Baseline', start:2, end:3, deps:['WM-OC-01'], risk:'WM-R-03, WM-R-04', deliverables:6, milestone:'WM-M-2 (designed)', status:'complete',
-    dateRange:'Wk 2-3 (Feb 23 - Mar 6)',
-    detail:'COMPLETE. Highest-leverage outcome. Workflow states, work categories, mixed pipeline handling, side-door capture, triage ceremony, WIP limits, capacity allocation, operating agreement.' },
-  { id:'WM-OC-03', name:'Tool Selected & System Configured', cat:'Baseline', start:3, end:5, deps:['WM-OC-02'], risk:'WM-R-05, WM-R-06, WM-R-07', deliverables:3, milestone:'',
-    dateRange:'Wk 3-5 (Mar 2 - Mar 20)',
-    detail:'Fit-to-process tool evaluation against operating agreement requirements. Board configured to match agreed workflow. No over-configuration.' },
-  { id:'WM-OC-04', name:'Existing Queue Dispositioned', cat:'Baseline', start:4, end:6, deps:['WM-OC-03'], risk:'WM-R-08', deliverables:3, milestone:'',
-    dateRange:'Wk 4-6 (Mar 9 - Mar 27)',
-    detail:'559 open 360 cases reviewed: still relevant (migrate), closeable (close), needs investigation (triage). Curated backlog, not bulk migration.' },
-  { id:'WM-OC-05', name:'Initial Adoption Validated', cat:'Iterative', start:5, end:9, deps:['WM-OC-03','WM-OC-04'], risk:'WM-R-09, WM-R-10, WM-R-11', deliverables:5, milestone:'WM-M-2 (implemented)',
-    dateRange:'Wk 5-9 (Mar 16 - Apr 17)',
-    detail:'Training wheels phase. One category (customer env config). Break-fix tagging + side-door capture from day one. Triage twice weekly. 4-week validation, max 2 cycles.' },
-  { id:'WM-OC-06', name:'Full Category Coverage & Reactive Visibility', cat:'Iterative', start:9, end:14, deps:['WM-OC-05'], risk:'WM-R-12, WM-R-13', deliverables:4, milestone:'WM-M-2 (Scorecard input)',
-    dateRange:'Wk 9-14 (Apr 13 - May 22)',
-    detail:'Expand to all work categories. PagerDuty integration for reactive work. Commitment tiers. Triage cadence evaluation. 4-week validation, max 2 cycles.' },
-  { id:'WM-OC-07', name:'Board Accuracy Validated', cat:'Iterative', start:12, end:16, deps:['WM-OC-06'], risk:'WM-R-14, WM-R-15', deliverables:3, milestone:'',
-    dateRange:'Wk 12-16 (May 4 - Jun 5) PAST DEADLINE',
-    detail:'Trust gate. Board freshness 90%+ sustained 3 consecutive weeks. No shadow spreadsheets. Stale item detection. Max 3 validation cycles. Extends ~1 week past end-of-May.' },
-  { id:'WM-OC-08', name:'Flow Metrics & Scorecard Operational', cat:'Baseline', start:10, end:14, deps:['WM-OC-06','WM-OC-07'], risk:'WM-R-16, WM-R-17', deliverables:3, milestone:'WM-M-2 (Scorecard operational)',
-    dateRange:'Wk 10-14 (Apr 20 - May 22)',
-    detail:'Can begin design during WM-OC-06 (should dep on WM-OC-07). Cycle time, throughput, queue depth. Reference estimates. Scorecard integration (Workstream D).' },
-  { id:'WM-OC-09', name:'Prioritization Drives Execution', cat:'Baseline', start:14, end:18, deps:['WM-OC-07','WM-OC-08'], risk:'WM-R-18, WM-R-19', deliverables:2, milestone:'',
-    dateRange:'Wk 14-18 (May 18 - Jun 19) PAST DEADLINE',
-    detail:'Capstone. System governs, not just informs. Priority changes reflected in team behavior. Side-door ratio declining. Flow retrospective process established. Extends ~3 weeks past end-of-May.' },
-];
+// WM Outcome Map — canonical data: wm-outcomes.json (#wm-outcomes-fallback mirrors for file://)
+let outcomes = [];
+let WM_MILESTONE_START = new Date(2026, 1, 16);
 
 function withToken(url) {
   var p = new URLSearchParams(window.location.search);
@@ -609,65 +783,6 @@ function withToken(url) {
   var sep = base.indexOf('?') >= 0 ? '&' : '?';
   return base + sep + 'token=' + encodeURIComponent(t) + hash;
 }
-
-// Build week markers with calendar dates
-const weekMarkersEl = document.getElementById('weekMarkers');
-const weekDates = [
-  'Feb 16','Feb 23','Mar 2','Mar 9','Mar 16','Mar 23','Mar 30',
-  'Apr 6','Apr 13','Apr 20','Apr 27','May 4','May 11','May 18','May 25',
-  'Jun 1','Jun 8','Jun 15'
-];
-for (let i = 0; i < 18; i++) {
-  const d = document.createElement('div');
-  d.className = 'week-marker';
-  d.textContent = weekDates[i];
-  if (i >= 15) d.style.color = '#E74C3C'; // past deadline
-  weekMarkersEl.appendChild(d);
-}
-
-// Build swim lanes
-const lanesEl = document.getElementById('swimLanes');
-const barClass = { 'Baseline': 'bar-baseline', 'Iterative': 'bar-iterative' };
-
-outcomes.forEach((oc, idx) => {
-  const lane = document.createElement('div');
-  lane.className = 'swim-lane';
-
-  const label = document.createElement('div');
-  label.className = 'lane-label';
-  label.innerHTML = `<span class="oc-id">${oc.id}</span>${oc.name}<div class="oc-cat">${oc.cat}${oc.cat === 'Iterative' ? ' (validation cycles)' : ''}</div>`;
-  lane.appendChild(label);
-
-  const track = document.createElement('div');
-  track.className = 'lane-track';
-
-  const bar = document.createElement('div');
-  bar.className = `outcome-bar ${barClass[oc.cat]}${oc.status === 'complete' ? ' bar-complete' : ''}`;
-  bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
-  bar.style.position = 'relative';
-  bar.dataset.idx = idx;
-  bar.dataset.ocId = oc.id;
-
-  const barText = document.createElement('span');
-  barText.textContent = oc.id;
-  bar.appendChild(barText);
-
-  const plusBtn = document.createElement('a');
-  plusBtn.className = 'plus-btn';
-  plusBtn.href = withToken(`WM-kanban.html#${oc.id}`);
-  plusBtn.textContent = '+';
-  plusBtn.title = `View ${oc.id} work items`;
-  plusBtn.addEventListener('click', (e) => e.stopPropagation());
-  bar.appendChild(plusBtn);
-
-  bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
-  bar.addEventListener('mousemove', (e) => moveTooltip(e));
-  bar.addEventListener('mouseleave', hideTooltip);
-
-  track.appendChild(bar);
-  lane.appendChild(track);
-  lanesEl.appendChild(lane);
-});
 
 /** Stalled/Blocked: live GitHub org project when PAT available (see Project-Plan/github-stall-live.js); else outcome-stall-overlay.json / #outcome-stall-overlay-fallback. */
 const STALL_OVERLAY_URL = '../../Project-Plan/outcome-stall-overlay.json';
@@ -748,18 +863,15 @@ function applyStallOverlayToOutcomeBars(data) {
   });
 }
 
-loadOutcomeStallOverlay().then(applyStallOverlayToOutcomeBars);
-
-/** Program milestones: ../../Project-Plan/project-milestones.json. Week 1 = Feb 16, 2026; 18-week grid. */
+/** Program milestones: ../../Capability-map/Milestones/project-milestones.json. Week 1 = Feb 16, 2026; 18-week grid. */
 const FALLBACK_PROJECT_MILESTONES = [
   { id: 'M2', date: '2026-03-27', label: 'M2 3/27' },
-  { id: 'M3', date: '2026-04-27', label: 'M3 4/27' },
+  { id: 'M3', date: '2026-05-28', label: 'M3 5/28' },
   { id: 'M4', date: '2026-10-27', label: 'M4 10/27' }
 ];
-const WM_MILESTONE_START = new Date(2026, 1, 16);
 const WM_MILESTONE_WEEKS = 18;
 function loadProjectMilestones() {
-  return fetch('../../Project-Plan/project-milestones.json')
+  return fetch('../../Capability-map/Milestones/project-milestones.json')
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(data => data.milestones || FALLBACK_PROJECT_MILESTONES)
     .catch(() => FALLBACK_PROJECT_MILESTONES);
@@ -784,9 +896,6 @@ function renderWMProjectMilestoneMarkers(milestones) {
   });
 }
 
-loadProjectMilestones().then(renderWMProjectMilestoneMarkers);
-
-/** Vertical "as of" line: last-modified time of this HTML file (document.lastModified). */
 function referenceDateFromDocument() {
   const d = new Date(document.lastModified);
   if (isNaN(d.getTime())) {
@@ -801,9 +910,8 @@ function formatAsOfTag(d) {
   return 'AS OF ' + d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
 }
 
-// As-of (last save) marker on 18-week grid from Feb 16, 2026
-const timelineEl = document.getElementById('timeline');
-(function() {
+function renderWmTodayAndDeadline(totalCol, deadlineCol) {
+  const timelineEl = document.getElementById('timeline');
   const ref = referenceDateFromDocument();
   const daysSince = (ref - WM_MILESTONE_START) / 86400000;
   const pct = Math.max(0, Math.min(100, (daysSince / (WM_MILESTONE_WEEKS * 7)) * 100));
@@ -815,19 +923,19 @@ const timelineEl = document.getElementById('timeline');
   todayTag.style.cssText = 'position:absolute;top:-22px;background:rgba(43,43,43,0.5);color:white;font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px;white-space:nowrap;z-index:5;left:' + left + ';transform:translateX(-50%)';
   todayTag.textContent = formatAsOfTag(ref);
   timelineEl.appendChild(todayTag);
-})();
 
-// Add end-of-May deadline line (Week 15 = column 15, which is ~83.3% through the 18-col grid)
-// The deadline falls at the end of Week 15 (May 29)
-const deadlineLine = document.createElement('div');
-deadlineLine.style.cssText = 'position:absolute;top:0;bottom:0;width:2px;background:#E74C3C;z-index:3;opacity:0.6;left:calc(200px + ((15 / 18) * (100% - 200px)))';
-timelineEl.appendChild(deadlineLine);
-const deadlineTag = document.createElement('div');
-deadlineTag.style.cssText = 'position:absolute;top:-22px;background:#E74C3C;color:white;font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px;white-space:nowrap;z-index:5;left:calc(200px + ((15 / 18) * (100% - 200px)));transform:translateX(-50%)';
-deadlineTag.textContent = 'END OF MAY DEADLINE';
-timelineEl.appendChild(deadlineTag);
+  const dc = deadlineCol != null ? deadlineCol : 15;
+  const tc = totalCol || 18;
+  const deadlineLeft = `calc(200px + ((${dc} / ${tc}) * (100% - 200px)))`;
+  const deadlineLine = document.createElement('div');
+  deadlineLine.style.cssText = 'position:absolute;top:0;bottom:0;width:2px;background:#E74C3C;z-index:3;opacity:0.6;left:' + deadlineLeft;
+  timelineEl.appendChild(deadlineLine);
+  const deadlineTag = document.createElement('div');
+  deadlineTag.style.cssText = 'position:absolute;top:-22px;background:#E74C3C;color:white;font-size:9px;font-weight:700;padding:2px 8px;border-radius:2px;white-space:nowrap;z-index:5;left:' + deadlineLeft + ';transform:translateX(-50%)';
+  deadlineTag.textContent = 'END OF MAY DEADLINE';
+  timelineEl.appendChild(deadlineTag);
+}
 
-// Tooltip
 const tooltipEl = document.getElementById('tooltip');
 
 function escapeHtml(s) {
@@ -882,104 +990,145 @@ function moveTooltip(e) {
 
 function hideTooltip() { tooltipEl.classList.remove('show'); }
 
-// Dependency graph (SVG)
-const svg = document.getElementById('depGraph');
-const nodes = {
-  'WM-OC-01': { x: 80,  y: 80,  color: '#3498DB' },
-  'WM-OC-02': { x: 220, y: 80,  color: '#3498DB' },
-  'WM-OC-03': { x: 380, y: 80,  color: '#3498DB' },
-  'WM-OC-04': { x: 380, y: 200, color: '#3498DB' },
-  'WM-OC-05': { x: 540, y: 140, color: '#76BE43' },
-  'WM-OC-06': { x: 680, y: 140, color: '#76BE43' },
-  'WM-OC-07': { x: 820, y: 140, color: '#76BE43' },
-  'WM-OC-08': { x: 820, y: 260, color: '#3498DB' },
-  'WM-OC-09': { x: 980, y: 200, color: '#3498DB' },
-};
+function renderWmDependencyGraph(flow) {
+  const svg = document.getElementById('depGraph');
+  if (!flow || !flow.nodes || !flow.edges) return;
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  const nodes = flow.nodes;
+  const edges = flow.edges;
+  const shortNames = flow.short_names || {};
+  const edgeColors = { must: '#2B2B2B', should: '#76BE43' };
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  ['must', 'should'].forEach(type => {
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker.setAttribute('id', `arrow-${type}`);
+    marker.setAttribute('viewBox', '0 0 10 10');
+    marker.setAttribute('refX', '28'); marker.setAttribute('refY', '5');
+    marker.setAttribute('markerWidth', '6'); marker.setAttribute('markerHeight', '6');
+    marker.setAttribute('orient', 'auto-start-reverse');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
+    path.setAttribute('fill', edgeColors[type]);
+    marker.appendChild(path);
+    defs.appendChild(marker);
+  });
+  svg.appendChild(defs);
+  edges.forEach(e => {
+    const f = nodes[e.from], t = nodes[e.to];
+    if (!f || !t) return;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', f.x); line.setAttribute('y1', f.y);
+    line.setAttribute('x2', t.x); line.setAttribute('y2', t.y);
+    line.setAttribute('stroke', edgeColors[e.type]);
+    line.setAttribute('stroke-width', e.type === 'must' ? '2' : '1.5');
+    line.setAttribute('opacity', '0.5');
+    line.setAttribute('marker-end', `url(#arrow-${e.type})`);
+    svg.appendChild(line);
+  });
+  Object.entries(nodes).forEach(([id, n]) => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y);
+    circle.setAttribute('r', '22');
+    circle.setAttribute('fill', n.color);
+    circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '2');
+    g.appendChild(circle);
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', n.x); text.setAttribute('y', n.y + 4);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('fill', 'white');
+    text.setAttribute('font-size', '9');
+    text.setAttribute('font-weight', '700');
+    text.setAttribute('font-family', 'Arial');
+    text.textContent = id;
+    g.appendChild(text);
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', n.x); label.setAttribute('y', n.y + 38);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('fill', '#555');
+    label.setAttribute('font-size', '8');
+    label.setAttribute('font-family', 'Arial');
+    label.textContent = shortNames[id] || id;
+    g.appendChild(label);
+    svg.appendChild(g);
+  });
+}
 
-const edges = [
-  { from: 'WM-OC-01', to: 'WM-OC-02', type: 'must' },
-  { from: 'WM-OC-02', to: 'WM-OC-03', type: 'must' },
-  { from: 'WM-OC-03', to: 'WM-OC-04', type: 'must' },
-  { from: 'WM-OC-03', to: 'WM-OC-05', type: 'must' },
-  { from: 'WM-OC-04', to: 'WM-OC-05', type: 'should' },
-  { from: 'WM-OC-05', to: 'WM-OC-06', type: 'must' },
-  { from: 'WM-OC-06', to: 'WM-OC-07', type: 'must' },
-  { from: 'WM-OC-06', to: 'WM-OC-08', type: 'should' },
-  { from: 'WM-OC-07', to: 'WM-OC-08', type: 'should' },
-  { from: 'WM-OC-07', to: 'WM-OC-09', type: 'must' },
-  { from: 'WM-OC-08', to: 'WM-OC-09', type: 'should' },
-];
+async function initWmOutcomeMapFromJson() {
+  const L = window.OutcomeMapFromJson;
+  const weekMarkersEl = document.getElementById('weekMarkers');
+  const lanesEl = document.getElementById('swimLanes');
+  if (!L) {
+    lanesEl.textContent = 'Missing outcome-map-from-json.js';
+    return;
+  }
+  let data;
+  try {
+    data = await L.fetchJsonPreferFile(new URL('wm-outcomes.json', document.URL).href, 'wm-outcomes-fallback');
+  } catch (e) {
+    console.error(e);
+    lanesEl.innerHTML = '<div style="padding:20px;color:#c0392b">Could not load wm-outcomes.json. Use a local HTTP server or update #wm-outcomes-fallback in this file.</div>';
+    return;
+  }
+  const wmPayload = L.buildWmPayload(data);
+  outcomes = wmPayload.outcomes;
+  const anchor = (data.outcome_map && data.outcome_map.week_1_anchor) || '2026-02-16';
+  WM_MILESTONE_START = L.parseAnchorDate(anchor);
 
-const edgeColors = { must: '#2B2B2B', should: '#76BE43' };
+  weekMarkersEl.innerHTML = '';
+  const labels = wmPayload.columnLabels;
+  const deadlineCol = wmPayload.deadlineColumn != null ? wmPayload.deadlineColumn : 15;
+  const totalCol = labels.length || 18;
+  for (let i = 0; i < labels.length; i++) {
+    const d = document.createElement('div');
+    d.className = 'week-marker';
+    d.textContent = labels[i];
+    if (i >= deadlineCol - 1) d.style.color = '#E74C3C';
+    weekMarkersEl.appendChild(d);
+  }
 
-// Arrowhead defs
-const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-['must','should'].forEach(type => {
-  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-  marker.setAttribute('id', `arrow-${type}`);
-  marker.setAttribute('viewBox', '0 0 10 10');
-  marker.setAttribute('refX', '28'); marker.setAttribute('refY', '5');
-  marker.setAttribute('markerWidth', '6'); marker.setAttribute('markerHeight', '6');
-  marker.setAttribute('orient', 'auto-start-reverse');
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
-  path.setAttribute('fill', edgeColors[type]);
-  marker.appendChild(path);
-  defs.appendChild(marker);
-});
-svg.appendChild(defs);
+  lanesEl.innerHTML = '';
+  const barClass = { Baseline: 'bar-baseline', Iterative: 'bar-iterative' };
+  outcomes.forEach((oc, idx) => {
+    const lane = document.createElement('div');
+    lane.className = 'swim-lane';
+    const label = document.createElement('div');
+    label.className = 'lane-label';
+    label.innerHTML = `<span class="oc-id">${oc.id}</span>${oc.name}<div class="oc-cat">${oc.cat}${oc.cat === 'Iterative' ? ' (validation cycles)' : ''}</div>`;
+    lane.appendChild(label);
+    const track = document.createElement('div');
+    track.className = 'lane-track';
+    const bar = document.createElement('div');
+    bar.className = `outcome-bar ${barClass[oc.cat]}${oc.status === 'complete' ? ' bar-complete' : ''}`;
+    bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
+    bar.style.position = 'relative';
+    bar.dataset.idx = idx;
+    bar.dataset.ocId = oc.id;
+    const barText = document.createElement('span');
+    barText.textContent = oc.id;
+    bar.appendChild(barText);
+    const plusBtn = document.createElement('a');
+    plusBtn.className = 'plus-btn';
+    plusBtn.href = withToken(`WM-kanban.html#${oc.id}`);
+    plusBtn.textContent = '+';
+    plusBtn.title = `View ${oc.id} work items`;
+    plusBtn.addEventListener('click', (e) => e.stopPropagation());
+    bar.appendChild(plusBtn);
+    bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
+    bar.addEventListener('mousemove', (e) => moveTooltip(e));
+    bar.addEventListener('mouseleave', hideTooltip);
+    track.appendChild(bar);
+    lane.appendChild(track);
+    lanesEl.appendChild(lane);
+  });
 
-// Draw edges
-edges.forEach(e => {
-  const f = nodes[e.from], t = nodes[e.to];
-  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  line.setAttribute('x1', f.x); line.setAttribute('y1', f.y);
-  line.setAttribute('x2', t.x); line.setAttribute('y2', t.y);
-  line.setAttribute('stroke', edgeColors[e.type]);
-  line.setAttribute('stroke-width', e.type === 'must' ? '2' : '1.5');
-  line.setAttribute('opacity', '0.5');
-  line.setAttribute('marker-end', `url(#arrow-${e.type})`);
-  svg.appendChild(line);
-});
+  loadOutcomeStallOverlay().then(applyStallOverlayToOutcomeBars);
+  loadProjectMilestones().then(renderWMProjectMilestoneMarkers);
+  renderWmTodayAndDeadline(totalCol, deadlineCol);
+  renderWmDependencyGraph(wmPayload.dependencyFlow);
+}
 
-// Draw nodes
-const shortNames = {
-  'WM-OC-01':'Discovery','WM-OC-02':'Operating Model','WM-OC-03':'Tool Config',
-  'WM-OC-04':'Queue Disposition','WM-OC-05':'Initial Adoption','WM-OC-06':'Full Coverage',
-  'WM-OC-07':'Board Accuracy','WM-OC-08':'Scorecard','WM-OC-09':'Prioritization'
-};
-
-Object.entries(nodes).forEach(([id, n]) => {
-  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-
-  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y);
-  circle.setAttribute('r', '22');
-  circle.setAttribute('fill', n.color);
-  circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '2');
-  g.appendChild(circle);
-
-  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  text.setAttribute('x', n.x); text.setAttribute('y', n.y + 4);
-  text.setAttribute('text-anchor', 'middle');
-  text.setAttribute('fill', 'white');
-  text.setAttribute('font-size', '9');
-  text.setAttribute('font-weight', '700');
-  text.setAttribute('font-family', 'Arial');
-  text.textContent = id.replace('WM-OC-0','WM-OC-');
-  g.appendChild(text);
-
-  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  label.setAttribute('x', n.x); label.setAttribute('y', n.y + 38);
-  label.setAttribute('text-anchor', 'middle');
-  label.setAttribute('fill', '#555');
-  label.setAttribute('font-size', '8');
-  label.setAttribute('font-family', 'Arial');
-  label.textContent = shortNames[id] || id;
-  g.appendChild(label);
-
-  svg.appendChild(g);
-});
+initWmOutcomeMapFromJson();
 </script>
 <script>
 /* WM decision tabs — WM-WBS.md §6 */

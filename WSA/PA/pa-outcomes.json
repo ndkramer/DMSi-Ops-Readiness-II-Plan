@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "capability": "PA",
   "wbs_markdown": "PA-WBS.md",
   "jira": {
@@ -8,68 +8,241 @@
     "poc_story_summary_prefix": "[POC]",
     "legacy_superseded_epic": "WSA-36",
     "superseding_epic_for_legacy": "WSA-3268",
-    "notes": "PA-OC-00 uses epic WSA-3758 (not 3267+0). PA-OC-01..11 use WSA-(3267+n) for n=1..11 => WSA-3268..WSA-3278. dependency_edges[] is canonical for PA-Outcome-map.html Dependency Flow; edit pa-outcomes.json first, then refresh embedded fallback in PA-Outcome-map.html if present."
+    "notes": "PA-OC-00 uses epic WSA-3758 (not 3267+0). PA-OC-01..11 use WSA-(3267+n) for n=1..11 => WSA-3268..WSA-3278. dependency_edges[] is canonical for PA-Outcome-map.html Dependency Flow; outcome_map + per-outcome timeline[] drive the Implementation Timeline. Edit pa-outcomes.json first, then refresh embedded #pa-dependency-edges-fallback when edge text changes."
   },
   "outcomes": [
     {
       "id": "PA-OC-00",
       "jira_epic_key": "WSA-3758",
-      "title": "[PA-OC-00] Infrastructure & Architecture POC"
+      "title": "[PA-OC-00] Infrastructure & Architecture POC",
+      "timeline": {
+        "start": 1,
+        "end": 2,
+        "cat": "POC",
+        "deps": [],
+        "risk": "",
+        "deliverables": 1,
+        "milestone": "",
+        "map_title": "Infrastructure & Architecture POC",
+        "detail": "First outcome (weeks 1–2): prove infrastructure and architecture—how the pipeline will run, connect, and be operated—plus approach, tooling, access, and velocity. Jira Epic WSA-3758; all [POC] Stories under this Epic. Must complete before PA-OC-01. PA-WBS v1.6."
+      }
     },
     {
       "id": "PA-OC-01",
       "jira_epic_key": "WSA-3268",
-      "title": "[PA-OC-01] Foundation Access and Security Baseline Complete"
+      "title": "[PA-OC-01] Foundation Access and Security Baseline Complete",
+      "timeline": {
+        "start": 3,
+        "end": 5,
+        "cat": "Baseline",
+        "deps": [
+          "PA-OC-00"
+        ],
+        "risk": "PA-R-01",
+        "deliverables": 6,
+        "milestone": "M3",
+        "map_title": "Foundation Access and Security Baseline Complete",
+        "detail": "Environment access, deployment process documentation, security baseline, data classification, access governance, network security. Jira Epic WSA-3268 ([PA-OC-01] Foundation Access and Security Baseline Complete). Legacy WSA-36 superseded."
+      }
     },
     {
       "id": "PA-OC-02",
       "jira_epic_key": "WSA-3269",
-      "title": "Configuration Inventory and Credential Mapping Complete"
+      "title": "Configuration Inventory and Credential Mapping Complete",
+      "timeline": {
+        "start": 6,
+        "end": 8,
+        "cat": "Baseline",
+        "deps": [
+          "PA-OC-01"
+        ],
+        "risk": "PA-R-S1, PA-R-S2",
+        "deliverables": 3,
+        "milestone": "M3",
+        "map_title": "Config Inventory & Credentials",
+        "detail": "NGINX config inventory, broader landscape assessment, credential and secret management plan."
+      }
     },
     {
       "id": "PA-OC-03",
       "jira_epic_key": "WSA-3270",
-      "title": "Migration Path and Runner Infrastructure Defined"
+      "title": "Migration Path and Runner Infrastructure Defined",
+      "timeline": {
+        "start": 9,
+        "end": 11,
+        "cat": "Baseline",
+        "deps": [
+          "PA-OC-02"
+        ],
+        "risk": "PA-R-04, PA-R-X5",
+        "deliverables": 3,
+        "milestone": "M3",
+        "map_title": "Migration Path & Runner Infra",
+        "detail": "Export method decisions, repo structure design, GitHub runner POC with Ansible feasibility validation."
+      }
     },
     {
       "id": "PA-OC-04",
       "jira_epic_key": "WSA-3271",
-      "title": "Configurations in Version Control"
+      "title": "Configurations in Version Control",
+      "timeline": {
+        "start": 12,
+        "end": 16,
+        "cat": "Baseline",
+        "deps": [
+          "PA-OC-03"
+        ],
+        "risk": "PA-R-X7",
+        "deliverables": 2,
+        "milestone": "M4",
+        "map_title": "Configs in Version Control",
+        "detail": "Config migration from share drive to GitHub. CODEOWNERS, branch protection, CAB approval for production configs."
+      }
     },
     {
       "id": "PA-OC-05",
       "jira_epic_key": "WSA-3272",
-      "title": "Build Pipeline Operational"
+      "title": "Build Pipeline Operational",
+      "timeline": {
+        "start": 17,
+        "end": 19,
+        "cat": "Baseline",
+        "deps": [
+          "PA-OC-04"
+        ],
+        "risk": "PA-R-06",
+        "deliverables": 2,
+        "milestone": "M4",
+        "map_title": "Build Pipeline Operational",
+        "detail": "GitHub Actions workflow for NGINX config build. Linting, schema validation, templating, artifact packaging. ~1 FTE allocation."
+      }
     },
     {
       "id": "PA-OC-06",
       "jira_epic_key": "WSA-3273",
-      "title": "Deploy Pipeline Operational"
+      "title": "Deploy Pipeline Operational",
+      "timeline": {
+        "start": 20,
+        "end": 23,
+        "cat": "Baseline",
+        "deps": [
+          "PA-OC-03",
+          "PA-OC-05"
+        ],
+        "risk": "PA-R-X4",
+        "deliverables": 2,
+        "milestone": "M4",
+        "map_title": "Deploy Pipeline Operational",
+        "detail": "Ansible-based deployment via runner. Pre-deploy validation, health checks, rollback. Starts after PA-OC-05 frees capacity."
+      }
     },
     {
       "id": "PA-OC-07",
       "jira_epic_key": "WSA-3274",
-      "title": "Drift Detection Operational"
+      "title": "Drift Detection Operational",
+      "timeline": {
+        "start": 17,
+        "end": 21,
+        "cat": "Baseline",
+        "deps": [
+          "PA-OC-04"
+        ],
+        "risk": "PA-R-07",
+        "deliverables": 2,
+        "milestone": "M4",
+        "map_title": "Drift Detection Operational",
+        "detail": "PARALLEL with PA-OC-05. Scheduled drift comparison, alerting, severity thresholds. Runs at ~0.5 FTE while PA-OC-05 uses ~1 FTE."
+      }
     },
     {
       "id": "PA-OC-08",
       "jira_epic_key": "WSA-3275",
-      "title": "Pipeline Reliability Validated"
+      "title": "Pipeline Reliability Validated",
+      "timeline": {
+        "start": 24,
+        "end": 28,
+        "cat": "Iterative",
+        "deps": [
+          "PA-OC-05",
+          "PA-OC-06",
+          "PA-OC-07"
+        ],
+        "risk": "PA-R-06, PA-R-X1",
+        "deliverables": 4,
+        "milestone": "M4",
+        "map_title": "Pipeline Reliability Validated",
+        "detail": "2-week measurement window (rolling): 90%+ success rate for all 3 pipelines. Max 3 cycles. Fallback: trigger PA-OC-10. Timeline allows time for fixes between cycles."
+      }
     },
     {
       "id": "PA-OC-09",
       "jira_epic_key": "WSA-3276",
-      "title": "Config-as-Code Enforced"
+      "title": "Config-as-Code Enforced",
+      "timeline": {
+        "start": 29,
+        "end": 33,
+        "cat": "Iterative",
+        "deps": [
+          "PA-OC-08"
+        ],
+        "risk": "PA-R-08",
+        "deliverables": 4,
+        "milestone": "M5",
+        "map_title": "Config-as-Code Enforced",
+        "detail": "4-week enforcement period per PA-WBS. No manual changes allowed. Team training, runbooks, IRP update. Max 2 cycles."
+      }
     },
     {
       "id": "PA-OC-10",
       "jira_epic_key": "WSA-3277",
-      "title": "Pipeline Fallback Activated"
+      "title": "Pipeline Fallback Activated",
+      "timeline": {
+        "start": 0,
+        "end": 0,
+        "cat": "Conditional",
+        "deps": [],
+        "risk": "",
+        "deliverables": 2,
+        "milestone": "",
+        "dates_label": "Trigger-activated",
+        "map_title": "Pipeline Fallback",
+        "placeholder_text": "Trigger: reliability failure after max iterations",
+        "detail": "CONDITIONAL: Triggers if PA-OC-08 reliability fails after 3 cycles. Manual processes maintained; revised plan to Hilltop.",
+        "conditional": {
+          "trigger": "Reliability failure after max iterations",
+          "what_triggers": "The reliability validation (PA-OC-08) fails to reach 90%+ success rate after the maximum 3 iteration cycles. The automated pipeline cannot meet the reliability target.",
+          "what_work": "Building a manual rollback/recovery process so the team is not stuck if the automated pipeline breaks. Documenting fallback procedures, defining when to use manual vs. automated paths, and presenting a revised plan to Hilltop.",
+          "what_outcome": "A documented, tested fallback procedure to safely revert changes without relying on the pipeline. Manual processes are maintained as a safety net until pipeline issues are resolved.",
+          "note": "This is a safety net, not a failure. The constraint model has no equivalent -- it just says \"S4 not complete.\" The outcome model provides an explicit path forward."
+        }
+      }
     },
     {
       "id": "PA-OC-11",
       "jira_epic_key": "WSA-3278",
-      "title": "Pipeline Pattern Replication"
+      "title": "Pipeline Pattern Replication",
+      "timeline": {
+        "start": 0,
+        "end": 0,
+        "cat": "Conditional",
+        "deps": [
+          "PA-OC-09"
+        ],
+        "risk": "",
+        "deliverables": 3,
+        "milestone": "M6",
+        "dates_label": "Trigger-activated",
+        "map_title": "Pipeline Pattern Replication",
+        "placeholder_text": "Trigger: NGINX POC validates framework + leadership decision",
+        "detail": "CONDITIONAL: Triggers when PA-OC-09 completes and leadership decides to extend the proven pipeline framework to other config types (PASOE, customer runtime, infrastructure configs). Not application code.",
+        "conditional": {
+          "trigger": "NGINX POC validates framework + leadership decision",
+          "what_triggers": "The NGINX proof-of-concept proves the full pipeline framework works end-to-end -- configs in GitHub, build/deploy/drift pipelines operational, reliability validated at 90%+, and config-as-code enforced. Leadership then decides whether to replicate this pattern for other configuration types.",
+          "what_work": "Applying the proven pipeline framework (GitHub Actions workflows, runner strategy, drift detection, enforcement) to additional configuration types beyond NGINX. Each new config type follows the same pattern with config-specific adaptations. This covers PASOE configs, customer runtime configs, infrastructure configs, etc.",
+          "what_outcome": "Additional config types have automated pipelines following the same framework proven by the NGINX POC. A replication playbook is documented so the pattern can be applied to future config types without starting from scratch.",
+          "note": "This is about replicating the pipeline pattern to other configs, NOT about application code. Application deployment (Caley's domain) is explicitly out of scope for this engagement."
+        }
+      }
     }
   ],
   "dependency_edges": [
@@ -403,5 +576,10 @@
         "Out of scope reminder: application deployment (Caley) remains separate (PA-D-14 resolved)."
       ]
     }
-  ]
+  ],
+  "outcome_map": {
+    "total_weeks": 34,
+    "week_1_anchor": "2026-03-16",
+    "notes": "Week-to-date mapping: week 1 starts 3/16/2026 (same anchor as milestone math on PA-Outcome-map.html)."
+  }
 }

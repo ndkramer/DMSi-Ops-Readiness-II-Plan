@@ -685,6 +685,254 @@
 </script>
 <script src="../../Project-Plan/github-stall-live.js"></script>
 
+<script src="../../Project-Plan/outcome-map-from-json.js"></script>
+<script type="application/json" id="vi-outcomes-fallback">
+{
+  "schema_version": 3,
+  "capability": "VI",
+  "wbs_markdown": "VI-WBS.md",
+  "jira": {
+    "capability_issue_key": "WSA-120",
+    "notes": "Timeline rows in outcomes[] are canonical for VI-WSB-Outcome-Map.html; edit this file first, then refresh #vi-outcomes-fallback in the HTML. Populate jira_epic_key per outcome when VI-WBS.md §9 lists stable Epic keys. Optional dependency_edges[]: same object shape as PA-Outcome-map.html depEdges."
+  },
+  "outcome_map": {
+    "layout": "half_month",
+    "total_columns": 16,
+    "column_labels": [
+      "Mar 1",
+      "Mar 15",
+      "Apr 1",
+      "Apr 15",
+      "May 1",
+      "May 15",
+      "Jun 1",
+      "Jun 15",
+      "Jul 1",
+      "Jul 15",
+      "Aug 1",
+      "Aug 15",
+      "Sep 1",
+      "Sep 15",
+      "Oct 1",
+      "Oct 15"
+    ],
+    "track_start": "2026-03-01",
+    "track_end": "2026-11-01"
+  },
+  "outcomes": [
+    {
+      "id": "VI-OC-16",
+      "title": "PagerDuty AIOps Deployed & Validated",
+      "start": 1,
+      "end": 5,
+      "cat": "Iterative",
+      "deps": [],
+      "risk": "VI-R-PD1, VI-R-PD2",
+      "deliverables": 7,
+      "milestone": "",
+      "date_range": "Mar 1 - May 8 (Active)",
+      "detail": "ALREADY UNDERWAY. Phase 1-2 complete (initial install configured). Phase 3 + 30-day ML learning + tuning + DMSi handover. Independent of Dynatrace Apr 1 start."
+    },
+    {
+      "id": "VI-OC-01",
+      "title": "Foundation Planning & Architecture",
+      "start": 3,
+      "end": 4,
+      "cat": "Baseline",
+      "deps": [],
+      "risk": "",
+      "deliverables": 6,
+      "milestone": "",
+      "date_range": "Vendor POC active; plan Apr 1 - Apr 25",
+      "detail": "CURRENT: POC with Dynatrace (tenant/scope). THEN: environment inventory, architecture design, integration architecture, A2W telemetry strategy, script rationalization, Elastic log mapping. 1.5 FTE conservative: 4 weeks on plan."
+    },
+    {
+      "id": "VI-OC-02",
+      "title": "Telemetry Strategy & Licensing",
+      "start": 5,
+      "end": 6,
+      "cat": "Baseline",
+      "deps": ["VI-OC-01"],
+      "risk": "VI-R-X6",
+      "deliverables": 6,
+      "milestone": "",
+      "date_range": "Apr 28 - May 23",
+      "detail": "ABL telemetry eval, OpenTelemetry feasibility, log retention review, licensing procurement (long pole), RBAC design. 1.5 FTE conservative: 4 weeks."
+    },
+    {
+      "id": "VI-OC-03",
+      "title": "Platform & Integrations Deployed",
+      "start": 6,
+      "end": 7,
+      "cat": "Baseline",
+      "deps": ["VI-OC-02"],
+      "risk": "VI-R-X3",
+      "deliverables": 4,
+      "milestone": "",
+      "date_range": "May 26 - Jun 6",
+      "detail": "Dynatrace tenant setup, ActiveGate deployment, PagerDuty integration, status page integration. 1.5 FTE conservative: 2 weeks."
+    },
+    {
+      "id": "VI-OC-04",
+      "title": "Host Fleet Instrumented",
+      "start": 7,
+      "end": 8,
+      "cat": "Baseline",
+      "deps": ["VI-OC-03"],
+      "risk": "VI-R-05, VI-R-06",
+      "deliverables": 2,
+      "milestone": "",
+      "date_range": "Jun 8 - Jun 27",
+      "detail": "OneAgent deployment across all hosts. PASOE/OpenEdge monitoring. Maintenance windows required. 1.5 FTE conservative: 3 weeks (window scheduling adds risk)."
+    },
+    {
+      "id": "VI-OC-05",
+      "title": "Infrastructure Visibility Validated",
+      "start": 8,
+      "end": 11,
+      "cat": "Iterative",
+      "deps": ["VI-OC-04"],
+      "risk": "VI-R-03",
+      "deliverables": 3,
+      "milestone": "M2",
+      "date_range": "Jun 30 - Aug 8",
+      "detail": "Dashboard build (2 wks) + 30-day validation: Dynatrace >= CheckMK. Coverage >= 95%. Max 2 cycles. Fallback: trigger VI-OC-15."
+    },
+    {
+      "id": "VI-OC-06",
+      "title": "Log Management Migrated",
+      "start": 7,
+      "end": 11,
+      "cat": "Iterative",
+      "deps": ["VI-OC-03"],
+      "risk": "VI-R-10, VI-R-11",
+      "deliverables": 6,
+      "milestone": "",
+      "date_range": "Jun 8 - Aug 8",
+      "detail": "PARALLEL with VI-OC-04/VI-OC-05. Log activation, ingestion, parsing, Elastic alert migration + 30-day parallel validation. 9 weeks at shared FTE."
+    },
+    {
+      "id": "VI-OC-07",
+      "title": "External Availability Monitoring",
+      "start": 8,
+      "end": 9,
+      "cat": "Baseline",
+      "deps": ["VI-OC-03"],
+      "risk": "VI-R-13",
+      "deliverables": 9,
+      "milestone": "M3",
+      "date_range": "Jun 15 - Jul 11",
+      "detail": "PARALLEL with VI-OC-04/VI-OC-05. Synthetic monitors, MTTD baseline, network path monitoring, NetApp ONTAP. 4 weeks at shared FTE."
+    },
+    {
+      "id": "VI-OC-08",
+      "title": "Application Telemetry Operational",
+      "start": 10,
+      "end": 11,
+      "cat": "Iterative",
+      "deps": ["VI-OC-05"],
+      "risk": "VI-R-14, VI-R-15",
+      "deliverables": 6,
+      "milestone": "M5",
+      "date_range": "Jul 20 - Aug 15",
+      "detail": "Starts during VI-OC-05 validation (should dep). APM scope, PASOE service detection, custom metrics, OpenTelemetry eval. HIGHEST RISK: dev team capacity."
+    },
+    {
+      "id": "VI-OC-09",
+      "title": "Baselines & Data Quality Validated",
+      "start": 12,
+      "end": 13,
+      "cat": "Iterative",
+      "deps": ["VI-OC-05", "VI-OC-07", "VI-OC-08"],
+      "risk": "",
+      "deliverables": 7,
+      "milestone": "",
+      "date_range": "Aug 18 - Sep 5",
+      "detail": "Infrastructure, application, and synthetic baselines. SLO definitions. PagerDuty AIOps confirmation. Engineering review. 3 weeks."
+    },
+    {
+      "id": "VI-OC-10",
+      "title": "Alerting Optimized & Dashboards Live",
+      "start": 13,
+      "end": 14,
+      "cat": "Iterative",
+      "deps": ["VI-OC-09", "VI-OC-16"],
+      "risk": "VI-R-07",
+      "deliverables": 8,
+      "milestone": "M4",
+      "date_range": "Sep 8 - Sep 26",
+      "detail": "Alert audit and tuning (<50/week target). PagerDuty AIOps integration. Persona dashboards (engineering, support, leadership). Trust validation. 3 weeks."
+    },
+    {
+      "id": "VI-OC-11",
+      "title": "Proactive Operations Validated",
+      "start": 14,
+      "end": 16,
+      "cat": "Iterative",
+      "deps": ["VI-OC-10", "VI-OC-07"],
+      "risk": "",
+      "deliverables": 8,
+      "milestone": "M5",
+      "date_range": "Sep 29 - Oct 31",
+      "detail": "MTTD <= 10 min sustained 4 weeks. Status page validated. Error budget policy. Runbook + knowledge transfer. M5 evidence package. 5 weeks (includes 4-week measurement)."
+    },
+    {
+      "id": "VI-OC-12",
+      "title": "Legacy Systems Decommissioned",
+      "start": 11,
+      "end": 12,
+      "cat": "Baseline",
+      "deps": ["VI-OC-05", "VI-OC-06"],
+      "risk": "",
+      "deliverables": 2,
+      "milestone": "",
+      "date_range": "Aug 11 - Aug 29",
+      "detail": "Elastic shutdown (TYPE 1 decision). CheckMK decommission evaluation. Gates on BOTH VI-OC-05 and VI-OC-06 validation. 3 weeks."
+    },
+    {
+      "id": "VI-OC-13",
+      "title": "A2W Monitoring Readiness",
+      "start": 14,
+      "end": 16,
+      "cat": "Conditional",
+      "deps": ["VI-OC-03"],
+      "risk": "VI-R-X4",
+      "deliverables": 2,
+      "milestone": "",
+      "date_range": "Conditional: A2W launch + 6 wk lead",
+      "detail": "CONDITIONAL: Triggers when A2W launch date confirmed. Synthetic test activation + RUM deployment. 6-week lead time needed."
+    },
+    {
+      "id": "VI-OC-14",
+      "title": "Predictive Ops & Advanced",
+      "start": 16,
+      "end": 16,
+      "cat": "Conditional",
+      "deps": ["VI-OC-11"],
+      "risk": "",
+      "deliverables": 4,
+      "milestone": "M7",
+      "date_range": "Nov 2026+",
+      "detail": "CONDITIONAL: Triggers after VI-OC-11 complete. DORA metrics, SLI-driven prioritization, customer experience correlation."
+    },
+    {
+      "id": "VI-OC-15",
+      "title": "Legacy Fallback",
+      "start": 0,
+      "end": 0,
+      "cat": "Conditional",
+      "deps": [],
+      "risk": "",
+      "deliverables": 2,
+      "milestone": "",
+      "date_range": "Conditional: validation failure",
+      "detail": "CONDITIONAL: Triggers if VI-OC-05 or VI-OC-09 validation fails after max iterations. Legacy systems maintained; revised plan to Hilltop."
+    }
+  ],
+  "dependency_edges": []
+}
+</script>
+
 <script>
 function withToken(url) {
   var p = new URLSearchParams(window.location.search);
@@ -696,65 +944,12 @@ function withToken(url) {
   var sep = base.indexOf('?') >= 0 ? '&' : '?';
   return base + sep + 'token=' + encodeURIComponent(t) + hash;
 }
-// Outcome data
-// Grid columns = half-month periods: Mar1, Mar15, Apr1, Apr15, May1, May15, Jun1, Jun15, Jul1, Jul15, Aug1, Aug15, Sep1, Sep15, Oct1, Oct15
-// Assumptions: Dynatrace vendor POC in progress; timeline below still anchors full rollout from Apr 1 (adjust after POC). PD AIOps started Mar 1 (install complete). 1.5 FTE. Conservative estimates.
-const outcomes = [
-  { id:'VI-OC-16', name:'PagerDuty AIOps Deployed & Validated', cat:'Iterative', start:1, end:5, deps:[], risk:'VI-R-PD1, VI-R-PD2', deliverables:7, milestone:'',
-    dateRange:'Mar 1 - May 8 (Active)',
-    detail:'ALREADY UNDERWAY. Phase 1-2 complete (initial install configured). Phase 3 + 30-day ML learning + tuning + DMSi handover. Independent of Dynatrace Apr 1 start.' },
-  { id:'VI-OC-01', name:'Foundation Planning & Architecture', cat:'Baseline', start:3, end:4, deps:[], risk:'', deliverables:6, milestone:'',
-    dateRange:'Vendor POC active; plan Apr 1 - Apr 25',
-    detail:'CURRENT: POC with Dynatrace (tenant/scope). THEN: environment inventory, architecture design, integration architecture, A2W telemetry strategy, script rationalization, Elastic log mapping. 1.5 FTE conservative: 4 weeks on plan.' },
-  { id:'VI-OC-02', name:'Telemetry Strategy & Licensing', cat:'Baseline', start:5, end:6, deps:['VI-OC-01'], risk:'VI-R-X6', deliverables:6, milestone:'',
-    dateRange:'Apr 28 - May 23',
-    detail:'ABL telemetry eval, OpenTelemetry feasibility, log retention review, licensing procurement (long pole), RBAC design. 1.5 FTE conservative: 4 weeks.' },
-  { id:'VI-OC-03', name:'Platform & Integrations Deployed', cat:'Baseline', start:6, end:7, deps:['VI-OC-02'], risk:'VI-R-X3', deliverables:4, milestone:'',
-    dateRange:'May 26 - Jun 6',
-    detail:'Dynatrace tenant setup, ActiveGate deployment, PagerDuty integration, status page integration. 1.5 FTE conservative: 2 weeks.' },
-  { id:'VI-OC-04', name:'Host Fleet Instrumented', cat:'Baseline', start:7, end:8, deps:['VI-OC-03'], risk:'VI-R-05, VI-R-06', deliverables:2, milestone:'',
-    dateRange:'Jun 8 - Jun 27',
-    detail:'OneAgent deployment across all hosts. PASOE/OpenEdge monitoring. Maintenance windows required. 1.5 FTE conservative: 3 weeks (window scheduling adds risk).' },
-  { id:'VI-OC-05', name:'Infrastructure Visibility Validated', cat:'Iterative', start:8, end:11, deps:['VI-OC-04'], risk:'VI-R-03', deliverables:3, milestone:'M2',
-    dateRange:'Jun 30 - Aug 8',
-    detail:'Dashboard build (2 wks) + 30-day validation: Dynatrace >= CheckMK. Coverage >= 95%. Max 2 cycles. Fallback: trigger VI-OC-15.' },
-  { id:'VI-OC-06', name:'Log Management Migrated', cat:'Iterative', start:7, end:11, deps:['VI-OC-03'], risk:'VI-R-10, VI-R-11', deliverables:6, milestone:'',
-    dateRange:'Jun 8 - Aug 8',
-    detail:'PARALLEL with VI-OC-04/VI-OC-05. Log activation, ingestion, parsing, Elastic alert migration + 30-day parallel validation. 9 weeks at shared FTE.' },
-  { id:'VI-OC-07', name:'External Availability Monitoring', cat:'Baseline', start:8, end:9, deps:['VI-OC-03'], risk:'VI-R-13', deliverables:9, milestone:'M3',
-    dateRange:'Jun 15 - Jul 11',
-    detail:'PARALLEL with VI-OC-04/VI-OC-05. Synthetic monitors, MTTD baseline, network path monitoring, NetApp ONTAP. 4 weeks at shared FTE.' },
-  { id:'VI-OC-08', name:'Application Telemetry Operational', cat:'Iterative', start:10, end:11, deps:['VI-OC-05'], risk:'VI-R-14, VI-R-15', deliverables:6, milestone:'M5',
-    dateRange:'Jul 20 - Aug 15',
-    detail:'Starts during VI-OC-05 validation (should dep). APM scope, PASOE service detection, custom metrics, OpenTelemetry eval. HIGHEST RISK: dev team capacity.' },
-  { id:'VI-OC-09', name:'Baselines & Data Quality Validated', cat:'Iterative', start:12, end:13, deps:['VI-OC-05','VI-OC-07','VI-OC-08'], risk:'', deliverables:7, milestone:'',
-    dateRange:'Aug 18 - Sep 5',
-    detail:'Infrastructure, application, and synthetic baselines. SLO definitions. PagerDuty AIOps confirmation. Engineering review. 3 weeks.' },
-  { id:'VI-OC-10', name:'Alerting Optimized & Dashboards Live', cat:'Iterative', start:13, end:14, deps:['VI-OC-09','VI-OC-16'], risk:'VI-R-07', deliverables:8, milestone:'M4',
-    dateRange:'Sep 8 - Sep 26',
-    detail:'Alert audit and tuning (<50/week target). PagerDuty AIOps integration. Persona dashboards (engineering, support, leadership). Trust validation. 3 weeks.' },
-  { id:'VI-OC-11', name:'Proactive Operations Validated', cat:'Iterative', start:14, end:16, deps:['VI-OC-10','VI-OC-07'], risk:'', deliverables:8, milestone:'M5',
-    dateRange:'Sep 29 - Oct 31',
-    detail:'MTTD <= 10 min sustained 4 weeks. Status page validated. Error budget policy. Runbook + knowledge transfer. M5 evidence package. 5 weeks (includes 4-week measurement).' },
-  { id:'VI-OC-12', name:'Legacy Systems Decommissioned', cat:'Baseline', start:11, end:12, deps:['VI-OC-05','VI-OC-06'], risk:'', deliverables:2, milestone:'',
-    dateRange:'Aug 11 - Aug 29',
-    detail:'Elastic shutdown (TYPE 1 decision). CheckMK decommission evaluation. Gates on BOTH VI-OC-05 and VI-OC-06 validation. 3 weeks.' },
-  { id:'VI-OC-13', name:'A2W Monitoring Readiness', cat:'Conditional', start:14, end:16, deps:['VI-OC-03'], risk:'VI-R-X4', deliverables:2, milestone:'',
-    dateRange:'Conditional: A2W launch + 6 wk lead',
-    detail:'CONDITIONAL: Triggers when A2W launch date confirmed. Synthetic test activation + RUM deployment. 6-week lead time needed.' },
-  { id:'VI-OC-14', name:'Predictive Ops & Advanced', cat:'Conditional', start:16, end:16, deps:['VI-OC-11'], risk:'', deliverables:4, milestone:'M7',
-    dateRange:'Nov 2026+',
-    detail:'CONDITIONAL: Triggers after VI-OC-11 complete. DORA metrics, SLI-driven prioritization, customer experience correlation.' },
-  { id:'VI-OC-15', name:'Legacy Fallback', cat:'Conditional', start:0, end:0, deps:[], risk:'', deliverables:2, milestone:'',
-    dateRange:'Conditional: validation failure',
-    detail:'CONDITIONAL: Triggers if VI-OC-05 or VI-OC-09 validation fails after max iterations. Legacy systems maintained; revised plan to Hilltop.' },
-];
 
-/** Horizontal position on the 16-column track (same calendar span as program milestones). */
-const VI_TRACK_START = new Date(2026, 2, 1);
-const VI_TRACK_END = new Date(2026, 10, 1);
+// vi-outcomes.json — #vi-outcomes-fallback mirrors for file://
+let outcomes = [];
+let VI_TRACK_START = new Date(2026, 2, 1);
+let VI_TRACK_END = new Date(2026, 10, 1);
 
-/** Vertical "as of" line: last-modified time of this HTML file (document.lastModified). */
 function referenceDateFromDocument() {
   const d = new Date(document.lastModified);
   if (isNaN(d.getTime())) {
@@ -769,19 +964,36 @@ function formatAsOfTag(d) {
   return 'AS OF ' + d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
 }
 
-// Build date markers (half-month periods: Mar-Oct 2026)
-const weekMarkersEl = document.getElementById('weekMarkers');
-const dateLabels = ['Mar 1','Mar 15','Apr 1','Apr 15','May 1','May 15','Jun 1','Jun 15','Jul 1','Jul 15','Aug 1','Aug 15','Sep 1','Sep 15','Oct 1','Oct 15'];
-dateLabels.forEach(label => {
-  const d = document.createElement('div');
-  d.className = 'week-marker';
-  d.textContent = label;
-  weekMarkersEl.appendChild(d);
-});
+async function initViOutcomeMapFromJson() {
+  const L = window.OutcomeMapFromJson;
+  const weekMarkersEl = document.getElementById('weekMarkers');
+  const lanesEl = document.getElementById('swimLanes');
+  const timelineEl = document.getElementById('timeline');
+  if (!L) {
+    lanesEl.textContent = 'Missing outcome-map-from-json.js';
+    return;
+  }
+  let data;
+  try {
+    data = await L.fetchJsonPreferFile(new URL('vi-outcomes.json', document.URL).href, 'vi-outcomes-fallback');
+  } catch (e) {
+    console.error(e);
+    lanesEl.innerHTML = '<div style="padding:16px;color:#c0392b">Could not load vi-outcomes.json. Use HTTP or sync #vi-outcomes-fallback.</div>';
+    return;
+  }
+  const vi = L.buildViPayload(data);
+  outcomes = vi.outcomes;
+  VI_TRACK_START = vi.trackStart;
+  VI_TRACK_END = vi.trackEnd;
 
-// As-of (last save) marker — linear calendar Mar 1–Nov 1, 2026 vs 16-column track
-const timelineEl = document.getElementById('timeline');
-(function() {
+  weekMarkersEl.innerHTML = '';
+  vi.columnLabels.forEach((label) => {
+    const d = document.createElement('div');
+    d.className = 'week-marker';
+    d.textContent = label;
+    weekMarkersEl.appendChild(d);
+  });
+
   const ref = referenceDateFromDocument();
   const rangeMs = VI_TRACK_END - VI_TRACK_START;
   const pct = Math.max(0, Math.min(100, ((ref - VI_TRACK_START) / rangeMs) * 100));
@@ -794,155 +1006,65 @@ const timelineEl = document.getElementById('timeline');
   todayTag.textContent = formatAsOfTag(ref);
   todayMarker.appendChild(todayTag);
   timelineEl.appendChild(todayMarker);
-})();
 
-// Build swim lanes
-const lanesEl = document.getElementById('swimLanes');
-const barClass = { 'Baseline': 'bar-baseline', 'Iterative': 'bar-iterative', 'Conditional': 'bar-conditional' };
-
-outcomes.forEach((oc, idx) => {
-  const lane = document.createElement('div');
-  lane.className = 'swim-lane';
-
-  // Label
-  const label = document.createElement('div');
-  label.className = 'lane-label';
-  label.innerHTML = `<span class="oc-id">${oc.id}</span>${oc.name}<div class="oc-cat">${oc.cat}${oc.cat === 'Iterative' ? ' (validation cycles)' : oc.cat === 'Conditional' ? ' (trigger-activated)' : ''}</div>`;
-  lane.appendChild(label);
-
-  // Track
-  const track = document.createElement('div');
-  track.className = 'lane-track';
-
-  if (oc.start > 0 && oc.end > 0) {
-    const bar = document.createElement('div');
-    bar.className = `outcome-bar ${barClass[oc.cat]}`;
-    bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
-    bar.style.position = 'relative';
-    bar.dataset.idx = idx;
-    bar.dataset.ocId = oc.id;
-
-    const barText = document.createElement('span');
-    barText.textContent = oc.id;
-    bar.appendChild(barText);
-
-    const plusBtn = document.createElement('a');
-    plusBtn.className = 'plus-btn';
-    plusBtn.href = withToken(`VI-kanban.html#${oc.id}`);
-    plusBtn.textContent = '+';
-    plusBtn.title = `View ${oc.id} work items`;
-    plusBtn.addEventListener('click', (e) => e.stopPropagation());
-    bar.appendChild(plusBtn);
-
-    bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
-    bar.addEventListener('mousemove', (e) => moveTooltip(e));
-    bar.addEventListener('mouseleave', hideTooltip);
-
-    track.appendChild(bar);
-  } else {
-    // Conditional with no schedule
-    const placeholder = document.createElement('div');
-    placeholder.style.gridColumn = '1 / 17';
-    placeholder.style.textAlign = 'center';
-    placeholder.style.fontSize = '11px';
-    placeholder.style.color = '#E67E22';
-    placeholder.style.fontStyle = 'italic';
-    placeholder.textContent = 'Trigger: validation failure after max iterations';
-    track.appendChild(placeholder);
-  }
-
-  lane.appendChild(track);
-  lanesEl.appendChild(lane);
-});
-
-const STALL_OVERLAY_URL = '../../Project-Plan/outcome-stall-overlay.json';
-const STALLED_BLOCKED_REPORT = '../../Project-Plan/Stalled-Blocked-rpt.html';
-let outcomeStallByOutcome = {};
-
-function stallMarkerReportHref(entry) {
-  if (window.GithubStallLive && typeof window.GithubStallLive.buildStalledBlockedReportUrl === 'function') {
-    return window.GithubStallLive.buildStalledBlockedReportUrl(entry, STALLED_BLOCKED_REPORT);
-  }
-  return STALLED_BLOCKED_REPORT;
-}
-
-function parseStallOverlayFallback() {
-  const el = document.getElementById('outcome-stall-overlay-fallback');
-  if (!el || !el.textContent) return { byOutcome: {} };
-  try {
-    const data = JSON.parse(el.textContent.trim());
-    return data && data.byOutcome ? data : { byOutcome: {} };
-  } catch (e) {
-    return { byOutcome: {} };
-  }
-}
-
-function loadOutcomeStallOverlayFromFile() {
-  return fetch(STALL_OVERLAY_URL, { cache: 'no-store' })
-    .then((r) => (r.ok ? r.json() : Promise.reject()))
-    .then((data) => (data && data.byOutcome ? data : { byOutcome: {} }))
-    .catch(() => parseStallOverlayFallback());
-}
-
-function loadOutcomeStallOverlay() {
-  let tokenFileUrl = null;
-  try {
-    tokenFileUrl = new URL('../../Project-Plan/Stalled-Blocked-github-token.local.json', window.location.href).href;
-  } catch (e) { /* ignore */ }
-  if (!window.GithubStallLive) return loadOutcomeStallOverlayFromFile();
-  return window.GithubStallLive.resolveGithubToken({ tokenFileUrl: tokenFileUrl }).then((token) => {
-    if (!token) return loadOutcomeStallOverlayFromFile();
-    return window.GithubStallLive.fetchStallByOutcomeMap(token)
-      .then((byOutcome) => ({ byOutcome: byOutcome || {} }))
-      .catch((err) => {
-        console.warn('VI Outcome Map: live GitHub stall data failed, using committed JSON.', err);
-        return loadOutcomeStallOverlayFromFile();
-      });
-  });
-}
-
-function applyStallOverlayToOutcomeBars(data) {
-  const by = (data && data.byOutcome) || {};
-  outcomeStallByOutcome = by;
-  document.querySelectorAll('.outcome-bar[data-oc-id]').forEach((bar) => {
-    const id = bar.getAttribute('data-oc-id');
-    bar.querySelectorAll('.stall-marker').forEach((n) => n.remove());
-    const ent = by[id];
-    if (!ent) return;
-    const hasB = ent.blocked && ent.blocked.length;
-    const hasS = ent.stalled && ent.stalled.length;
-    if (hasB) {
-      const m = document.createElement('a');
-      m.className = 'stall-marker stall-blocked';
-      m.href = stallMarkerReportHref(ent.blocked[0]);
-      m.textContent = 'B';
-      m.setAttribute('title', 'Blocked on GitHub — open on Stalled/Blocked report');
-      m.setAttribute('aria-label', 'Open blocked work item on Stalled Blocked report');
-      m.addEventListener('click', (e) => e.stopPropagation());
-      bar.appendChild(m);
-    } else if (hasS) {
-      const m = document.createElement('a');
-      m.className = 'stall-marker stall-stalled';
-      m.href = stallMarkerReportHref(ent.stalled[0]);
-      m.textContent = 'S';
-      m.setAttribute('title', 'Stalled on GitHub — open on Stalled/Blocked report');
-      m.setAttribute('aria-label', 'Open stalled work item on Stalled Blocked report');
-      m.addEventListener('click', (e) => e.stopPropagation());
-      bar.appendChild(m);
+  lanesEl.innerHTML = '';
+  const barClass = { Baseline: 'bar-baseline', Iterative: 'bar-iterative', Conditional: 'bar-conditional' };
+  outcomes.forEach((oc, idx) => {
+    const lane = document.createElement('div');
+    lane.className = 'swim-lane';
+    const label = document.createElement('div');
+    label.className = 'lane-label';
+    label.innerHTML = `<span class="oc-id">${oc.id}</span>${oc.name}<div class="oc-cat">${oc.cat}${oc.cat === 'Iterative' ? ' (validation cycles)' : oc.cat === 'Conditional' ? ' (trigger-activated)' : ''}</div>`;
+    lane.appendChild(label);
+    const track = document.createElement('div');
+    track.className = 'lane-track';
+    if (oc.start > 0 && oc.end > 0) {
+      const bar = document.createElement('div');
+      bar.className = `outcome-bar ${barClass[oc.cat]}`;
+      bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
+      bar.style.position = 'relative';
+      bar.dataset.idx = idx;
+      bar.dataset.ocId = oc.id;
+      const barText = document.createElement('span');
+      barText.textContent = oc.id;
+      bar.appendChild(barText);
+      const plusBtn = document.createElement('a');
+      plusBtn.className = 'plus-btn';
+      plusBtn.href = withToken(`VI-kanban.html#${oc.id}`);
+      plusBtn.textContent = '+';
+      plusBtn.title = `View ${oc.id} work items`;
+      plusBtn.addEventListener('click', (e) => e.stopPropagation());
+      bar.appendChild(plusBtn);
+      bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
+      bar.addEventListener('mousemove', (e) => moveTooltip(e));
+      bar.addEventListener('mouseleave', hideTooltip);
+      track.appendChild(bar);
+    } else {
+      const placeholder = document.createElement('div');
+      placeholder.style.gridColumn = '1 / 17';
+      placeholder.style.textAlign = 'center';
+      placeholder.style.fontSize = '11px';
+      placeholder.style.color = '#E67E22';
+      placeholder.style.fontStyle = 'italic';
+      placeholder.textContent = 'Trigger: validation failure after max iterations';
+      track.appendChild(placeholder);
     }
+    lane.appendChild(track);
+    lanesEl.appendChild(lane);
   });
+  loadOutcomeStallOverlay().then(applyStallOverlayToOutcomeBars);
 }
 
-loadOutcomeStallOverlay().then(applyStallOverlayToOutcomeBars);
 
-/** Program milestones: ../../Project-Plan/project-milestones.json. Horizontal position: linear calendar Mar 1–Nov 1, 2026 vs 16-column track. */
+
+/** Program milestones: ../../Capability-map/Milestones/project-milestones.json. Horizontal position: linear calendar Mar 1–Nov 1, 2026 vs 16-column track. */
 const FALLBACK_PROJECT_MILESTONES = [
   { id: 'M2', date: '2026-03-27', label: 'M2 3/27' },
-  { id: 'M3', date: '2026-04-27', label: 'M3 4/27' },
+  { id: 'M3', date: '2026-05-28', label: 'M3 5/28' },
   { id: 'M4', date: '2026-10-27', label: 'M4 10/27' }
 ];
 function loadProjectMilestones() {
-  return fetch('../../Project-Plan/project-milestones.json')
+  return fetch('../../Capability-map/Milestones/project-milestones.json')
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(data => data.milestones || FALLBACK_PROJECT_MILESTONES)
     .catch(() => FALLBACK_PROJECT_MILESTONES);
@@ -1021,6 +1143,8 @@ function moveTooltip(e) {
 }
 
 function hideTooltip() { tooltipEl.classList.remove('show'); }
+
+initViOutcomeMapFromJson();
 
 // Dependency graph (SVG)
 const svg = document.getElementById('depGraph');

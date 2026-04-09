@@ -656,7 +656,7 @@
   <!-- Dependency Map -->
   <div class="section-title">Dependency Flow</div>
   <div class="dep-graph-wrap" style="background:white;border-radius:8px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);overflow-x:auto;">
-    <p class="dep-graph-note"><strong>Canonical data:</strong> <code>pa-outcomes.json</code> → <code>dependency_edges</code> (loaded at runtime; <code>#pa-dependency-edges-fallback</code> mirrors it for <code>file://</code>). Edit the JSON first, then refresh the fallback block in this file when edge text changes. <strong>Type 1</strong> decisions are one-way doors (irreversible); they need explicit sign-off and cannot auto-default. <strong>Type 2</strong> decisions are two-way doors (reversible); default adoption rules apply if not resolved within 3 business days after the required-by date (per PA-WBS §5). <strong>Hover</strong> (or keyboard-focus) any arrow for timing, prerequisite detail, decisions to make ahead of time, and cross-workstream links (PA-CW-XX).</p>
+    <p class="dep-graph-note"><strong>Canonical data:</strong> <code>pa-outcomes.json</code> → <code>outcome_map</code> + per-outcome <code>timeline</code> (swim lanes) and <code>dependency_edges</code> (dependency flow). Dependency edges use <code>#pa-dependency-edges-fallback</code> for <code>file://</code>; the timeline needs HTTP (same folder as this page) to load the JSON. Edit the JSON first, then refresh the fallback block in this file when edge text changes. <strong>Type 1</strong> decisions are one-way doors (irreversible); they need explicit sign-off and cannot auto-default. <strong>Type 2</strong> decisions are two-way doors (reversible); default adoption rules apply if not resolved within 3 business days after the required-by date (per PA-WBS §5). <strong>Hover</strong> (or keyboard-focus) any arrow for timing, prerequisite detail, decisions to make ahead of time, and cross-workstream links (PA-CW-XX).</p>
     <svg id="depGraph" width="1280" height="620" viewBox="0 0 1280 620" role="img" aria-label="PA outcome dependency flow: nodes are outcomes; arrows are must, should, or contingent dependencies. Hover arrows for details."></svg>
   </div>
 
@@ -673,6 +673,7 @@
 {"byOutcome":{}}
 </script>
 <script src="../../Project-Plan/github-stall-live.js"></script>
+<script src="../../Project-Plan/outcome-map-from-json.js"></script>
 
 <script type="application/json" id="pa-dependency-edges-fallback">
 [
@@ -1011,89 +1012,17 @@
 
 
 <script>
-// Week-to-date mapping (week 1 starts 3/16/2026)
-const weekDates = {};
-const startDate = new Date(2026, 2, 16); // March 16, 2026
-for (let w = 1; w <= 34; w++) {
-  const d = new Date(startDate);
-  d.setDate(d.getDate() + (w - 1) * 7);
-  const endD = new Date(d);
-  endD.setDate(endD.getDate() + 4); // Friday
-  weekDates[w] = {
-    start: `${d.getMonth()+1}/${d.getDate()}`,
-    end: `${endD.getMonth()+1}/${endD.getDate()}`,
-    month: d.toLocaleString('en-US', { month: 'short' })
-  };
-}
 
-function dateRange(startWk, endWk) {
-  return `${weekDates[startWk].start} - ${weekDates[endWk].end}`;
-}
+// pa-outcomes.json — Implementation timeline (fetch; use same-folder HTTP server like dependency graph)
+let outcomes = [];
+let TOTAL_WEEKS = 34;
+let paWeekDates = {};
+let PA_MAP_PROJECT_START = new Date(2026, 2, 16);
 
-// Outcome data with actual dates
-const outcomes = [
-  { id:'PA-OC-00', name:'Infrastructure & Architecture POC', cat:'POC', start:1, end:2, deps:[], risk:'', deliverables:1, milestone:'',
-    dates: dateRange(1, 2),
-    detail:'First outcome (weeks 1–2): prove infrastructure and architecture—how the pipeline will run, connect, and be operated—plus approach, tooling, access, and velocity. Jira Epic WSA-3758; all [POC] Stories under this Epic. Must complete before PA-OC-01. PA-WBS v1.6.' },
-  { id:'PA-OC-01', name:'Foundation Access and Security Baseline Complete', cat:'Baseline', start:3, end:5, deps:['PA-OC-00'], risk:'PA-R-01', deliverables:6, milestone:'M3',
-    dates: dateRange(3, 5),
-    detail:'Environment access, deployment process documentation, security baseline, data classification, access governance, network security. Jira Epic WSA-3268 ([PA-OC-01] Foundation Access and Security Baseline Complete). Legacy WSA-36 superseded.' },
-  { id:'PA-OC-02', name:'Config Inventory & Credentials', cat:'Baseline', start:6, end:8, deps:['PA-OC-01'], risk:'PA-R-S1, PA-R-S2', deliverables:3, milestone:'M3',
-    dates: dateRange(6, 8),
-    detail:'NGINX config inventory, broader landscape assessment, credential and secret management plan.' },
-  { id:'PA-OC-03', name:'Migration Path & Runner Infra', cat:'Baseline', start:9, end:11, deps:['PA-OC-02'], risk:'PA-R-04, PA-R-X5', deliverables:3, milestone:'M3',
-    dates: dateRange(9, 11),
-    detail:'Export method decisions, repo structure design, GitHub runner POC with Ansible feasibility validation.' },
-  { id:'PA-OC-04', name:'Configs in Version Control', cat:'Baseline', start:12, end:16, deps:['PA-OC-03'], risk:'PA-R-X7', deliverables:2, milestone:'M4',
-    dates: dateRange(12, 16),
-    detail:'Config migration from share drive to GitHub. CODEOWNERS, branch protection, CAB approval for production configs.' },
-  { id:'PA-OC-05', name:'Build Pipeline Operational', cat:'Baseline', start:17, end:19, deps:['PA-OC-04'], risk:'PA-R-06', deliverables:2, milestone:'M4',
-    dates: dateRange(17, 19),
-    detail:'GitHub Actions workflow for NGINX config build. Linting, schema validation, templating, artifact packaging. ~1 FTE allocation.' },
-  { id:'PA-OC-06', name:'Deploy Pipeline Operational', cat:'Baseline', start:20, end:23, deps:['PA-OC-03','PA-OC-05'], risk:'PA-R-X4', deliverables:2, milestone:'M4',
-    dates: dateRange(20, 23),
-    detail:'Ansible-based deployment via runner. Pre-deploy validation, health checks, rollback. Starts after PA-OC-05 frees capacity.' },
-  { id:'PA-OC-07', name:'Drift Detection Operational', cat:'Baseline', start:17, end:21, deps:['PA-OC-04'], risk:'PA-R-07', deliverables:2, milestone:'M4',
-    dates: dateRange(17, 21),
-    detail:'PARALLEL with PA-OC-05. Scheduled drift comparison, alerting, severity thresholds. Runs at ~0.5 FTE while PA-OC-05 uses ~1 FTE.' },
-  { id:'PA-OC-08', name:'Pipeline Reliability Validated', cat:'Iterative', start:24, end:28, deps:['PA-OC-05','PA-OC-06','PA-OC-07'], risk:'PA-R-06, PA-R-X1', deliverables:4, milestone:'M4',
-    dates: dateRange(24, 28),
-    detail:'2-week measurement window (rolling): 90%+ success rate for all 3 pipelines. Max 3 cycles. Fallback: trigger PA-OC-10. Timeline allows time for fixes between cycles.' },
-  { id:'PA-OC-09', name:'Config-as-Code Enforced', cat:'Iterative', start:29, end:33, deps:['PA-OC-08'], risk:'PA-R-08', deliverables:4, milestone:'M5',
-    dates: dateRange(29, 33),
-    detail:'4-week enforcement period per PA-WBS. No manual changes allowed. Team training, runbooks, IRP update. Max 2 cycles.' },
-  { id:'PA-OC-10', name:'Pipeline Fallback', cat:'Conditional', start:0, end:0, deps:[], risk:'', deliverables:2, milestone:'',
-    dates: 'Trigger-activated',
-    detail:'CONDITIONAL: Triggers if PA-OC-08 reliability fails after 3 cycles. Manual processes maintained; revised plan to Hilltop.' },
-  { id:'PA-OC-11', name:'Pipeline Pattern Replication', cat:'Conditional', start:0, end:0, deps:['PA-OC-09'], risk:'', deliverables:3, milestone:'M6',
-    dates: 'Trigger-activated',
-    detail:'CONDITIONAL: Triggers when PA-OC-09 completes and leadership decides to extend the proven pipeline framework to other config types (PASOE, customer runtime, infrastructure configs). Not application code.' },
-];
-
-const TOTAL_WEEKS = 34;
-
-// Build week markers
-const weekMarkersEl = document.getElementById('weekMarkers');
-let lastMonth = '';
-for (let w = 1; w <= TOTAL_WEEKS; w++) {
-  const d = document.createElement('div');
-  d.className = 'week-marker';
-  const wd = weekDates[w];
-  d.innerHTML = `${w}<br><span class="wk-date">${wd.start}</span>`;
-  weekMarkersEl.appendChild(d);
-}
-
-// Build swim lanes
-const lanesEl = document.getElementById('swimLanes');
-const barClass = { 'Baseline': 'bar-baseline', 'Iterative': 'bar-iterative', 'Conditional': 'bar-conditional', 'POC': 'bar-poc' };
-
-/** Maps timeline row id (PA-OC-00, PA-OC-01, …) to PA-kanban.html hash (OC-00, OC-01, …). */
 function timelineIdToKanbanHash(timelineId) {
   const m = /^PA-OC-(\d{2})$/.exec(timelineId);
   return m ? 'OC-' + m[1] : null;
 }
-
-/** Opens PA-kanban.html for the given timeline row; preserves optional ?token= on this page. */
 function navigateToKanban(timelineId) {
   const hash = timelineIdToKanbanHash(timelineId);
   if (!hash) return;
@@ -1103,7 +1032,6 @@ function navigateToKanban(timelineId) {
   url += '#' + encodeURIComponent(hash);
   window.location.href = url;
 }
-
 function bindKanbanOpen(el, timelineId) {
   el.setAttribute('title', 'Open kanban board for this outcome');
   el.setAttribute('role', 'link');
@@ -1120,58 +1048,104 @@ function bindKanbanOpen(el, timelineId) {
   });
 }
 
-outcomes.forEach((oc, idx) => {
-  const lane = document.createElement('div');
-  lane.className = 'swim-lane';
+async function initPaOutcomeMapFromJson() {
+  const L = window.OutcomeMapFromJson;
+  const weekMarkersEl = document.getElementById('weekMarkers');
+  const lanesEl = document.getElementById('swimLanes');
+  if (!L) {
+    lanesEl.textContent = 'Missing outcome-map-from-json.js';
+    return;
+  }
+  let data;
+  try {
+    data = await L.fetchJsonPreferFile(new URL('pa-outcomes.json', document.URL).href, null);
+  } catch (e) {
+    console.error(e);
+    lanesEl.innerHTML = '<div style="padding:16px;color:#c0392b">Could not load pa-outcomes.json (needed for timeline rows). Open via a local HTTP server from the repo root or WSA/PA folder.</div>';
+    return;
+  }
+  const pa = L.buildPaOutcomes(data);
+  outcomes = pa.outcomes;
+  TOTAL_WEEKS = pa.totalWeeks;
+  paWeekDates = pa.weekDates;
+  PA_MAP_PROJECT_START = pa.projectStart;
 
-  const label = document.createElement('div');
-  label.className = 'lane-label';
-  const catLabel = oc.cat === 'Iterative' ? ' (validation cycles)' : oc.cat === 'Conditional' ? ' (trigger-activated)' : oc.cat === 'POC' ? '' : '';
-  label.innerHTML = `<span class="oc-id">${oc.id}</span>${oc.name}<div class="oc-cat">${oc.cat}${catLabel}</div>`;
-  lane.appendChild(label);
-
-  const track = document.createElement('div');
-  track.className = 'lane-track';
-
-  if (oc.start > 0 && oc.end > 0) {
-    const bar = document.createElement('div');
-    bar.className = `outcome-bar ${barClass[oc.cat]}`;
-    bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
-    bar.style.position = 'relative';
-    bar.dataset.idx = idx;
-    bar.dataset.ocId = oc.id;
-    const barLbl = document.createElement('span');
-    barLbl.textContent = oc.id;
-    bar.appendChild(barLbl);
-
-    bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
-    bar.addEventListener('mousemove', (e) => moveTooltip(e));
-    bar.addEventListener('mouseleave', hideTooltip);
-    bindKanbanOpen(bar, oc.id);
-
-    track.appendChild(bar);
-  } else {
-    const placeholder = document.createElement('div');
-    placeholder.style.gridColumn = `1 / ${TOTAL_WEEKS + 1}`;
-    placeholder.style.textAlign = 'center';
-    placeholder.style.fontSize = '11px';
-    placeholder.style.color = '#E67E22';
-    placeholder.style.fontStyle = 'italic';
-    placeholder.style.cursor = 'pointer';
-    placeholder.style.textDecoration = 'underline dotted #E67E22';
-    placeholder.textContent = oc.id === 'PA-OC-10' ? 'Trigger: reliability failure after max iterations' : 'Trigger: NGINX POC validates framework + leadership decision';
-
-    placeholder.addEventListener('mouseenter', (e) => showTriggerTooltip(e, oc));
-    placeholder.addEventListener('mousemove', (e) => moveTooltip(e));
-    placeholder.addEventListener('mouseleave', hideTooltip);
-    bindKanbanOpen(placeholder, oc.id);
-
-    track.appendChild(placeholder);
+  weekMarkersEl.innerHTML = '';
+  for (let w = 1; w <= TOTAL_WEEKS; w++) {
+    const d = document.createElement('div');
+    d.className = 'week-marker';
+    const wd = paWeekDates[w];
+    d.innerHTML = w + '<br><span class="wk-date">' + wd.start + '</span>';
+    weekMarkersEl.appendChild(d);
   }
 
-  lane.appendChild(track);
-  lanesEl.appendChild(lane);
-});
+  lanesEl.innerHTML = '';
+  const barClass = { Baseline: 'bar-baseline', Iterative: 'bar-iterative', Conditional: 'bar-conditional', POC: 'bar-poc' };
+  outcomes.forEach((oc, idx) => {
+    const lane = document.createElement('div');
+    lane.className = 'swim-lane';
+    const label = document.createElement('div');
+    label.className = 'lane-label';
+    const catLabel = oc.cat === 'Iterative' ? ' (validation cycles)' : oc.cat === 'Conditional' ? ' (trigger-activated)' : oc.cat === 'POC' ? '' : '';
+    label.innerHTML = `<span class="oc-id">${oc.id}</span>${oc.name}<div class="oc-cat">${oc.cat}${catLabel}</div>`;
+    lane.appendChild(label);
+    const track = document.createElement('div');
+    track.className = 'lane-track';
+    if (oc.start > 0 && oc.end > 0) {
+      const bar = document.createElement('div');
+      bar.className = `outcome-bar ${barClass[oc.cat]}`;
+      bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
+      bar.style.position = 'relative';
+      bar.dataset.idx = idx;
+      bar.dataset.ocId = oc.id;
+      const barLbl = document.createElement('span');
+      barLbl.textContent = oc.id;
+      bar.appendChild(barLbl);
+      bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
+      bar.addEventListener('mousemove', (e) => moveTooltip(e));
+      bar.addEventListener('mouseleave', hideTooltip);
+      bindKanbanOpen(bar, oc.id);
+      track.appendChild(bar);
+    } else {
+      const placeholder = document.createElement('div');
+      placeholder.style.gridColumn = `1 / ${TOTAL_WEEKS + 1}`;
+      placeholder.style.textAlign = 'center';
+      placeholder.style.fontSize = '11px';
+      placeholder.style.color = '#E67E22';
+      placeholder.style.fontStyle = 'italic';
+      placeholder.style.cursor = 'pointer';
+      placeholder.style.textDecoration = 'underline dotted #E67E22';
+      placeholder.textContent = oc.placeholder_text || (oc.id === 'PA-OC-10' ? 'Trigger: reliability failure after max iterations' : 'Trigger: NGINX POC validates framework + leadership decision');
+      placeholder.addEventListener('mouseenter', (e) => showTriggerTooltip(e, oc));
+      placeholder.addEventListener('mousemove', (e) => moveTooltip(e));
+      placeholder.addEventListener('mouseleave', hideTooltip);
+      bindKanbanOpen(placeholder, oc.id);
+      track.appendChild(placeholder);
+    }
+    lane.appendChild(track);
+    lanesEl.appendChild(lane);
+  });
+
+  loadOutcomeStallOverlay().then(applyStallOverlayToOutcomeBars);
+  loadProjectMilestones().then(renderProjectMilestoneMarkers);
+
+  const timelineEl = document.getElementById('timeline');
+  const ref = referenceDateFromDocument();
+  const projectStart = PA_MAP_PROJECT_START;
+  const msPerDay = 86400000;
+  const daysSinceStart = (ref - projectStart) / msPerDay;
+  let weekFloat = daysSinceStart / 7;
+  weekFloat = Math.max(0, Math.min(TOTAL_WEEKS, weekFloat));
+  const labelWidth = 200;
+  const marker = document.createElement('div');
+  marker.className = 'today-marker';
+  marker.style.left = `calc(${labelWidth}px + (100% - ${labelWidth}px) * ${weekFloat / TOTAL_WEEKS})`;
+  const lbl = document.createElement('span');
+  lbl.className = 'today-marker-label';
+  lbl.textContent = formatAsOfTag(ref);
+  marker.appendChild(lbl);
+  timelineEl.appendChild(marker);
+}
 
 const STALL_OVERLAY_URL = '../../Project-Plan/outcome-stall-overlay.json';
 const STALLED_BLOCKED_REPORT = '../../Project-Plan/Stalled-Blocked-rpt.html';
@@ -1251,16 +1225,14 @@ function applyStallOverlayToOutcomeBars(data) {
   });
 }
 
-loadOutcomeStallOverlay().then(applyStallOverlayToOutcomeBars);
-
-/** Program milestones: ../../Project-Plan/project-milestones.json (fallback mirrors that file). */
+/** Program milestones: ../../Capability-map/Milestones/project-milestones.json (fallback mirrors that file). */
 const FALLBACK_PROJECT_MILESTONES = [
   { id: 'M2', date: '2026-03-27', label: 'M2 3/27' },
-  { id: 'M3', date: '2026-04-27', label: 'M3 4/27' },
+  { id: 'M3', date: '2026-05-28', label: 'M3 5/28' },
   { id: 'M4', date: '2026-10-27', label: 'M4 10/27' }
 ];
 function loadProjectMilestones() {
-  return fetch('../../Project-Plan/project-milestones.json')
+  return fetch('../../Capability-map/Milestones/project-milestones.json')
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(data => data.milestones || FALLBACK_PROJECT_MILESTONES)
     .catch(() => FALLBACK_PROJECT_MILESTONES);
@@ -1268,7 +1240,7 @@ function loadProjectMilestones() {
 function renderProjectMilestoneMarkers(milestones) {
   const timelineEl = document.getElementById('timeline');
   const labelWidth = 200;
-  const projectStart = new Date(2026, 2, 16);
+  const projectStart = PA_MAP_PROJECT_START;
   const spanDays = TOTAL_WEEKS * 7;
   milestones.forEach(m => {
     const d = new Date(m.date + 'T12:00:00');
@@ -1285,8 +1257,6 @@ function renderProjectMilestoneMarkers(milestones) {
     timelineEl.appendChild(tag);
   });
 }
-loadProjectMilestones().then(renderProjectMilestoneMarkers);
-
 /** Vertical "as of" line: last-modified time of this HTML file (document.lastModified). */
 function referenceDateFromDocument() {
   const d = new Date(document.lastModified);
@@ -1301,27 +1271,6 @@ function referenceDateFromDocument() {
 function formatAsOfTag(d) {
   return 'AS OF ' + d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
 }
-
-// As-of (last save) marker — position from file date on the 34-week grid from 3/16/2026
-(function() {
-  const ref = referenceDateFromDocument();
-  const projectStart = new Date(2026, 2, 16); // March 16, 2026
-  const msPerDay = 86400000;
-  const daysSinceStart = (ref - projectStart) / msPerDay;
-  let weekFloat = daysSinceStart / 7;
-  weekFloat = Math.max(0, Math.min(TOTAL_WEEKS, weekFloat));
-
-  const timelineEl = document.getElementById('timeline');
-  const labelWidth = 200;
-  const marker = document.createElement('div');
-  marker.className = 'today-marker';
-  marker.style.left = `calc(${labelWidth}px + (100% - ${labelWidth}px) * ${weekFloat / TOTAL_WEEKS})`;
-  const lbl = document.createElement('span');
-  lbl.className = 'today-marker-label';
-  lbl.textContent = formatAsOfTag(ref);
-  marker.appendChild(lbl);
-  timelineEl.appendChild(marker);
-})();
 
 // Tooltip
 const tooltipEl = document.getElementById('tooltip');
@@ -1391,26 +1340,8 @@ function moveTooltip(e) {
 
 function hideTooltip() { tooltipEl.classList.remove('show'); }
 
-// Trigger tooltip for conditional outcomes
-const triggerDetails = {
-  'PA-OC-10': {
-    trigger: 'Reliability failure after max iterations',
-    what_triggers: 'The reliability validation (PA-OC-08) fails to reach 90%+ success rate after the maximum 3 iteration cycles. The automated pipeline cannot meet the reliability target.',
-    what_work: 'Building a manual rollback/recovery process so the team is not stuck if the automated pipeline breaks. Documenting fallback procedures, defining when to use manual vs. automated paths, and presenting a revised plan to Hilltop.',
-    what_outcome: 'A documented, tested fallback procedure to safely revert changes without relying on the pipeline. Manual processes are maintained as a safety net until pipeline issues are resolved.',
-    note: 'This is a safety net, not a failure. The constraint model has no equivalent -- it just says "S4 not complete." The outcome model provides an explicit path forward.'
-  },
-  'PA-OC-11': {
-    trigger: 'NGINX POC validates framework + leadership decision',
-    what_triggers: 'The NGINX proof-of-concept proves the full pipeline framework works end-to-end -- configs in GitHub, build/deploy/drift pipelines operational, reliability validated at 90%+, and config-as-code enforced. Leadership then decides whether to replicate this pattern for other configuration types.',
-    what_work: 'Applying the proven pipeline framework (GitHub Actions workflows, runner strategy, drift detection, enforcement) to additional configuration types beyond NGINX. Each new config type follows the same pattern with config-specific adaptations. This covers PASOE configs, customer runtime configs, infrastructure configs, etc.',
-    what_outcome: 'Additional config types have automated pipelines following the same framework proven by the NGINX POC. A replication playbook is documented so the pattern can be applied to future config types without starting from scratch.',
-    note: 'This is about replicating the pipeline pattern to other configs, NOT about application code. Application deployment (Caley\'s domain) is explicitly out of scope for this engagement.'
-  }
-};
-
 function showTriggerTooltip(e, oc) {
-  const td = triggerDetails[oc.id];
+  const td = oc.conditional;
   if (!td) return;
 
   let html = `<div class="tt-title">${oc.id}: ${oc.name}</div>`;
@@ -1677,9 +1608,8 @@ async function initPaDependencyGraph() {
   buildPaDepGraph(depEdgesNorm);
 }
 
+initPaOutcomeMapFromJson();
 initPaDependencyGraph();
-  nodeLayer.appendChild(g);
-});
 </script>
 <script>
 /* Decision tabs: Type 1 / Type 2 panels (PA-WBS §6). */

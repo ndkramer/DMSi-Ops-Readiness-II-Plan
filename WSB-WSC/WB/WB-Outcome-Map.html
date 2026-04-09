@@ -339,25 +339,100 @@
 </script>
 <script src="../../Project-Plan/github-stall-live.js"></script>
 
+<script src="../../Project-Plan/outcome-map-from-json.js"></script>
+<script type="application/json" id="wb-outcomes-fallback">
+{
+  "schema_version": 2,
+  "capability": "WB",
+  "wbs_markdown": "WB-WBS.md",
+  "jira": {
+    "capability_issue_key": null,
+    "action_items_epic_key": null,
+    "notes": "Timeline rows in outcomes[] are canonical for WB-Outcome-Map.html; edit this file first, then refresh #wb-outcomes-fallback in the HTML. Populate keys when Jira hierarchy exists; run node Scripts/jira-export-wb.js. Keep in sync with WB-WBS.md §11."
+  },
+  "outcome_map": {
+    "total_columns": 18,
+    "marker_style": "program_month",
+    "notes": "18 columns = program months M1–M18 (indicative; calendar TBD in WB-WBS)."
+  },
+  "outcomes": [
+    {
+      "id": "WB-OC-01",
+      "jira_epic_key": null,
+      "title": "[WB-OC-01] Alignment & Instrumentation Complete",
+      "name": "Alignment & Instrumentation",
+      "start": 1,
+      "end": 2,
+      "cat": "Baseline",
+      "deps": [],
+      "risk": "WB-R-01",
+      "deliverables": 3,
+      "date_range": "M1–M2 (Phase 0, weeks 1–4)",
+      "detail": "Governance charter, Scorecard v0, segmentation in 360, incident process documented."
+    },
+    {
+      "id": "WB-OC-02",
+      "jira_epic_key": null,
+      "title": "[WB-OC-02] Prove Flow & Communications Complete",
+      "name": "Prove Flow & Communications",
+      "start": 2,
+      "end": 5,
+      "cat": "Baseline",
+      "deps": ["WB-OC-01"],
+      "risk": "WB-R-02",
+      "deliverables": 3,
+      "date_range": "M2–M5 (Phase 1)",
+      "detail": "MIM, Agility Core + Other Products pods, Enterprise vs Commercial SLOs, FCR baseline."
+    },
+    {
+      "id": "WB-OC-03",
+      "jira_epic_key": null,
+      "title": "[WB-OC-03] Full Pod Scale Complete",
+      "name": "Full Pod Scale",
+      "start": 4,
+      "end": 9,
+      "cat": "Baseline",
+      "deps": ["WB-OC-02"],
+      "risk": "WB-R-03",
+      "deliverables": 2,
+      "date_range": "M4–M9 (Phase 2)",
+      "detail": "All Agility pods, fast-lane, routing optimization; ~15% handling reduction target."
+    },
+    {
+      "id": "WB-OC-04",
+      "jira_epic_key": null,
+      "title": "[WB-OC-04] Tooling Selection & AI Layer Complete",
+      "name": "Tooling & AI Layer",
+      "start": 3,
+      "end": 10,
+      "cat": "Baseline",
+      "deps": ["WB-OC-02", "WB-OC-03"],
+      "risk": "WB-R-04",
+      "deliverables": 2,
+      "date_range": "M3–M10 (Phase 3; overlaps scale)",
+      "detail": "SaaS RFP through contract; Agentic AI pilot through rollout; migration blueprint."
+    },
+    {
+      "id": "WB-OC-05",
+      "jira_epic_key": null,
+      "title": "[WB-OC-05] Platform Migration & Institutionalization Complete",
+      "name": "Platform Migration",
+      "start": 10,
+      "end": 18,
+      "cat": "Iterative",
+      "deps": ["WB-OC-04"],
+      "risk": "WB-R-05",
+      "deliverables": 3,
+      "date_range": "M10–M18 (Phase 4)",
+      "detail": "Configure platform, pilot + full migration, freeze 360 for Support, benefits realization."
+    }
+  ]
+}
+</script>
+
 <script>
-// 18 columns = program months M1–M18 (indicative; calendar TBD in WB-WBS)
-const outcomes = [
-  { id:'WB-OC-01', name:'Alignment & Instrumentation', cat:'Baseline', start:1, end:2, deps:[], risk:'WB-R-01', deliverables:3,
-    dateRange:'M1–M2 (Phase 0, weeks 1–4)',
-    detail:'Governance charter, Scorecard v0, segmentation in 360, incident process documented.' },
-  { id:'WB-OC-02', name:'Prove Flow & Communications', cat:'Baseline', start:2, end:5, deps:['WB-OC-01'], risk:'WB-R-02', deliverables:3,
-    dateRange:'M2–M5 (Phase 1)',
-    detail:'MIM, Agility Core + Other Products pods, Enterprise vs Commercial SLOs, FCR baseline.' },
-  { id:'WB-OC-03', name:'Full Pod Scale', cat:'Baseline', start:4, end:9, deps:['WB-OC-02'], risk:'WB-R-03', deliverables:2,
-    dateRange:'M4–M9 (Phase 2)',
-    detail:'All Agility pods, fast-lane, routing optimization; ~15% handling reduction target.' },
-  { id:'WB-OC-04', name:'Tooling & AI Layer', cat:'Baseline', start:3, end:10, deps:['WB-OC-02','WB-OC-03'], risk:'WB-R-04', deliverables:2,
-    dateRange:'M3–M10 (Phase 3; overlaps scale)',
-    detail:'SaaS RFP through contract; Agentic AI pilot through rollout; migration blueprint.' },
-  { id:'WB-OC-05', name:'Platform Migration', cat:'Iterative', start:10, end:18, deps:['WB-OC-04'], risk:'WB-R-05', deliverables:3,
-    dateRange:'M10–M18 (Phase 4)',
-    detail:'Configure platform, pilot + full migration, freeze 360 for Support, benefits realization.' },
-];
+// wb-outcomes.json — #wb-outcomes-fallback for file:// (populate by copying wb-outcomes.json)
+let outcomes = [];
 
 function withToken(url) {
   var p = new URLSearchParams(window.location.search);
@@ -370,56 +445,67 @@ function withToken(url) {
   return base + sep + 'token=' + encodeURIComponent(t) + hash;
 }
 
-const monthMarkersEl = document.getElementById('monthMarkers');
-for (let i = 1; i <= 18; i++) {
-  const d = document.createElement('div');
-  d.className = 'month-marker';
-  d.textContent = 'M' + i;
-  monthMarkersEl.appendChild(d);
+async function initWbOutcomeMapFromJson() {
+  const L = window.OutcomeMapFromJson;
+  const monthMarkersEl = document.getElementById('monthMarkers');
+  const lanesEl = document.getElementById('swimLanes');
+  if (!L) {
+    lanesEl.textContent = 'Missing outcome-map-from-json.js';
+    return;
+  }
+  let data;
+  try {
+    data = await L.fetchJsonPreferFile(new URL('wb-outcomes.json', document.URL).href, 'wb-outcomes-fallback');
+  } catch (e) {
+    console.error(e);
+    lanesEl.innerHTML = '<div style="padding:16px;color:#c0392b">Could not load wb-outcomes.json. Use HTTP or sync #wb-outcomes-fallback.</div>';
+    return;
+  }
+  const wb = L.buildWbPayload(data);
+  outcomes = wb.outcomes;
+  monthMarkersEl.innerHTML = '';
+  for (let i = 1; i <= wb.totalColumns; i++) {
+    const d = document.createElement('div');
+    d.className = 'month-marker';
+    d.textContent = 'M' + i;
+    monthMarkersEl.appendChild(d);
+  }
+  lanesEl.innerHTML = '';
+  const barClass = { 'Baseline': 'bar-baseline', 'Iterative': 'bar-iterative' };
+  outcomes.forEach((oc, idx) => {
+    const lane = document.createElement('div');
+    lane.className = 'swim-lane';
+    const label = document.createElement('div');
+    label.className = 'lane-label';
+    label.innerHTML = `<span class="oc-id">${oc.id}</span>${oc.name}<div class="oc-cat">${oc.cat}</div>`;
+    lane.appendChild(label);
+    const track = document.createElement('div');
+    track.className = 'lane-track';
+    const bar = document.createElement('div');
+    bar.className = `outcome-bar ${barClass[oc.cat]}`;
+    bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
+    bar.style.position = 'relative';
+    bar.dataset.idx = idx;
+    bar.dataset.ocId = oc.id;
+    const barText = document.createElement('span');
+    barText.textContent = oc.id.replace('WB-OC-0', 'OC-');
+    bar.appendChild(barText);
+    const plusBtn = document.createElement('a');
+    plusBtn.className = 'plus-btn';
+    plusBtn.href = withToken(`WB-kanban.html#${oc.id}`);
+    plusBtn.textContent = '+';
+    plusBtn.title = 'Kanban for ' + oc.id;
+    plusBtn.addEventListener('click', (e) => e.stopPropagation());
+    bar.appendChild(plusBtn);
+    bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
+    bar.addEventListener('mousemove', (e) => moveTooltip(e));
+    bar.addEventListener('mouseleave', hideTooltip);
+    track.appendChild(bar);
+    lane.appendChild(track);
+    lanesEl.appendChild(lane);
+  });
+  loadOutcomeStallOverlay().then(applyStallOverlayToOutcomeBars);
 }
-
-const lanesEl = document.getElementById('swimLanes');
-const barClass = { 'Baseline': 'bar-baseline', 'Iterative': 'bar-iterative' };
-
-outcomes.forEach((oc, idx) => {
-  const lane = document.createElement('div');
-  lane.className = 'swim-lane';
-
-  const label = document.createElement('div');
-  label.className = 'lane-label';
-  label.innerHTML = `<span class="oc-id">${oc.id}</span>${oc.name}<div class="oc-cat">${oc.cat}</div>`;
-  lane.appendChild(label);
-
-  const track = document.createElement('div');
-  track.className = 'lane-track';
-
-  const bar = document.createElement('div');
-  bar.className = `outcome-bar ${barClass[oc.cat]}`;
-  bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
-  bar.style.position = 'relative';
-  bar.dataset.idx = idx;
-  bar.dataset.ocId = oc.id;
-
-  const barText = document.createElement('span');
-  barText.textContent = oc.id.replace('WB-OC-0', 'OC-');
-  bar.appendChild(barText);
-
-  const plusBtn = document.createElement('a');
-  plusBtn.className = 'plus-btn';
-  plusBtn.href = withToken(`WB-kanban.html#${oc.id}`);
-  plusBtn.textContent = '+';
-  plusBtn.title = 'Kanban for ' + oc.id;
-  plusBtn.addEventListener('click', (e) => e.stopPropagation());
-  bar.appendChild(plusBtn);
-
-  bar.addEventListener('mouseenter', (e) => showTooltip(e, oc));
-  bar.addEventListener('mousemove', (e) => moveTooltip(e));
-  bar.addEventListener('mouseleave', hideTooltip);
-
-  track.appendChild(bar);
-  lane.appendChild(track);
-  lanesEl.appendChild(lane);
-});
 
 const STALL_OVERLAY_URL = '../../Project-Plan/outcome-stall-overlay.json';
 const STALLED_BLOCKED_REPORT = '../../Project-Plan/Stalled-Blocked-rpt.html';
@@ -499,8 +585,6 @@ function applyStallOverlayToOutcomeBars(data) {
   });
 }
 
-loadOutcomeStallOverlay().then(applyStallOverlayToOutcomeBars);
-
 const tooltipEl = document.getElementById('tooltip');
 
 function escapeHtml(s) {
@@ -548,6 +632,8 @@ function moveTooltip(e) {
   tooltipEl.style.top = y + 'px';
 }
 function hideTooltip() { tooltipEl.classList.remove('show'); }
+
+initWbOutcomeMapFromJson();
 
 // Dependency SVG (matches WB-WBS §3)
 const svg = document.getElementById('depGraph');

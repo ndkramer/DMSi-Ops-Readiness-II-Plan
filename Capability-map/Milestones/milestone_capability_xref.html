@@ -77,6 +77,10 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   background:var(--bg); padding:2px 8px; border-radius:10px; border:1px solid var(--border);
   display:inline-block;
 }
+.milestone-date {
+  font-size:10px; font-weight:600; color:var(--text-muted);
+  display:block; margin-top:6px; line-height:1.35;
+}
 
 /* Capability header */
 .th-cap {
@@ -333,17 +337,52 @@ Object.values(workstreams).forEach(w => {
 // Matrix
 const matrix = document.getElementById('matrix');
 
-// Header row
-let thead = `<thead><tr>
+/** Same-origin fetch with optional Lambda ?token= gate (mirrors Capability-map/Milestones/project-milestones.json). */
+function fetchUrlWithToken(path) {
+  const token = new URLSearchParams(window.location.search).get('token');
+  if (!token) return path;
+  const sep = path.indexOf('?') >= 0 ? '&' : '?';
+  return path + sep + 'token=' + encodeURIComponent(token);
+}
+
+const FALLBACK_PROJECT_MILESTONES = {
+  milestones: [
+    { id: 'M2', label: 'M2: March 27th' },
+    { id: 'M3', label: 'M3: May 28th' },
+    { id: 'M4', label: 'M4: Oct 27th' }
+  ]
+};
+
+function milestoneDateLineFromLabel(label) {
+  if (!label || typeof label !== 'string') return '';
+  const idx = label.indexOf(':');
+  return idx >= 0 ? label.slice(idx + 1).trim() : '';
+}
+
+function datesByMilestoneId(json) {
+  const map = {};
+  (json && json.milestones || []).forEach(m => {
+    if (m.id && m.label) map[m.id] = milestoneDateLineFromLabel(m.label);
+  });
+  return map;
+}
+
+function buildThead(dateMap) {
+  let thead = `<thead><tr>
   <th class="th-cap col-cap" style="background:var(--bg);border:1px solid var(--border);"></th>`;
-milestones.forEach(m => {
-  thead += `<th class="th-milestone">
+  milestones.forEach(m => {
+    const line = dateMap[m.id];
+    const dateHtml = line ? `<span class="milestone-date">${line}</span>` : '';
+    thead += `<th class="th-milestone">
     <span class="milestone-id">${m.id}</span>
     <span class="milestone-name">${m.name}</span>
     <span class="milestone-target">${m.target}</span>
+    ${dateHtml}
   </th>`;
-});
-thead += '</tr></thead>';
+  });
+  thead += '</tr></thead>';
+  return thead;
+}
 
 // Body rows
 let tbody = '<tbody>';
@@ -390,7 +429,15 @@ capabilities.forEach(cap => {
 });
 
 tbody += '</tbody>';
-matrix.innerHTML = thead + tbody;
+
+fetch(fetchUrlWithToken('project-milestones.json'), { cache: 'no-store' })
+  .then(r => (r.ok ? r.json() : Promise.reject(new Error('milestones json'))))
+  .then(j => {
+    matrix.innerHTML = buildThead(datesByMilestoneId(j)) + tbody;
+  })
+  .catch(() => {
+    matrix.innerHTML = buildThead(datesByMilestoneId(FALLBACK_PROJECT_MILESTONES)) + tbody;
+  });
 
 // Outcomes
 const outcomesEl = document.getElementById('outcomes');

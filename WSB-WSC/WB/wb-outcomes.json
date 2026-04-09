@@ -1,17 +1,87 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "capability": "WB",
   "wbs_markdown": "WB-WBS.md",
   "jira": {
     "capability_issue_key": null,
     "action_items_epic_key": null,
-    "notes": "Populate when Jira hierarchy exists. Then run: node Scripts/jira-export-wb.js (or node Scripts/jira-export-pa.js WB <capabilityKey> <actionEpicKey>). Keep in sync with WB-WBS.md §11."
+    "notes": "Timeline rows in outcomes[] are canonical for WB-Outcome-Map.html; edit this file first, then refresh #wb-outcomes-fallback in the HTML. Populate keys when Jira hierarchy exists; run node Scripts/jira-export-wb.js. Keep in sync with WB-WBS.md §11."
+  },
+  "outcome_map": {
+    "total_columns": 18,
+    "marker_style": "program_month",
+    "notes": "18 columns = program months M1–M18 (indicative; calendar TBD in WB-WBS)."
   },
   "outcomes": [
-    { "id": "WB-OC-01", "jira_epic_key": null, "title": "[WB-OC-01] Alignment & Instrumentation Complete" },
-    { "id": "WB-OC-02", "jira_epic_key": null, "title": "[WB-OC-02] Prove Flow & Communications Complete" },
-    { "id": "WB-OC-03", "jira_epic_key": null, "title": "[WB-OC-03] Full Pod Scale Complete" },
-    { "id": "WB-OC-04", "jira_epic_key": null, "title": "[WB-OC-04] Tooling Selection & AI Layer Complete" },
-    { "id": "WB-OC-05", "jira_epic_key": null, "title": "[WB-OC-05] Platform Migration & Institutionalization Complete" }
+    {
+      "id": "WB-OC-01",
+      "jira_epic_key": null,
+      "title": "[WB-OC-01] Alignment & Instrumentation Complete",
+      "name": "Alignment & Instrumentation",
+      "start": 1,
+      "end": 2,
+      "cat": "Baseline",
+      "deps": [],
+      "risk": "WB-R-01",
+      "deliverables": 3,
+      "date_range": "M1–M2 (Phase 0, weeks 1–4)",
+      "detail": "Governance charter, Scorecard v0, segmentation in 360, incident process documented."
+    },
+    {
+      "id": "WB-OC-02",
+      "jira_epic_key": null,
+      "title": "[WB-OC-02] Prove Flow & Communications Complete",
+      "name": "Prove Flow & Communications",
+      "start": 2,
+      "end": 5,
+      "cat": "Baseline",
+      "deps": ["WB-OC-01"],
+      "risk": "WB-R-02",
+      "deliverables": 3,
+      "date_range": "M2–M5 (Phase 1)",
+      "detail": "MIM, Agility Core + Other Products pods, Enterprise vs Commercial SLOs, FCR baseline."
+    },
+    {
+      "id": "WB-OC-03",
+      "jira_epic_key": null,
+      "title": "[WB-OC-03] Full Pod Scale Complete",
+      "name": "Full Pod Scale",
+      "start": 4,
+      "end": 9,
+      "cat": "Baseline",
+      "deps": ["WB-OC-02"],
+      "risk": "WB-R-03",
+      "deliverables": 2,
+      "date_range": "M4–M9 (Phase 2)",
+      "detail": "All Agility pods, fast-lane, routing optimization; ~15% handling reduction target."
+    },
+    {
+      "id": "WB-OC-04",
+      "jira_epic_key": null,
+      "title": "[WB-OC-04] Tooling Selection & AI Layer Complete",
+      "name": "Tooling & AI Layer",
+      "start": 3,
+      "end": 10,
+      "cat": "Baseline",
+      "deps": ["WB-OC-02", "WB-OC-03"],
+      "risk": "WB-R-04",
+      "deliverables": 2,
+      "date_range": "M3–M10 (Phase 3; overlaps scale)",
+      "detail": "SaaS RFP through contract; Agentic AI pilot through rollout; migration blueprint."
+    },
+    {
+      "id": "WB-OC-05",
+      "jira_epic_key": null,
+      "title": "[WB-OC-05] Platform Migration & Institutionalization Complete",
+      "name": "Platform Migration",
+      "start": 10,
+      "end": 18,
+      "cat": "Iterative",
+      "deps": ["WB-OC-04"],
+      "risk": "WB-R-05",
+      "deliverables": 3,
+      "date_range": "M10–M18 (Phase 4)",
+      "detail": "Configure platform, pilot + full migration, freeze 360 for Support, benefits realization."
+    }
   ]
 }
