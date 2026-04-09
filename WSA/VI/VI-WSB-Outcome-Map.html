@@ -1114,7 +1114,30 @@
       "detail": "CONDITIONAL: Triggers if VI-OC-05 or VI-OC-09 validation fails after max iterations. Legacy systems maintained; revised plan to Hilltop."
     }
   ],
-  "dependency_edges": []
+  "dependency_edges": [
+    {
+      "id": "e-vi-01-03-should",
+      "from": "VI-OC-01",
+      "to": "VI-OC-03",
+      "type": "should",
+      "curve": 0,
+      "timing": "VI-WBS §3: architecture (VI-OC-01) should precede or overlap DMSi platform work; document risk if VI-OC-03.8 runs fully ahead of VI-OC-01 exit.",
+      "prerequisite": "Parity with VI-OC-03 Dependencies table and CW-08 coordination with PA-OC-00 (WSA-3758).",
+      "decisions": [],
+      "cross_cutting": "CW-08: VI-OC-01 schedule coupling with Pipeline Automation PA-OC-00."
+    },
+    {
+      "id": "e-vi-03-16-should",
+      "from": "VI-OC-03",
+      "to": "VI-OC-16",
+      "type": "should",
+      "curve": 0,
+      "timing": "VI-OC-16 runs on existing PagerDuty sources without waiting for VI-OC-03; complete VI-OC-03.3 before holistic AIOps tuning that includes Dynatrace-sourced alerts.",
+      "prerequisite": "Dynatrace → PagerDuty is not a hard gate for PD-native AIOps phases 1–3 (VI-WBS VI-OC-16 Dependencies).",
+      "decisions": [],
+      "cross_cutting": ""
+    }
+  ]
 }
 </script>
 

@@ -65,7 +65,7 @@ The following outcomes can run concurrently once their dependencies are met:
 - **VI-OC-04** (Host Instrumentation), **VI-OC-06** (Log Migration), and **VI-OC-07** (Synthetic Monitoring) can all begin once VI-OC-03 (Platform Deployed) is complete. They do not depend on each other.
 - **VI-OC-08** (Application Telemetry) can begin design work in parallel with VI-OC-05 (Infrastructure Validation), needing only a `should` dependency for full execution.
 - **VI-OC-13** (A2W Readiness) can progress incrementally alongside any other active outcome, as long as VI-OC-03 is complete.
-- **VI-OC-16** (PagerDuty AIOps) is already underway and runs in parallel with all other outcomes. It feeds into VI-OC-10 (alerting tuning) and VI-OC-11 (proactive ops validation).
+- **VI-OC-16** (PagerDuty AIOps) is already underway on **PagerDuty-native** event sources (e.g. CheckMK and other services already ingesting into PagerDuty) and **does not wait** for VI-OC-03. Treat **VI-OC-03.3** (Dynatrace → PagerDuty) as the coordination point when **Dynatrace-sourced** alerts must be folded into the same dedupe/AIOps model and when **VI-OC-10** assumes a unified DT+PD alerting story. It feeds into VI-OC-10 (alerting tuning) and VI-OC-11 (proactive ops validation).
 
 ---
 
@@ -93,15 +93,17 @@ graph TD
     VI-OC-11 -->|must| VI-OC-14[VI-OC-14: Predictive Ops]
     VI-OC-05 -.->|contingent: validation fails| VI-OC-15[VI-OC-15: Legacy Fallback]
     VI-OC-09 -.->|contingent: validation fails| VI-OC-15
-    VI-OC-03 -->|must| VI-OC-16[VI-OC-16: PagerDuty AIOps]
+    VI-OC-01 -.->|should| VI-OC-03
+    VI-OC-16[VI-OC-16: PagerDuty AIOps]
     VI-OC-16 -->|must| VI-OC-10
     VI-OC-16 -->|should| VI-OC-11
+    VI-OC-03 -.->|should: DT to PD for holistic alert tuning| VI-OC-16
 ```
 
 ### Dependency Type Legend
 
 - **must** (solid arrow): Hard prerequisite. The dependent outcome cannot start until the prerequisite is complete.
-- **should** (solid arrow, labeled): Recommended sequence. Can proceed with documented risk acceptance.
+- **should** (solid or dashed arrow, labeled): Recommended sequence. Can proceed with documented risk acceptance. §3 uses dashed lines for some `should` edges to distinguish optional coordination from hard `must` prerequisites.
 - **contingent** (dashed arrow): Only applies if a specific condition is met.
 
 ---
@@ -383,6 +385,18 @@ graph TD
 - Coordinate **application reboots / maintenance windows** with DMSi for agent or exporter changes (**assumption:** DMSi availability for reboots — validate; see §7.5)
 - Maintain a **POC / trial calendar**: trial start, agreed **trial end date** (VI-Q-26), and which premium features are in scope for the trial
 - Produce **rollout checkpoints** for the POC (what must be true after each phase) — internal working artifact; formal SOW text follows leadership alignment
+
+#### VI-OC-03 execution note (intra-outcome order and M3 MVP)
+
+Contractually all deliverables **03.1–03.8** target **M3**; in practice use **parallel tracks** to avoid a false “platform first, then everything else” serial story:
+
+- **Track A — tenant and routing:** **03.1**, **03.2**, then **03.3** / **03.4** after **VI-D-01** / contract and when soft-launch strategy (**VI-D-09**) is clear.
+- **Track B — discovery and planning:** **03.5** (A2W telemetry strategy), **03.6** (script rationalization), and **03.7** (Elastic inventory) can run **in parallel** with Track A where access allows; they do not all need a fully hardened production tenant on day one.
+- **Track C — DMSi POC execution:** **03.8** often runs on a **trial or POC tenant** and may **start or deepen** before every production hardening item in 03.1–03.4 is complete — document explicit risk if production and trial timelines diverge.
+
+**VI-OC-03.7 vs VI-OC-02.3:** **VI-OC-02.3** already measures **GB/day** from Elastic for retention and **licensing projection**. **VI-OC-03.7** is the **migration-grade** inventory: index names, owners, dashboards, Watcher rules, and **per–log-source mapping** for cutover to Dynatrace Log Management. Treat 02.3 as **sizing input**; 03.7 as **authoritative inventory for migration** (refine or replace 02.3 estimates if the tenant or scope changed).
+
+**M3 MVP if procurement or access slips:** Minimum credible **M3** story: **03.1** + **03.2** operational for agreed scope, **03.8** POC executed per checkpoints with trial calendar (**VI-Q-26**) documented, **03.5** strategy signed off, and **03.7** far enough along that log migration risk is visible. Defer **03.3**/**03.4** to documented post-M3 only with explicit program acceptance (alert and status automation gaps).
 
 #### Dependencies
 
@@ -1183,7 +1197,7 @@ This outcome consolidates all A2W-related monitoring work that was previously sc
 
 | Risk ID | Severity | Description | Mitigation |
 |---------|----------|-------------|------------|
-| VI-R-X4 | MEDIUM | A2W migration timeline is not known; RUM and synthetic work may need to be revisited or accelerated based on launch date | Design A2W monitoring artifacts as "ready to activate" from VI-OC-07 onward; do not hard-code A2W launch assumptions |
+| VI-R-X4 | MEDIUM | A2W migration timeline is not known; RUM and synthetic work may need to be revisited or accelerated based on launch date | Design A2W monitoring artifacts as "ready to activate" anchored in **VI-OC-03.5** (strategy) and **VI-OC-07.7** (synthetic readiness); do not hard-code A2W launch assumptions |
 
 ---
 
@@ -1288,6 +1302,8 @@ This outcome activates if VI-OC-05 or VI-OC-09 validation fails after maximum it
 
 This outcome is already underway. PagerDuty AIOps (Intelligent Alert Grouping + Auto-Pause Notifications) is being deployed in a phased rollout across PagerDuty services. The rollout follows the same approach used for the 5-tier priority deployment: start with lowest-risk services, validate, then expand. AIOps needs approximately 30 days of data to fully learn the environment's patterns.
 
+**Sequencing vs. VI-OC-03:** Early phases do **not** require Dynatrace problems to flow into PagerDuty. When Dynatrace alerting is routed per **VI-OC-03.3**, extend AIOps validation and **VI-OC-10** tuning to cover that traffic so dedupe and thresholds stay coherent across CheckMK-, Dynatrace-, and other-sourced events.
+
 **What AIOps introduces:**
 - **Intelligent Alert Grouping:** Related alerts grouped into a single incident (fewer interruptions for the same underlying issue)
 - **Auto-Pause Notifications:** Transient alerts held during a pause window; if self-resolved, no page is sent
@@ -1365,7 +1381,8 @@ This outcome is already underway. PagerDuty AIOps (Intelligent Alert Grouping + 
 
 | Depends On | Type | Description |
 |------------|------|-------------|
-| VI-OC-03 | must | PagerDuty integration must be operational (VI-OC-03.3) before AIOps can layer on top |
+| — | — | Phases 1–3 run on **existing** PagerDuty integrations (CheckMK and other sources already in PD). No wait for VI-OC-03. |
+| VI-OC-03.3 | should | Complete **Dynatrace → PagerDuty** (VI-OC-03.3) before **holistic** AIOps tuning that treats Dynatrace problems as first-class inputs and before **VI-OC-10** work that assumes a unified DT+PD alerting baseline. |
 
 #### Iteration Policy
 
@@ -1400,7 +1417,7 @@ This outcome is already underway. PagerDuty AIOps (Intelligent Alert Grouping + 
 #### Relationship to Other Outcomes
 
 - **Absorbs VI-OC-10.3** (PagerDuty AIOps Configuration): This work was previously a single deliverable under VI-OC-10. With the phased rollout plan, it is now a full outcome with its own validation cycles, phases, and handover.
-- **Feeds VI-OC-10** (Alerting Optimized): AIOps must be deployed and past the learning period before alert tuning in VI-OC-10 can be fully effective. VI-OC-10.1 (Alert Audit) and VI-OC-10.2 (Threshold Tuning) benefit from AIOps noise reduction data.
+- **Feeds VI-OC-10** (Alerting Optimized): AIOps must be deployed and past the learning period before alert tuning in VI-OC-10 can be fully effective. VI-OC-10.1 (Alert Audit) and VI-OC-10.2 (Threshold Tuning) benefit from AIOps noise reduction data. When **VI-OC-10** assumes Dynatrace-sourced alerts, align with **VI-OC-03.3** per VI-OC-16 Dependencies.
 - **Feeds VI-OC-11** (Proactive Operations): The alert noise reduction from AIOps directly impacts the MTTD and alert volume metrics that VI-OC-11 validates for M5.
 - **Updates VI-OC-09.5** (PagerDuty AIOps Confirmation): Event volume confirmation now happens as part of VI-OC-16.4 monitoring, not as a standalone deliverable.
 
@@ -1415,7 +1432,7 @@ The following risks apply across multiple outcomes and are tracked at the engage
 | VI-R-X1 | Progress OpenEdge architectural constraints prevent achieving APM depth required for MTTD target without compensating synthetic monitoring scope | HIGH | HIGH | Dynamo + Andy | Validate in VI-OC-01 / VI-OC-03 POC scope; define fallback scope before VI-OC-08 |
 | VI-R-X2 | Dev team remains above 60% reactive load through VI-OC-08, preventing APM instrumentation work | MEDIUM | HIGH | Brent | VI-OC-08 APM scope designed to minimize dev hours; confirm allocation before VI-OC-05 exits |
 | VI-R-X3 | Dynatrace generates alert noise layered on CheckMK during parallel operation, worsening alert fatigue before it improves | MEDIUM | HIGH | Dynamo | Conservative initial thresholds; soft-launch period; deduplicate in PagerDuty |
-| VI-R-X4 | A2W migration timeline unknown; RUM and synthetic work may need to be revisited or accelerated | MEDIUM | MEDIUM | Robin + Dynamo | Design A2W monitoring artifacts as "ready to activate" from VI-OC-07 onward |
+| VI-R-X4 | A2W migration timeline unknown; RUM and synthetic work may need to be revisited or accelerated | MEDIUM | MEDIUM | Robin + Dynamo | Design A2W monitoring artifacts as "ready to activate" from **VI-OC-03.5** and **VI-OC-07.7** onward |
 | VI-R-X5 | Access dependencies **or DMSi engagement stalls** (server access, Elastic configs, GitHub org, approvals delayed or blocked) remain unresolved, blocking VI-OC-03/VI-OC-04 and POC | MEDIUM | HIGH | Andy Meyers | Formally request access in VI-OC-01.1; escalate to Hilltop if unresolved; treat procedural stall like missing access |
 | VI-R-X6 | Dynatrace licensing cost exceeds budget, causing mid-implementation scope reduction | LOW | HIGH | DMSi Procurement + Dynamo | Complete VI-OC-02.4 before deployment; modular design allows scope reduction without rework |
 | VI-R-X7 | Dynatrace go-live coincides with a major incident, eroding trust | LOW | MEDIUM | Dynamo | Soft launch with conservative thresholds; Dynamo monitors for first 2 weeks |
@@ -1475,8 +1492,8 @@ These questions, once answered and acted upon, lock in irreversible choices.
 - **VI-Q-04**: Prior dev team evaluation of Dynatrace or APM for OpenEdge? Owner: Brent.
 - **VI-Q-05**: A2W target launch timeline? Gates VI-D-12 and VI-D-15. Owner: Robin + Brent.
 - **VI-Q-07**: Current on-call structure? Owner: Andy / Brent.
-- **VI-Q-10**: Approximate daily log ingest volume (GB/day)? Owner: Andy / Elastic admin.
-- **VI-Q-11**: Operational Kibana dashboards in use? Owner: Andy.
+- **VI-Q-10**: Approximate daily log ingest volume (GB/day)? Owner: Andy / Elastic admin. Inform **VI-OC-03.7**; **VI-OC-02.3** uses preliminary sizing for licensing — reconcile if estimates diverge.
+- **VI-Q-11**: Operational Kibana dashboards in use? Owner: Andy. Inform **VI-OC-03.7** inventory (dashboard consumers and frequency).
 - **VI-Q-12**: Elastic cluster admin access -- siloed knowledge risk? Owner: Andy.
 - **VI-Q-13**: Full inventory of custom CheckMK modules? Owner: Andy / CheckMK admin. Required before VI-OC-03.6.
 - **VI-Q-14**: Complete list of scripts outside primary monitoring stack? Owner: Andy / Brent.
@@ -1509,13 +1526,14 @@ Validate these assumptions explicitly; if false, convert to risks or blockers.
 
 | Dep ID | External Workstream | External Outcome | Internal Outcome | Type | Coordination |
 |--------|--------------------|--------------------|-------------------|------|--------------|
-| CW-01 | WSA Work Management + Workstream D | Engineering Scorecard (M2) | VI-OC-05 | must | PD Stage 1 operational before scorecard baseline is locked. If VI-OC-05 slips past M2, scorecard launches with CheckMK data as temporary baseline. Document transition point. |
+| CW-01 | WSA Work Management + Workstream D | Engineering Scorecard (M2) | VI-OC-05 | must | PD Stage 1 operational before scorecard baseline is locked. If VI-OC-05 slips past M2, scorecard launches with CheckMK data as temporary baseline. Document transition point. **M2 vs M3:** M2 scorecard baseline does **not** require VI-OC-03 (full Dynatrace platform M3); if VI-OC-03 slips past M3, infra validation and scorecard still assume **CheckMK (or agreed interim) visibility** until Dynatrace-backed baselines replace them. |
 | CW-02 | Workstream B (Stage 2-3) | Tiered Customer Service (M3-M4) | VI-OC-07 | must | Synthetic monitoring must be live before top-tier service level is marketed. Make VI-OC-07 completion a gate in WSB acceptance criteria. |
 | CW-03 | Workstream C (WSC C3 Gate) | Tool Selection | VI-OC-03.3 | contingent | PagerDuty routing must remain platform-agnostic (VI-D-19). If WSC selects new platform at C3, PagerDuty service routing reconfigured. |
 | CW-04 | WSA Pipeline Automation (M6/M7) | CFR and DORA Metrics | VI-OC-10.5 | must | CI/CD pipeline must emit deployment events to Dynatrace SDLC event API. Coordinate with Pipeline Automation WBS. |
 | CW-05 | Workstream D (Stage 3, M4) | Executive Dashboard | VI-OC-05 | should | Dashboard needs 2-4 weeks of Dynatrace data for credible trends. Account for pre/post-Dynatrace data discontinuity. |
 | CW-06 | Workstream B (Stage 4-5, M4-M5) | Support Pod Structure | VI-OC-10.4 | should | WSB pod structure design must be provided before alert routing is finalized. Do not finalize PagerDuty routing until pod ownership confirmed. |
 | CW-07 | Workstream B (Stage 1-2) | Status Page Communication | VI-OC-03.4, VI-OC-10.6 | should | WSB must own and approve status page templates before they go live. Joint session required. |
+| CW-08 | WSA Pipeline Automation | NGINX infrastructure & architecture POC (**PA-OC-00**, Jira **WSA-3758**) | VI-OC-01 | should | VI-OC-01 (Dynamo NGINX POC) naming and scope should **track** PA’s NGINX POC milestones; align architecture/inventory exit with PA-OC-00 evidence so foundation work and pipeline POC stay schedule-coupled. |
 
 ---
 
@@ -1572,6 +1590,7 @@ Normative history of substantive edits to this WBS. **Newest first.** On each up
 | Date | Summary |
 |------|---------|
 | 2026-04-10 | **VI-OC-01 / VI-OC-03 restructure (Dynamo vs DMSi NGINX POC):** **VI-OC-01** retitled *Foundation Planning and Architecture Complete (Dynamo NGINX POC)* — deliverables **01.1–01.3** only. **VI-OC-03** retitled *Dynatrace Platform and Integrations Deployed (DMSi NGINX POC)* — former **01.4–01.7** renumbered to **03.5–03.8**; **entire VI-OC-03 outcome due M3**. Added VI-OC-03 `should` dependency on VI-OC-01 for architecture vs POC overlap. Cross-refs updated (VI-OC-13, VI-D-21, VI-Q-13, §7.5, VI-R-X1, VI-OC-04.2). **Related:** `vi-outcomes.json`, `VI-WBS-Jira-Import.json`, `VI-WSB-Outcome-Map.html`, `VI-kanban.html`. |
+| 2026-04-09 | **VI-WBS sequencing review:** Resolved **VI-OC-16** vs **VI-OC-03** tension — AIOps phases on existing PD sources; **VI-OC-03.3** `should` before holistic DT+PD tuning; §3 Mermaid: removed hard **must** OC-03→OC-16, added `should` edges **VI-OC-01→VI-OC-03** and **VI-OC-03→VI-OC-16**. Added **VI-OC-03 execution note** (tracks, **03.7** vs **02.3**, M3 MVP). **CW-08** (VI-OC-01 ↔ **PA-OC-00** / **WSA-3758**). **CW-01** M2/M3 scorecard blurb. **VI-R-X4** cites **VI-OC-03.5** + **VI-OC-07.7**; **VI-Q-10** / **VI-Q-11** tied to **VI-OC-03.7**. **Related:** `vi-outcomes.json`, `VI-WSB-Outcome-Map.html` (`dependency_edges`). |
 | 2026-04-09 | **Dynatrace POC in DMSi environment (planning session):** §2 outcome map and VI-OC-01 status expanded for DMSi-env trial/POC; new deliverable **VI-OC-01.7** (PASOE OTO exporters, Fireflies follow-up configs, training, reboot windows, trial calendar, rollout checkpoints); **VI-OC-01.4** scope note (A2W not broadly live; RUM readiness vs. full instrumentation); **VI-OC-04.2** OTO/Fireflies bullets; **VI-OC-08.3** / **VI-OC-09.2** **SOSAVE** (service-order save duration) with fileshare/SME dependency; new risks **VI-R-20**, **VI-R-X5** engagement/stall wording; **VI-Q-26** (trial end / included capabilities), **VI-Q-27** (SOSAVE); **§7.5** working assumptions table; **VI-D-21** (POC success vs. trial end). **Related:** `vi-outcomes.json`, `VI-WSB-Outcome-Map.html`, `VI-kanban.html`, `VI-Constraint-vs-Outcome-Map.html`. |
 
 ---
