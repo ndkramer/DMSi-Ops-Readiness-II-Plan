@@ -78,7 +78,7 @@
     {
       "id": "VI-OC-03",
       "title": "Platform & Integrations Deployed (DMSi NGINX POC)",
-      "start": 4,
+      "start": 3,
       "end": 6,
       "cat": "Baseline",
       "deps": [
