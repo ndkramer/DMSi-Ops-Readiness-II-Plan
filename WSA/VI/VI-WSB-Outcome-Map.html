@@ -150,21 +150,9 @@
   .bar-iterative { background: #76BE43; }
   .bar-conditional { background: #E67E22; border: 2px dashed #D35400; }
   .bar-validation { background: repeating-linear-gradient(45deg, #76BE43, #76BE43 4px, #5DA832 4px, #5DA832 8px); }
-  /* Checkmark when outcomes[].status === "complete". Top-left avoids overlap with + (right) and stall marker on narrow bars (e.g. VI-OC-01). */
+  /* Same as WM-Outcome-Map: checkmark when outcomes[].status === "complete" */
   .bar-complete { position: relative; }
-  .bar-complete::after {
-    content: '\2713';
-    position: absolute;
-    left: 5px;
-    top: 3px;
-    right: auto;
-    font-size: 10px;
-    line-height: 1;
-    color: white;
-    font-weight: 700;
-    z-index: 18;
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.35);
-  }
+  .bar-complete::after { content: '\2713'; position: absolute; top: 2px; right: 22px; font-size: 9px; color: white; font-weight: 700; }
 
   .stall-marker {
     position: absolute;
