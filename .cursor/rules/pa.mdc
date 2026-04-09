@@ -13,6 +13,7 @@ When editing or creating content under **`WSA/PA/`**, follow the Pipeline Automa
 - **Outcome map**: Table with ID, Outcome, Category, Target Date, Calendar, Milestone Alignment.
 - **Dependencies**: Mermaid graph with `must` / `should` / `contingent`; document in Dependency Type Legend.
 - **Per-outcome sections**: Use `### PA-OC-XX: Outcome Title`; include **Category:**, **Target Date:**, **Owner:**, **Status:**; then **Success Criteria** (bullets), **Deliverables** (table), then **PA-OC-XX.Y: Deliverable Name** with bullet subtasks.
+- **Document Change Log** (end of `PA-WBS.md`, §12): Prepend a dated row on every substantive edit (**newest first**). Jira/planning bullets also stay in **§1 — Change log (planning ↔ Jira)** when relevant. See `.cursor/skills/wbs-update-pattern/SKILL.md`.
 
 ## Conventions
 

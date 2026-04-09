@@ -1564,4 +1564,14 @@ Validate these assumptions explicitly; if false, convert to risks or blockers.
 
 ---
 
+## 11. Document Change Log
+
+Normative history of substantive edits to this WBS. **Newest first.** On each update, prepend an entry (see `.cursor/skills/wbs-update-pattern/SKILL.md`).
+
+| Date | Summary |
+|------|---------|
+| 2026-04-09 | **Dynatrace POC in DMSi environment (planning session):** §2 outcome map and VI-OC-01 status expanded for DMSi-env trial/POC; new deliverable **VI-OC-01.7** (PASOE OTO exporters, Fireflies follow-up configs, training, reboot windows, trial calendar, rollout checkpoints); **VI-OC-01.4** scope note (A2W not broadly live; RUM readiness vs. full instrumentation); **VI-OC-04.2** OTO/Fireflies bullets; **VI-OC-08.3** / **VI-OC-09.2** **SOSAVE** (service-order save duration) with fileshare/SME dependency; new risks **VI-R-20**, **VI-R-X5** engagement/stall wording; **VI-Q-26** (trial end / included capabilities), **VI-Q-27** (SOSAVE); **§7.5** working assumptions table; **VI-D-21** (POC success vs. trial end). **Related:** `vi-outcomes.json`, `VI-WSB-Outcome-Map.html`, `VI-kanban.html`, `VI-Constraint-vs-Outcome-Map.html`. |
+
+---
+
 *Document generated March 2026 by Dynamo Consulting. This document uses the Outcome-Based Project Model framework.*

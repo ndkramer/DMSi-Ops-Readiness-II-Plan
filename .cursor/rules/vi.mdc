@@ -16,6 +16,7 @@ When editing or creating content under **`WSA/VI/`**, follow the VI outcome-base
 - **Risk Register**: Table with ID, Severity, Description, Mitigation. IDs use `VI-R-XX` for outcome-specific, `VI-R-X#` for cross-cutting, `VI-R-PD#` for PagerDuty-specific.
 - **Decision Register**: Table with ID, Type (1 or 2), Decision, Owner, Deadline. IDs use `VI-D-XX` for outcome-specific, `VI-D-PD#` for PagerDuty-specific.
 - **Open Questions**: Numbered list with `VI-Q-XX` IDs, each with Owner and expected answer timeline.
+- **Document Change Log** (end of `VI-WBS.md`, §11): On each substantive WBS edit, prepend a dated row (**newest first**). See `.cursor/skills/wbs-update-pattern/SKILL.md`.
 
 ## Conventions
 

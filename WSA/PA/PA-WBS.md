@@ -1095,4 +1095,14 @@ This table shows how the original stage-gate WBS maps to this outcome-based stru
 
 ---
 
+## 12. Document Change Log
+
+Substantive edits to this WBS — **newest first.** Jira ↔ planning narrative history also lives under **§1 — Change log (planning ↔ Jira)**; when those bullets change, add a matching dated row here. See `.cursor/skills/wbs-update-pattern/SKILL.md`.
+
+| Date | Summary |
+|------|---------|
+| 2026-04-09 | Initialized end-of-document **Document Change Log** for all capability WBS files (process change); no PA outcome/deliverable text changed on this date. |
+
+---
+
 *Document generated March 2026 by Dynamo Consulting. This document uses the Outcome-Based Project Model framework.*

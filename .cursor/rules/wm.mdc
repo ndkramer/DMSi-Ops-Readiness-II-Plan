@@ -13,6 +13,7 @@ When editing or creating content under **`WSA/WM/`**, follow the Work Management
 - **Outcome map**: Table with ID, Outcome, Category, Target Date, Calendar, Milestone Alignment.
 - **Dependencies**: Mermaid graph with `must` / `should`; document in Dependency Type Legend.
 - **Per-outcome sections**: Use `### OC-XX: Outcome Title`; include **Category:**, **Target Date:**, **Owner:**, **Status:**; then **Success Criteria** (bullets), **Deliverables** (table), then **OC-XX.Y: Deliverable Name** with bullet subtasks.
+- **Document Change Log** (end of `WM-WBS.md`, §11): Prepend a dated row on every substantive edit (**newest first**). See `.cursor/skills/wbs-update-pattern/SKILL.md`.
 
 ## Conventions
 

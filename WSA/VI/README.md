@@ -6,7 +6,7 @@ Normative planning for **Visibility Infrastructure & proactive detection** (Dyna
 
 | Artifact | Purpose |
 |----------|---------|
-| **`VI-WBS.md`** | Outcome-based **Work Breakdown Structure** — success criteria, deliverables, dependencies, risks, decisions, Jira mapping. |
+| **`VI-WBS.md`** | Outcome-based **Work Breakdown Structure** — success criteria, deliverables, dependencies, risks, decisions, Jira mapping. **§11 Document Change Log** at end of file (prepend dated rows on substantive edits). |
 | **`vi-outcomes.json`** | Optional **structured** outcome ↔ Jira keys for scripts; **extend** when §9 epic mapping is fully enumerated (same idea as `PA/pa-outcomes.json`). |
 | **`VI-WSB-Outcome-Map.html`** | Visual timeline (filename keeps historical **WSB**; content aligns with **VI-WBS**). |
 | **`VI-kanban.html`** | Per-outcome boards. |

@@ -856,3 +856,13 @@ For teams referencing the original constraint model (WM-S0 through WM-S6), this 
 | WM-S6 | Prioritization Drives Execution | 1:1 | WM-OC-09 | Maps directly to capstone |
 | -- | (No stage equivalent) | NEW | WM-OC-06 | Full category expansion and reactive visibility from implementation plan Phase 4 |
 | -- | (No stage equivalent) | NEW | WM-OC-08 | Scorecard and flow metrics from implementation plan Phase 4.4/4.6 |
+
+---
+
+## 11. Document Change Log
+
+Substantive edits to this WBS — **newest first.** See `.cursor/skills/wbs-update-pattern/SKILL.md`.
+
+| Date | Summary |
+|------|---------|
+| 2026-04-09 | Initialized end-of-document **Document Change Log** (process change); no WM outcome/deliverable text changed on this date. |

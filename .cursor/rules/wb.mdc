@@ -14,6 +14,7 @@ When editing or creating content under **`WSB-WSC/WB/`** (Customer Support capab
 - **Dependencies**: Mermaid graph with `must` / `should` / `contingent`; document in Dependency Type Legend.
 - **Per-outcome sections**: Use `### [WB-OC-XX] Title`; include **Category:**, **Target Date:**, **Owner:**, **Status:**; then **Success criteria**, **Deliverables** table, deliverable subsections with bullet subtasks.
 - **Planning HTML**: `WB-Outcome-Map.html` (timeline), `WB-kanban.html` (per-outcome boards). Cross-link from `WSB-WSC/WSB-WSC-Outcome-Map.html` where relevant.
+- **Document Change Log** (end of `WB-WBS.md`, §13): Prepend a dated row on every substantive edit (**newest first**). See `.cursor/skills/wbs-update-pattern/SKILL.md`.
 
 ## Conventions
 

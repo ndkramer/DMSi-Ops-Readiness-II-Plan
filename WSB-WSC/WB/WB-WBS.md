@@ -576,4 +576,14 @@ Risks below are adapted from the source **Risk Register** and program narrative.
 
 ---
 
+## 13. Document Change Log
+
+Substantive edits to this WBS — **newest first.** See `.cursor/skills/wbs-update-pattern/SKILL.md`.
+
+| Date | Summary |
+|------|---------|
+| 2026-04-09 | Initialized end-of-document **Document Change Log** (process change); no WB outcome/deliverable text changed on this date. |
+
+---
+
 *Document derived March 2026 from DMSi Customer Support Implementation Plan & Execution Roadmap. Outcome structure aligned to `WSA/PA/PA-WBS.md` conventions.*
