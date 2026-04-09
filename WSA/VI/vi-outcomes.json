@@ -51,11 +51,11 @@
       "end": 4,
       "cat": "Baseline",
       "deps": [],
-      "risk": "",
-      "deliverables": 6,
+      "risk": "VI-R-X5",
+      "deliverables": 7,
       "milestone": "",
-      "date_range": "Vendor POC active; plan Apr 1 - Apr 25",
-      "detail": "CURRENT: POC with Dynatrace (tenant/scope). THEN: environment inventory, architecture design, integration architecture, A2W telemetry strategy, script rationalization, Elastic log mapping. 1.5 FTE conservative: 4 weeks on plan."
+      "date_range": "DMSi-env POC active; trial end TBD (VI-Q-26); plan Apr 1 - Apr 25",
+      "detail": "DMSi-environment Dynatrace POC: agents/install, PASOE OTO exporters, reboot windows, Dynatrace+DMSi training (VI-OC-01.7). THEN: inventory, architecture, integration, A2W telemetry strategy (current-state + RUM readiness), scripts, Elastic mapping. SOSAVE discovery starts in VI-OC-08. 1.5 FTE conservative: 4 weeks on plan."
     },
     {
       "id": "VI-OC-02",
@@ -142,11 +142,11 @@
       "end": 11,
       "cat": "Iterative",
       "deps": ["VI-OC-05"],
-      "risk": "VI-R-14, VI-R-15",
+      "risk": "VI-R-14, VI-R-15, VI-R-16, VI-R-20",
       "deliverables": 6,
       "milestone": "M5",
       "date_range": "Jul 20 - Aug 15",
-      "detail": "Starts during VI-OC-05 validation (should dep). APM scope, PASOE service detection, custom metrics, OpenTelemetry eval. HIGHEST RISK: dev team capacity."
+      "detail": "Starts during VI-OC-05 validation (should dep). APM scope, PASOE service detection, custom metrics incl. SOSAVE (service-order save duration; fileshare/SME access), OpenTelemetry eval. HIGHEST RISK: dev team capacity; SOSAVE blocked without access (VI-R-20)."
     },
     {
       "id": "VI-OC-09",

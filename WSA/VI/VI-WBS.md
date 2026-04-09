@@ -41,7 +41,7 @@ Each outcome follows a standard template:
 
 | ID | Outcome | Category | Target Date | Milestone Alignment |
 |----|---------|----------|-------------|---------------------|
-| VI-OC-01 | Foundation Planning and Architecture Complete | Baseline | [TBD -- Weeks 1-2]; **Dynatrace vendor POC in progress** | -- |
+| VI-OC-01 | Foundation Planning and Architecture Complete | Baseline | [TBD -- Weeks 1-2]; **DMSi-environment Dynatrace POC**: agents/install, PASOE OTO exporter enablement, coordinated reboots, vendor + DMSi training; trial scope/end date TBD (VI-Q-26) | -- |
 | VI-OC-02 | Telemetry Strategy and Licensing Resolved | Baseline | [TBD -- Weeks 2-3] | -- |
 | VI-OC-03 | Dynatrace Platform and Integrations Deployed | Baseline | [TBD -- Weeks 3-4] | -- |
 | VI-OC-04 | Host Fleet Instrumented | Baseline | [TBD -- Weeks 4-5] | -- |
@@ -115,7 +115,7 @@ graph TD
 **Category:** Baseline
 **Target Date:** [TBD -- Weeks 1-2]
 **Owner:** Dynamo + Andy Meyers
-**Status:** In Progress — **Dynatrace vendor POC**: working with Dynatrace to stand up and scope a proof-of-concept / trial environment; supports early validation for licensing, deployment model (VI-D-01), and architecture before full VI-OC-03 rollout.
+**Status:** In Progress — **DMSi-environment Dynatrace POC / trial**: trial tenant in DMSi dev; OneAgent and platform features not yet fully rolled (e.g. deep monitoring may be partial). Confirm with Dynatrace what the trial includes (Davis / AI-assisted features, log intelligence) and **record trial end date** once known (VI-Q-26). Internal framing for contract language such as “observability documented”: prefer **Dynatrace rollout checkpoints** (what must be true after each POC phase) over generic documentation — pending Michelle/Cameron confirmation for formal SOW wording.
 **Source:** S0 (WP 0.1, 0.2, 0.4, 0.5, 0.6, 0.7)
 
 #### Success Criteria
@@ -124,6 +124,7 @@ graph TD
 - [ ] Dynatrace architecture design documented and reviewed by Robin and Andy
 - [ ] Integration architecture (PagerDuty, status page, CheckMK coexistence) documented
 - [ ] A2W telemetry strategy document produced and signed off
+- [ ] Dynatrace POC execution in DMSi environment advanced per VI-OC-01.7 (agents/config, training, trial calendar)
 - [ ] Custom script inventory centralized in GitHub with classification complete
 - [ ] Elastic log source inventory complete with volume estimates
 
@@ -137,6 +138,7 @@ graph TD
 | VI-OC-01.4 | A2W Telemetry Strategy (M3 Deliverable) | Dynamo + Robin | [TBD] |
 | VI-OC-01.5 | Custom Script Rationalization Planning | Dynamo + Andy | [TBD] |
 | VI-OC-01.6 | Elastic Inventory and Log Source Mapping | Dynamo + Andy | [TBD] |
+| VI-OC-01.7 | Dynatrace POC — DMSi Environment Execution | Dynamo + Matt + Brent | [TBD] |
 
 **VI-OC-01.1: Environment Inventory and Gap Assessment**
 
@@ -168,6 +170,8 @@ graph TD
 
 **VI-OC-01.4: A2W Telemetry Strategy (M3 Deliverable)**
 
+**Scope note:** A2W is not broadly in production today; treat this deliverable as **current-state** monitoring (RDP-delivered Agility) plus **future-state hooks** for A2W. Where A2W has no committed production date, emphasize **initial Real User Monitoring (RUM) strategy** and a **readiness checklist** for when A2W goes live, rather than pretending full A2W instrumentation is executable now. Contract milestone wording may be a pre-Dynatrace holdover — align narrative with Dynamo’s Dynatrace-first plan.
+
 - Document current-state monitoring approach for RDP-delivered Agility
 - Define target-state monitoring requirements for A2W browser-delivered interface (RUM, synthetic, APM)
 - Map Dynatrace capabilities to A2W target state
@@ -192,6 +196,16 @@ graph TD
 - Estimate daily log ingest volume in GB/day -- this directly affects Dynatrace Log Management licensing cost
 - Produce completed log source inventory -- reviewed by Andy and Brent
 
+**VI-OC-01.7: Dynatrace POC — DMSi Environment Execution**
+
+- Install/configure Dynatrace components in DMSi POC/dev scope per VI-OC-01.2 architecture (agents, connectivity, tagging as applicable)
+- **PASOE / OpenTelemetry:** enable or configure OpenTelemetry (OTO) exporters in PASOE per DMSi change control (**assumption:** Matt has access to change PASOE config — validate; see §7.5)
+- Capture **two additional configuration items** documented from engagement notes (e.g. Fireflies transcript follow-ups) and track to completion
+- Schedule and complete **Dynatrace-led training** with DMSi teams (coordinate with Brent / account team)
+- Coordinate **application reboots / maintenance windows** with DMSi for agent or exporter changes (**assumption:** DMSi availability for reboots — validate; see §7.5)
+- Maintain a **POC / trial calendar**: trial start, agreed **trial end date** (VI-Q-26), and which premium features are in scope for the trial
+- Produce **rollout checkpoints** for the POC (what must be true after each phase) — internal working artifact; formal SOW text follows leadership alignment
+
 #### Dependencies
 
 | Depends On | Type | Description |
@@ -202,7 +216,7 @@ graph TD
 
 | Risk ID | Severity | Description | Mitigation |
 |---------|----------|-------------|------------|
-| VI-R-X5 | HIGH | Access dependencies (read-only server access, Elastic configs, GitHub org access) remain unresolved, blocking deployment | Formally request access in VI-OC-01.1; escalate to Hilltop if not resolved before VI-OC-02 starts |
+| VI-R-X5 | HIGH | Access dependencies **or DMSi engagement stalls** (server access, Elastic configs, GitHub org, procedural/political delays on approvals) remain unresolved, blocking VI-OC-03/VI-OC-04 and POC progress | Formally request access in VI-OC-01.1; escalate to Hilltop if not resolved before VI-OC-02 starts; treat repeated “slow no” on access as the same severity as missing credentials |
 | VI-R-01 | MEDIUM | Environment inventory incomplete due to undocumented hosts or shadow infrastructure | Cross-reference CheckMK host list, Elastic log sources, and PagerDuty service map to triangulate coverage |
 
 #### Decisions Required
@@ -431,6 +445,7 @@ graph TD
 **VI-OC-04.2: Progress OpenEdge and PASOE Monitoring** *(Highest-risk work package)*
 
 - Validate OneAgent detection of PASOE processes (Java-based JVM monitoring). Configure OpenTelemetry if needed.
+- **PASOE OTO exporters:** enable/configure OpenTelemetry exporters in PASOE where required for APM depth, per DMSi change control and VI-OC-01.7; cross-reference supplemental config notes (e.g. two items tracked from Fireflies / meeting follow-ups)
 - Determine what OpenEdge ABL processes are detectable vs. require custom extensions
 - Configure Dynatrace Extension Framework 2.0 for OpenEdge-specific metrics (if required)
 - Instrument NGINX with Dynatrace NGINX extension -- validate request throughput and error rate metrics
@@ -733,7 +748,7 @@ This outcome can begin as soon as the platform is deployed (VI-OC-03). It does N
 
 - [ ] APM scope confirmed based on VI-OC-04 gap analysis
 - [ ] PASOE service detection rules configured in Dynatrace
-- [ ] Business-level custom metrics defined (active user sessions, transaction success rate, report job queue depth)
+- [ ] Business-level custom metrics defined (active user sessions, transaction success rate, report job queue depth), including **SOSAVE** (service-order save duration — high priority to DMSi; see VI-Q-27, VI-R-20)
 - [ ] OpenTelemetry evaluation complete (VI-D-14)
 - [ ] Infrastructure and service dashboards built for engineering
 
@@ -759,6 +774,7 @@ This outcome can begin as soon as the platform is deployed (VI-OC-03). It does N
 **VI-OC-08.3: Custom Metric Definition**
 
 - Define business-level metrics (active user sessions, transaction success rate, report job queue depth)
+- **SOSAVE (priority):** DMSi tracks how long clients take to save service orders. Document the **as-is measurement process** (sources, batch jobs, fileshares, logs, or manual steps). Obtain **read-only fileshare / SME access** as needed to reproduce or supersede the metric in Dynatrace (metric events, log-based signals, custom instrumentation, or hybrid). Time-box discovery; escalate if access is blocked (VI-R-20)
 
 **VI-OC-08.4: OpenTelemetry Evaluation (VI-D-14)**
 
@@ -793,6 +809,7 @@ This outcome can begin as soon as the platform is deployed (VI-OC-03). It does N
 | VI-R-14 | HIGH | APM instrumentation of Progress OpenEdge ABL requires dev team capacity. If dev team is still at 70% reactive load, this work will slip and M5 will be at risk. This is the most significant schedule risk in the engagement. | Confirm dev team allocation before starting; design for minimal dev hours |
 | VI-R-15 | HIGH | OpenEdge ABL is not a natively supported Dynatrace technology for distributed tracing. Deep APM may not be achievable without significant custom development. | Set realistic expectations with DMSi leadership before starting |
 | VI-R-16 | MEDIUM | Custom business metrics require knowledge of the OpenEdge application data model that only DMSi engineering SMEs possess | Plan for at least 2 working sessions with Bryan or Andy to define metrics |
+| VI-R-20 | HIGH | **SOSAVE** (service-order save duration) cannot be replicated or replaced in Dynatrace without fileshare access, process documentation, or SME time — DMSi may see POC as low value | Early workshop with DMSi SMEs; formal read-only access request; time-boxed discovery; escalate via VI-R-X5 path if stalled |
 | VI-R-X2 | HIGH | Dev team remains above 60% reactive load, preventing APM instrumentation work | VI-OC-08 APM scope is designed to minimize dev team hours; confirm allocation before VI-OC-05 exits |
 
 #### Decisions Required
@@ -841,6 +858,7 @@ This outcome can begin as soon as the platform is deployed (VI-OC-03). It does N
 **VI-OC-09.2: Application Baseline**
 
 - Define normal request throughput, error rates, and response time distributions for key PASOE endpoints
+- Once **SOSAVE** is defined in VI-OC-08.3, add **service-order save latency** (or equivalent) to application baselines and candidate SLOs
 
 **VI-OC-09.3: Synthetic Baseline**
 
@@ -1397,7 +1415,7 @@ The following risks apply across multiple outcomes and are tracked at the engage
 | VI-R-X2 | Dev team remains above 60% reactive load through VI-OC-08, preventing APM instrumentation work | MEDIUM | HIGH | Brent | VI-OC-08 APM scope designed to minimize dev hours; confirm allocation before VI-OC-05 exits |
 | VI-R-X3 | Dynatrace generates alert noise layered on CheckMK during parallel operation, worsening alert fatigue before it improves | MEDIUM | HIGH | Dynamo | Conservative initial thresholds; soft-launch period; deduplicate in PagerDuty |
 | VI-R-X4 | A2W migration timeline unknown; RUM and synthetic work may need to be revisited or accelerated | MEDIUM | MEDIUM | Robin + Dynamo | Design A2W monitoring artifacts as "ready to activate" from VI-OC-07 onward |
-| VI-R-X5 | Access dependencies (server access, Elastic configs, GitHub org) remain unresolved, blocking VI-OC-03/VI-OC-04 | MEDIUM | HIGH | Andy Meyers | Formally request access in VI-OC-01.1; escalate to Hilltop if unresolved |
+| VI-R-X5 | Access dependencies **or DMSi engagement stalls** (server access, Elastic configs, GitHub org, approvals delayed or blocked) remain unresolved, blocking VI-OC-03/VI-OC-04 and POC | MEDIUM | HIGH | Andy Meyers | Formally request access in VI-OC-01.1; escalate to Hilltop if unresolved; treat procedural stall like missing access |
 | VI-R-X6 | Dynatrace licensing cost exceeds budget, causing mid-implementation scope reduction | LOW | HIGH | DMSi Procurement + Dynamo | Complete VI-OC-02.4 before deployment; modular design allows scope reduction without rework |
 | VI-R-X7 | Dynatrace go-live coincides with a major incident, eroding trust | LOW | MEDIUM | Dynamo | Soft launch with conservative thresholds; Dynamo monitors for first 2 weeks |
 
@@ -1431,6 +1449,7 @@ Each decision is classified using the Bezos / Amazon Type 1 / Type 2 framework. 
 | VI-D-18 | TYPE 2 | Log ingestion scope | Andy + Dynamo | VI-OC-06.1 | OPEN |
 | VI-D-19 | TYPE 2 | PagerDuty-to-ticket integration (portable webhook vs. native) | Dynamo + WSC lead | VI-OC-03.3 | OPEN |
 | VI-D-20 | TYPE 2 | New Relic disposition | Andy + Dynamo | VI-OC-01 exit | OPEN |
+| VI-D-21 | TYPE 2 | Dynatrace POC success criteria vs. trial end — what must be demonstrated before trial lapses | Brent + Dynamo + Andy | VI-OC-01.7 exit | OPEN |
 
 ---
 
@@ -1468,6 +1487,20 @@ These questions, once answered and acted upon, lock in irreversible choices.
 - **VI-Q-23**: Which CI/CD tool will Pipeline Automation use? Owner: Brent + Dynamo. Required before VI-OC-10.5.
 - **VI-Q-24** [feeds VI-D-20]: Is New Relic in active use? Owner: Andy. Required before VI-OC-01 exit.
 - **VI-Q-25**: Can OpenTelemetry in Progress OpenEdge ABL provide needed monitoring depth? Owner: Dan + Matt. Required before VI-OC-02.2.
+- **VI-Q-26**: What is the Dynatrace **trial end date**, and which capabilities are included (deep monitoring, Davis / AI-assisted log analysis, etc.)? Owner: Brent + Dynatrace account team. Required before POC exit / licensing commitment (feeds VI-D-21).
+- **VI-Q-27**: **SOSAVE** — authoritative definition, current measurement process, data sources, fileshare paths, and owning SME. Owner: DMSi engineering + Brent/Matt. Required early in VI-OC-08.3.
+
+### 7.5 Working Assumptions — Dynatrace POC in DMSi Environment
+
+Validate these assumptions explicitly; if false, convert to risks or blockers.
+
+| Assumption | Owner | Validate by |
+|------------|-------|-------------|
+| Matt (or designated DMSi admin) can change **PASOE configuration** to enable OpenTelemetry (OTO) exporters | Matt + Andy | Before VI-OC-04.2 execution |
+| **Two additional configs** beyond PASOE OTO are captured from meeting notes (e.g. Fireflies) and scheduled | Matt + Brent | During VI-OC-01.7 |
+| **DMSi** will provide **maintenance windows / app reboots** when required for agent or exporter rollout | Andy + DMSi Eng | Per VI-OC-01.7 / VI-OC-04.1 schedule |
+| **Dynatrace-led training** with DMSi teams can be scheduled and attended | Brent | VI-OC-01.7 |
+| **Fileshare / read-only access** can be granted for teams reconstructing **SOSAVE** and related processes | DMSi + Brent | Before VI-OC-08.3 deep work |
 
 ---
 

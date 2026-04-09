@@ -437,7 +437,7 @@
   <a href="../../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined outcome Gantt" title="Combined Outcome Gantt">&#8592;</a>
   <div class="header-main">
     <h1>VI-WBS: Visibility Infrastructure &amp; Proactive Detection Outcome Map</h1>
-    <div class="subtitle">Dynatrace Implementation -- DMSi Software | 1.5 FTE Conservative Estimate | Dynatrace: vendor POC in progress | Full rollout calendar from Apr 1, 2026 (revisit after POC) | PD AIOps active since Mar 1</div>
+    <div class="subtitle">Dynatrace Implementation -- DMSi Software | 1.5 FTE Conservative Estimate | DMSi-environment Dynatrace POC (agents, PASOE OTO, training; trial end TBD) | Full rollout from Apr 1, 2026 | SOSAVE metric in VI-OC-08 | PD AIOps active since Mar 1</div>
   </div>
   <div class="brand">DYNAMO</div>
 </div>
@@ -495,7 +495,7 @@
   <div class="insight-grid">
     <div class="insight-card">
       <h3>Parallel Execution Unlocked</h3>
-      <p>VI-OC-06 (Log Migration), VI-OC-07 (Synthetic Monitoring), VI-OC-04 (Host Instrumentation), and VI-OC-16 (PagerDuty AIOps) all start after VI-OC-03 and run concurrently. PagerDuty AIOps is already underway in parallel. Dynatrace is currently in a <strong>vendor POC phase</strong> (before the dated full rollout on the timeline).</p>
+      <p>VI-OC-06 (Log Migration), VI-OC-07 (Synthetic Monitoring), VI-OC-04 (Host Instrumentation), and VI-OC-16 (PagerDuty AIOps) all start after VI-OC-03 and run concurrently. PagerDuty AIOps is already underway in parallel. Dynatrace is in a <strong>DMSi-environment POC / trial</strong> (VI-OC-01.7: install, PASOE OTO exporters, reboot windows, training; trial scope/end per VI-Q-26) before the dated full rollout on the timeline.</p>
     </div>
     <div class="insight-card">
       <h3>Iterative Loops Made Explicit</h3>
@@ -659,6 +659,13 @@
           <div>
             <div class="d-text"><span class="d-id">VI-D-20:</span> New Relic disposition</div>
             <div class="d-owner">Owner: Andy + Dynamo | Required by: VI-OC-01 exit</div>
+          </div>
+        </div>
+        <div class="decision-card">
+          <div class="d-type type2">TYPE 2</div>
+          <div>
+            <div class="d-text"><span class="d-id">VI-D-21:</span> Dynatrace POC success criteria vs. trial end</div>
+            <div class="d-owner">Owner: Brent + Dynamo + Andy | Required by: VI-OC-01.7 exit</div>
           </div>
         </div>
       </div>
@@ -915,11 +922,11 @@
       "end": 4,
       "cat": "Baseline",
       "deps": [],
-      "risk": "",
-      "deliverables": 6,
+      "risk": "VI-R-X5",
+      "deliverables": 7,
       "milestone": "",
-      "date_range": "Vendor POC active; plan Apr 1 - Apr 25",
-      "detail": "CURRENT: POC with Dynatrace (tenant/scope). THEN: environment inventory, architecture design, integration architecture, A2W telemetry strategy, script rationalization, Elastic log mapping. 1.5 FTE conservative: 4 weeks on plan."
+      "date_range": "DMSi-env POC active; trial end TBD (VI-Q-26); plan Apr 1 - Apr 25",
+      "detail": "DMSi-environment Dynatrace POC: agents/install, PASOE OTO exporters, reboot windows, Dynatrace+DMSi training (VI-OC-01.7). THEN: inventory, architecture, integration, A2W telemetry strategy (current-state + RUM readiness), scripts, Elastic mapping. SOSAVE discovery starts in VI-OC-08. 1.5 FTE conservative: 4 weeks on plan."
     },
     {
       "id": "VI-OC-02",
@@ -1006,11 +1013,11 @@
       "end": 11,
       "cat": "Iterative",
       "deps": ["VI-OC-05"],
-      "risk": "VI-R-14, VI-R-15",
+      "risk": "VI-R-14, VI-R-15, VI-R-16, VI-R-20",
       "deliverables": 6,
       "milestone": "M5",
       "date_range": "Jul 20 - Aug 15",
-      "detail": "Starts during VI-OC-05 validation (should dep). APM scope, PASOE service detection, custom metrics, OpenTelemetry eval. HIGHEST RISK: dev team capacity."
+      "detail": "Starts during VI-OC-05 validation (should dep). APM scope, PASOE service detection, custom metrics incl. SOSAVE (service-order save duration; fileshare/SME access), OpenTelemetry eval. HIGHEST RISK: dev team capacity; SOSAVE blocked without access (VI-R-20)."
     },
     {
       "id": "VI-OC-09",
