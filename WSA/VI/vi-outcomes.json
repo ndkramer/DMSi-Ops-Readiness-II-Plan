@@ -41,7 +41,7 @@
       "risk": "VI-R-PD1, VI-R-PD2",
       "deliverables": 7,
       "milestone": "",
-      "status": "complete",
+      "status": "",
       "date_range": "Mar 1 - May 8 (Active)",
       "detail": "ALREADY UNDERWAY. Phase 1-2 complete (initial install configured). Phase 3 + 30-day ML learning + tuning + DMSi handover. Independent of Dynatrace Apr 1 start."
     },
@@ -55,7 +55,7 @@
       "risk": "VI-R-X5",
       "deliverables": 3,
       "milestone": "M2",
-      "status": "",
+      "status": "complete",
       "date_range": "Weeks 1-2; align with Pipeline Automation NGINX POC",
       "detail": "VI-OC-01.1\u201301.3 only: environment inventory, Dynatrace architecture design, integration architecture (PagerDuty, status page, CheckMK). DMSi Dynatrace platform + M3 deliverables (A2W strategy, scripts, Elastic, in-env POC) are VI-OC-03."
     },
