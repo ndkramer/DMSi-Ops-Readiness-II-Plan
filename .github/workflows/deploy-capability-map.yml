@@ -88,6 +88,8 @@ jobs:
           if [ -f Project-Plan/Stalled-Blocked-github-token.local.json ]; then
             zip -g deploy.zip Project-Plan/Stalled-Blocked-github-token.local.json
           fi
+          # Repo-relative URL ../../Capability-map/Milestones/project-milestones.json (WM/PA/VI outcome maps)
+          zip -g deploy.zip Capability-map/Milestones/project-milestones.json
           zip -r deploy.zip WSA/WM WSA/VI WSA/PA WSB-WSC/WB
           zip -j -g deploy.zip WSB-WSC/WSB-WSC-Outcome-Map.html
           zip -j -g deploy.zip WSB-WSC/wsb-wsc-outcome-dependencies.json WSB-WSC/dependency-sources.yml
