@@ -41,7 +41,7 @@
       "risk": "VI-R-PD1, VI-R-PD2",
       "deliverables": 7,
       "milestone": "",
-      "status": "",
+      "status": "complete",
       "date_range": "Mar 1 - May 8 (Active)",
       "detail": "ALREADY UNDERWAY. Phase 1-2 complete (initial install configured). Phase 3 + 30-day ML learning + tuning + DMSi handover. Independent of Dynatrace Apr 1 start."
     },
