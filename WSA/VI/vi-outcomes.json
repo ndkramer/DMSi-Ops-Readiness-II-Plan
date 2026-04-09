@@ -46,16 +46,16 @@
     },
     {
       "id": "VI-OC-01",
-      "title": "Foundation Planning & Architecture",
+      "title": "Foundation Planning & Architecture (Dynamo NGINX POC)",
       "start": 3,
       "end": 4,
       "cat": "Baseline",
       "deps": [],
       "risk": "VI-R-X5",
-      "deliverables": 7,
+      "deliverables": 3,
       "milestone": "",
-      "date_range": "DMSi-env POC active; trial end TBD (VI-Q-26); plan Apr 1 - Apr 25",
-      "detail": "DMSi-environment Dynatrace POC: agents/install, PASOE OTO exporters, reboot windows, Dynatrace+DMSi training (VI-OC-01.7). THEN: inventory, architecture, integration, A2W telemetry strategy (current-state + RUM readiness), scripts, Elastic mapping. SOSAVE discovery starts in VI-OC-08. 1.5 FTE conservative: 4 weeks on plan."
+      "date_range": "Weeks 1-2; align with Pipeline Automation NGINX POC",
+      "detail": "VI-OC-01.1–01.3 only: environment inventory, Dynatrace architecture design, integration architecture (PagerDuty, status page, CheckMK). DMSi Dynatrace platform + M3 deliverables (A2W strategy, scripts, Elastic, in-env POC) are VI-OC-03."
     },
     {
       "id": "VI-OC-02",
@@ -72,16 +72,16 @@
     },
     {
       "id": "VI-OC-03",
-      "title": "Platform & Integrations Deployed",
+      "title": "Platform & Integrations Deployed (DMSi NGINX POC)",
       "start": 6,
       "end": 7,
       "cat": "Baseline",
       "deps": ["VI-OC-02"],
       "risk": "VI-R-X3",
-      "deliverables": 4,
-      "milestone": "",
-      "date_range": "May 26 - Jun 6",
-      "detail": "Dynatrace tenant setup, ActiveGate deployment, PagerDuty integration, status page integration. 1.5 FTE conservative: 2 weeks."
+      "deliverables": 8,
+      "milestone": "M3",
+      "date_range": "M3 — May/Jun band; full outcome due milestone 3",
+      "detail": "VI-OC-03.1–03.4: tenant, ActiveGate, PagerDuty, status page. VI-OC-03.5–03.8: A2W telemetry strategy, script rationalization, Elastic inventory, DMSi Dynatrace POC execution (OTO, training, trial). SOSAVE remains VI-OC-08."
     },
     {
       "id": "VI-OC-04",

@@ -41,9 +41,9 @@ Each outcome follows a standard template:
 
 | ID | Outcome | Category | Target Date | Milestone Alignment |
 |----|---------|----------|-------------|---------------------|
-| VI-OC-01 | Foundation Planning and Architecture Complete | Baseline | [TBD -- Weeks 1-2]; **DMSi-environment Dynatrace POC**: agents/install, PASOE OTO exporter enablement, coordinated reboots, vendor + DMSi training; trial scope/end date TBD (VI-Q-26) | -- |
+| VI-OC-01 | Foundation Planning and Architecture Complete (Dynamo NGINX POC) | Baseline | [TBD -- Weeks 1-2]; planning/architecture aligned with **Dynamo NGINX POC** (Pipeline Automation); inventory + design + integration docs | -- |
 | VI-OC-02 | Telemetry Strategy and Licensing Resolved | Baseline | [TBD -- Weeks 2-3] | -- |
-| VI-OC-03 | Dynatrace Platform and Integrations Deployed | Baseline | [TBD -- Weeks 3-4] | -- |
+| VI-OC-03 | Dynatrace Platform and Integrations Deployed (DMSi NGINX POC) | Baseline | [TBD -- Weeks 3-4]; **entire outcome due M3** — tenant/ActiveGate/integrations + A2W telemetry, scripts, Elastic, DMSi Dynatrace POC execution (VI-OC-03.5–03.8) | **M3** |
 | VI-OC-04 | Host Fleet Instrumented | Baseline | [TBD -- Weeks 4-5] | -- |
 | VI-OC-05 | Infrastructure Visibility Validated | Iterative | [TBD -- Week 6-10] | M2 data dependency |
 | VI-OC-06 | Log Management Migrated | Iterative | [TBD -- Weeks 4-9] | -- |
@@ -73,8 +73,8 @@ The following outcomes can run concurrently once their dependencies are met:
 
 ```mermaid
 graph TD
-    VI-OC-01[VI-OC-01: Foundation Planning] -->|must| VI-OC-02[VI-OC-02: Telemetry & Licensing]
-    VI-OC-02 -->|must| VI-OC-03[VI-OC-03: Platform Deployed]
+    VI-OC-01[VI-OC-01: Foundation Dynamo NGINX POC] -->|must| VI-OC-02[VI-OC-02: Telemetry & Licensing]
+    VI-OC-02 -->|must| VI-OC-03[VI-OC-03: Platform DMSi NGINX POC]
     VI-OC-03 -->|must| VI-OC-04[VI-OC-04: Host Fleet Instrumented]
     VI-OC-03 -->|must| VI-OC-06[VI-OC-06: Log Management Migrated]
     VI-OC-03 -->|must| VI-OC-07[VI-OC-07: External Availability Monitoring]
@@ -110,12 +110,12 @@ graph TD
 
 ---
 
-### VI-OC-01: Foundation Planning and Architecture Complete
+### VI-OC-01: Foundation Planning and Architecture Complete (Dynamo NGINX POC)
 
 **Category:** Baseline
 **Target Date:** [TBD -- Weeks 1-2]
 **Owner:** Dynamo + Andy Meyers
-**Status:** In Progress — **DMSi-environment Dynatrace POC / trial**: trial tenant in DMSi dev; OneAgent and platform features not yet fully rolled (e.g. deep monitoring may be partial). Confirm with Dynatrace what the trial includes (Davis / AI-assisted features, log intelligence) and **record trial end date** once known (VI-Q-26). Internal framing for contract language such as “observability documented”: prefer **Dynatrace rollout checkpoints** (what must be true after each POC phase) over generic documentation — pending Michelle/Cameron confirmation for formal SOW wording.
+**Status:** In Progress — **Dynamo NGINX POC alignment**: foundation visibility work tied to Pipeline Automation’s NGINX proof-of-concept (architecture, inventory, integration design). **DMSi-environment Dynatrace execution** (trial, OTO exporters, training, M3-facing deliverables) is under **VI-OC-03** (DMSi NGINX POC).
 **Source:** S0 (WP 0.1, 0.2, 0.4, 0.5, 0.6, 0.7)
 
 #### Success Criteria
@@ -123,10 +123,6 @@ graph TD
 - [ ] Environment inventory complete, reviewed, and signed off by Andy and Brent
 - [ ] Dynatrace architecture design documented and reviewed by Robin and Andy
 - [ ] Integration architecture (PagerDuty, status page, CheckMK coexistence) documented
-- [ ] A2W telemetry strategy document produced and signed off
-- [ ] Dynatrace POC execution in DMSi environment advanced per VI-OC-01.7 (agents/config, training, trial calendar)
-- [ ] Custom script inventory centralized in GitHub with classification complete
-- [ ] Elastic log source inventory complete with volume estimates
 
 #### Deliverables
 
@@ -135,10 +131,6 @@ graph TD
 | VI-OC-01.1 | Environment Inventory and Gap Assessment | Dynamo + Andy | [TBD] |
 | VI-OC-01.2 | Dynatrace Architecture Design | Dynamo + Robin | [TBD] |
 | VI-OC-01.3 | Integration Architecture | Dynamo | [TBD] |
-| VI-OC-01.4 | A2W Telemetry Strategy (M3 Deliverable) | Dynamo + Robin | [TBD] |
-| VI-OC-01.5 | Custom Script Rationalization Planning | Dynamo + Andy | [TBD] |
-| VI-OC-01.6 | Elastic Inventory and Log Source Mapping | Dynamo + Andy | [TBD] |
-| VI-OC-01.7 | Dynatrace POC — DMSi Environment Execution | Dynamo + Matt + Brent | [TBD] |
 
 **VI-OC-01.1: Environment Inventory and Gap Assessment**
 
@@ -167,44 +159,6 @@ graph TD
 - Design CheckMK coexistence plan -- define alert deduplication strategy during transition period
 - Define alert ownership model -- which team (Dynamo, DMSi Eng, Support) owns which alert category
 - Document integration architecture in a single reference document
-
-**VI-OC-01.4: A2W Telemetry Strategy (M3 Deliverable)**
-
-**Scope note:** A2W is not broadly in production today; treat this deliverable as **current-state** monitoring (RDP-delivered Agility) plus **future-state hooks** for A2W. Where A2W has no committed production date, emphasize **initial Real User Monitoring (RUM) strategy** and a **readiness checklist** for when A2W goes live, rather than pretending full A2W instrumentation is executable now. Contract milestone wording may be a pre-Dynatrace holdover — align narrative with Dynamo’s Dynatrace-first plan.
-
-- Document current-state monitoring approach for RDP-delivered Agility
-- Define target-state monitoring requirements for A2W browser-delivered interface (RUM, synthetic, APM)
-- Map Dynatrace capabilities to A2W target state
-- Identify instrumentation work that must be done by the dev team at A2W launch
-- Produce telemetry strategy document -- reviewed and signed off by Robin and engineering leads
-
-**VI-OC-01.5: Custom Script Rationalization Planning**
-
-- Inventory all custom monitoring scripts -- including CheckMK modules, standalone scripts, and scripts feeding Elastic indices
-- Centralize script inventory into a managed repository (GitHub)
-- For each script, classify: (a) replaced by OneAgent, (b) replaceable via Extension Framework, (c) must be retained
-- For retained scripts, document what they monitor and why OneAgent does not cover it
-- Identify any scripts that feed data into or query from Elastic indices -- dependency on VI migration timeline
-
-**VI-OC-01.6: Elastic Inventory and Log Source Mapping**
-
-- Identify who owns the Elastic cluster -- admin credentials, cluster version, and hosting location
-- Export inventory of all Elastic indices -- names, retention periods, data volumes, and approximate daily ingest rate
-- Map each index to a log source -- which application, host, or service generates it
-- Identify any Kibana dashboards currently in use -- who uses them, for what purpose, and how frequently
-- Identify any Elastic alerts or Watcher rules currently in use
-- Estimate daily log ingest volume in GB/day -- this directly affects Dynatrace Log Management licensing cost
-- Produce completed log source inventory -- reviewed by Andy and Brent
-
-**VI-OC-01.7: Dynatrace POC — DMSi Environment Execution**
-
-- Install/configure Dynatrace components in DMSi POC/dev scope per VI-OC-01.2 architecture (agents, connectivity, tagging as applicable)
-- **PASOE / OpenTelemetry:** enable or configure OpenTelemetry (OTO) exporters in PASOE per DMSi change control (**assumption:** Matt has access to change PASOE config — validate; see §7.5)
-- Capture **two additional configuration items** documented from engagement notes (e.g. Fireflies transcript follow-ups) and track to completion
-- Schedule and complete **Dynatrace-led training** with DMSi teams (coordinate with Brent / account team)
-- Coordinate **application reboots / maintenance windows** with DMSi for agent or exporter changes (**assumption:** DMSi availability for reboots — validate; see §7.5)
-- Maintain a **POC / trial calendar**: trial start, agreed **trial end date** (VI-Q-26), and which premium features are in scope for the trial
-- Produce **rollout checkpoints** for the POC (what must be true after each phase) — internal working artifact; formal SOW text follows leadership alignment
 
 #### Dependencies
 
@@ -313,7 +267,7 @@ graph TD
 | Risk ID | Severity | Description | Mitigation |
 |---------|----------|-------------|------------|
 | VI-R-X6 | HIGH | Dynatrace licensing cost materially exceeds DMSi budget, causing mid-implementation scope reduction | Complete VI-OC-02.4 before any infrastructure deployment; design implementation to be modular so scope can be reduced without rework |
-| VI-R-X1 | HIGH | Progress OpenEdge architectural constraints prevent achieving APM depth required for MTTD target without compensating synthetic monitoring scope | Validate in VI-OC-01 POC; define fallback scope with stakeholders before VI-OC-08 |
+| VI-R-X1 | HIGH | Progress OpenEdge architectural constraints prevent achieving APM depth required for MTTD target without compensating synthetic monitoring scope | Validate in VI-OC-01 / VI-OC-03 POC scope; define fallback scope with stakeholders before VI-OC-08 |
 
 #### Decisions Required
 
@@ -327,13 +281,13 @@ graph TD
 
 ---
 
-### VI-OC-03: Dynatrace Platform and Integrations Deployed
+### VI-OC-03: Dynatrace Platform and Integrations Deployed (DMSi NGINX POC)
 
 **Category:** Baseline
-**Target Date:** [TBD -- Weeks 3-4]
-**Owner:** Dynamo
-**Status:** Not Started
-**Source:** S2 (WP 2.1, 2.2, 2.5, 2.6)
+**Target Date:** [TBD -- Weeks 3-4]; **Milestone 3 (M3)** — all deliverables below (VI-OC-03.1 through VI-OC-03.8) are due **by M3**
+**Owner:** Dynamo + DMSi Engineering (Matt, Brent, Robin, Andy, Jared per deliverable)
+**Status:** Not Started — **DMSi NGINX POC** scope: production Dynatrace platform setup in DMSi plus M3 planning/execution deliverables (telemetry strategy, scripts, Elastic mapping, in-environment POC). Trial scope/end date: VI-Q-26.
+**Source:** S2 (WP 2.1, 2.2, 2.5, 2.6); M3 program alignment
 
 #### Success Criteria
 
@@ -341,15 +295,23 @@ graph TD
 - [ ] ActiveGate(s) deployed and validated with failover tested
 - [ ] PagerDuty integration operational with end-to-end test confirmed
 - [ ] Status page automation configured and tested in staging
+- [ ] A2W telemetry strategy document produced and signed off (VI-OC-03.5)
+- [ ] Custom script inventory centralized in GitHub with classification complete (VI-OC-03.6)
+- [ ] Elastic log source inventory complete with volume estimates (VI-OC-03.7)
+- [ ] Dynatrace POC execution in DMSi environment complete per VI-OC-03.8 (agents/config, training, trial calendar, rollout checkpoints)
 
 #### Deliverables
 
 | ID | Deliverable | Owner | Due |
 |----|-------------|-------|-----|
-| VI-OC-03.1 | Dynatrace Tenant Setup | Dynamo | [TBD] |
-| VI-OC-03.2 | ActiveGate Deployment | Dynamo + Andy | [TBD] |
-| VI-OC-03.3 | PagerDuty Integration | Dynamo | [TBD] |
-| VI-OC-03.4 | Status Page Integration | Dynamo + Jared | [TBD] |
+| VI-OC-03.1 | Dynatrace Tenant Setup | Dynamo | **M3** |
+| VI-OC-03.2 | ActiveGate Deployment | Dynamo + Andy | **M3** |
+| VI-OC-03.3 | PagerDuty Integration | Dynamo | **M3** |
+| VI-OC-03.4 | Status Page Integration | Dynamo + Jared | **M3** |
+| VI-OC-03.5 | A2W Telemetry Strategy (M3 Deliverable) | Dynamo + Robin | **M3** |
+| VI-OC-03.6 | Custom Script Rationalization Planning | Dynamo + Andy | **M3** |
+| VI-OC-03.7 | Elastic Inventory and Log Source Mapping | Dynamo + Andy | **M3** |
+| VI-OC-03.8 | Dynatrace POC — DMSi Environment Execution | Dynamo + Matt + Brent | **M3** |
 
 **VI-OC-03.1: Dynatrace Tenant Setup**
 
@@ -384,11 +346,50 @@ graph TD
 - Test automated status update flow end-to-end in staging
 - Define manual override process for status page when automated updates are incorrect
 
+**VI-OC-03.5: A2W Telemetry Strategy (M3 Deliverable)**
+
+**Scope note:** A2W is not broadly in production today; treat this deliverable as **current-state** monitoring (RDP-delivered Agility) plus **future-state hooks** for A2W. Where A2W has no committed production date, emphasize **initial Real User Monitoring (RUM) strategy** and a **readiness checklist** for when A2W goes live, rather than pretending full A2W instrumentation is executable now. Contract milestone wording may be a pre-Dynatrace holdover — align narrative with Dynamo’s Dynatrace-first plan.
+
+- Document current-state monitoring approach for RDP-delivered Agility
+- Define target-state monitoring requirements for A2W browser-delivered interface (RUM, synthetic, APM)
+- Map Dynatrace capabilities to A2W target state
+- Identify instrumentation work that must be done by the dev team at A2W launch
+- Produce telemetry strategy document -- reviewed and signed off by Robin and engineering leads
+
+**VI-OC-03.6: Custom Script Rationalization Planning**
+
+- Inventory all custom monitoring scripts -- including CheckMK modules, standalone scripts, and scripts feeding Elastic indices
+- Centralize script inventory into a managed repository (GitHub)
+- For each script, classify: (a) replaced by OneAgent, (b) replaceable via Extension Framework, (c) must be retained
+- For retained scripts, document what they monitor and why OneAgent does not cover it
+- Identify any scripts that feed data into or query from Elastic indices -- dependency on VI migration timeline
+
+**VI-OC-03.7: Elastic Inventory and Log Source Mapping**
+
+- Identify who owns the Elastic cluster -- admin credentials, cluster version, and hosting location
+- Export inventory of all Elastic indices -- names, retention periods, data volumes, and approximate daily ingest rate
+- Map each index to a log source -- which application, host, or service generates it
+- Identify any Kibana dashboards currently in use -- who uses them, for what purpose, and how frequently
+- Identify any Elastic alerts or Watcher rules currently in use
+- Estimate daily log ingest volume in GB/day -- this directly affects Dynatrace Log Management licensing cost
+- Produce completed log source inventory -- reviewed by Andy and Brent
+
+**VI-OC-03.8: Dynatrace POC — DMSi Environment Execution**
+
+- Install/configure Dynatrace components in DMSi POC/dev scope per **VI-OC-01.2** architecture (agents, connectivity, tagging as applicable)
+- **PASOE / OpenTelemetry:** enable or configure OpenTelemetry (OTO) exporters in PASOE per DMSi change control (**assumption:** Matt has access to change PASOE config — validate; see §7.5)
+- Capture **two additional configuration items** documented from engagement notes (e.g. Fireflies transcript follow-ups) and track to completion
+- Schedule and complete **Dynatrace-led training** with DMSi teams (coordinate with Brent / account team)
+- Coordinate **application reboots / maintenance windows** with DMSi for agent or exporter changes (**assumption:** DMSi availability for reboots — validate; see §7.5)
+- Maintain a **POC / trial calendar**: trial start, agreed **trial end date** (VI-Q-26), and which premium features are in scope for the trial
+- Produce **rollout checkpoints** for the POC (what must be true after each phase) — internal working artifact; formal SOW text follows leadership alignment
+
 #### Dependencies
 
 | Depends On | Type | Description |
 |------------|------|-------------|
 | VI-OC-02 | must | Licensing must be procured and RBAC defined before tenant can be provisioned |
+| VI-OC-01 | should | Architecture design (VI-OC-01.2) should precede or overlap DMSi POC execution (VI-OC-03.8); document risk if parallel |
 
 #### Risks
 
@@ -445,7 +446,7 @@ graph TD
 **VI-OC-04.2: Progress OpenEdge and PASOE Monitoring** *(Highest-risk work package)*
 
 - Validate OneAgent detection of PASOE processes (Java-based JVM monitoring). Configure OpenTelemetry if needed.
-- **PASOE OTO exporters:** enable/configure OpenTelemetry exporters in PASOE where required for APM depth, per DMSi change control and VI-OC-01.7; cross-reference supplemental config notes (e.g. two items tracked from Fireflies / meeting follow-ups)
+- **PASOE OTO exporters:** enable/configure OpenTelemetry exporters in PASOE where required for APM depth, per DMSi change control and VI-OC-03.8; cross-reference supplemental config notes (e.g. two items tracked from Fireflies / meeting follow-ups)
 - Determine what OpenEdge ABL processes are detectable vs. require custom extensions
 - Configure Dynatrace Extension Framework 2.0 for OpenEdge-specific metrics (if required)
 - Instrument NGINX with Dynatrace NGINX extension -- validate request throughput and error rate metrics
@@ -1148,7 +1149,7 @@ This outcome consolidates all A2W-related monitoring work that was previously sc
 
 #### Success Criteria
 
-- [ ] A2W telemetry strategy documented and signed off (from VI-OC-01.4)
+- [ ] A2W telemetry strategy documented and signed off (from VI-OC-03.5; prerequisite for VI-OC-13 activation)
 - [ ] Synthetic test specifications for A2W web interface ready to activate
 - [ ] RUM implementation specification finalized (VI-D-15)
 - [ ] RUM operational and producing user experience data (post-launch)
@@ -1411,7 +1412,7 @@ The following risks apply across multiple outcomes and are tracked at the engage
 
 | Risk ID | Description | Probability | Impact | Owner | Mitigation |
 |---------|-------------|-------------|--------|-------|------------|
-| VI-R-X1 | Progress OpenEdge architectural constraints prevent achieving APM depth required for MTTD target without compensating synthetic monitoring scope | HIGH | HIGH | Dynamo + Andy | Validate in VI-OC-01 POC; define fallback scope before VI-OC-08 |
+| VI-R-X1 | Progress OpenEdge architectural constraints prevent achieving APM depth required for MTTD target without compensating synthetic monitoring scope | HIGH | HIGH | Dynamo + Andy | Validate in VI-OC-01 / VI-OC-03 POC scope; define fallback scope before VI-OC-08 |
 | VI-R-X2 | Dev team remains above 60% reactive load through VI-OC-08, preventing APM instrumentation work | MEDIUM | HIGH | Brent | VI-OC-08 APM scope designed to minimize dev hours; confirm allocation before VI-OC-05 exits |
 | VI-R-X3 | Dynatrace generates alert noise layered on CheckMK during parallel operation, worsening alert fatigue before it improves | MEDIUM | HIGH | Dynamo | Conservative initial thresholds; soft-launch period; deduplicate in PagerDuty |
 | VI-R-X4 | A2W migration timeline unknown; RUM and synthetic work may need to be revisited or accelerated | MEDIUM | MEDIUM | Robin + Dynamo | Design A2W monitoring artifacts as "ready to activate" from VI-OC-07 onward |
@@ -1449,7 +1450,7 @@ Each decision is classified using the Bezos / Amazon Type 1 / Type 2 framework. 
 | VI-D-18 | TYPE 2 | Log ingestion scope | Andy + Dynamo | VI-OC-06.1 | OPEN |
 | VI-D-19 | TYPE 2 | PagerDuty-to-ticket integration (portable webhook vs. native) | Dynamo + WSC lead | VI-OC-03.3 | OPEN |
 | VI-D-20 | TYPE 2 | New Relic disposition | Andy + Dynamo | VI-OC-01 exit | OPEN |
-| VI-D-21 | TYPE 2 | Dynatrace POC success criteria vs. trial end — what must be demonstrated before trial lapses | Brent + Dynamo + Andy | VI-OC-01.7 exit | OPEN |
+| VI-D-21 | TYPE 2 | Dynatrace POC success criteria vs. trial end — what must be demonstrated before trial lapses | Brent + Dynamo + Andy | VI-OC-03.8 exit | OPEN |
 
 ---
 
@@ -1477,7 +1478,7 @@ These questions, once answered and acted upon, lock in irreversible choices.
 - **VI-Q-10**: Approximate daily log ingest volume (GB/day)? Owner: Andy / Elastic admin.
 - **VI-Q-11**: Operational Kibana dashboards in use? Owner: Andy.
 - **VI-Q-12**: Elastic cluster admin access -- siloed knowledge risk? Owner: Andy.
-- **VI-Q-13**: Full inventory of custom CheckMK modules? Owner: Andy / CheckMK admin. Required before VI-OC-01.5.
+- **VI-Q-13**: Full inventory of custom CheckMK modules? Owner: Andy / CheckMK admin. Required before VI-OC-03.6.
 - **VI-Q-14**: Complete list of scripts outside primary monitoring stack? Owner: Andy / Brent.
 - **VI-Q-16**: Full mapping of alert sources feeding PagerDuty? Owner: Andy / on-call lead.
 - **VI-Q-17**: RHEL 7 OneAgent compatibility for specific DMSi server configs? Owner: Andy. Required before VI-OC-04.1.
@@ -1497,9 +1498,9 @@ Validate these assumptions explicitly; if false, convert to risks or blockers.
 | Assumption | Owner | Validate by |
 |------------|-------|-------------|
 | Matt (or designated DMSi admin) can change **PASOE configuration** to enable OpenTelemetry (OTO) exporters | Matt + Andy | Before VI-OC-04.2 execution |
-| **Two additional configs** beyond PASOE OTO are captured from meeting notes (e.g. Fireflies) and scheduled | Matt + Brent | During VI-OC-01.7 |
-| **DMSi** will provide **maintenance windows / app reboots** when required for agent or exporter rollout | Andy + DMSi Eng | Per VI-OC-01.7 / VI-OC-04.1 schedule |
-| **Dynatrace-led training** with DMSi teams can be scheduled and attended | Brent | VI-OC-01.7 |
+| **Two additional configs** beyond PASOE OTO are captured from meeting notes (e.g. Fireflies) and scheduled | Matt + Brent | During VI-OC-03.8 |
+| **DMSi** will provide **maintenance windows / app reboots** when required for agent or exporter rollout | Andy + DMSi Eng | Per VI-OC-03.8 / VI-OC-04.1 schedule |
+| **Dynatrace-led training** with DMSi teams can be scheduled and attended | Brent | VI-OC-03.8 |
 | **Fileshare / read-only access** can be granted for teams reconstructing **SOSAVE** and related processes | DMSi + Brent | Before VI-OC-08.3 deep work |
 
 ---
@@ -1543,9 +1544,9 @@ Validate these assumptions explicitly; if false, convert to risks or blockers.
 
 | ID | Outcome | Category | Owner | Target Date | Status | % Complete | Risk Flag | Notes |
 |----|---------|----------|-------|-------------|--------|------------|-----------|-------|
-| VI-OC-01 | Foundation Planning | Baseline | Dynamo + Andy | [TBD] | Not Started | 0% | -- | -- |
+| VI-OC-01 | Foundation Planning (Dynamo NGINX POC) | Baseline | Dynamo + Andy | [TBD] | Not Started | 0% | -- | Deliverables 01.1–01.3 |
 | VI-OC-02 | Telemetry & Licensing | Baseline | Dynamo + Brent | [TBD] | Not Started | 0% | -- | -- |
-| VI-OC-03 | Platform Deployed | Baseline | Dynamo | [TBD] | Not Started | 0% | -- | -- |
+| VI-OC-03 | Platform Deployed (DMSi NGINX POC) | Baseline | Dynamo + DMSi Eng | [TBD] | Not Started | 0% | -- | **M3** — deliverables 03.1–03.8 |
 | VI-OC-04 | Host Fleet Instrumented | Baseline | Dynamo + Andy | [TBD] | Not Started | 0% | -- | -- |
 | VI-OC-05 | Infra Visibility Validated | Iterative | Dynamo + Andy | [TBD] | Not Started | 0% | -- | 30-day validation |
 | VI-OC-06 | Log Management Migrated | Iterative | Dynamo + Andy | [TBD] | Not Started | 0% | -- | Parallel with VI-OC-04/VI-OC-05 |
@@ -1570,6 +1571,7 @@ Normative history of substantive edits to this WBS. **Newest first.** On each up
 
 | Date | Summary |
 |------|---------|
+| 2026-04-10 | **VI-OC-01 / VI-OC-03 restructure (Dynamo vs DMSi NGINX POC):** **VI-OC-01** retitled *Foundation Planning and Architecture Complete (Dynamo NGINX POC)* — deliverables **01.1–01.3** only. **VI-OC-03** retitled *Dynatrace Platform and Integrations Deployed (DMSi NGINX POC)* — former **01.4–01.7** renumbered to **03.5–03.8**; **entire VI-OC-03 outcome due M3**. Added VI-OC-03 `should` dependency on VI-OC-01 for architecture vs POC overlap. Cross-refs updated (VI-OC-13, VI-D-21, VI-Q-13, §7.5, VI-R-X1, VI-OC-04.2). **Related:** `vi-outcomes.json`, `VI-WBS-Jira-Import.json`, `VI-WSB-Outcome-Map.html`, `VI-kanban.html`. |
 | 2026-04-09 | **Dynatrace POC in DMSi environment (planning session):** §2 outcome map and VI-OC-01 status expanded for DMSi-env trial/POC; new deliverable **VI-OC-01.7** (PASOE OTO exporters, Fireflies follow-up configs, training, reboot windows, trial calendar, rollout checkpoints); **VI-OC-01.4** scope note (A2W not broadly live; RUM readiness vs. full instrumentation); **VI-OC-04.2** OTO/Fireflies bullets; **VI-OC-08.3** / **VI-OC-09.2** **SOSAVE** (service-order save duration) with fileshare/SME dependency; new risks **VI-R-20**, **VI-R-X5** engagement/stall wording; **VI-Q-26** (trial end / included capabilities), **VI-Q-27** (SOSAVE); **§7.5** working assumptions table; **VI-D-21** (POC success vs. trial end). **Related:** `vi-outcomes.json`, `VI-WSB-Outcome-Map.html`, `VI-kanban.html`, `VI-Constraint-vs-Outcome-Map.html`. |
 
 ---

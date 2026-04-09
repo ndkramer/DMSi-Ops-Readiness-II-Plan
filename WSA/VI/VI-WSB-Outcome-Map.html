@@ -221,6 +221,7 @@
     background: #E74C3C;
     z-index: 1;
     opacity: 0.4;
+    pointer-events: none;
   }
   .milestone-tag {
     position: absolute;
@@ -234,6 +235,7 @@
     border-radius: 2px;
     white-space: nowrap;
     z-index: 5;
+    pointer-events: none;
   }
 
   /* Today marker */
@@ -260,6 +262,7 @@
     white-space: nowrap;
     z-index: 5;
     letter-spacing: 0.5px;
+    pointer-events: none;
   }
 
   /* Tooltip */
@@ -437,7 +440,7 @@
   <a href="../../Project-Plan/Combined-Outcome-Gantt.html" class="header-back" aria-label="Back to combined outcome Gantt" title="Combined Outcome Gantt">&#8592;</a>
   <div class="header-main">
     <h1>VI-WBS: Visibility Infrastructure &amp; Proactive Detection Outcome Map</h1>
-    <div class="subtitle">Dynatrace Implementation -- DMSi Software | 1.5 FTE Conservative Estimate | DMSi-environment Dynatrace POC (agents, PASOE OTO, training; trial end TBD) | Full rollout from Apr 1, 2026 | SOSAVE metric in VI-OC-08 | PD AIOps active since Mar 1</div>
+    <div class="subtitle">Dynatrace Implementation -- DMSi Software | 1.5 FTE Conservative Estimate | VI-OC-01: Dynamo NGINX POC foundation | VI-OC-03: DMSi NGINX POC + M3 (03.1–03.8) | SOSAVE in VI-OC-08 | PD AIOps active since Mar 1</div>
   </div>
   <div class="brand">DYNAMO</div>
 </div>
@@ -495,7 +498,7 @@
   <div class="insight-grid">
     <div class="insight-card">
       <h3>Parallel Execution Unlocked</h3>
-      <p>VI-OC-06 (Log Migration), VI-OC-07 (Synthetic Monitoring), VI-OC-04 (Host Instrumentation), and VI-OC-16 (PagerDuty AIOps) all start after VI-OC-03 and run concurrently. PagerDuty AIOps is already underway in parallel. Dynatrace is in a <strong>DMSi-environment POC / trial</strong> (VI-OC-01.7: install, PASOE OTO exporters, reboot windows, training; trial scope/end per VI-Q-26) before the dated full rollout on the timeline.</p>
+      <p>VI-OC-06 (Log Migration), VI-OC-07 (Synthetic Monitoring), VI-OC-04 (Host Instrumentation), and VI-OC-16 (PagerDuty AIOps) all start after VI-OC-03 and run concurrently. PagerDuty AIOps is already underway in parallel. <strong>VI-OC-03 (DMSi NGINX POC)</strong> includes tenant/integrations and M3 deliverables (A2W strategy, scripts, Elastic, DMSi Dynatrace POC per VI-OC-03.8). <strong>VI-OC-01</strong> is foundation aligned with the <strong>Dynamo NGINX POC</strong>.</p>
     </div>
     <div class="insight-card">
       <h3>Iterative Loops Made Explicit</h3>
@@ -665,7 +668,7 @@
           <div class="d-type type2">TYPE 2</div>
           <div>
             <div class="d-text"><span class="d-id">VI-D-21:</span> Dynatrace POC success criteria vs. trial end</div>
-            <div class="d-owner">Owner: Brent + Dynamo + Andy | Required by: VI-OC-01.7 exit</div>
+            <div class="d-owner">Owner: Brent + Dynamo + Andy | Required by: VI-OC-03.8 exit</div>
           </div>
         </div>
       </div>
@@ -917,16 +920,16 @@
     },
     {
       "id": "VI-OC-01",
-      "title": "Foundation Planning & Architecture",
+      "title": "Foundation Planning & Architecture (Dynamo NGINX POC)",
       "start": 3,
       "end": 4,
       "cat": "Baseline",
       "deps": [],
       "risk": "VI-R-X5",
-      "deliverables": 7,
+      "deliverables": 3,
       "milestone": "",
-      "date_range": "DMSi-env POC active; trial end TBD (VI-Q-26); plan Apr 1 - Apr 25",
-      "detail": "DMSi-environment Dynatrace POC: agents/install, PASOE OTO exporters, reboot windows, Dynatrace+DMSi training (VI-OC-01.7). THEN: inventory, architecture, integration, A2W telemetry strategy (current-state + RUM readiness), scripts, Elastic mapping. SOSAVE discovery starts in VI-OC-08. 1.5 FTE conservative: 4 weeks on plan."
+      "date_range": "Weeks 1-2; align with Pipeline Automation NGINX POC",
+      "detail": "VI-OC-01.1–01.3 only: environment inventory, Dynatrace architecture design, integration architecture (PagerDuty, status page, CheckMK). DMSi Dynatrace platform + M3 deliverables (A2W strategy, scripts, Elastic, in-env POC) are VI-OC-03."
     },
     {
       "id": "VI-OC-02",
@@ -943,16 +946,16 @@
     },
     {
       "id": "VI-OC-03",
-      "title": "Platform & Integrations Deployed",
+      "title": "Platform & Integrations Deployed (DMSi NGINX POC)",
       "start": 6,
       "end": 7,
       "cat": "Baseline",
       "deps": ["VI-OC-02"],
       "risk": "VI-R-X3",
-      "deliverables": 4,
-      "milestone": "",
-      "date_range": "May 26 - Jun 6",
-      "detail": "Dynatrace tenant setup, ActiveGate deployment, PagerDuty integration, status page integration. 1.5 FTE conservative: 2 weeks."
+      "deliverables": 8,
+      "milestone": "M3",
+      "date_range": "M3 — May/Jun band; full outcome due milestone 3",
+      "detail": "VI-OC-03.1–03.4: tenant, ActiveGate, PagerDuty, status page. VI-OC-03.5–03.8: A2W telemetry strategy, script rationalization, Elastic inventory, DMSi Dynatrace POC execution (OTO, training, trial). SOSAVE remains VI-OC-08."
     },
     {
       "id": "VI-OC-04",
@@ -1127,6 +1130,85 @@ function withToken(url) {
   return base + sep + 'token=' + encodeURIComponent(t) + hash;
 }
 
+/** Stalled/Blocked: live GitHub org project when PAT available (see Project-Plan/github-stall-live.js); else outcome-stall-overlay.json / #outcome-stall-overlay-fallback. */
+const STALL_OVERLAY_URL = '../../Project-Plan/outcome-stall-overlay.json';
+const STALLED_BLOCKED_REPORT = '../../Project-Plan/Stalled-Blocked-rpt.html';
+let outcomeStallByOutcome = {};
+
+function stallMarkerReportHref(entry) {
+  if (window.GithubStallLive && typeof window.GithubStallLive.buildStalledBlockedReportUrl === 'function') {
+    return window.GithubStallLive.buildStalledBlockedReportUrl(entry, STALLED_BLOCKED_REPORT);
+  }
+  return STALLED_BLOCKED_REPORT;
+}
+
+function parseStallOverlayFallback() {
+  const el = document.getElementById('outcome-stall-overlay-fallback');
+  if (!el || !el.textContent) return { byOutcome: {} };
+  try {
+    const data = JSON.parse(el.textContent.trim());
+    return data && data.byOutcome ? data : { byOutcome: {} };
+  } catch (e) {
+    return { byOutcome: {} };
+  }
+}
+
+function loadOutcomeStallOverlayFromFile() {
+  return fetch(STALL_OVERLAY_URL, { cache: 'no-store' })
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((data) => (data && data.byOutcome ? data : { byOutcome: {} }))
+    .catch(() => parseStallOverlayFallback());
+}
+
+function loadOutcomeStallOverlay() {
+  let tokenFileUrl = null;
+  try {
+    tokenFileUrl = new URL('../../Project-Plan/Stalled-Blocked-github-token.local.json', window.location.href).href;
+  } catch (e) { /* ignore */ }
+  if (!window.GithubStallLive) return loadOutcomeStallOverlayFromFile();
+  return window.GithubStallLive.resolveGithubToken({ tokenFileUrl: tokenFileUrl }).then((token) => {
+    if (!token) return loadOutcomeStallOverlayFromFile();
+    return window.GithubStallLive.fetchStallByOutcomeMap(token)
+      .then((byOutcome) => ({ byOutcome: byOutcome || {} }))
+      .catch((err) => {
+        console.warn('VI Outcome Map: live GitHub stall data failed, using committed JSON.', err);
+        return loadOutcomeStallOverlayFromFile();
+      });
+  });
+}
+
+function applyStallOverlayToOutcomeBars(data) {
+  const by = (data && data.byOutcome) || {};
+  outcomeStallByOutcome = by;
+  document.querySelectorAll('.outcome-bar[data-oc-id]').forEach((bar) => {
+    const id = bar.getAttribute('data-oc-id');
+    bar.querySelectorAll('.stall-marker').forEach((n) => n.remove());
+    const ent = by[id];
+    if (!ent) return;
+    const hasB = ent.blocked && ent.blocked.length;
+    const hasS = ent.stalled && ent.stalled.length;
+    if (hasB) {
+      const m = document.createElement('a');
+      m.className = 'stall-marker stall-blocked';
+      m.href = stallMarkerReportHref(ent.blocked[0]);
+      m.textContent = 'B';
+      m.setAttribute('title', 'Blocked on GitHub — open on Stalled/Blocked report');
+      m.setAttribute('aria-label', 'Open blocked work item on Stalled Blocked report');
+      m.addEventListener('click', (e) => e.stopPropagation());
+      bar.appendChild(m);
+    } else if (hasS) {
+      const m = document.createElement('a');
+      m.className = 'stall-marker stall-stalled';
+      m.href = stallMarkerReportHref(ent.stalled[0]);
+      m.textContent = 'S';
+      m.setAttribute('title', 'Stalled on GitHub — open on Stalled/Blocked report');
+      m.setAttribute('aria-label', 'Open stalled work item on Stalled Blocked report');
+      m.addEventListener('click', (e) => e.stopPropagation());
+      bar.appendChild(m);
+    }
+  });
+}
+
 // vi-outcomes.json — #vi-outcomes-fallback mirrors for file://
 let outcomes = [];
 let VI_TRACK_START = new Date(2026, 2, 1);
@@ -1283,13 +1365,14 @@ function escapeHtml(s) {
 }
 
 function showTooltip(e, oc) {
+  if (!tooltipEl) return;
   let html = `<div class="tt-title">${oc.id}: ${oc.name}</div>`;
   html += `<div class="tt-row"><span class="tt-label">Category:</span> ${oc.cat}</div>`;
   html += `<div class="tt-row"><span class="tt-label">Timeline:</span> ${oc.dateRange || 'Trigger-activated'}</div>`;
   html += `<div class="tt-row"><span class="tt-label">Deliverables:</span> ${oc.deliverables}</div>`;
   if (oc.milestone) html += `<div class="tt-row"><span class="tt-label">Milestone:</span> <strong>${oc.milestone}</strong></div>`;
   if (oc.risk) html += `<div class="tt-row"><span class="tt-label tt-risk">Key Risks:</span> ${oc.risk}</div>`;
-  if (oc.deps.length) {
+  if (oc.deps && oc.deps.length) {
     html += `<div class="tt-deps"><span class="tt-label">Depends on:</span> ${oc.deps.join(', ')}</div>`;
   }
   const st = outcomeStallByOutcome[oc.id];
@@ -1316,6 +1399,7 @@ function showTooltip(e, oc) {
 }
 
 function moveTooltip(e) {
+  if (!tooltipEl) return;
   let x = e.clientX + 16;
   let y = e.clientY + 16;
   if (x + 380 > window.innerWidth) x = e.clientX - 396;
@@ -1324,7 +1408,9 @@ function moveTooltip(e) {
   tooltipEl.style.top = y + 'px';
 }
 
-function hideTooltip() { tooltipEl.classList.remove('show'); }
+function hideTooltip() {
+  if (tooltipEl) tooltipEl.classList.remove('show');
+}
 
 initViOutcomeMapFromJson();
 
