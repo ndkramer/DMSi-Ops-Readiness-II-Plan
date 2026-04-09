@@ -169,6 +169,8 @@
   .bar-iterative { background: #76BE43; }
   .bar-conditional { background: #E67E22; border: 2px dashed #D35400; }
   .bar-poc { background: #9B59B6; }
+  .bar-complete { position: relative; }
+  .bar-complete::after { content: '\2713'; position: absolute; top: 2px; right: 22px; font-size: 9px; color: white; font-weight: 700; z-index: 12; }
 
   .stall-marker {
     position: absolute;
@@ -467,6 +469,7 @@
   <div class="legend-item"><div class="legend-line should"></div> should dependency</div>
   <div class="legend-item"><div class="legend-line contingent"></div> contingent</div>
   <div class="legend-item"><div style="width:0;height:14px;border-left:2px dashed #2B2B2B;opacity:0.5;"></div> As of last save</div>
+  <div class="legend-item"><div class="outcome-bar bar-poc bar-complete" style="width:40px;height:16px;font-size:8px;padding:0 4px;min-width:0" title="Sample">00</div> Complete (<code>status: &quot;complete&quot;</code>)</div>
   <div class="legend-item"><span class="stall-marker stall-stalled legend-sample" aria-hidden="true">S</span> GitHub Stalled</div>
   <div class="legend-item"><span class="stall-marker stall-blocked legend-sample" aria-hidden="true">B</span> GitHub Blocked</div>
   <div class="legend-item" style="font-size:11px;color:#666;max-width:520px;line-height:1.35">S/B load live from GitHub when a PAT is set (<code>github-stall-live.js</code>); else <code>outcome-stall-overlay.json</code>.</div>
@@ -749,6 +752,7 @@
         risk: t.risk || '',
         deliverables: t.deliverables != null ? t.deliverables : 0,
         milestone: t.milestone || '',
+        status: (o.status != null && o.status !== '') ? o.status : (t.status || ''),
         dates: dates,
         detail: t.detail || ''
       };
@@ -806,6 +810,7 @@
         risk: o.risk || '',
         deliverables: o.deliverables,
         milestone: o.milestone || '',
+        status: o.status || '',
         dateRange: o.date_range || o.dateRange || '',
         detail: o.detail || ''
       };
@@ -1268,7 +1273,7 @@ async function initPaOutcomeMapFromJson() {
     track.className = 'lane-track';
     if (oc.start > 0 && oc.end > 0) {
       const bar = document.createElement('div');
-      bar.className = `outcome-bar ${barClass[oc.cat]}`;
+      bar.className = `outcome-bar ${barClass[oc.cat]}${oc.status === 'complete' ? ' bar-complete' : ''}`;
       bar.style.gridColumn = `${oc.start} / ${oc.end + 1}`;
       bar.style.position = 'relative';
       bar.dataset.idx = idx;
@@ -1487,6 +1492,8 @@ function showTooltip(e, oc) {
   if (oc.start > 0) html += `<div class="tt-row"><span class="tt-label">Duration:</span> ${oc.end - oc.start + 1} weeks (Weeks ${oc.start}-${oc.end})</div>`;
   if (oc.deliverables > 0) html += `<div class="tt-row"><span class="tt-label">Deliverables:</span> ${oc.deliverables}</div>`;
   if (oc.milestone) html += `<div class="tt-row"><span class="tt-label">Milestone:</span> <strong>${oc.milestone}</strong></div>`;
+  if (oc.status === 'complete') html += `<div class="tt-row"><span class="tt-label">Status:</span> <strong>Complete</strong></div>`;
+  else if (oc.status) html += `<div class="tt-row"><span class="tt-label">Status:</span> ${oc.status}</div>`;
   if (oc.risk) html += `<div class="tt-row"><span class="tt-label tt-risk">Key Risks:</span> ${oc.risk}</div>`;
   if (oc.deps.length) {
     html += `<div class="tt-deps"><span class="tt-label">Depends on:</span> ${oc.deps.join(', ')}</div>`;

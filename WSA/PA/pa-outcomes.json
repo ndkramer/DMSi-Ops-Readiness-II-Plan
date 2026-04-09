@@ -8,7 +8,7 @@
     "poc_story_summary_prefix": "[POC]",
     "legacy_superseded_epic": "WSA-36",
     "superseding_epic_for_legacy": "WSA-3268",
-    "notes": "PA-OC-00 uses epic WSA-3758 (not 3267+0). PA-OC-01..11 use WSA-(3267+n) for n=1..11 => WSA-3268..WSA-3278. dependency_edges[] is canonical for PA-Outcome-map.html Dependency Flow; outcome_map + per-outcome timeline[] drive the Implementation Timeline. Edit pa-outcomes.json first, then refresh embedded #pa-dependency-edges-fallback when edge text changes."
+    "notes": "PA-OC-00 uses epic WSA-3758 (not 3267+0). PA-OC-01..11 use WSA-(3267+n) for n=1..11 => WSA-3268..WSA-3278. dependency_edges[] is canonical for PA-Outcome-map.html Dependency Flow; outcome_map + per-outcome timeline[] drive the Implementation Timeline. Optional outcome-level status: use \"complete\" (string) for a checkmark on the timeline bar (same convention as wm-outcomes.json). Edit pa-outcomes.json first, then refresh embedded #pa-dependency-edges-fallback when edge text changes."
   },
   "outcomes": [
     {
@@ -24,8 +24,9 @@
         "deliverables": 1,
         "milestone": "",
         "map_title": "Infrastructure & Architecture POC",
-        "detail": "First outcome (weeks 1–2): prove infrastructure and architecture—how the pipeline will run, connect, and be operated—plus approach, tooling, access, and velocity. Jira Epic WSA-3758; all [POC] Stories under this Epic. Must complete before PA-OC-01. PA-WBS v1.6."
-      }
+        "detail": "First outcome (weeks 1\u20132): prove infrastructure and architecture\u2014how the pipeline will run, connect, and be operated\u2014plus approach, tooling, access, and velocity. Jira Epic WSA-3758; all [POC] Stories under this Epic. Must complete before PA-OC-01. PA-WBS v1.6."
+      },
+      "status": ""
     },
     {
       "id": "PA-OC-01",
@@ -43,7 +44,8 @@
         "milestone": "M3",
         "map_title": "Foundation Access and Security Baseline Complete",
         "detail": "Environment access, deployment process documentation, security baseline, data classification, access governance, network security. Jira Epic WSA-3268 ([PA-OC-01] Foundation Access and Security Baseline Complete). Legacy WSA-36 superseded."
-      }
+      },
+      "status": ""
     },
     {
       "id": "PA-OC-02",
@@ -61,7 +63,8 @@
         "milestone": "M3",
         "map_title": "Config Inventory & Credentials",
         "detail": "NGINX config inventory, broader landscape assessment, credential and secret management plan."
-      }
+      },
+      "status": ""
     },
     {
       "id": "PA-OC-03",
@@ -79,7 +82,8 @@
         "milestone": "M3",
         "map_title": "Migration Path & Runner Infra",
         "detail": "Export method decisions, repo structure design, GitHub runner POC with Ansible feasibility validation."
-      }
+      },
+      "status": ""
     },
     {
       "id": "PA-OC-04",
@@ -97,7 +101,8 @@
         "milestone": "M4",
         "map_title": "Configs in Version Control",
         "detail": "Config migration from share drive to GitHub. CODEOWNERS, branch protection, CAB approval for production configs."
-      }
+      },
+      "status": ""
     },
     {
       "id": "PA-OC-05",
@@ -115,7 +120,8 @@
         "milestone": "M4",
         "map_title": "Build Pipeline Operational",
         "detail": "GitHub Actions workflow for NGINX config build. Linting, schema validation, templating, artifact packaging. ~1 FTE allocation."
-      }
+      },
+      "status": ""
     },
     {
       "id": "PA-OC-06",
@@ -134,7 +140,8 @@
         "milestone": "M4",
         "map_title": "Deploy Pipeline Operational",
         "detail": "Ansible-based deployment via runner. Pre-deploy validation, health checks, rollback. Starts after PA-OC-05 frees capacity."
-      }
+      },
+      "status": ""
     },
     {
       "id": "PA-OC-07",
@@ -152,7 +159,8 @@
         "milestone": "M4",
         "map_title": "Drift Detection Operational",
         "detail": "PARALLEL with PA-OC-05. Scheduled drift comparison, alerting, severity thresholds. Runs at ~0.5 FTE while PA-OC-05 uses ~1 FTE."
-      }
+      },
+      "status": ""
     },
     {
       "id": "PA-OC-08",
@@ -172,7 +180,8 @@
         "milestone": "M4",
         "map_title": "Pipeline Reliability Validated",
         "detail": "2-week measurement window (rolling): 90%+ success rate for all 3 pipelines. Max 3 cycles. Fallback: trigger PA-OC-10. Timeline allows time for fixes between cycles."
-      }
+      },
+      "status": ""
     },
     {
       "id": "PA-OC-09",
@@ -190,7 +199,8 @@
         "milestone": "M5",
         "map_title": "Config-as-Code Enforced",
         "detail": "4-week enforcement period per PA-WBS. No manual changes allowed. Team training, runbooks, IRP update. Max 2 cycles."
-      }
+      },
+      "status": ""
     },
     {
       "id": "PA-OC-10",
@@ -215,7 +225,8 @@
           "what_outcome": "A documented, tested fallback procedure to safely revert changes without relying on the pipeline. Manual processes are maintained as a safety net until pipeline issues are resolved.",
           "note": "This is a safety net, not a failure. The constraint model has no equivalent -- it just says \"S4 not complete.\" The outcome model provides an explicit path forward."
         }
-      }
+      },
+      "status": ""
     },
     {
       "id": "PA-OC-11",
@@ -242,7 +253,8 @@
           "what_outcome": "Additional config types have automated pipelines following the same framework proven by the NGINX POC. A replication playbook is documented so the pattern can be applied to future config types without starting from scratch.",
           "note": "This is about replicating the pipeline pattern to other configs, NOT about application code. Application deployment (Caley's domain) is explicitly out of scope for this engagement."
         }
-      }
+      },
+      "status": ""
     }
   ],
   "dependency_edges": [
@@ -252,10 +264,10 @@
       "to": "PA-OC-01",
       "type": "must",
       "curve": 0,
-      "timing": "POC band (weeks 1–2 on this timeline) must satisfy PA-OC-00 success criteria before PA-OC-01 is treated complete; foundation work may overlap late POC only where risks are documented.",
+      "timing": "POC band (weeks 1\u20132 on this timeline) must satisfy PA-OC-00 success criteria before PA-OC-01 is treated complete; foundation work may overlap late POC only where risks are documented.",
       "prerequisite": "Hard prerequisite: infrastructure & architecture proof (runner reachability, repo integration, at least one exercised automation path) so PA-OC-01 does not redo unresolved POC-scope unknowns.",
       "decisions": [],
-      "cross_cutting": "PA-CW-01 (Visibility Infrastructure): Dan's security review and PA-OC-01 WP 0.3 baseline should be coordinated with VI; biweekly security sync per PA-WBS §8."
+      "cross_cutting": "PA-CW-01 (Visibility Infrastructure): Dan's security review and PA-OC-01 WP 0.3 baseline should be coordinated with VI; biweekly security sync per PA-WBS \u00a78."
     },
     {
       "id": "e-01-02",
@@ -304,7 +316,7 @@
         }
       ],
       "granular": [
-        "§9 gate: runner model, secrets, SOC 2 baseline, and data classification resolved before treating OC-01→OC-02 transition as clean."
+        "\u00a79 gate: runner model, secrets, SOC 2 baseline, and data classification resolved before treating OC-01\u2192OC-02 transition as clean."
       ]
     },
     {
@@ -339,7 +351,7 @@
       "to": "PA-OC-04",
       "type": "must",
       "curve": 0,
-      "timing": "Migration execution starts after export method, repo structure, branching, and runner/Ansible feasibility are defined. PA-D-13 must be understood before PA-OC-04 entry (WBS dependency not shown on §3 mermaid alone).",
+      "timing": "Migration execution starts after export method, repo structure, branching, and runner/Ansible feasibility are defined. PA-D-13 must be understood before PA-OC-04 entry (WBS dependency not shown on \u00a73 mermaid alone).",
       "prerequisite": "PA-OC-03 deliverables complete; plus CAB/change process understood before production config migration.",
       "decisions": [
         {
@@ -375,7 +387,7 @@
       ],
       "cross_cutting": "PA-CW-02 (Work Management): pipeline tasks should live in the same work system as operational readiness (should).",
       "granular": [
-        "§9: repo structure, format, runner infra, Ansible feasibility + PA-D-13 before productive migration."
+        "\u00a79: repo structure, format, runner infra, Ansible feasibility + PA-D-13 before productive migration."
       ]
     },
     {
@@ -396,7 +408,7 @@
         {
           "id": "PA-D-09",
           "decision_type": "TYPE 2",
-          "text": "Drift alerting channel (PagerDuty vs Slack) — also cited at PA-OC-05 entry for build-adjacent ops.",
+          "text": "Drift alerting channel (PagerDuty vs Slack) \u2014 also cited at PA-OC-05 entry for build-adjacent ops.",
           "required_by": "PA-OC-05 entry"
         }
       ]
@@ -455,10 +467,10 @@
       "type": "should",
       "curve": 0,
       "timing": "Recommended sequence: deploy development can start in parallel, but full deploy validation needs build artifacts.",
-      "prerequisite": "Should dependency — can proceed with documented risk acceptance if build lags.",
+      "prerequisite": "Should dependency \u2014 can proceed with documented risk acceptance if build lags.",
       "decisions": [],
       "granular": [
-        "WBS: PA-OC-05 → PA-OC-06 is \"should\", not \"must\"."
+        "WBS: PA-OC-05 \u2192 PA-OC-06 is \"should\", not \"must\"."
       ]
     },
     {
@@ -473,12 +485,12 @@
         {
           "id": "PA-D-10",
           "decision_type": "TYPE 1",
-          "text": "Config-as-code enforcement policy — must be decided by PA-OC-08 exit so PA-OC-09 can start.",
+          "text": "Config-as-code enforcement policy \u2014 must be decided by PA-OC-08 exit so PA-OC-09 can start.",
           "required_by": "PA-OC-08 exit"
         }
       ],
       "granular": [
-        "§9: 90%+ success targets for build/deploy/drift before advancing."
+        "\u00a79: 90%+ success targets for build/deploy/drift before advancing."
       ]
     },
     {
@@ -522,7 +534,7 @@
       "to": "PA-OC-09",
       "type": "must",
       "curve": 0,
-      "timing": "PA-OC-09 entry requires PA-OC-08 complete AND PA-D-10 approved (WBS §4 PA-OC-09 dependencies) — explicit gate missing from §3 graph alone.",
+      "timing": "PA-OC-09 entry requires PA-OC-08 complete AND PA-D-10 approved (WBS \u00a74 PA-OC-09 dependencies) \u2014 explicit gate missing from \u00a73 graph alone.",
       "prerequisite": "90%+ reliability (or iteration policy exhausted), rollback trusted, dashboard operational.",
       "decisions": [
         {
@@ -532,9 +544,9 @@
           "required_by": "Before PA-OC-09 entry (also listed PA-OC-08 exit)"
         }
       ],
-      "cross_cutting": "PA-CW-05 (Incident Response): IRP updated after PA-OC-08 and before enforcement (must per §8).",
+      "cross_cutting": "PA-CW-05 (Incident Response): IRP updated after PA-OC-08 and before enforcement (must per \u00a78).",
       "granular": [
-        "Type 1: organizational commitment; no auto-default per §5."
+        "Type 1: organizational commitment; no auto-default per \u00a75."
       ]
     },
     {

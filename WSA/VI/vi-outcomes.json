@@ -4,7 +4,7 @@
   "wbs_markdown": "VI-WBS.md",
   "jira": {
     "capability_issue_key": "WSA-120",
-    "notes": "Timeline rows in outcomes[] are canonical for VI-WSB-Outcome-Map.html; edit this file first, then refresh #vi-outcomes-fallback in the HTML. Populate jira_epic_key per outcome when VI-WBS.md §9 lists stable Epic keys. Optional dependency_edges[]: same object shape as PA-Outcome-map.html depEdges."
+    "notes": "Timeline rows in outcomes[] are canonical for VI-WSB-Outcome-Map.html; edit this file first, then refresh #vi-outcomes-fallback in the HTML. Each outcome may include status (e.g. empty string or \"complete\" for a bar checkmark, same as wm-outcomes.json). Populate jira_epic_key per outcome when VI-WBS.md §9 lists stable Epic keys. Optional dependency_edges[]: same object shape as PA-Outcome-map.html depEdges."
   },
   "outcome_map": {
     "layout": "half_month",
@@ -41,47 +41,55 @@
       "risk": "VI-R-PD1, VI-R-PD2",
       "deliverables": 7,
       "milestone": "",
+      "status": "",
       "date_range": "Mar 1 - May 8 (Active)",
       "detail": "ALREADY UNDERWAY. Phase 1-2 complete (initial install configured). Phase 3 + 30-day ML learning + tuning + DMSi handover. Independent of Dynatrace Apr 1 start."
     },
     {
       "id": "VI-OC-01",
       "title": "Foundation Planning & Architecture (Dynamo NGINX POC)",
-      "start": 3,
-      "end": 4,
+      "start": 2,
+      "end": 3,
       "cat": "Baseline",
       "deps": [],
       "risk": "VI-R-X5",
       "deliverables": 3,
-      "milestone": "",
+      "milestone": "M2",
+      "status": "",
       "date_range": "Weeks 1-2; align with Pipeline Automation NGINX POC",
-      "detail": "VI-OC-01.1–01.3 only: environment inventory, Dynatrace architecture design, integration architecture (PagerDuty, status page, CheckMK). DMSi Dynatrace platform + M3 deliverables (A2W strategy, scripts, Elastic, in-env POC) are VI-OC-03."
+      "detail": "VI-OC-01.1\u201301.3 only: environment inventory, Dynatrace architecture design, integration architecture (PagerDuty, status page, CheckMK). DMSi Dynatrace platform + M3 deliverables (A2W strategy, scripts, Elastic, in-env POC) are VI-OC-03."
     },
     {
       "id": "VI-OC-02",
       "title": "Telemetry Strategy & Licensing",
       "start": 5,
-      "end": 6,
+      "end": 8,
       "cat": "Baseline",
-      "deps": ["VI-OC-01"],
+      "deps": [
+        "VI-OC-01"
+      ],
       "risk": "VI-R-X6",
       "deliverables": 6,
       "milestone": "",
+      "status": "",
       "date_range": "Apr 28 - May 23",
       "detail": "ABL telemetry eval, OpenTelemetry feasibility, log retention review, licensing procurement (long pole), RBAC design. 1.5 FTE conservative: 4 weeks."
     },
     {
       "id": "VI-OC-03",
       "title": "Platform & Integrations Deployed (DMSi NGINX POC)",
-      "start": 6,
-      "end": 7,
+      "start": 4,
+      "end": 6,
       "cat": "Baseline",
-      "deps": ["VI-OC-02"],
+      "deps": [
+        "VI-OC-02"
+      ],
       "risk": "VI-R-X3",
       "deliverables": 8,
       "milestone": "M3",
-      "date_range": "M3 — May/Jun band; full outcome due milestone 3",
-      "detail": "VI-OC-03.1–03.4: tenant, ActiveGate, PagerDuty, status page. VI-OC-03.5–03.8: A2W telemetry strategy, script rationalization, Elastic inventory, DMSi Dynatrace POC execution (OTO, training, trial). SOSAVE remains VI-OC-08."
+      "status": "",
+      "date_range": "M3 \u2014 May/Jun band; full outcome due milestone 3",
+      "detail": "VI-OC-03.1\u201303.4: tenant, ActiveGate, PagerDuty, status page. VI-OC-03.5\u201303.8: A2W telemetry strategy, script rationalization, Elastic inventory, DMSi Dynatrace POC execution (OTO, training, trial). SOSAVE remains VI-OC-08."
     },
     {
       "id": "VI-OC-04",
@@ -89,10 +97,13 @@
       "start": 7,
       "end": 8,
       "cat": "Baseline",
-      "deps": ["VI-OC-03"],
+      "deps": [
+        "VI-OC-03"
+      ],
       "risk": "VI-R-05, VI-R-06",
       "deliverables": 2,
       "milestone": "",
+      "status": "",
       "date_range": "Jun 8 - Jun 27",
       "detail": "OneAgent deployment across all hosts. PASOE/OpenEdge monitoring. Maintenance windows required. 1.5 FTE conservative: 3 weeks (window scheduling adds risk)."
     },
@@ -102,10 +113,13 @@
       "start": 8,
       "end": 11,
       "cat": "Iterative",
-      "deps": ["VI-OC-04"],
+      "deps": [
+        "VI-OC-04"
+      ],
       "risk": "VI-R-03",
       "deliverables": 3,
       "milestone": "M2",
+      "status": "",
       "date_range": "Jun 30 - Aug 8",
       "detail": "Dashboard build (2 wks) + 30-day validation: Dynatrace >= CheckMK. Coverage >= 95%. Max 2 cycles. Fallback: trigger VI-OC-15."
     },
@@ -115,10 +129,13 @@
       "start": 7,
       "end": 11,
       "cat": "Iterative",
-      "deps": ["VI-OC-03"],
+      "deps": [
+        "VI-OC-03"
+      ],
       "risk": "VI-R-10, VI-R-11",
       "deliverables": 6,
       "milestone": "",
+      "status": "",
       "date_range": "Jun 8 - Aug 8",
       "detail": "PARALLEL with VI-OC-04/VI-OC-05. Log activation, ingestion, parsing, Elastic alert migration + 30-day parallel validation. 9 weeks at shared FTE."
     },
@@ -128,10 +145,13 @@
       "start": 8,
       "end": 9,
       "cat": "Baseline",
-      "deps": ["VI-OC-03"],
+      "deps": [
+        "VI-OC-03"
+      ],
       "risk": "VI-R-13",
       "deliverables": 9,
       "milestone": "M3",
+      "status": "",
       "date_range": "Jun 15 - Jul 11",
       "detail": "PARALLEL with VI-OC-04/VI-OC-05. Synthetic monitors, MTTD baseline, network path monitoring, NetApp ONTAP. 4 weeks at shared FTE."
     },
@@ -141,10 +161,13 @@
       "start": 10,
       "end": 11,
       "cat": "Iterative",
-      "deps": ["VI-OC-05"],
+      "deps": [
+        "VI-OC-05"
+      ],
       "risk": "VI-R-14, VI-R-15, VI-R-16, VI-R-20",
       "deliverables": 6,
       "milestone": "M5",
+      "status": "",
       "date_range": "Jul 20 - Aug 15",
       "detail": "Starts during VI-OC-05 validation (should dep). APM scope, PASOE service detection, custom metrics incl. SOSAVE (service-order save duration; fileshare/SME access), OpenTelemetry eval. HIGHEST RISK: dev team capacity; SOSAVE blocked without access (VI-R-20)."
     },
@@ -154,10 +177,15 @@
       "start": 12,
       "end": 13,
       "cat": "Iterative",
-      "deps": ["VI-OC-05", "VI-OC-07", "VI-OC-08"],
+      "deps": [
+        "VI-OC-05",
+        "VI-OC-07",
+        "VI-OC-08"
+      ],
       "risk": "",
       "deliverables": 7,
       "milestone": "",
+      "status": "",
       "date_range": "Aug 18 - Sep 5",
       "detail": "Infrastructure, application, and synthetic baselines. SLO definitions. PagerDuty AIOps confirmation. Engineering review. 3 weeks."
     },
@@ -167,10 +195,14 @@
       "start": 13,
       "end": 14,
       "cat": "Iterative",
-      "deps": ["VI-OC-09", "VI-OC-16"],
+      "deps": [
+        "VI-OC-09",
+        "VI-OC-16"
+      ],
       "risk": "VI-R-07",
       "deliverables": 8,
       "milestone": "M4",
+      "status": "",
       "date_range": "Sep 8 - Sep 26",
       "detail": "Alert audit and tuning (<50/week target). PagerDuty AIOps integration. Persona dashboards (engineering, support, leadership). Trust validation. 3 weeks."
     },
@@ -180,10 +212,14 @@
       "start": 14,
       "end": 16,
       "cat": "Iterative",
-      "deps": ["VI-OC-10", "VI-OC-07"],
+      "deps": [
+        "VI-OC-10",
+        "VI-OC-07"
+      ],
       "risk": "",
       "deliverables": 8,
       "milestone": "M5",
+      "status": "",
       "date_range": "Sep 29 - Oct 31",
       "detail": "MTTD <= 10 min sustained 4 weeks. Status page validated. Error budget policy. Runbook + knowledge transfer. M5 evidence package. 5 weeks (includes 4-week measurement)."
     },
@@ -193,10 +229,14 @@
       "start": 11,
       "end": 12,
       "cat": "Baseline",
-      "deps": ["VI-OC-05", "VI-OC-06"],
+      "deps": [
+        "VI-OC-05",
+        "VI-OC-06"
+      ],
       "risk": "",
       "deliverables": 2,
       "milestone": "",
+      "status": "",
       "date_range": "Aug 11 - Aug 29",
       "detail": "Elastic shutdown (TYPE 1 decision). CheckMK decommission evaluation. Gates on BOTH VI-OC-05 and VI-OC-06 validation. 3 weeks."
     },
@@ -206,10 +246,13 @@
       "start": 14,
       "end": 16,
       "cat": "Conditional",
-      "deps": ["VI-OC-03"],
+      "deps": [
+        "VI-OC-03"
+      ],
       "risk": "VI-R-X4",
       "deliverables": 2,
       "milestone": "",
+      "status": "",
       "date_range": "Conditional: A2W launch + 6 wk lead",
       "detail": "CONDITIONAL: Triggers when A2W launch date confirmed. Synthetic test activation + RUM deployment. 6-week lead time needed."
     },
@@ -219,10 +262,13 @@
       "start": 16,
       "end": 16,
       "cat": "Conditional",
-      "deps": ["VI-OC-11"],
+      "deps": [
+        "VI-OC-11"
+      ],
       "risk": "",
       "deliverables": 4,
       "milestone": "M7",
+      "status": "",
       "date_range": "Nov 2026+",
       "detail": "CONDITIONAL: Triggers after VI-OC-11 complete. DORA metrics, SLI-driven prioritization, customer experience correlation."
     },
@@ -236,6 +282,7 @@
       "risk": "",
       "deliverables": 2,
       "milestone": "",
+      "status": "",
       "date_range": "Conditional: validation failure",
       "detail": "CONDITIONAL: Triggers if VI-OC-05 or VI-OC-09 validation fails after max iterations. Legacy systems maintained; revised plan to Hilltop."
     }
@@ -247,7 +294,7 @@
       "to": "VI-OC-03",
       "type": "should",
       "curve": 0,
-      "timing": "VI-WBS §3: architecture (VI-OC-01) should precede or overlap DMSi platform work; document risk if VI-OC-03.8 runs fully ahead of VI-OC-01 exit.",
+      "timing": "VI-WBS \u00a73: architecture (VI-OC-01) should precede or overlap DMSi platform work; document risk if VI-OC-03.8 runs fully ahead of VI-OC-01 exit.",
       "prerequisite": "Parity with VI-OC-03 Dependencies table and CW-08 coordination with PA-OC-00 (WSA-3758).",
       "decisions": [],
       "cross_cutting": "CW-08: VI-OC-01 schedule coupling with Pipeline Automation PA-OC-00."
@@ -259,7 +306,7 @@
       "type": "should",
       "curve": 0,
       "timing": "VI-OC-16 runs on existing PagerDuty sources without waiting for VI-OC-03; complete VI-OC-03.3 before holistic AIOps tuning that includes Dynatrace-sourced alerts.",
-      "prerequisite": "Dynatrace → PagerDuty is not a hard gate for PD-native AIOps phases 1–3 (VI-WBS VI-OC-16 Dependencies).",
+      "prerequisite": "Dynatrace \u2192 PagerDuty is not a hard gate for PD-native AIOps phases 1\u20133 (VI-WBS VI-OC-16 Dependencies).",
       "decisions": [],
       "cross_cutting": ""
     }

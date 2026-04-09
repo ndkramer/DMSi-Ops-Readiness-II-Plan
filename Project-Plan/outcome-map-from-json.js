@@ -76,6 +76,7 @@
         risk: t.risk || '',
         deliverables: t.deliverables != null ? t.deliverables : 0,
         milestone: t.milestone || '',
+        status: (o.status != null && o.status !== '') ? o.status : (t.status || ''),
         dates: dates,
         detail: t.detail || ''
       };
@@ -133,6 +134,7 @@
         risk: o.risk || '',
         deliverables: o.deliverables,
         milestone: o.milestone || '',
+        status: o.status || '',
         dateRange: o.date_range || o.dateRange || '',
         detail: o.detail || ''
       };
