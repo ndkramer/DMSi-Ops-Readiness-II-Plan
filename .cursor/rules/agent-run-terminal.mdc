@@ -1,0 +1,12 @@
+---
+description: Agent must run terminal commands itself; never delegate runnable commands to the user
+alwaysApply: true
+---
+
+# Run commands here — do not ask the user to run them
+
+- **Never** ask the user to run shell/terminal commands that you can run yourself with the tools available in this environment (git, npm, scripts, file inspection, etc.).
+- **Execute** those commands directly and report results or fix failures.
+- **Exception:** Only if a step is strictly **interactive and user-only** (e.g. signing in to a service in a browser, typing a password or MFA that must not pass through the agent, or approving a prompt only the user can see). In that case, state the minimum user action in one sentence — do not paste long “run this, then that” instruction lists for work you could automate.
+
+This project expects the agent to own the terminal, not delegate it.
