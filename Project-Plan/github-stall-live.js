@@ -55,14 +55,22 @@
   var LABEL_OC_RE = /^(wm|vi|pa|wb)-oc-(\d+)(\.\d+)?$/i;
   var TITLE_BRACKET_RE = /\[([A-Za-z]{2}-OC-\d+(?:\.\d+)?)\]/g;
 
+  function isLambdaFunctionUrlHost() {
+    try {
+      var h = (global.location.hostname || '').toLowerCase();
+      return h.indexOf('lambda-url') >= 0 || h.endsWith('.on.aws') || h.indexOf('.lambda-url.') >= 0;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function useGithubProxy() {
     try {
       if (global.location.protocol === 'file:') return false;
       var q = new URLSearchParams(global.location.search || '');
       if (q.get('github_proxy') === '0') return false;
-      if (q.get('github_proxy') === '1') return true;
-      var h = (global.location.hostname || '').toLowerCase();
-      return h.indexOf('lambda-url') >= 0 || h.endsWith('.on.aws') || h.indexOf('.lambda-url.') >= 0;
+      if (q.get('github_proxy') === '1') return isLambdaFunctionUrlHost();
+      return isLambdaFunctionUrlHost();
     } catch (e) {
       return false;
     }
@@ -116,6 +124,13 @@
 
   function githubGraphqlFetch(token, query, variables) {
     var origin = safePageOrigin();
+    if (useGithubProxy() && !origin) {
+      return Promise.reject(
+        new Error(
+          'GitHub proxy: cannot resolve page origin; use full Lambda URL (*.on.aws) in iframe src or open in a new tab.'
+        )
+      );
+    }
     var url = useGithubProxy()
       ? withLambdaGate((origin || '') + '/github-proxy/graphql')
       : 'https://api.github.com/graphql';

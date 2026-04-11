@@ -561,7 +561,7 @@
         <li>Enable scopes: <code>read:project</code> (or full <code>project</code> for classic boards), <code>read:org</code>, and <code>repo</code> if issues are in <strong>private</strong> repositories.</li>
       </ol>
       <p>If you see <strong>“Project #1 not found”</strong> or similar: the board may be a <strong>classic</strong> project (this page now falls back to that API) or your token may lack <strong>Organization → Projects (Read)</strong>. If the org uses <strong>SAML SSO</strong>, open the token in GitHub → <strong>Configure SSO</strong> and authorize it for <strong>DynamoLLC-Hub</strong>.</p>
-      <p>If you see <strong>“Failed to fetch”</strong> or <strong>403</strong>: embedders may block <code>api.github.com</code>, or Lambda may reject requests without the <strong>gate</strong> token. Use both: <code>?token=…</code> (same value as the Capability Map / Confluence iframe) <strong>and</strong> <code>&amp;github_token=…</code> (GitHub PAT). Force proxy with <code>&amp;github_proxy=1</code> if needed.</p>
+      <p>If you see <strong>“Failed to fetch”</strong> or <strong>403</strong>: embedders may block <code>api.github.com</code>, or Lambda may reject requests without the <strong>gate</strong> token. Use both: <code>?token=…</code> (same value as the Capability Map / Confluence iframe) <strong>and</strong> <code>&amp;github_token=…</code> (GitHub PAT). Optional <code>&amp;github_proxy=1</code> only when the report is already opened on a <strong>*.on.aws</strong> Lambda URL (it does nothing on Confluence’s domain — otherwise you get <strong>404</strong> on <code>/github-proxy</code>).</p>
       <p><strong>Confluence iframe:</strong> sandboxed frames can make <code>location.origin</code> the string <code>null</code> (this page uses <code>location.href</code> for the Lambda host). Those frames also treat calls to your Lambda as <strong>cross-origin</strong>, so the Lambda must return CORS headers on <code>/github-proxy</code> and <code>/github-api</code> — deploy the latest <code>index.mjs</code>. Avoid putting a PAT in bookmarked URLs; revoke any leaked PAT.</p>
       <p>Official guide: <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener noreferrer">Managing personal access tokens</a>.</p>
     </div>
@@ -1007,15 +1007,27 @@
     };
   }
 
-  /** When hosted on Lambda Function URL, call GitHub through same-origin proxy (Confluence CSP blocks api.github.com). */
+  /** True when this page is served from an AWS Lambda Function URL host (*.lambda-url.*.on.aws / *.on.aws). */
+  function isLambdaFunctionUrlHost() {
+    try {
+      var h = (window.location.hostname || '').toLowerCase();
+      return h.indexOf('lambda-url') >= 0 || h.endsWith('.on.aws') || h.indexOf('.lambda-url.') >= 0;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
+   * When hosted on Lambda Function URL, call GitHub through same-origin proxy (Confluence CSP blocks api.github.com).
+   * github_proxy=1 only applies on a Lambda host; otherwise it would request /github-proxy on the wrong origin (e.g. Confluence) → 404.
+   */
   function useGithubProxy() {
     try {
       if (window.location.protocol === 'file:') return false;
       var q = new URLSearchParams(window.location.search || '');
       if (q.get('github_proxy') === '0') return false;
-      if (q.get('github_proxy') === '1') return true;
-      var h = (window.location.hostname || '').toLowerCase();
-      return h.indexOf('lambda-url') >= 0 || h.endsWith('.on.aws') || h.indexOf('.lambda-url.') >= 0;
+      if (q.get('github_proxy') === '1') return isLambdaFunctionUrlHost();
+      return isLambdaFunctionUrlHost();
     } catch (e) {
       return false;
     }
@@ -1051,12 +1063,17 @@
         res.status === 502 || res.status === 503 || res.status === 504
           ? ' Often a temporary bad gateway or timeout from GitHub or the Lambda proxy — retry in a minute; if it persists, check Lambda logs, memory, and GitHub status.'
           : '';
+      var notFound =
+        res.status === 404
+          ? ' HTTP 404 on /github-proxy usually means the page is not on the Lambda URL (wrong host) or the deployed Lambda is missing /github-proxy — open the *.on.aws report URL or redeploy Capability-map/index.mjs.'
+          : '';
       throw new Error(
         (context || 'Request') +
           ': expected JSON but got plain text (HTTP ' +
           res.status +
           ').' +
           gateway +
+          notFound +
           ' Preview: ' +
           preview
       );
@@ -1102,6 +1119,15 @@
 
   function githubGraphqlFetch(token, query, variables) {
     var origin = safePageOrigin();
+    if (useGithubProxy() && !origin) {
+      return Promise.reject(
+        new Error(
+          'GitHub proxy: cannot resolve this page’s origin (common in sandboxed iframes). ' +
+            'Embed using an iframe whose src is the full https://….on.aws/…/Stalled-Blocked-rpt.html URL with ?token= and ?github_token=, ' +
+            'or open that URL in a new tab. Remove ?github_proxy=1 unless the address bar host is *.on.aws.'
+        )
+      );
+    }
     var url = useGithubProxy()
       ? withLambdaGate((origin || '') + '/github-proxy/graphql')
       : 'https://api.github.com/graphql';
@@ -1119,6 +1145,11 @@
   async function githubRestFetch(absUrl, token) {
     if (!useGithubProxy()) {
       return fetch(absUrl, { headers: restHeaders(token) });
+    }
+    if (!safePageOrigin()) {
+      throw new Error(
+        'GitHub proxy: cannot resolve this page’s origin (see Stalled & Blocked help — use full Lambda URL in iframe src or open in a new tab).'
+      );
     }
     try {
       var parsed = new URL(absUrl);
@@ -1740,7 +1771,7 @@
       if (err && (err.message === 'Failed to fetch' || err.name === 'TypeError')) {
         msg = 'Failed to reach the server (network, CSP, or blocked request).\n\n' +
           '1) If the Capability Map uses ?token= for Lambda, add the same token to this page: ?token=…&github_token=…\n' +
-          '2) Deploy latest Lambda (GitHub proxy). Host should be *.lambda-url.*.on.aws — or add &github_proxy=1 to force proxy.\n' +
+          '2) Deploy latest Lambda (GitHub proxy). Host should be *.lambda-url.*.on.aws. Do not use github_proxy=1 unless the page URL is already on *.on.aws.\n' +
           '3) In Confluence, try opening the iframe URL in a new tab to rule out embed restrictions.';
       }
       setMessage(msg, 'error');
