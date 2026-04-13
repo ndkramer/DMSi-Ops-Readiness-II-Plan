@@ -485,6 +485,11 @@
     border: 5px solid transparent; border-top-color: #1a1a1a;
   }
   .blocker-badge:hover .blocker-tooltip { display: block; }
+  .blocker-badge.blocker-badge-link {
+    cursor: pointer;
+    color: #fff;
+    text-decoration: none;
+  }
 
   /* ── Blocker list in expanded body ── */
   .blocker-section { margin-top: 10px; }
@@ -1664,6 +1669,46 @@ function hasStageArtifactUrl(url) {
   return true;
 }
 
+/** Escape text for HTML text nodes and attribute values. */
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/**
+ * Blocker: string, or { text, url? } (optional legacy: label, href). url may be GitHub, Confluence, etc.
+ */
+function normalizeBlockerEntry(b) {
+  if (b == null) return { text: '', url: '' };
+  if (typeof b === 'string') return { text: b, url: '' };
+  if (typeof b === 'object') {
+    var text = b.text != null ? String(b.text) : (b.label != null ? String(b.label) : '');
+    var url = '';
+    if (b.url != null && String(b.url).trim() !== '') url = String(b.url).trim();
+    else if (b.href != null && String(b.href).trim() !== '') url = String(b.href).trim();
+    return { text: text, url: url };
+  }
+  return { text: String(b), url: '' };
+}
+
+function normalizeBlockersList(blockers) {
+  if (!Array.isArray(blockers)) return [];
+  return blockers.map(normalizeBlockerEntry);
+}
+
+/** First http(s) URL among blockers (B badge opens this when present). */
+function firstBlockerUrl(normalized) {
+  if (!normalized || !normalized.length) return '';
+  for (var i = 0; i < normalized.length; i++) {
+    var u = normalized[i].url;
+    if (u && /^https?:\/\//i.test(u)) return u;
+  }
+  return '';
+}
+
 function makeStageCard(stage, capId, idx, theme) {
   const card = document.createElement('div');
   card.className = `stage-card status-${stage.status}`;
@@ -1698,22 +1743,35 @@ function makeStageCard(stage, capId, idx, theme) {
     ${sprintHtml}
   </div>`;
 
-  // Blocker badge (collapsed header)
+  // Blocker badge (collapsed header); optional link on B when a blocker has url
+  const blockersNorm = normalizeBlockersList(stage.blockers);
   let blockerBadgeHtml = '';
-  if (stage.blockers && stage.blockers.length > 0) {
-    const tooltipText = stage.blockers.join('<br>');
-    blockerBadgeHtml = `<span class="blocker-badge">B<div class="blocker-tooltip">${tooltipText}</div></span>`;
+  if (blockersNorm.length > 0) {
+    const tooltipText = blockersNorm.map(x => escapeHtml(x.text)).join('<br>');
+    const tooltipInner = `<div class="blocker-tooltip">${tooltipText}</div>`;
+    const primaryUrl = firstBlockerUrl(blockersNorm);
+    if (primaryUrl) {
+      blockerBadgeHtml = `<a class="blocker-badge blocker-badge-link" href="${escapeHtml(primaryUrl)}" target="_blank" rel="noopener noreferrer" title="Open tracking link" onclick="event.stopPropagation()">B${tooltipInner}</a>`;
+    } else {
+      blockerBadgeHtml = `<span class="blocker-badge">B${tooltipInner}</span>`;
+    }
   }
 
   // Blocker section (expanded body)
   let blockerSectionHtml = '';
-  if (stage.blockers && stage.blockers.length > 0) {
+  if (blockersNorm.length > 0) {
+    const liHtml = blockersNorm.map(x => {
+      const t = escapeHtml(x.text);
+      const u = x.url && /^https?:\/\//i.test(x.url) ? x.url : '';
+      if (u) return `<li><a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${t}</a></li>`;
+      return `<li>${t}</li>`;
+    }).join('');
     blockerSectionHtml = `<div class="blocker-section">
       <p class="blocker-label">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l7 14H1L8 1z" fill="#dc2626"/><text x="8" y="12" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">!</text></svg>
         Active Blockers
       </p>
-      <ul>${stage.blockers.map(b => `<li>${b}</li>`).join('')}</ul>
+      <ul>${liHtml}</ul>
     </div>`;
   }
 
@@ -1873,8 +1931,9 @@ function toggleEl(id) {
 
 /* ═══════════════════════════════ */
 /* STATE FROM JSON / EMBEDDED      */
-/* Loads capability-map-state.json when present; otherwise uses EMBEDDED_STATE below (for single-file sharing).
-   Repeat ?token= on fetches when present (Lambda; query or hash). capability-map-dmsi.html includes meta capability-map-artifacts-variant=dmsi; or use ?artifacts=dmsi. Merge capability-map-artifacts-dmsi.json onto artifactsUrl only. */
+/* capability-map-state.json: same-origin fetch (cache: no-store), then GitHub raw main fallback, then EMBEDDED_STATE.
+   Regenerate EMBEDDED after JSON edits: node Capability-map/sync-dmsi-embedded-from-state.mjs
+   Repeat ?token= on fetches when present (Lambda; query or hash). Merge capability-map-artifacts-dmsi.json onto artifactsUrl only. */
 /* ═══════════════════════════════ */
 
 var EMBEDDED_STATE = {
@@ -1883,18 +1942,6 @@ var EMBEDDED_STATE = {
     "headline": "Sprint 4 is active across all workstreams.",
     "narrative": "Work Management and Visibility Infrastructure remain on track. Pipeline Automation moves from discovery into design and feasibility. Proactive Detection continues integration and baseline stability work. Workstreams B, C, and D advance planning; timelines stay tied to tooling and platform decisions."
   },
-  "recentlyCompleted": [
-    { "stage": "S1", "title": "Config Inventory Complete", "date": "Completed Mar 13, 2026", "capability": "Pipeline Automation" },
-    { "stage": "S0", "title": "PagerDuty AIOps Installed and Configured", "date": "Completed Mar 14, 2026", "capability": "Visibility Infrastructure" },
-    { "stage": "S0", "title": "Scorecard Requirements and Gap Analysis Complete", "date": "Completed Mar 14, 2026", "capability": "Strategic Visibility" },
-    { "stage": "S0", "title": "Decision Package Delivered for Executive Review", "date": "Completed Mar 14, 2026", "capability": "Proactive Detection" }
-  ],
-  "comingNext": [
-    { "stage": "S2", "title": "Work Taxonomy Defined", "date": "Target: Mar 28, 2026", "capability": "Work Management" },
-    { "stage": "S3", "title": "System Configured and Ready", "date": "Target: Apr 10, 2026", "capability": "Work Management" },
-    { "stage": "S2", "title": "Migration Path Defined (POC)", "date": "Target: [March 27], 2026", "capability": "Pipeline Automation" },
-    { "stage": "S0", "title": "Monitoring Strategy Defined (Dynatrace POC)", "date": "Target: [March 27], 2026", "capability": "Proactive Detection" }
-  ],
   "milestones": [
     {
       "id": "M2",
@@ -1937,6 +1984,10 @@ var EMBEDDED_STATE = {
       "confidence": "on-track"
     },
     {
+      "id": "pd",
+      "confidence": "on-track"
+    },
+    {
       "id": "pa",
       "confidence": "on-track"
     },
@@ -1962,7 +2013,7 @@ var EMBEDDED_STATE = {
       "capabilityId": "wm",
       "num": 0,
       "status": "done",
-      "artifactsUrl": "#",
+      "artifactsUrl": "sharepoint-wm-s0.html",
       "blockers": [],
       "targetStart": "Feb 16, 2026",
       "targetEnd": "Feb 27, 2026"
@@ -1979,20 +2030,25 @@ var EMBEDDED_STATE = {
     {
       "capabilityId": "wm",
       "num": 2,
-      "status": "in-progress",
+      "status": "done",
       "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCQYCCV_9UMQ5_xCaJmFjmEATsb7XOD8J_mv-sk8DjJgXE?e=WPgs5e",
       "blockers": [],
-      "targetStart": "Feb 29, 2026",
-      "targetEnd": "Mar 20, 2026"
+      "targetStart": "Feb 23, 2026",
+      "targetEnd": "Mar 6, 2026"
     },
     {
       "capabilityId": "wm",
       "num": 3,
       "status": "in-progress",
       "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCesn-mHu54RLP2dj7D7iUoAb7FqufrhwIgagO25rHXbRs?e=draens",
-      "blockers": [],
-      "targetStart": "Mar 16, 2026",
-      "targetEnd": "Apr 10, 2026"
+      "blockers": [
+        {
+          "text": "Prioritization of 360 Pull Queue (#41)",
+          "url": "https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2242314241/Stalled+Blocked+360"
+        }
+      ],
+      "targetStart": "Mar 2, 2026",
+      "targetEnd": "Mar 27, 2026"
     },
     {
       "capabilityId": "wm",
@@ -2000,7 +2056,7 @@ var EMBEDDED_STATE = {
       "status": "not-started",
       "artifactsUrl": "#",
       "blockers": [],
-      "targetStart": "Mar 29, 2026",
+      "targetStart": "Mar 16, 2026",
       "targetEnd": "Apr 17, 2026"
     },
     {
@@ -2024,11 +2080,11 @@ var EMBEDDED_STATE = {
     {
       "capabilityId": "vi",
       "num": 0,
-      "status": "in-progress",
-      "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgAmn5KtPFQKQp-qWNJmk1VnAfCiuec5ybw8kq_pGhio7To?e=oEPR2p",
+      "status": "done",
+      "artifactsUrl": "sharepoint-wm-s0.html",
       "blockers": [],
-      "targetStart": "Feb 16, 2026",
-      "targetEnd": "Apr 17, 2026"
+      "targetStart": "Apr 1, 2026",
+      "targetEnd": "May 23, 2026"
     },
     {
       "capabilityId": "vi",
@@ -2152,7 +2208,7 @@ var EMBEDDED_STATE = {
       "capabilityId": "pa",
       "num": 1,
       "status": "done",
-      "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgDjbLSvA53HSLVg9lEi3q-PAXme5aHgy6n_0KdHNDRediM?e=9StF0h",
+      "artifactsUrl": "#",
       "blockers": [],
       "targetStart": "Mar 2, 2026",
       "targetEnd": "Mar 13, 2026"
@@ -2160,10 +2216,10 @@ var EMBEDDED_STATE = {
     {
       "capabilityId": "pa",
       "num": 2,
-      "status": "in-progress",
+      "status": "not-started",
       "artifactsUrl": "#",
       "blockers": [],
-      "targetStart": "Mar 16, 2026",
+      "targetStart": "Mar 30, 2026",
       "targetEnd": "May 29, 2026"
     },
     {
@@ -2419,14 +2475,6 @@ var EMBEDDED_STATE = {
   ]
 };
 
-
-
-
-
-
-
-
-
 function getStageArrays(capId) {
   return capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [];
 }
@@ -2676,10 +2724,32 @@ function fetchUrlWithPageToken(resourcePath) {
   }
 }
 
+/** Avoid stale JSON after Lambda deploy; public fallback helps file:// and other failed same-origin loads. */
+var CAPABILITY_MAP_STATE_PUBLIC_FALLBACK =
+  'https://raw.githubusercontent.com/ndkramer/DMSi-Ops-Readiness-II-Plan/main/Capability-map/capability-map-state.json';
+var STATE_AND_ARTIFACT_FETCH_OPTS = { cache: 'no-store' };
+
+/** Same-origin first; on failure or !ok, try GitHub raw (main). Returns null if both fail. */
+function fetchCapabilityMapStateJson() {
+  var localUrl = fetchUrlWithPageToken('capability-map-state.json');
+  return fetch(localUrl, STATE_AND_ARTIFACT_FETCH_OPTS)
+    .then(function (r) {
+      if (!r.ok) throw new Error('state not ok');
+      return r.json();
+    })
+    .catch(function () {
+      return fetch(CAPABILITY_MAP_STATE_PUBLIC_FALLBACK, STATE_AND_ARTIFACT_FETCH_OPTS).then(function (r) {
+        if (!r.ok) return null;
+        return r.json();
+      });
+    })
+    .catch(function () { return null; });
+}
+
 /** After state (file or embedded), load DMSi artifact overrides when this page is the DMSi variant. */
 function fetchDmsiArtifactOverrides() {
   if (!isDmsiArtifactsVariant()) return Promise.resolve();
-  return fetch(fetchUrlWithPageToken('capability-map-artifacts-dmsi.json'))
+  return fetch(fetchUrlWithPageToken('capability-map-artifacts-dmsi.json'), STATE_AND_ARTIFACT_FETCH_OPTS)
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (artifactData) {
       var list = artifactData && (artifactData.overrides || (Array.isArray(artifactData) ? artifactData : null));
@@ -2689,8 +2759,7 @@ function fetchDmsiArtifactOverrides() {
 }
 
 function loadState() {
-  fetch(fetchUrlWithPageToken('capability-map-state.json'))
-    .then(function (r) { return r.ok ? r.json() : null; })
+  fetchCapabilityMapStateJson()
     .then(function (data) {
       if (data) applyState(data);
       else applyState(EMBEDDED_STATE);

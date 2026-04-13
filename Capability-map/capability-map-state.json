@@ -103,7 +103,12 @@
       "num": 3,
       "status": "in-progress",
       "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCesn-mHu54RLP2dj7D7iUoAb7FqufrhwIgagO25rHXbRs?e=draens",
-      "blockers": ["Prioritization of 360 Pull Queue"],
+      "blockers": [
+        {
+          "text": "Prioritization of 360 Pull Queue (#41)",
+          "url": "https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2242314241/Stalled+Blocked+360"
+        }
+      ],
       "targetStart": "Mar 2, 2026",
       "targetEnd": "Mar 27, 2026"
     },
