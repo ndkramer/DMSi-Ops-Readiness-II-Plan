@@ -1686,12 +1686,12 @@ function escapeHtml(str) {
 }
 
 /**
- * Blocker: string, or { text, url?, secondaryUrl? } (legacy: label, href).
- * url: primary link (B badge). secondaryUrl: optional e.g. GitHub when url is Confluence.
+ * Blocker: string, or { text, url?, secondaryUrl?, stalledBlocked? } (legacy: label, href).
+ * stalledBlocked: { repo, issue } or { issueUrl } — same deep link as WM-Outcome-Map B → Stalled-Blocked-rpt modal.
  */
 function normalizeBlockerEntry(b) {
-  if (b == null) return { text: '', url: '', secondaryUrl: '' };
-  if (typeof b === 'string') return { text: b, url: '', secondaryUrl: '' };
+  if (b == null) return { text: '', url: '', secondaryUrl: '', stalledBlocked: null };
+  if (typeof b === 'string') return { text: b, url: '', secondaryUrl: '', stalledBlocked: null };
   if (typeof b === 'object') {
     var text = b.text != null ? String(b.text) : (b.label != null ? String(b.label) : '');
     var url = '';
@@ -1699,9 +1699,18 @@ function normalizeBlockerEntry(b) {
     else if (b.href != null && String(b.href).trim() !== '') url = String(b.href).trim();
     var secondaryUrl = '';
     if (b.secondaryUrl != null && String(b.secondaryUrl).trim() !== '') secondaryUrl = String(b.secondaryUrl).trim();
-    return { text: text, url: url, secondaryUrl: secondaryUrl };
+    var stalledBlocked = null;
+    if (b.stalledBlocked && typeof b.stalledBlocked === 'object') {
+      var sb = b.stalledBlocked;
+      var r = sb.repo != null ? String(sb.repo).trim() : '';
+      var iss = sb.issue;
+      var iu = sb.issueUrl != null ? String(sb.issueUrl).trim() : (sb.issue_url != null ? String(sb.issue_url).trim() : '');
+      if (r && iss != null && String(iss) !== '') stalledBlocked = { repo: r, issue: String(iss) };
+      else if (iu) stalledBlocked = { issueUrl: iu };
+    }
+    return { text: text, url: url, secondaryUrl: secondaryUrl, stalledBlocked: stalledBlocked };
   }
-  return { text: String(b), url: '', secondaryUrl: '' };
+  return { text: String(b), url: '', secondaryUrl: '', stalledBlocked: null };
 }
 
 function normalizeBlockersList(blockers) {
@@ -1709,7 +1718,38 @@ function normalizeBlockersList(blockers) {
   return blockers.map(normalizeBlockerEntry);
 }
 
-/** First http(s) primary url among blockers (B badge opens this when present). */
+function getStalledBlockedReportHtmlPath() {
+  var path = window.location.pathname || '';
+  if (path.indexOf('/Capability-map/') !== -1) return '../Project-Plan/Stalled-Blocked-rpt.html';
+  return 'Project-Plan/Stalled-Blocked-rpt.html';
+}
+
+function buildStalledBlockedReportHrefFromBlocker(x) {
+  if (!x || !x.stalledBlocked) return '';
+  var sb = x.stalledBlocked;
+  var reportPath = getStalledBlockedReportHtmlPath();
+  var p = new URLSearchParams();
+  try {
+    var cur = new URLSearchParams(window.location.search || '');
+    var tok = cur.get('token');
+    var gh = cur.get('github_token') || cur.get('gh_token');
+    if (tok) p.set('token', tok);
+    if (gh) p.set('github_token', gh);
+  } catch (e) { /* ignore */ }
+  if (sb.repo && sb.issue != null && String(sb.issue) !== '') {
+    p.set('repo', sb.repo);
+    p.set('issue', String(sb.issue));
+  } else if (sb.issueUrl) {
+    p.set('issue_url', sb.issueUrl);
+  } else {
+    return '';
+  }
+  var qs = p.toString();
+  if (!qs) return '';
+  var sep = reportPath.indexOf('?') >= 0 ? '&' : '?';
+  return reportPath + sep + qs;
+}
+
 function firstBlockerUrl(normalized) {
   if (!normalized || !normalized.length) return '';
   for (var i = 0; i < normalized.length; i++) {
@@ -1717,6 +1757,15 @@ function firstBlockerUrl(normalized) {
     if (u && /^https?:\/\//i.test(u)) return u;
   }
   return '';
+}
+
+function firstBlockerBadgeHref(normalized) {
+  if (!normalized || !normalized.length) return '';
+  for (var i = 0; i < normalized.length; i++) {
+    var stall = buildStalledBlockedReportHrefFromBlocker(normalized[i]);
+    if (stall) return stall;
+  }
+  return firstBlockerUrl(normalized);
 }
 
 function makeStageCard(stage, capId, idx, theme) {
@@ -1753,15 +1802,18 @@ function makeStageCard(stage, capId, idx, theme) {
     ${sprintHtml}
   </div>`;
 
-  // Blocker badge (collapsed header); optional link on B when a blocker has url
+  // Blocker badge: stalledBlocked → Stalled-Blocked-rpt.html?repo=&issue= (same modal as WM Outcome Map B)
   const blockersNorm = normalizeBlockersList(stage.blockers);
   let blockerBadgeHtml = '';
   if (blockersNorm.length > 0) {
     const tooltipText = blockersNorm.map(x => escapeHtml(x.text)).join('<br>');
     const tooltipInner = `<div class="blocker-tooltip">${tooltipText}</div>`;
-    const primaryUrl = firstBlockerUrl(blockersNorm);
+    const primaryUrl = firstBlockerBadgeHref(blockersNorm);
     if (primaryUrl) {
-      blockerBadgeHtml = `<a class="blocker-badge blocker-badge-link" href="${escapeHtml(primaryUrl)}" target="_blank" rel="noopener noreferrer" title="Open tracking page (Confluence cannot auto-open Smart Link popups from the URL)" onclick="event.stopPropagation()">B${tooltipInner}</a>`;
+      var badgeTitle = blockersNorm.some(x => x.stalledBlocked)
+        ? 'Open Stalled/Blocked report (GitHub issue detail popup)'
+        : 'Open tracking link';
+      blockerBadgeHtml = `<a class="blocker-badge blocker-badge-link" href="${escapeHtml(primaryUrl)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(badgeTitle)}" onclick="event.stopPropagation()">B${tooltipInner}</a>`;
     } else {
       blockerBadgeHtml = `<span class="blocker-badge">B${tooltipInner}</span>`;
     }
@@ -1772,12 +1824,20 @@ function makeStageCard(stage, capId, idx, theme) {
   if (blockersNorm.length > 0) {
     const liHtml = blockersNorm.map(x => {
       const t = escapeHtml(x.text);
+      const stallHref = buildStalledBlockedReportHrefFromBlocker(x);
       const u = x.url && /^https?:\/\//i.test(x.url) ? x.url : '';
       const su = x.secondaryUrl && /^https?:\/\//i.test(x.secondaryUrl) ? x.secondaryUrl : '';
       let inner = t;
-      if (u) inner = `<a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${t}</a>`;
+      if (stallHref) {
+        inner = `<a href="${escapeHtml(stallHref)}" target="_blank" rel="noopener noreferrer">${t}</a>`;
+      } else if (u) {
+        inner = `<a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${t}</a>`;
+      }
+      if (stallHref && u && u !== stallHref) {
+        inner += `<span class="blocker-secondary-link"><a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">View on Confluence</a></span>`;
+      }
       if (su) {
-        inner += `<span class="blocker-secondary-link"><a href="${escapeHtml(su)}" target="_blank" rel="noopener noreferrer">Open GitHub issue</a></span>`;
+        inner += `<span class="blocker-secondary-link"><a href="${escapeHtml(su)}" target="_blank" rel="noopener noreferrer">Open on GitHub</a></span>`;
       }
       return `<li>${inner}</li>`;
     }).join('');
@@ -2059,6 +2119,10 @@ var EMBEDDED_STATE = {
       "blockers": [
         {
           "text": "Prioritization of 360 Pull Queue [WM-OC-03]",
+          "stalledBlocked": {
+            "repo": "DynamoLLC-Hub/dynamo-toolbox",
+            "issue": 40
+          },
           "url": "https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2242314241/Stalled+Blocked+360",
           "secondaryUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/40"
         }

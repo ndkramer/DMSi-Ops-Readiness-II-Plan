@@ -106,6 +106,10 @@
       "blockers": [
         {
           "text": "Prioritization of 360 Pull Queue [WM-OC-03]",
+          "stalledBlocked": {
+            "repo": "DynamoLLC-Hub/dynamo-toolbox",
+            "issue": 40
+          },
           "url": "https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2242314241/Stalled+Blocked+360",
           "secondaryUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/40"
         }
