@@ -103,7 +103,7 @@
       "num": 3,
       "status": "in-progress",
       "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCesn-mHu54RLP2dj7D7iUoAb7FqufrhwIgagO25rHXbRs?e=draens",
-      "blockers": [],
+      "blockers": ["Prioritization of 360 Pull Queue"],
       "targetStart": "Mar 2, 2026",
       "targetEnd": "Mar 27, 2026"
     },
