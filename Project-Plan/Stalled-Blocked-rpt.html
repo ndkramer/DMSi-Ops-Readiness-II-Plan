@@ -8,7 +8,7 @@
   Loads items from an organization GitHub Project (Projects v2) that are Issues or Pull Requests
   with a label named "Stalled", "Blocked", or "Cleared" (case-insensitive). Items appear in the matching column; if several apply, priority is Cleared, then Blocked, then Stalled.
 
-  Tab "360 Tickets": issues/PRs with label "360" (case-insensitive exact name). Columns Backlog / Advancing / Done follow the project’s Status single-select (field name "Status" or "GitHub Status"). Classic project boards use the card’s column name the same way. If Status is missing, CLOSED/MERGED → Done, otherwise Backlog.
+  Tab "360 Tickets": issues/PRs with label "360" (case-insensitive exact name). Columns use the project Status field (second GraphQL round-trip, only for 360-labeled items, to keep the main project query light and avoid GitHub/Lambda 502s). Classic boards use the card column name. If Status is missing, CLOSED/MERGED → Done, else Backlog.
 
   GitHub does not issue a token scoped to a single Project only. Use a Personal Access Token (PAT)
   on your user account with read access to the org project and repos whose issues appear on the board.
@@ -673,19 +673,6 @@
     '        pageInfo { hasNextPage endCursor }',
     '        nodes {',
     '          id',
-    '          fieldValues(first: 24) {',
-    '            nodes {',
-    '              __typename',
-    '              ... on ProjectV2ItemFieldSingleSelectValue {',
-    '                name',
-    '                field {',
-    '                  ... on ProjectV2SingleSelectField {',
-    '                    name',
-    '                  }',
-    '                }',
-    '              }',
-    '            }',
-    '          }',
     '          content {',
     '            __typename',
     '            ... on Issue {',
@@ -716,6 +703,32 @@
     '              title',
     '              body',
     '              assignees(first: 10) { nodes { login avatarUrl url } }',
+    '            }',
+    '          }',
+    '        }',
+    '      }',
+    '    }',
+    '  }',
+    '}'
+  ].join('\n');
+
+  /**
+   * Second request: Status field values only for ProjectV2Item rows that have label 360 (lighter than fieldValues on every card).
+   */
+  var GRAPHQL_PROJECT_ITEM_FIELDS = [
+    'query ProjectItemsFieldValues($ids: [ID!]!) {',
+    '  nodes(ids: $ids) {',
+    '    ... on ProjectV2Item {',
+    '      id',
+    '      fieldValues(first: 24) {',
+    '        nodes {',
+    '          __typename',
+    '          ... on ProjectV2ItemFieldSingleSelectValue {',
+    '            name',
+    '            field {',
+    '              ... on ProjectV2SingleSelectField {',
+    '                name',
+    '              }',
     '            }',
     '          }',
     '        }',
@@ -1314,6 +1327,53 @@
     return 'GitHub Projects (new) visible to this token: ' + desc + '. If #' + CONFIG.projectNumber + ' is missing here, that number may not be a “new” project, or your token cannot see it.';
   }
 
+  /**
+   * Projects (new): load Status fieldValues only for items with label 360 (smaller than requesting fieldValues for every project card).
+   */
+  async function attachProjectItemFieldValuesFor360(token, allNodes) {
+    if (!allNodes || !allNodes.length) return;
+    var ids = [];
+    var seen = {};
+    for (var i = 0; i < allNodes.length; i++) {
+      var n = allNodes[i];
+      var c = n && n.content;
+      if (!c || (c.__typename !== 'Issue' && c.__typename !== 'PullRequest')) continue;
+      var labels = (c.labels && c.labels.nodes) ? c.labels.nodes : [];
+      if (!labelMatches360(labels) || !n.id) continue;
+      if (seen[n.id]) continue;
+      seen[n.id] = true;
+      ids.push(n.id);
+    }
+    if (!ids.length) return;
+    var CHUNK = 40;
+    var byId = {};
+    for (var s = 0; s < ids.length; s += CHUNK) {
+      var chunk = ids.slice(s, s + CHUNK);
+      var res = await githubGraphqlFetch(token, GRAPHQL_PROJECT_ITEM_FIELDS, { ids: chunk });
+      var json = await parseGithubJsonResponse(res, 'GitHub GraphQL (360 Status fields)');
+      if (!res.ok) {
+        throw new Error(json.message || 'HTTP ' + res.status);
+      }
+      if (json.errors && json.errors.length) {
+        throw new Error(json.errors.map(function (e) { return e.message; }).join('; '));
+      }
+      var arr = json.data && json.data.nodes;
+      if (!arr) continue;
+      for (var j = 0; j < arr.length; j++) {
+        var item = arr[j];
+        if (item && item.id && item.fieldValues) {
+          byId[item.id] = item.fieldValues;
+        }
+      }
+    }
+    for (var k = 0; k < allNodes.length; k++) {
+      var node = allNodes[k];
+      if (node && node.id && byId[node.id]) {
+        node.fieldValues = byId[node.id];
+      }
+    }
+  }
+
   async function fetchAllItemsV2(token) {
     var allNodes = [];
     var cursor = null;
@@ -1350,6 +1410,8 @@
       cursor = conn.pageInfo && conn.pageInfo.endCursor;
       if (!hasNext) break;
     }
+
+    await attachProjectItemFieldValuesFor360(token, allNodes);
 
     return { projectTitle: projectTitle, nodes: allNodes, projectMissing: false };
   }

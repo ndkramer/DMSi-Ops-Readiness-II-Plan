@@ -169,21 +169,34 @@ async function handleGithubGraphqlProxy(event) {
     };
   }
   const forwardBody = JSON.stringify({ query, variables: variables ?? null });
-  const res = await fetch('https://api.github.com/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      'User-Agent': 'DMSI-Lambda-GitHub-Proxy',
-    },
-    body: forwardBody,
-  });
-  const text = await res.text();
-  const outHeaders = corsHeadersForGithubProxy({
-    'Content-Type': res.headers.get('content-type') || 'application/json',
-    'Cache-Control': 'no-store',
-  });
-  return { statusCode: res.status, headers: outHeaders, body: text };
+  try {
+    const res = await fetch('https://api.github.com/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'User-Agent': 'DMSI-Lambda-GitHub-Proxy',
+      },
+      body: forwardBody,
+    });
+    const text = await res.text();
+    const outHeaders = corsHeadersForGithubProxy({
+      'Content-Type': res.headers.get('content-type') || 'application/json',
+      'Cache-Control': 'no-store',
+    });
+    return { statusCode: res.status, headers: outHeaders, body: text };
+  } catch (err) {
+    const msg = err && err.message ? String(err.message) : String(err);
+    return {
+      statusCode: 502,
+      headers: corsHeadersForGithubProxy({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({
+        message:
+          'Lambda proxy could not complete the GitHub GraphQL request (network or timeout). ' +
+          msg,
+      }),
+    };
+  }
 }
 
 async function handleGithubRestProxy(event) {
