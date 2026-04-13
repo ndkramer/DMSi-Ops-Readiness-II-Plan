@@ -106,7 +106,8 @@
       "blockers": [
         {
           "text": "Prioritization of 360 Pull Queue [WM-OC-03]",
-          "url": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/40"
+          "url": "https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2242314241/Stalled+Blocked+360",
+          "secondaryUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/40"
         }
       ],
       "targetStart": "Mar 2, 2026",

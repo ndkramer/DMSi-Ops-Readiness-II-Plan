@@ -499,6 +499,13 @@
   }
   .blocker-section ul li { color: #b91c1c; }
   .blocker-section ul li::before { background: #dc2626 !important; opacity: 1 !important; }
+  .blocker-secondary-link {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .blocker-secondary-link a { color: #2563eb; }
 
   /* ── Timestamp ── */
   .last-updated {
@@ -1757,19 +1764,22 @@ function escapeHtml(str) {
 }
 
 /**
- * Blocker: string, or { text, url? } (optional legacy: label, href). url may be GitHub, Confluence, etc.
+ * Blocker: string, or { text, url?, secondaryUrl? } (legacy: label, href).
+ * url: primary link (B badge and main row link). secondaryUrl: optional e.g. GitHub when url is Confluence.
  */
 function normalizeBlockerEntry(b) {
-  if (b == null) return { text: '', url: '' };
-  if (typeof b === 'string') return { text: b, url: '' };
+  if (b == null) return { text: '', url: '', secondaryUrl: '' };
+  if (typeof b === 'string') return { text: b, url: '', secondaryUrl: '' };
   if (typeof b === 'object') {
     var text = b.text != null ? String(b.text) : (b.label != null ? String(b.label) : '');
     var url = '';
     if (b.url != null && String(b.url).trim() !== '') url = String(b.url).trim();
     else if (b.href != null && String(b.href).trim() !== '') url = String(b.href).trim();
-    return { text: text, url: url };
+    var secondaryUrl = '';
+    if (b.secondaryUrl != null && String(b.secondaryUrl).trim() !== '') secondaryUrl = String(b.secondaryUrl).trim();
+    return { text: text, url: url, secondaryUrl: secondaryUrl };
   }
-  return { text: String(b), url: '' };
+  return { text: String(b), url: '', secondaryUrl: '' };
 }
 
 function normalizeBlockersList(blockers) {
@@ -1777,7 +1787,7 @@ function normalizeBlockersList(blockers) {
   return blockers.map(normalizeBlockerEntry);
 }
 
-/** First http(s) URL among blockers (B badge opens this when present). */
+/** First http(s) primary url among blockers (B badge opens this when present). */
 function firstBlockerUrl(normalized) {
   if (!normalized || !normalized.length) return '';
   for (var i = 0; i < normalized.length; i++) {
@@ -1829,7 +1839,7 @@ function makeStageCard(stage, capId, idx, theme) {
     const tooltipInner = `<div class="blocker-tooltip">${tooltipText}</div>`;
     const primaryUrl = firstBlockerUrl(blockersNorm);
     if (primaryUrl) {
-      blockerBadgeHtml = `<a class="blocker-badge blocker-badge-link" href="${escapeHtml(primaryUrl)}" target="_blank" rel="noopener noreferrer" title="Open tracking link" onclick="event.stopPropagation()">B${tooltipInner}</a>`;
+      blockerBadgeHtml = `<a class="blocker-badge blocker-badge-link" href="${escapeHtml(primaryUrl)}" target="_blank" rel="noopener noreferrer" title="Open tracking page (Confluence cannot auto-open Smart Link popups from the URL)" onclick="event.stopPropagation()">B${tooltipInner}</a>`;
     } else {
       blockerBadgeHtml = `<span class="blocker-badge">B${tooltipInner}</span>`;
     }
@@ -1841,8 +1851,13 @@ function makeStageCard(stage, capId, idx, theme) {
     const liHtml = blockersNorm.map(x => {
       const t = escapeHtml(x.text);
       const u = x.url && /^https?:\/\//i.test(x.url) ? x.url : '';
-      if (u) return `<li><a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${t}</a></li>`;
-      return `<li>${t}</li>`;
+      const su = x.secondaryUrl && /^https?:\/\//i.test(x.secondaryUrl) ? x.secondaryUrl : '';
+      let inner = t;
+      if (u) inner = `<a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${t}</a>`;
+      if (su) {
+        inner += `<span class="blocker-secondary-link"><a href="${escapeHtml(su)}" target="_blank" rel="noopener noreferrer">Open GitHub issue</a></span>`;
+      }
+      return `<li>${inner}</li>`;
     }).join('');
     blockerSectionHtml = `<div class="blocker-section">
       <p class="blocker-label">
@@ -2122,7 +2137,8 @@ var EMBEDDED_STATE = {
       "blockers": [
         {
           "text": "Prioritization of 360 Pull Queue [WM-OC-03]",
-          "url": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/40"
+          "url": "https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2242314241/Stalled+Blocked+360",
+          "secondaryUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/40"
         }
       ],
       "targetStart": "Mar 2, 2026",
