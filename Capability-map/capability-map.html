@@ -422,11 +422,24 @@
     font-size: 10px; color: var(--text-muted);
   }
   .stage-dates svg { flex-shrink: 0; }
-  .stage-github-milestone {
-    font-weight: 700;
-    color: #c62828;
+  /* Inline milestone pill next to stage dates — same scheme as .milestone-list (colors from JSON status) */
+  .milestone-pill.milestone-pill-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     margin-left: 0.35em;
-    white-space: nowrap;
+    vertical-align: middle;
+    flex-wrap: wrap;
+    max-width: min(100%, 320px);
+  }
+  .milestone-pill.milestone-pill-inline .m-badge {
+    font-size: 9px;
+    min-width: 22px;
+    padding: 1px 5px;
+  }
+  .milestone-pill.milestone-pill-inline .m-label {
+    font-size: 10px;
+    line-height: 1.25;
   }
 
   .stage-info-row {
@@ -2246,6 +2259,58 @@ function firstBlockerBadgeHref(normalized) {
   return firstBlockerUrl(normalized);
 }
 
+/** Snapshot of state.milestones; used to color stage GitHub milestone markers like top milestone pills. */
+var CAPABILITY_MAP_MILESTONES = [];
+
+/** Match GitHub milestone title to capability-map-state.json milestones (id e.g. M3, or label). */
+function findMilestoneMetaForGithubTitle(githubTitle) {
+  const raw = String(githubTitle || "").trim();
+  if (!raw) return null;
+  const list = CAPABILITY_MAP_MILESTONES;
+  if (!list || !list.length) return null;
+  const lower = raw.toLowerCase();
+  const compact = raw.toUpperCase().replace(/\s+/g, "");
+  var m = list.find(function (x) {
+    const id = String(x.id || "").trim();
+    return id.toUpperCase() === compact || id.toUpperCase() === raw.toUpperCase().trim();
+  });
+  if (m) return m;
+  m = list.find(function (x) {
+    const id = String(x.id || "").toUpperCase().replace(/\s+/g, "");
+    return id.length >= 2 && (compact === id || compact.indexOf(id) === 0);
+  });
+  if (m) return m;
+  m = list.find(function (x) {
+    return String(x.label || "").toLowerCase() === lower;
+  });
+  return m || null;
+}
+
+function milestonePillClassFromMeta(meta) {
+  if (!meta) return "m-not-started";
+  if (meta.status === "done") return "m-done";
+  if (meta.status === "in-progress") return "m-in-progress";
+  return "m-not-started";
+}
+
+/** Renders like top summary milestone pills; colors follow JSON milestone status when id/label matches. */
+function githubMilestoneMarkerHtml(githubMilestoneTitle) {
+  const raw = String(githubMilestoneTitle || "").trim();
+  if (!raw) return "";
+  const meta = findMilestoneMetaForGithubTitle(raw);
+  const cls = milestonePillClassFromMeta(meta);
+  const badgeInner =
+    cls === "m-done" && meta
+      ? "&#10003;"
+      : escapeHtml(meta && meta.id ? meta.id : raw);
+  const labelPart =
+    meta && meta.label
+      ? `<span class="m-label">${escapeHtml(meta.label)}</span>`
+      : "";
+  const tip = meta && meta.label ? `${meta.id}: ${meta.label}` : raw;
+  return ` <span class="milestone-pill milestone-pill-inline ${cls}" title="${escapeHtml(tip)}"><span class="m-badge">${badgeInner}</span>${labelPart}</span>`;
+}
+
 function makeStageCard(stage, capId, idx, theme) {
   const card = document.createElement('div');
   card.className = `stage-card status-${stage.status}`;
@@ -2262,9 +2327,7 @@ function makeStageCard(stage, capId, idx, theme) {
     ? (stage.targetStart === stage.targetEnd ? stage.targetStart : `${stage.targetStart || '?'} &ndash; ${stage.targetEnd || '?'}`)
     : 'Not scheduled';
   const ms = stage._githubMilestoneTitle && String(stage._githubMilestoneTitle).trim();
-  const milestoneHtml = ms
-    ? ` <span class="stage-github-milestone" title="Milestone on linked GitHub issue">${escapeHtml(ms)}</span>`
-    : '';
+  const milestoneHtml = ms ? githubMilestoneMarkerHtml(ms) : "";
   const sprintInfos = getSprintsForDateRange(stage.targetStart, stage.targetEnd);
   const sprintInfosInWindow = sprintInfos.filter(isSprintInDisplayWindow);
   const sprintHtml = sprintInfosInWindow.length
@@ -3143,6 +3206,9 @@ function getAllStages() {
 }
 
 function renderSummaryPanel(state) {
+  if (state.milestones && Array.isArray(state.milestones)) {
+    CAPABILITY_MAP_MILESTONES = state.milestones.slice();
+  }
   // Narrative
   if (state.summary) {
     const h = document.getElementById('summaryHeadline');
