@@ -437,10 +437,6 @@
     min-width: 22px;
     padding: 1px 5px;
   }
-  .milestone-pill.milestone-pill-inline .m-label {
-    font-size: 10px;
-    line-height: 1.25;
-  }
 
   .stage-info-row {
     display: flex; align-items: center; justify-content: space-between;
@@ -2216,12 +2212,8 @@ function githubMilestoneMarkerHtml(githubMilestoneTitle) {
     cls === "m-done" && meta
       ? "&#10003;"
       : escapeHtml(meta && meta.id ? meta.id : raw);
-  const labelPart =
-    meta && meta.label
-      ? `<span class="m-label">${escapeHtml(meta.label)}</span>`
-      : "";
   const tip = meta && meta.label ? `${meta.id}: ${meta.label}` : raw;
-  return ` <span class="milestone-pill milestone-pill-inline ${cls}" title="${escapeHtml(tip)}"><span class="m-badge">${badgeInner}</span>${labelPart}</span>`;
+  return ` <span class="milestone-pill milestone-pill-inline ${cls}" title="${escapeHtml(tip)}"><span class="m-badge">${badgeInner}</span></span>`;
 }
 
 function makeStageCard(stage, capId, idx, theme) {

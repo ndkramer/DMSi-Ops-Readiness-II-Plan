@@ -437,10 +437,6 @@
     min-width: 22px;
     padding: 1px 5px;
   }
-  .milestone-pill.milestone-pill-inline .m-label {
-    font-size: 10px;
-    line-height: 1.25;
-  }
 
   .stage-info-row {
     display: flex; align-items: center; justify-content: space-between;
@@ -2293,7 +2289,7 @@ function milestonePillClassFromMeta(meta) {
   return "m-not-started";
 }
 
-/** Renders like top summary milestone pills; colors follow JSON milestone status when id/label matches. */
+/** Badge only (M3 / checkmark); colors from JSON milestone status. Full name on hover via title. */
 function githubMilestoneMarkerHtml(githubMilestoneTitle) {
   const raw = String(githubMilestoneTitle || "").trim();
   if (!raw) return "";
@@ -2303,12 +2299,8 @@ function githubMilestoneMarkerHtml(githubMilestoneTitle) {
     cls === "m-done" && meta
       ? "&#10003;"
       : escapeHtml(meta && meta.id ? meta.id : raw);
-  const labelPart =
-    meta && meta.label
-      ? `<span class="m-label">${escapeHtml(meta.label)}</span>`
-      : "";
   const tip = meta && meta.label ? `${meta.id}: ${meta.label}` : raw;
-  return ` <span class="milestone-pill milestone-pill-inline ${cls}" title="${escapeHtml(tip)}"><span class="m-badge">${badgeInner}</span>${labelPart}</span>`;
+  return ` <span class="milestone-pill milestone-pill-inline ${cls}" title="${escapeHtml(tip)}"><span class="m-badge">${badgeInner}</span></span>`;
 }
 
 function makeStageCard(stage, capId, idx, theme) {
