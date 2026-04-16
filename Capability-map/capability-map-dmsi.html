@@ -1487,6 +1487,59 @@ function parseGithubIssueUrl(url) {
   return { owner: m[1], repo: m[2], issue: parseInt(m[3], 10) };
 }
 
+/** Same key as Project-Plan/github-stall-live.js + Stalled-Blocked-rpt.html */
+var GITHUB_PAT_STORAGE_KEY = "dmsiStalledBlockedGithubPat";
+
+function isLambdaFunctionUrlHost() {
+  try {
+    const h = (window.location.hostname || "").toLowerCase();
+    return h.indexOf("lambda-url") >= 0 || h.endsWith(".on.aws") || h.indexOf(".lambda-url.") >= 0;
+  } catch (e) {
+    return false;
+  }
+}
+
+/** Match Project-Plan: on Lambda Function URL, use same-origin /github-api proxy (Confluence CSP blocks api.github.com). */
+function useGithubProxy() {
+  try {
+    if (window.location.protocol === "file:") return false;
+    const q = new URLSearchParams(window.location.search || "");
+    if (q.get("github_proxy") === "0") return false;
+    if (q.get("github_proxy") === "1") return isLambdaFunctionUrlHost();
+    return isLambdaFunctionUrlHost();
+  } catch (e) {
+    return false;
+  }
+}
+
+function safePageOrigin() {
+  try {
+    const href = window.location.href;
+    if (href && href.indexOf("http") === 0) {
+      const u = new URL(href);
+      if (u.origin && u.origin !== "null") return u.origin;
+    }
+  } catch (e) { /* ignore */ }
+  try {
+    const o = window.location.origin;
+    if (o && o !== "null") return o;
+  } catch (e2) { /* ignore */ }
+  return "";
+}
+
+/** Append Lambda gate ?token= when present (same as Stalled-Blocked withLambdaGate). */
+function withLambdaGateForCapabilityMap(url) {
+  try {
+    const q = new URLSearchParams(window.location.search || "");
+    const t = q.get("token");
+    if (!t) return url;
+    const sep = url.indexOf("?") >= 0 ? "&" : "?";
+    return url + sep + "token=" + encodeURIComponent(t);
+  } catch (e) {
+    return url;
+  }
+}
+
 /** Same query/hash pattern as Stalled/Blocked report: ?github_token= or ?gh_token= */
 function getGithubTokenFromPage() {
   try {
@@ -1502,21 +1555,89 @@ function getGithubTokenFromPage() {
   }
 }
 
-function fetchGithubIssueParsed(owner, repo, issueNum) {
-  const token = getGithubTokenFromPage();
-  const headers = {
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28"
-  };
-  if (token) headers["Authorization"] = "Bearer " + token;
-  const url =
+function getGithubTokenFromLocalStorage() {
+  try {
+    const t = localStorage.getItem(GITHUB_PAT_STORAGE_KEY);
+    return t ? String(t).trim() : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/** Same-origin JSON as Stalled-Blocked-rpt (deploy zip includes it when CI writes the file). */
+function githubPatFileFetchUrl() {
+  try {
+    const base = window.location.href;
+    const rel =
+      window.location.protocol === "file:"
+        ? new URL("../Project-Plan/Stalled-Blocked-github-token.local.json", base).href
+        : new URL("Project-Plan/Stalled-Blocked-github-token.local.json", base).href;
+    return fetchUrlWithPageToken(rel);
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Same order as Project-Plan/github-stall-live.js resolveGithubToken: URL → localStorage → optional JSON.
+ * @returns {Promise<string|null>}
+ */
+function resolveGithubTokenForMap() {
+  const fromQ = getGithubTokenFromPage();
+  if (fromQ) return Promise.resolve(String(fromQ).trim());
+  const fromLs = getGithubTokenFromLocalStorage();
+  if (fromLs) return Promise.resolve(fromLs);
+  const fileUrl = githubPatFileFetchUrl();
+  if (!fileUrl || window.location.protocol === "file:") return Promise.resolve(null);
+  return fetch(fileUrl, { cache: "no-store" })
+    .then(function (r) {
+      return r.ok ? r.json() : null;
+    })
+    .then(function (data) {
+      let raw = data && (data.github_token || data.gh_token || data.token);
+      raw = raw ? String(raw).trim() : "";
+      if (!raw || raw.indexOf("PASTE_YOUR") >= 0) return null;
+      return raw;
+    })
+    .catch(function () {
+      return null;
+    });
+}
+
+function fetchGithubIssueWithResolvedToken(owner, repo, issueNum, token) {
+  const apiUrl =
     "https://api.github.com/repos/" +
     encodeURIComponent(owner) +
     "/" +
     encodeURIComponent(repo) +
     "/issues/" +
     issueNum;
-  return fetch(url, { headers, cache: "no-store" }).then(function (r) {
+  const baseHeaders = {
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+  if (useGithubProxy() && safePageOrigin() && token) {
+    let path;
+    try {
+      path = new URL(apiUrl).pathname;
+    } catch (e) {
+      return Promise.reject(new Error("Bad issue URL"));
+    }
+    const proxyUrl = withLambdaGateForCapabilityMap(safePageOrigin() + "/github-api" + path);
+    return fetch(proxyUrl, {
+      headers: Object.assign({}, baseHeaders, { "X-GitHub-Token": token }),
+      cache: "no-store"
+    });
+  }
+  const headers = Object.assign({}, baseHeaders);
+  if (token) headers["Authorization"] = "Bearer " + token;
+  return fetch(apiUrl, { headers, cache: "no-store" });
+}
+
+function fetchGithubIssueParsed(owner, repo, issueNum) {
+  return resolveGithubTokenForMap().then(function (token) {
+    return fetchGithubIssueWithResolvedToken(owner, repo, issueNum, token);
+  }).then(function (r) {
     if (!r.ok) return Promise.reject(new Error("GitHub API HTTP " + r.status));
     return r.json();
   }).then(function (data) {
@@ -2145,7 +2266,7 @@ function toggleEl(id) {
 /* capability-map-state.json: same-origin fetch (cache: no-store), then GitHub raw main fallback, then EMBEDDED_STATE.
    Regenerate EMBEDDED after JSON edits: node Capability-map/sync-dmsi-embedded-from-state.mjs
    Repeat ?token= on fetches when present (Lambda; query or hash). Merge capability-map-artifacts-dmsi.json onto artifactsUrl only.
-   Optional per stage: githubIssueUrl — fetches issue body at load; use ?github_token= for private repos. */
+   Optional per stage: githubIssueUrl — fetches issue body at load (same token rules as Project-Plan/Stalled-Blocked-rpt: ?github_token=, localStorage dmsiStalledBlockedGithubPat, Project-Plan/Stalled-Blocked-github-token.local.json; on *.on.aws use Lambda /github-api when a PAT is present). */
 /* ═══════════════════════════════ */
 
 var EMBEDDED_STATE = {
