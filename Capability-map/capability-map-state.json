@@ -510,7 +510,8 @@
       "artifactsUrl": "#",
       "blockers": [],
       "targetStart": "TBD",
-      "targetEnd": "TBD"
+      "targetEnd": "TBD",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/58"
     },
     {
       "capabilityId": "wsd",

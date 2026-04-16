@@ -353,6 +353,9 @@
 
   .stage-body-content { padding: 0 14px 16px; border-top: 1px solid var(--border); }
   .stage-body-content .stage-desc { font-size: 12.5px; line-height: 1.6; color: var(--text-dim); margin-top: 12px; }
+  .stage-github-status { opacity: 0.88; font-style: italic; }
+  .stage-github-error { font-size: 12px; line-height: 1.45; color: #b45309; margin: 8px 0; }
+  .stage-github-placeholder { opacity: 0.6; }
 
   .stage-body-content .prereq-label {
     font-size: 11px; font-weight: 700; color: var(--text-muted);
@@ -1538,6 +1541,117 @@ const wscStages = [
 /* WS-D DATA                       */
 /* ═══════════════════════════════ */
 
+/**
+ * GitHub issue body → stage copy. Optional <without-this>…</without-this> maps to the green “Without this progress” box.
+ * Optional “For this to work:” section with markdown bullets.
+ */
+function parseGithubIssueBody(raw) {
+  const withoutMatch = raw.match(/<without-this>([\s\S]*?)<\/without-this>/i);
+  const without = withoutMatch ? withoutMatch[1].trim().replace(/\s+/g, " ") : "";
+  const main = withoutMatch ? raw.replace(withoutMatch[0], "").trim() : raw.trim();
+  const parts = main.split(/\n\nFor this to work:\s*\n/i);
+  const desc = parts[0].trim();
+  const prereqs = parts[1]
+    ? parts[1].split("\n").map((line) => line.replace(/^[-*]\s+/, "").trim()).filter(Boolean)
+    : [];
+  return { desc, prereqs, without };
+}
+
+/** Returns { owner, repo, issue } for github.com …/issues/N or …/pull/N URLs. */
+function parseGithubIssueUrl(url) {
+  if (!url || typeof url !== "string") return null;
+  const m = url.trim().match(/github\.com\/([^/]+)\/([^/]+)\/(?:issues|pull)\/(\d+)/i);
+  if (!m) return null;
+  return { owner: m[1], repo: m[2], issue: parseInt(m[3], 10) };
+}
+
+/** Same query/hash pattern as Stalled/Blocked report: ?github_token= or ?gh_token= */
+function getGithubTokenFromPage() {
+  try {
+    const q = new URLSearchParams(window.location.search || "");
+    let g = q.get("github_token") || q.get("gh_token");
+    if (g) return g;
+    const hash = (window.location.hash || "").replace(/^#/, "");
+    if (!hash) return null;
+    const hq = new URLSearchParams(hash);
+    return hq.get("github_token") || hq.get("gh_token");
+  } catch (e) {
+    return null;
+  }
+}
+
+function fetchGithubIssueParsed(owner, repo, issueNum) {
+  const token = getGithubTokenFromPage();
+  const headers = {
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+  if (token) headers["Authorization"] = "Bearer " + token;
+  const url =
+    "https://api.github.com/repos/" +
+    encodeURIComponent(owner) +
+    "/" +
+    encodeURIComponent(repo) +
+    "/issues/" +
+    issueNum;
+  return fetch(url, { headers, cache: "no-store" }).then(function (r) {
+    if (!r.ok) return Promise.reject(new Error("GitHub API HTTP " + r.status));
+    return r.json();
+  }).then(function (data) {
+    const body = data.body != null ? String(data.body) : "";
+    return { title: data.title != null ? String(data.title) : "", parsed: parseGithubIssueBody(body) };
+  });
+}
+
+function capIdToTheme(capId) {
+  const map = { wm: "green", vi: "blue", pa: "teal", ls: "gold", wsb: "orange", wsc: "violet", wsd: "slate" };
+  return map[capId] || "green";
+}
+
+function replaceStageCardEl(capId, stage) {
+  const id = capId + "-stage-" + stage.num;
+  const oldEl = document.getElementById(id);
+  if (!oldEl || !oldEl.parentNode) return;
+  const expanded = oldEl.classList.contains("expanded");
+  const arr = getStageArrays(capId)[0];
+  const idx = arr.findIndex(function (s) {
+    return s.num === stage.num;
+  });
+  const newEl = makeStageCard(stage, capId, idx >= 0 ? idx : 0, capIdToTheme(capId));
+  if (expanded) newEl.classList.add("expanded");
+  oldEl.parentNode.replaceChild(newEl, oldEl);
+}
+
+/** After render, load issue bodies for stages that set githubIssueUrl in capability-map-state.json */
+function hydrateGithubLinkedStages() {
+  const pending = getAllStages().filter(function (s) {
+    return s.githubIssueUrl && s._githubBodyStatus === "loading";
+  });
+  pending.forEach(function (s) {
+    const parts = parseGithubIssueUrl(s.githubIssueUrl);
+    if (!parts) {
+      s._githubBodyStatus = "error";
+      s._githubErrorMessage = "Invalid githubIssueUrl (expected …/owner/repo/issues/N)";
+      replaceStageCardEl(s.capId, s);
+      return;
+    }
+    fetchGithubIssueParsed(parts.owner, parts.repo, parts.issue)
+      .then(function (result) {
+        s.desc = result.parsed.desc;
+        s.prereqs = result.parsed.prereqs;
+        s.without = result.parsed.without;
+        s._githubBodyStatus = "ready";
+        delete s._githubErrorMessage;
+        replaceStageCardEl(s.capId, s);
+      })
+      .catch(function (err) {
+        s._githubBodyStatus = "error";
+        s._githubErrorMessage = err && err.message ? err.message : "GitHub request failed";
+        replaceStageCardEl(s.capId, s);
+      });
+  });
+}
+
 const wsdStages = [
   { num: 4, title: "Data-Driven Habits Forming", status: "not-started",
     targetStart: "TBD", targetEnd: "TBD",
@@ -1576,17 +1690,17 @@ const wsdStages = [
       "Scorecard visible and referenced in the Support L10"
     ],
     without: "Executive Dashboard is incomplete. Engineering health is visible but customer-facing operations are a black box." },
-  { num: 1, title: "Engineering Scorecard Live", status: "not-started",
+  { num: 1, title: "System Engineering Scorecard Live", status: "not-started",
     targetStart: "TBD", targetEnd: "TBD",
-    desc: "Scorecard v0 aligned to Engineering goals exists and integration into L10 meetings.",
+    desc: "Scorecard v0 is aligned to Engineering goals and is being integrated into L10 meetings.",
     prereqs: [
       "Engineering goals clearly defined (what does \"good\" look like?)",
       "Metrics selected that measure progress toward goals",
-      "Data sources for those metrics identified and accessible",
+      "Data sources for those metrics have been identified and are accessible",
       "Engineering L10 structure understood (what do they review now?)",
       "Scorecard format validated with Engineering leadership",
       "Scorecard visible and referenced in the Engineering L10",
-      "First proof of value demonstrated"
+      "First proof of value demonstrated.."
     ],
     without: "No foundation to build on. Support Scorecard would be designed in isolation, and we'd discover misalignment later." },
   { num: 0, title: "Scope, Discovery, and Documentation", status: "done",
@@ -1933,6 +2047,34 @@ function makeStageCard(stage, capId, idx, theme) {
     </div>`;
   }
 
+  const ghLoading = stage.githubIssueUrl && stage._githubBodyStatus === "loading";
+  const ghError = stage.githubIssueUrl && stage._githubBodyStatus === "error";
+  const prereqRows = (stage.prereqs || []).map(p => {
+    if (typeof p === "object" && p !== null && "main" in p && Array.isArray(p.sub)) {
+      return `<li>${escapeHtml(p.main)}<ul>${p.sub.map(s => `<li>${escapeHtml(s)}</li>`).join("")}</ul></li>`;
+    }
+    const line = typeof p === "string" ? p : (p && p.main) || "";
+    return `<li>${escapeHtml(line)}</li>`;
+  }).join("");
+  const prereqBlock =
+    ghLoading
+      ? `<p class="prereq-label">For this to work:</p><ul><li class="stage-github-placeholder">…</li></ul>`
+      : prereqRows
+        ? `<p class="prereq-label">For this to work:</p><ul>${prereqRows}</ul>`
+        : "";
+  let descBlock;
+  let withoutBlock;
+  if (ghLoading) {
+    descBlock = `<p class="stage-desc"><span class="stage-github-status">Loading issue from GitHub…</span></p>`;
+    withoutBlock = `<div class="without-this">&nbsp;</div>`;
+  } else if (ghError) {
+    descBlock = `<p class="stage-github-error">${escapeHtml(stage._githubErrorMessage || "Could not load GitHub issue.")} Showing embedded description below.</p><p class="stage-desc">${escapeHtml(stage.desc)}</p>`;
+    withoutBlock = `<div class="without-this">${escapeHtml(stage.without || "")}</div>`;
+  } else {
+    descBlock = `<p class="stage-desc">${escapeHtml(stage.desc)}</p>`;
+    withoutBlock = `<div class="without-this">${escapeHtml(stage.without || "")}</div>`;
+  }
+
   card.innerHTML = `
     ${blockerBadgeHtml}
     <div class="stage-header" onclick="toggleStageCard('${card.id}')">
@@ -1951,16 +2093,10 @@ function makeStageCard(stage, capId, idx, theme) {
     </div>
     <div class="stage-body">
       <div class="stage-body-content">
-        <p class="stage-desc">${stage.desc}</p>
+        ${descBlock}
         ${blockerSectionHtml}
-        <p class="prereq-label">For this to work:</p>
-        <ul>${stage.prereqs.map(p => {
-          if (typeof p === 'object' && p !== null && 'main' in p && Array.isArray(p.sub)) {
-            return `<li>${p.main}<ul>${p.sub.map(s => `<li>${s}</li>`).join('')}</ul></li>`;
-          }
-          return `<li>${typeof p === 'string' ? p : (p && p.main) || ''}</li>`;
-        }).join('')}</ul>
-        <div class="without-this">${stage.without}</div>
+        ${prereqBlock}
+        ${withoutBlock}
         ${bubbleHtml}
         ${hasStageArtifactUrl(stage.artifactsUrl) ? `<a class="artifacts-link" href="${stage.artifactsUrl}" target="_blank" rel="noopener">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h5.586a1 1 0 01.707.293l3.414 3.414A1 1 0 0113 6.414V13a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" stroke="#2563eb" stroke-width="1.5"/><path d="M8 2v4h4" stroke="#2563eb" stroke-width="1.5"/></svg>
@@ -2091,7 +2227,8 @@ function toggleEl(id) {
 /* STATE FROM JSON / EMBEDDED      */
 /* capability-map-state.json: same-origin fetch (cache: no-store), then GitHub raw main fallback, then EMBEDDED_STATE.
    Regenerate EMBEDDED after JSON edits: node Capability-map/sync-dmsi-embedded-from-state.mjs
-   Repeat ?token= on fetches when present (Lambda; query or hash). Merge capability-map-artifacts-dmsi.json onto artifactsUrl only. */
+   Repeat ?token= on fetches when present (Lambda; query or hash). Merge capability-map-artifacts-dmsi.json onto artifactsUrl only.
+   Optional per stage: githubIssueUrl — fetches issue body from api.github.com at load; use ?github_token= for private repos. */
 /* ═══════════════════════════════ */
 
 var EMBEDDED_STATE = {
@@ -2606,7 +2743,8 @@ var EMBEDDED_STATE = {
       "artifactsUrl": "#",
       "blockers": [],
       "targetStart": "TBD",
-      "targetEnd": "TBD"
+      "targetEnd": "TBD",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/58"
     },
     {
       "capabilityId": "wsd",
@@ -2673,6 +2811,17 @@ function applyState(state) {
           if ('targetEnd' in s) found.targetEnd = s.targetEnd;
           // Do not clear dates when state has no dates for this stage (e.g. PA 6–8 are unmapped)
           if ('artifactsUrl' in s) found.artifactsUrl = s.artifactsUrl;
+          if ('githubIssueUrl' in s) {
+            if (s.githubIssueUrl && String(s.githubIssueUrl).trim()) {
+              found.githubIssueUrl = String(s.githubIssueUrl).trim();
+              found._githubBodyStatus = 'loading';
+              delete found._githubErrorMessage;
+            } else {
+              delete found.githubIssueUrl;
+              delete found._githubBodyStatus;
+              delete found._githubErrorMessage;
+            }
+          }
           break;
         }
       }
@@ -2941,6 +3090,7 @@ function loadState() {
     })
     .then(function () {
       renderAll();
+      hydrateGithubLinkedStages();
     });
 }
 
