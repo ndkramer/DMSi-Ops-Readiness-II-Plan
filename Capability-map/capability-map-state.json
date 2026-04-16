@@ -8,12 +8,12 @@
     {
       "id": "M2",
       "label": "Establish the Structure",
-      "status": "in-progress"
+      "status": "advancing"
     },
     {
       "id": "M3",
       "label": "Build the Foundation",
-      "status": "in-progress"
+      "status": "advancing"
     },
     {
       "id": "M4",
@@ -103,7 +103,7 @@
     {
       "capabilityId": "wm",
       "num": 3,
-      "status": "in-progress",
+      "status": "advancing",
       "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCesn-mHu54RLP2dj7D7iUoAb7FqufrhwIgagO25rHXbRs?e=draens",
       "blockers": [
         {
@@ -205,7 +205,7 @@
     {
       "capabilityId": "pd",
       "num": 0,
-      "status": "in-progress",
+      "status": "advancing",
       "artifactsUrl": "sharepoint-wm-s0.html",
       "blockers": [],
       "targetStart": "Feb 2026",
@@ -515,7 +515,7 @@
     {
       "capabilityId": "wsd",
       "num": 1,
-      "status": "in-progress",
+      "status": "advancing",
       "artifactsUrl": "#",
       "blockers": [],
       "targetStart": "TBD",

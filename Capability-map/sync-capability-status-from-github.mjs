@@ -3,9 +3,9 @@
  * Updates `capability-map-state.json` stage `status` from GitHub Projects (v2) single-select
  * field **Status** (or **GitHub Status**) for stages that define `githubIssueUrl`.
  *
- * Mapping (GitHub option → JSON status used by capability-map.html):
+ * Mapping (GitHub option → JSON status used by capability-map-state.json):
  *   Backlog | Ready     → not-started
- *   Advancing | In Review → in-progress
+ *   Advancing | In Review → advancing  (UI + getStatusLabel show “Advancing”; HTML normalizes to in-progress for CSS)
  *   Done               → done
  *
  * Stages without `githubIssueUrl` are unchanged. If the API returns no Status or an
@@ -97,7 +97,7 @@ function statusFieldNameFromProjectItems(data) {
 
 /**
  * @param {string} githubStatus — raw single-select option from GitHub
- * @returns {'not-started'|'in-progress'|'done'|null}
+ * @returns {'not-started'|'advancing'|'done'|null}
  */
 function mapGithubStatusToJson(githubStatus) {
   const t = String(githubStatus || '')
@@ -105,7 +105,7 @@ function mapGithubStatusToJson(githubStatus) {
     .toLowerCase()
     .replace(/\s+/g, ' ');
   if (t === 'backlog' || t === 'ready') return 'not-started';
-  if (t === 'advancing' || t === 'in review') return 'in-progress';
+  if (t === 'advancing' || t === 'in review') return 'advancing';
   if (t === 'done') return 'done';
   return null;
 }

@@ -1832,13 +1832,21 @@ function githubProjectStatusFromGraphqlData(data) {
   return "";
 }
 
+/** JSON + GitHub use "advancing"; CSS / stage rows use canonical "in-progress". */
+function normalizeCapabilityStatusToInternal(v) {
+  if (v == null || v === "") return null;
+  var x = String(v).toLowerCase();
+  if (x === "advancing" || x === "in-progress") return "in-progress";
+  return v;
+}
+
 function mapGithubProjectStatusToStageStatus(optionName) {
   var t = String(optionName || "")
     .trim()
     .toLowerCase()
     .replace(/\s+/g, " ");
   if (t === "backlog" || t === "ready") return "not-started";
-  if (t === "advancing" || t === "in review") return "in-progress";
+  if (t === "advancing" || t === "in review") return "advancing";
   if (t === "done") return "done";
   return null;
 }
@@ -1874,7 +1882,10 @@ function hydrateGithubLinkedStageStatusesFromProject() {
             if (!data) return;
             var raw = githubProjectStatusFromGraphqlData(data);
             var mapped = mapGithubProjectStatusToStageStatus(raw);
-            if (mapped != null) op.stage.status = mapped;
+            if (mapped != null) {
+              var nSt = normalizeCapabilityStatusToInternal(mapped);
+              op.stage.status = nSt != null ? nSt : mapped;
+            }
           })
           .catch(function () {
             /* keep JSON status */
@@ -2146,7 +2157,7 @@ function isSprintInDisplayWindow(sprintInfo) {
 /* ═══════════════════════════════ */
 
 function getStatusLabel(s) {
-  return s === 'done' ? 'Completed' : s === 'in-progress' ? 'In Progress' : 'Not Started';
+  return s === 'done' ? 'Completed' : s === 'in-progress' ? 'Advancing' : 'Not Started';
 }
 
 /** True when artifact icon/link should show: not placeholder (not #, blank, or PASTE_DMSI_URL). Includes relative helper paths from state (e.g. sharepoint-*.html). */
@@ -2284,8 +2295,10 @@ function findMilestoneMetaForGithubTitle(githubTitle) {
 
 function milestonePillClassFromMeta(meta) {
   if (!meta) return "m-not-started";
-  if (meta.status === "done") return "m-done";
-  if (meta.status === "in-progress") return "m-in-progress";
+  var st = normalizeCapabilityStatusToInternal(meta.status);
+  var eff = st != null ? st : meta.status;
+  if (eff === "done") return "m-done";
+  if (eff === "in-progress") return "m-in-progress";
   return "m-not-started";
 }
 
@@ -2446,7 +2459,7 @@ function makeStageCard(stage, capId, idx, theme) {
           <label>Status:</label>
           <select onchange="event.stopPropagation(); updateStageStatus('${capId}', ${stage.num}, this.value)">
             <option value="not-started" ${stage.status === 'not-started' ? 'selected' : ''}>Not Started</option>
-            <option value="in-progress" ${stage.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+            <option value="in-progress" ${stage.status === 'in-progress' ? 'selected' : ''}>Advancing</option>
             <option value="done" ${stage.status === 'done' ? 'selected' : ''}>Complete</option>
           </select>
         </div>
@@ -2581,12 +2594,12 @@ var EMBEDDED_STATE = {
     {
       "id": "M2",
       "label": "Establish the Structure",
-      "status": "in-progress"
+      "status": "advancing"
     },
     {
       "id": "M3",
       "label": "Build the Foundation",
-      "status": "in-progress"
+      "status": "advancing"
     },
     {
       "id": "M4",
@@ -2676,7 +2689,7 @@ var EMBEDDED_STATE = {
     {
       "capabilityId": "wm",
       "num": 3,
-      "status": "in-progress",
+      "status": "advancing",
       "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCesn-mHu54RLP2dj7D7iUoAb7FqufrhwIgagO25rHXbRs?e=draens",
       "blockers": [
         {
@@ -2778,7 +2791,7 @@ var EMBEDDED_STATE = {
     {
       "capabilityId": "pd",
       "num": 0,
-      "status": "in-progress",
+      "status": "advancing",
       "artifactsUrl": "sharepoint-wm-s0.html",
       "blockers": [],
       "targetStart": "Feb 2026",
@@ -3088,7 +3101,7 @@ var EMBEDDED_STATE = {
     {
       "capabilityId": "wsd",
       "num": 1,
-      "status": "in-progress",
+      "status": "advancing",
       "artifactsUrl": "#",
       "blockers": [],
       "targetStart": "TBD",
@@ -3154,7 +3167,10 @@ function applyState(state) {
       for (let i = 0; i < arrays.length; i++) {
         const found = arrays[i].find(function (stage) { return stage.num === s.num; });
         if (found) {
-          found.status = s.status || found.status;
+          if (s.status !== undefined) {
+            var nSt = normalizeCapabilityStatusToInternal(s.status);
+            found.status = nSt != null ? nSt : s.status || found.status;
+          }
           found.blockers = Array.isArray(s.blockers) ? s.blockers : (found.blockers || []);
           if ('targetStart' in s) found.targetStart = s.targetStart;
           if ('targetEnd' in s) found.targetEnd = s.targetEnd;
@@ -3205,7 +3221,10 @@ function getAllStages() {
 
 function renderSummaryPanel(state) {
   if (state.milestones && Array.isArray(state.milestones)) {
-    CAPABILITY_MAP_MILESTONES = state.milestones.slice();
+    CAPABILITY_MAP_MILESTONES = state.milestones.map(function (m) {
+      var st = normalizeCapabilityStatusToInternal(m.status);
+      return Object.assign({}, m, { status: st != null ? st : m.status });
+    });
   }
   // Narrative
   if (state.summary) {
@@ -3220,8 +3239,9 @@ function renderSummaryPanel(state) {
     const container = document.getElementById('milestonePills');
     if (container) {
       container.innerHTML = state.milestones.map(m => {
-        const cls = m.status === 'done' ? 'm-done' : m.status === 'in-progress' ? 'm-in-progress' : 'm-not-started';
-        const badge = m.status === 'done' ? '&#10003;' : m.id;
+        const eff = normalizeCapabilityStatusToInternal(m.status) != null ? normalizeCapabilityStatusToInternal(m.status) : m.status;
+        const cls = eff === 'done' ? 'm-done' : eff === 'in-progress' ? 'm-in-progress' : 'm-not-started';
+        const badge = eff === 'done' ? '&#10003;' : m.id;
         return `<div class="milestone-pill ${cls}">
           <span class="m-badge">${badge}</span>
           <span class="m-label">${m.label}</span>
