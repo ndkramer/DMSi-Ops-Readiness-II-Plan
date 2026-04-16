@@ -422,6 +422,12 @@
     font-size: 10px; color: var(--text-muted);
   }
   .stage-dates svg { flex-shrink: 0; }
+  .stage-github-milestone {
+    font-weight: 700;
+    color: #c62828;
+    margin-left: 0.35em;
+    white-space: nowrap;
+  }
 
   .stage-info-row {
     display: flex; align-items: center; justify-content: space-between;
@@ -1720,7 +1726,15 @@ function fetchGithubIssueParsed(owner, repo, issueNum) {
     return r.json();
   }).then(function (data) {
     const body = data.body != null ? String(data.body) : "";
-    return { title: data.title != null ? String(data.title) : "", parsed: parseGithubIssueBody(body) };
+    var milestoneTitle = "";
+    if (data.milestone && data.milestone.title != null) {
+      milestoneTitle = String(data.milestone.title).trim();
+    }
+    return {
+      title: data.title != null ? String(data.title) : "",
+      parsed: parseGithubIssueBody(body),
+      milestoneTitle: milestoneTitle
+    };
   });
 }
 
@@ -1880,6 +1894,12 @@ function replaceStageCardEl(capId, stage) {
   oldEl.parentNode.replaceChild(newEl, oldEl);
 }
 
+/** Writable stage row in wmStages / paStages / … (getAllStages spreads copies; mutate this for hydration). */
+function canonicalStageFor(capId, num) {
+  const arr = getStageArrays(capId)[0];
+  return arr && arr.find(function (st) { return st.num === num; });
+}
+
 /** After render, load issue bodies for stages that set githubIssueUrl in capability-map-state.json */
 function hydrateGithubLinkedStages() {
   const pending = getAllStages().filter(function (s) {
@@ -1887,25 +1907,28 @@ function hydrateGithubLinkedStages() {
   });
   pending.forEach(function (s) {
     const parts = parseGithubIssueUrl(s.githubIssueUrl);
+    const stage = canonicalStageFor(s.capId, s.num) || s;
     if (!parts) {
-      s._githubBodyStatus = "error";
-      s._githubErrorMessage = "Invalid githubIssueUrl (expected …/owner/repo/issues/N)";
-      replaceStageCardEl(s.capId, s);
+      stage._githubBodyStatus = "error";
+      stage._githubErrorMessage = "Invalid githubIssueUrl (expected …/owner/repo/issues/N)";
+      replaceStageCardEl(s.capId, stage);
       return;
     }
     fetchGithubIssueParsed(parts.owner, parts.repo, parts.issue)
       .then(function (result) {
-        s.desc = result.parsed.desc;
-        s.prereqs = result.parsed.prereqs;
-        s.without = result.parsed.without;
-        s._githubBodyStatus = "ready";
-        delete s._githubErrorMessage;
-        replaceStageCardEl(s.capId, s);
+        stage.desc = result.parsed.desc;
+        stage.prereqs = result.parsed.prereqs;
+        stage.without = result.parsed.without;
+        stage._githubBodyStatus = "ready";
+        delete stage._githubErrorMessage;
+        if (result.milestoneTitle) stage._githubMilestoneTitle = result.milestoneTitle;
+        else delete stage._githubMilestoneTitle;
+        replaceStageCardEl(s.capId, stage);
       })
       .catch(function (err) {
-        s._githubBodyStatus = "error";
-        s._githubErrorMessage = err && err.message ? err.message : "GitHub request failed";
-        replaceStageCardEl(s.capId, s);
+        stage._githubBodyStatus = "error";
+        stage._githubErrorMessage = err && err.message ? err.message : "GitHub request failed";
+        replaceStageCardEl(s.capId, stage);
       });
   });
 }
@@ -2238,6 +2261,10 @@ function makeStageCard(stage, capId, idx, theme) {
   const dateText = hasDates
     ? (stage.targetStart === stage.targetEnd ? stage.targetStart : `${stage.targetStart || '?'} &ndash; ${stage.targetEnd || '?'}`)
     : 'Not scheduled';
+  const ms = stage._githubMilestoneTitle && String(stage._githubMilestoneTitle).trim();
+  const milestoneHtml = ms
+    ? ` <span class="stage-github-milestone" title="Milestone on linked GitHub issue">${escapeHtml(ms)}</span>`
+    : '';
   const sprintInfos = getSprintsForDateRange(stage.targetStart, stage.targetEnd);
   const sprintInfosInWindow = sprintInfos.filter(isSprintInDisplayWindow);
   const sprintHtml = sprintInfosInWindow.length
@@ -2252,7 +2279,7 @@ function makeStageCard(stage, capId, idx, theme) {
   const dateHtml = `<div class="stage-dates-col">
     <div class="stage-dates">
       <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v4M11 1v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      ${dateText}
+      ${dateText}${milestoneHtml}
     </div>
     ${sprintHtml}
   </div>`;
@@ -3077,10 +3104,12 @@ function applyState(state) {
               found.githubIssueUrl = String(s.githubIssueUrl).trim();
               found._githubBodyStatus = 'loading';
               delete found._githubErrorMessage;
+              delete found._githubMilestoneTitle;
             } else {
               delete found.githubIssueUrl;
               delete found._githubBodyStatus;
               delete found._githubErrorMessage;
+              delete found._githubMilestoneTitle;
             }
           }
           break;
