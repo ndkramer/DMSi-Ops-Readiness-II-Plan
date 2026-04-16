@@ -410,6 +410,33 @@
   .bubble-callout .bubble-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
   .bubble-callout .bubble-title { font-weight: 700; color: var(--text); display: block; margin-bottom: 2px; font-size: 12px; }
 
+  /* GitHub issue <quote>…</quote> → gray callout (inner HTML sanitized; b/strong etc. allowed) */
+  .stage-quote-bubble {
+    margin-top: 12px;
+    background: #f5f5f5;
+    border: 1px solid #d4d4d4;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  .stage-quote-bubble + .stage-quote-bubble { margin-top: 8px; }
+  .stage-quote-icon-svg {
+    flex-shrink: 0;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+  .stage-quote-inner b,
+  .stage-quote-inner strong { font-weight: 700; color: var(--text); }
+  .stage-quote-inner p { margin: 0.35em 0; }
+  .stage-quote-inner p:first-child { margin-top: 0; }
+  .stage-quote-inner p:last-child { margin-bottom: 0; }
+  .stage-quote-bubble + .stage-desc { margin-top: 10px; }
+
   .status-select { margin-top: 10px; display: flex; align-items: center; gap: 8px; }
   .status-select label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
   .status-select select {
@@ -1477,20 +1504,101 @@ const wscStages = [
 /* WS-D DATA                       */
 /* ═══════════════════════════════ */
 
+/** Allowed inline-ish tags inside GitHub <quote>; everything else is unwrapped. */
+var GITHUB_QUOTE_ALLOWED_TAGS = { b: 1, strong: 1, i: 1, em: 1, u: 1, br: 1, p: 1, span: 1, sub: 1, sup: 1 };
+
+function stripGithubQuoteDangerousAttrs(el) {
+  var attrs = el.attributes;
+  for (var ai = attrs.length - 1; ai >= 0; ai--) {
+    var an = attrs[ai].name.toLowerCase();
+    if (/^on/i.test(an) || an === "style") el.removeAttribute(attrs[ai].name);
+  }
+}
+
+/** Sanitize inner HTML for quote bubbles (no script/on*; strip unknown tags by unwrapping). */
+function sanitizeGithubQuoteHtml(unsafe) {
+  if (!unsafe || typeof unsafe !== "string") return "";
+  try {
+    var doc = new DOMParser().parseFromString(
+      '<div class="gh-quote-sanitize-root">' + unsafe + "</div>",
+      "text/html"
+    );
+    var root = doc.body.firstElementChild;
+    if (!root) return "";
+    function walk(el) {
+      var n = el.firstChild;
+      while (n) {
+        var next = n.nextSibling;
+        if (n.nodeType === 8) {
+          el.removeChild(n);
+        } else if (n.nodeType === 1) {
+          var name = n.nodeName.toLowerCase();
+          if (!GITHUB_QUOTE_ALLOWED_TAGS[name]) {
+            while (n.firstChild) el.insertBefore(n.firstChild, n);
+            el.removeChild(n);
+            n = next;
+            continue;
+          }
+          stripGithubQuoteDangerousAttrs(n);
+          walk(n);
+        }
+        n = next;
+      }
+    }
+    walk(root);
+    return root.innerHTML;
+  } catch (e) {
+    return "";
+  }
+}
+
+var STAGE_QUOTE_ICON_SVG =
+  '<svg class="stage-quote-icon-svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+  '<path fill="none" stroke="currentColor" stroke-width="1.4" d="M6 4.5h12a2 2 0 012 2v8a2 2 0 01-2 2h-6.2L9 19.5v-3H6a2 2 0 01-2-2v-8a2 2 0 012-2z"/>' +
+  '<circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="12" cy="10" r="1" fill="currentColor"/>' +
+  '<circle cx="15" cy="10" r="1" fill="currentColor"/></svg>';
+
+function buildStageQuoteBubblesFromChunks(quoteChunks) {
+  if (!quoteChunks || !quoteChunks.length) return "";
+  var parts = [];
+  for (var qi = 0; qi < quoteChunks.length; qi++) {
+    var safe = sanitizeGithubQuoteHtml(quoteChunks[qi]);
+    if (!safe) continue;
+    parts.push(
+      '<div class="stage-quote-bubble">' +
+        STAGE_QUOTE_ICON_SVG +
+        '<div class="stage-quote-inner">' +
+        safe +
+        "</div></div>"
+    );
+  }
+  return parts.join("");
+}
+
 /**
- * GitHub issue body → stage copy. Optional <without-this>…</without-this> maps to the green “Without this progress” box.
+ * GitHub issue body → stage copy. Optional <quote>…</quote> → gray quote bubble(s) with limited inner HTML.
+ * Optional <without-this>…</without-this> maps to the green “Without this progress” box.
  * Optional “For this to work:” section with markdown bullets.
  */
 function parseGithubIssueBody(raw) {
-  const withoutMatch = raw.match(/<without-this>([\s\S]*?)<\/without-this>/i);
+  const src = raw != null ? String(raw) : "";
+  const quoteChunks = [];
+  const quoteRe = /<quote>([\s\S]*?)<\/quote>/gi;
+  let qm;
+  while ((qm = quoteRe.exec(src)) !== null) {
+    quoteChunks.push(qm[1]);
+  }
+  const work = src.replace(/<quote>([\s\S]*?)<\/quote>/gi, "").trim();
+  const withoutMatch = work.match(/<without-this>([\s\S]*?)<\/without-this>/i);
   const without = withoutMatch ? withoutMatch[1].trim().replace(/\s+/g, " ") : "";
-  const main = withoutMatch ? raw.replace(withoutMatch[0], "").trim() : raw.trim();
+  const main = withoutMatch ? work.replace(withoutMatch[0], "").trim() : work.trim();
   const parts = main.split(/\n\nFor this to work:\s*\n/i);
   const desc = parts[0].trim();
   const prereqs = parts[1]
     ? parts[1].split("\n").map((line) => line.replace(/^[-*]\s+/, "").trim()).filter(Boolean)
     : [];
-  return { desc, prereqs, without };
+  const quoteHtml = buildStageQuoteBubblesFromChunks(quoteChunks);
+  return { desc, prereqs, without, quoteHtml };
 }
 
 /** Returns { owner, repo, issue } for github.com …/issues/N or …/pull/N URLs. */
@@ -1851,6 +1959,7 @@ function hydrateGithubLinkedStages() {
     if (!parts) {
       stage._githubBodyStatus = "error";
       stage._githubErrorMessage = "Invalid githubIssueUrl (expected …/owner/repo/issues/N)";
+      delete stage._githubQuoteHtml;
       replaceStageCardEl(s.capId, stage);
       return;
     }
@@ -1861,6 +1970,8 @@ function hydrateGithubLinkedStages() {
         stage.without = result.parsed.without;
         stage._githubBodyStatus = "ready";
         delete stage._githubErrorMessage;
+        if (result.parsed.quoteHtml) stage._githubQuoteHtml = result.parsed.quoteHtml;
+        else delete stage._githubQuoteHtml;
         if (result.milestoneTitle) stage._githubMilestoneTitle = result.milestoneTitle;
         else delete stage._githubMilestoneTitle;
         replaceStageCardEl(s.capId, stage);
@@ -1868,6 +1979,7 @@ function hydrateGithubLinkedStages() {
       .catch(function (err) {
         stage._githubBodyStatus = "error";
         stage._githubErrorMessage = err && err.message ? err.message : "GitHub request failed";
+        delete stage._githubQuoteHtml;
         replaceStageCardEl(s.capId, stage);
       });
   });
@@ -2314,6 +2426,13 @@ function makeStageCard(stage, capId, idx, theme) {
 
   const ghLoading = stage.githubIssueUrl && stage._githubBodyStatus === "loading";
   const ghError = stage.githubIssueUrl && stage._githubBodyStatus === "error";
+  const ghQuoteReady =
+    !ghLoading &&
+    !ghError &&
+    stage.githubIssueUrl &&
+    stage._githubBodyStatus === "ready" &&
+    stage._githubQuoteHtml &&
+    String(stage._githubQuoteHtml).trim();
   const prereqRows = (stage.prereqs || []).map(p => {
     if (typeof p === "object" && p !== null && "main" in p && Array.isArray(p.sub)) {
       return `<li>${escapeHtml(p.main)}<ul>${p.sub.map(s => `<li>${escapeHtml(s)}</li>`).join("")}</ul></li>`;
@@ -2336,7 +2455,8 @@ function makeStageCard(stage, capId, idx, theme) {
     descBlock = `<p class="stage-github-error">${escapeHtml(stage._githubErrorMessage || "Could not load GitHub issue.")} Showing embedded description below.</p><p class="stage-desc">${escapeHtml(stage.desc)}</p>`;
     withoutBlock = `<div class="without-this">${escapeHtml(stage.without || "")}</div>`;
   } else {
-    descBlock = `<p class="stage-desc">${escapeHtml(stage.desc)}</p>`;
+    const quotePrefix = ghQuoteReady ? String(stage._githubQuoteHtml) : "";
+    descBlock = quotePrefix + `<p class="stage-desc">${escapeHtml(stage.desc)}</p>`;
     withoutBlock = `<div class="without-this">${escapeHtml(stage.without || "")}</div>`;
   }
 
@@ -3094,11 +3214,13 @@ function applyState(state) {
               found._githubBodyStatus = 'loading';
               delete found._githubErrorMessage;
               delete found._githubMilestoneTitle;
+              delete found._githubQuoteHtml;
             } else {
               delete found.githubIssueUrl;
               delete found._githubBodyStatus;
               delete found._githubErrorMessage;
               delete found._githubMilestoneTitle;
+              delete found._githubQuoteHtml;
             }
           }
           break;
