@@ -1724,6 +1724,143 @@ function fetchGithubIssueParsed(owner, repo, issueNum) {
   });
 }
 
+/** Same mapping as Capability-map/sync-capability-status-from-github.mjs and Stalled-Blocked-rpt project Status. */
+var GITHUB_ISSUE_PROJECT_STATUS_QUERY =
+  "query IssueGithubProjectStatus($owner: String!, $name: String!, $number: Int!) {\n" +
+  "  repository(owner: $owner, name: $name) {\n" +
+  "    issue(number: $number) {\n" +
+  "      projectItems(first: 25) {\n" +
+  "        nodes {\n" +
+  "          fieldValues(first: 40) {\n" +
+  "            nodes {\n" +
+  "              __typename\n" +
+  "              ... on ProjectV2ItemFieldSingleSelectValue {\n" +
+  "                name\n" +
+  "                field {\n" +
+  "                  ... on ProjectV2SingleSelectField {\n" +
+  "                    name\n" +
+  "                  }\n" +
+  "                }\n" +
+  "              }\n" +
+  "            }\n" +
+  "          }\n" +
+  "        }\n" +
+  "      }\n" +
+  "    }\n" +
+  "  }\n" +
+  "}\n";
+
+function fetchGithubGraphqlData(query, variables, token) {
+  if (!token) return Promise.resolve(null);
+  var body = JSON.stringify({ query: query, variables: variables || {} });
+  var baseHeaders = {
+    "Content-Type": "application/json",
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+  var req;
+  if (useGithubProxy() && safePageOrigin()) {
+    var proxyUrl = withLambdaGateForCapabilityMap(safePageOrigin() + "/github-proxy/graphql");
+    req = fetch(proxyUrl, {
+      method: "POST",
+      headers: Object.assign({}, baseHeaders, { "X-GitHub-Token": token }),
+      body: body,
+      cache: "no-store"
+    });
+  } else {
+    req = fetch("https://api.github.com/graphql", {
+      method: "POST",
+      headers: Object.assign({}, baseHeaders, { Authorization: "Bearer " + token }),
+      body: body,
+      cache: "no-store"
+    });
+  }
+  return req
+    .then(function (r) {
+      if (!r.ok) return Promise.reject(new Error("GraphQL HTTP " + r.status));
+      return r.json();
+    })
+    .then(function (json) {
+      if (json.errors && json.errors.length) {
+        return Promise.reject(new Error(json.errors.map(function (e) { return e.message; }).join("; ")));
+      }
+      return json.data;
+    });
+}
+
+function githubProjectStatusFromGraphqlData(data) {
+  var issue = data && data.repository && data.repository.issue;
+  var nodes = issue && issue.projectItems && issue.projectItems.nodes;
+  if (!nodes || !nodes.length) return "";
+  for (var i = 0; i < nodes.length; i++) {
+    var fvNodes = nodes[i] && nodes[i].fieldValues && nodes[i].fieldValues.nodes;
+    if (!fvNodes) continue;
+    for (var j = 0; j < fvNodes.length; j++) {
+      var n = fvNodes[j];
+      if (!n || n.__typename !== "ProjectV2ItemFieldSingleSelectValue") continue;
+      var fname = String((n.field && n.field.name) || "")
+        .trim()
+        .toLowerCase();
+      if (fname === "status" || fname === "github status") {
+        return String(n.name || "").trim();
+      }
+    }
+  }
+  return "";
+}
+
+function mapGithubProjectStatusToStageStatus(optionName) {
+  var t = String(optionName || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+  if (t === "backlog" || t === "ready") return "not-started";
+  if (t === "advancing" || t === "in review") return "in-progress";
+  if (t === "done") return "done";
+  return null;
+}
+
+/**
+ * Before first render: set stage.status from org Project \"Status\" for stages with githubIssueUrl
+ * (requires PAT: ?github_token=, localStorage, or Stalled-Blocked-github-token.local.json).
+ * On failure or no token, status stays as loaded from JSON/embedded state.
+ */
+function hydrateGithubLinkedStageStatusesFromProject() {
+  return resolveGithubTokenForMap().then(function (token) {
+    if (!token) return;
+    var capIds = ["wm", "vi", "pa", "ls", "wsb", "wsc", "wsd"];
+    var ops = [];
+    capIds.forEach(function (capId) {
+      var arr = getStageArrays(capId)[0];
+      if (!arr) return;
+      arr.forEach(function (stage) {
+        if (!stage.githubIssueUrl || !String(stage.githubIssueUrl).trim()) return;
+        var parts = parseGithubIssueUrl(stage.githubIssueUrl);
+        if (!parts) return;
+        ops.push({
+          stage: stage,
+          vars: { owner: parts.owner, name: parts.repo, number: parts.issue }
+        });
+      });
+    });
+    if (!ops.length) return;
+    return Promise.all(
+      ops.map(function (op) {
+        return fetchGithubGraphqlData(GITHUB_ISSUE_PROJECT_STATUS_QUERY, op.vars, token)
+          .then(function (data) {
+            if (!data) return;
+            var raw = githubProjectStatusFromGraphqlData(data);
+            var mapped = mapGithubProjectStatusToStageStatus(raw);
+            if (mapped != null) op.stage.status = mapped;
+          })
+          .catch(function () {
+            /* keep JSON status */
+          });
+      })
+    );
+  });
+}
+
 function capIdToTheme(capId) {
   const map = { wm: "green", vi: "blue", pa: "teal", ls: "gold", wsb: "orange", wsc: "violet", wsd: "slate" };
   return map[capId] || "green";
@@ -2349,7 +2486,7 @@ function toggleEl(id) {
 /* capability-map-state.json: same-origin fetch (cache: no-store), then GitHub raw main fallback, then EMBEDDED_STATE.
    Regenerate EMBEDDED after JSON edits: node Capability-map/sync-dmsi-embedded-from-state.mjs
    Repeat ?token= on fetches when present (Lambda; query or hash). Merge capability-map-artifacts-dmsi.json onto artifactsUrl only.
-   Optional per stage: githubIssueUrl — fetches issue body at load (same token rules as Project-Plan/Stalled-Blocked-rpt: ?github_token=, localStorage dmsiStalledBlockedGithubPat, Project-Plan/Stalled-Blocked-github-token.local.json; on *.on.aws use Lambda /github-api when a PAT is present). */
+   Optional per stage: githubIssueUrl — before render, GraphQL loads org Project Status (maps to stage status; Lambda: /github-proxy/graphql); then REST loads issue body (same PAT as Stalled-Blocked-rpt: ?github_token=, localStorage, Stalled-Blocked-github-token.local.json; REST on *.on.aws: /github-api). */
 /* ═══════════════════════════════ */
 
 var EMBEDDED_STATE = {
@@ -3199,17 +3336,30 @@ function fetchDmsiArtifactOverrides() {
 }
 
 function loadState() {
+  var stateUsed = EMBEDDED_STATE;
   fetchCapabilityMapStateJson()
     .then(function (data) {
-      if (data) applyState(data);
-      else applyState(EMBEDDED_STATE);
+      if (data) {
+        stateUsed = data;
+        applyState(data);
+      } else {
+        applyState(EMBEDDED_STATE);
+        stateUsed = EMBEDDED_STATE;
+      }
       return fetchDmsiArtifactOverrides();
     })
     .catch(function () {
       applyState(EMBEDDED_STATE);
+      stateUsed = EMBEDDED_STATE;
       return fetchDmsiArtifactOverrides();
     })
     .then(function () {
+      return hydrateGithubLinkedStageStatusesFromProject();
+    })
+    .then(function () {
+      if (stateUsed && (stateUsed.summary || stateUsed.milestones)) {
+        renderSummaryPanel(stateUsed);
+      }
       renderAll();
       hydrateGithubLinkedStages();
     });
