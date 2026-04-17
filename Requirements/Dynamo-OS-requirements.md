@@ -2,7 +2,7 @@
 
 **Purpose:** Give the **Dynamo-OS** repository maintainers everything needed to bootstrap the tooling repo and align with the first consumer. You can copy this file into the Dynamo-OS repo as **`requirements.md`** (or `docs/requirements.md`). Keep a **link back** to the full PRD in the consumer repo when both exist.
 
-**Full product requirements (canonical):** [Dynamo-os-prd.md](./Dynamo-os-prd.md) in **DMSI-Op-Readiness-II-Plan** (same `Requirements/` folder as this file). **GitHub location (target):** **Dynamo** organization account — **`https://github.com/<dynamo-org>/<dms-planning-repo>`** after **transfer at end of project** (final cutover). Until then the canonical clone may remain on the current remote; replace placeholders when the move is done. PRD path in repo: `Requirements/Dynamo-os-prd.md`.
+**Full product requirements (canonical):** [Dynamo-os-prd.md](./Dynamo-os-prd.md) in **DMSI-OP-Readiness-OS** (same `Requirements/` folder as this file). **GitHub location (canonical):** **`https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS`**. PRD path in repo: `Requirements/Dynamo-os-prd.md`.
 
 ---
 
@@ -29,7 +29,7 @@
 
 ## 3. First consumer (reference implementation)
 
-- **Repository:** **DMSI-Op-Readiness-II-Plan** — **intended home** is the **Dynamo GitHub org/account**. **Timing:** repository **transfer (or new repo + push) is planned for the end of this project**, not before Dynamo-OS work begins. **After cutover, canonical remote (TBD):** `https://github.com/<dynamo-org>/<dms-planning-repo>.git` — fill in org/repo when the move is executed; update this file and the PRD.
+- **Repository:** **DMSI-OP-Readiness-OS** — **canonical remote:** **`https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS.git`**. Update this file and the PRD if the URL or default branch changes.
 - **AWS:** CI should deploy the capability-map **Lambda** into the **Dynamo AWS account**, typically in the **same final cutover phase** as the GitHub move (or immediately after), when **function name, region, IAM/OIDC to the new GitHub repo, and Actions secrets** are set.
 - **Paths to study** (relative to that repo root):
 
@@ -85,7 +85,7 @@ Port from DMSI using a **strangler**: **config + path resolution first**, then *
 
 ## 6. Information only the product owner can supply (if missing)
 
-- **Dynamo GitHub:** organization or owner slug, repository name for DMSI-Op-Readiness-II-Plan, default branch, and transfer date / method — **scheduled for end of project**
+- **Dynamo GitHub:** canonical repo **`DynamoLLC-Hub/DMSI-OP-Readiness-OS`** — confirm default branch and org access; archive or redirect any superseded remotes per org policy
 - **Dynamo AWS:** account ID (if needed for docs), region for Lambda, **function name(s)**, OIDC trust to GitHub vs access keys, and the exact **GitHub Actions secret names** for deploy
 - **npm scope** and registry (npmjs org vs GitHub Packages)
 - **Final package name** (`dynamo-os` vs `@one80labs/dynamo-os`)

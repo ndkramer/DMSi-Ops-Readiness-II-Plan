@@ -1,8 +1,8 @@
 # Project file structure
 
-Snapshot of the **DMSI-Op-Readiness-II-Plan** repository layout. Folders end with `/`.
+Snapshot of the **DMSI-OP-Readiness-OS** repository layout. Folders end with `/`.
 
-**Generated:** 2026-03-26
+**Generated:** 2026-04-17
 
 **Omitted from this listing**
 
@@ -13,7 +13,7 @@ Snapshot of the **DMSI-Op-Readiness-II-Plan** repository layout. Folders end wit
 
 ```
 
-DMSI-Op-Readiness-II-Plan/
+DMSI-OP-Readiness-OS/
 ├── .cursor/
 │   ├── rules/
 │   │   ├── pa.mdc
@@ -240,7 +240,7 @@ def walk(dirpath, prefix="", depth=0, max_depth=25):
             ext = "    " if last else "│   "
             walk(os.path.join(dirpath, name), prefix + ext, depth + 1, max_depth)
 
-print("DMSI-Op-Readiness-II-Plan/")
+print("DMSI-OP-Readiness-OS/")
 walk(ROOT, "", 0)
 PY
 ```

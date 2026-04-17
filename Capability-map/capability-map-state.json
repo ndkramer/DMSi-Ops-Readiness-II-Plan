@@ -78,7 +78,8 @@
       "artifactsUrl": "sharepoint-wm-s0.html",
       "blockers": [],
       "targetStart": "Feb 16, 2026",
-      "targetEnd": "Feb 27, 2026"
+      "targetEnd": "Feb 27, 2026",
+        "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/71"
     },
     {
       "capabilityId": "wm",

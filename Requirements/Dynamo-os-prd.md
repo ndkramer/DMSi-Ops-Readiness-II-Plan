@@ -2,19 +2,19 @@
 
 **Status:** Draft (aligned to internal planning)  
 **Planning toolkit strangler (DMSI consumer):** **Complete** — see [dynamo-os/planning-toolkit/docs/CODE-MAPPING.md](../../dynamo-os/planning-toolkit/docs/CODE-MAPPING.md) (sibling clone) and repo **`package.json`** (`npm install` wires **`dynamo-plan`**).  
-**Last updated:** 2026-04-03 (strangler completion note; Lambda binary assets; root `package.json`; org/AWS cutover still end-of-project)  
-**Audience:** Owners of planning repos (e.g. DMSI-Op-Readiness-II-Plan) and the future **Dynamo-OS** tooling repository.
+**Last updated:** 2026-04-17 (canonical GitHub remote: DynamoLLC-Hub/DMSI-OP-Readiness-OS; AWS/Lambda org cutover still end-of-project)  
+**Audience:** Owners of planning repos (e.g. **DMSI-OP-Readiness-OS**) and the future **Dynamo-OS** tooling repository.
 
 ## Purpose
 
 Split **reusable tooling** (WBS lifecycle, map sync, Gantt data build, Lambda static handler, and **transitional** Jira adapters) into a **Dynamo-OS** repository, delivered as a **versioned npm package with a CLI**. Each **project repository** holds **planning data**, **capability work**, **HTML artifacts**, and **project-specific configuration** (disk paths, Gantt sources; Jira settings only while Jira remains).
 
-**First project consumer:** `DMSI-Op-Readiness-II-Plan`. Additional independent project repos follow the same layout and config.
+**First project consumer:** **`DMSI-OP-Readiness-OS`** — canonical remote: **`https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS`**. Additional independent project repos follow the same layout and config.
 
 ### Repository and cloud hosting (target)
 
-- **GitHub:** **DMSI-Op-Readiness-II-Plan** will move to the **Dynamo** GitHub organization (or equivalent Dynamo-owned account) **at the end of this project** as a **final cutover** step — not a prerequisite for starting Dynamo-OS development. Until then, work may continue on the **current** remote; record the **canonical** `https://github.com/<dynamo-org>/<repo>` here and in [Dynamo-OS-requirements.md](./Dynamo-OS-requirements.md) when the transfer (or new repo + push) is executed. Update local `git remote`, branch protections, and any Confluence/bookmarks that point at the old URL.
-- **AWS:** GitHub Actions should deploy the static **capability-map Lambda** (and any follow-on functions) into the **Dynamo AWS account**. **Plan this cutover for the same end-of-project window as the GitHub move** (or slightly after), when **Lambda function name, region, IAM/OIDC to the new GitHub repo, and secret names/values** are provided; update `.github/workflows/` and GitHub repo secrets to match.
+- **GitHub:** **Canonical planning repo:** **`https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS`**. Use this URL for `git clone`, `git remote`, branch protections, and Confluence/bookmarks; supersede any prior personal or interim remotes. Details also recorded in [Dynamo-OS-requirements.md](./Dynamo-OS-requirements.md).
+- **AWS:** GitHub Actions should deploy the static **capability-map Lambda** (and any follow-on functions) into the **Dynamo AWS account**. **Plan this cutover for the end-of-project window** (or shortly after the GitHub repo cutover), when **Lambda function name, region, IAM/OIDC to the DynamoLLC-Hub repo, and secret names/values** are provided; update `.github/workflows/` and GitHub repo secrets to match.
 
 ---
 
@@ -226,7 +226,7 @@ Follow **Code migration approach (DMSI → Dynamo-OS)** above for how to port sl
 
 7. **New project repo:** Scaffold from a template with the **same top-level pattern** (workstream roots + `Documentation`, `Requirements`, `Capability-Map`, `Project-Plan`), capability stubs, sample `dynamo-os.config`, and Cursor templates (skills **and** rules).
 
-8. **Final cutover (end of project):** **Transfer** (or recreate and push) **DMSI-Op-Readiness-II-Plan** to the **Dynamo GitHub** org; point **GitHub Actions** OIDC or secrets at the **Dynamo AWS** account and Lambda; update this PRD and [Dynamo-OS-requirements.md](./Dynamo-OS-requirements.md) with final URLs and identifiers; refresh bookmarks and integrations.
+8. **Final cutover (end of project):** **GitHub:** Planning repo is **`https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS`** (done). **AWS:** Point **GitHub Actions** OIDC or secrets at the **Dynamo AWS** account and Lambda; update this PRD and [Dynamo-OS-requirements.md](./Dynamo-OS-requirements.md) with final AWS identifiers; refresh bookmarks and integrations that still reference legacy hosts.
 
 ---
 
@@ -347,7 +347,8 @@ Cursor loads rules from **`.cursor/rules/*.mdc`** at the **repository root**. �
 - [ ] Update `.cursor/skills/` and **`.cursor/rules/*.mdc`** (globs, paths, CLI commands, Jira transitional wording); **evaluate folder-scoped rules** (Capability-map, Project-Plan, Documentation, Requirements, Scripts, `.github`, `WSB-WSC` outside `WB`) and document add/split/none decision; skills/README; optional template skills + **template rules** in Dynamo-OS  
 - [ ] Add second project repo template (same layout + minimal config)  
 - [ ] Document canonical tree; workstreams at repo root (`WSA`, `WSB-WSC`); per-capability `Jira`, `Output` (+ `Output/Archive`), `Archive`, `Input`, `Update-Reports`; Option A root `Project-Plan`; post-restructure checklist; Lambda phasing  
-- [ ] **End of project:** Move **DMSI-Op-Readiness-II-Plan** to **Dynamo GitHub**; cut over **Lambda/CI** to **Dynamo AWS**; update docs with final org/repo URLs and secrets/OIDC
+- [x] **GitHub home:** Canonical repo **`https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS`** (migrate complete; re-add Actions secrets on org repo as needed).
+- [ ] **End of project:** Cut over **Lambda/CI** to **Dynamo AWS**; update docs with final AWS identifiers and secrets/OIDC
 
 ---
 

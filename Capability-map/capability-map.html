@@ -3560,7 +3560,7 @@ function fetchUrlWithPageToken(resourcePath) {
 
 /** Avoid stale JSON after Lambda deploy; public fallback helps file:// and other failed same-origin loads. */
 var CAPABILITY_MAP_STATE_PUBLIC_FALLBACK =
-  'https://raw.githubusercontent.com/ndkramer/DMSi-Ops-Readiness-II-Plan/main/Capability-map/capability-map-state.json';
+  'https://raw.githubusercontent.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS/main/Capability-map/capability-map-state.json';
 var STATE_AND_ARTIFACT_FETCH_OPTS = { cache: 'no-store' };
 
 /** Same-origin first; on failure or !ok, try GitHub raw (main). Returns null if both fail. */
