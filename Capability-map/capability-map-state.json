@@ -323,7 +323,8 @@
       "artifactsUrl": "#",
       "blockers": [],
       "targetStart": "Sep 28, 2026",
-      "targetEnd": "Oct 30, 2026"
+      "targetEnd": "Oct 30, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/70"
     },
     {
       "capabilityId": "pa",
