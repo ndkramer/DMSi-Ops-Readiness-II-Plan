@@ -1948,6 +1948,22 @@ function canonicalStageFor(capId, num) {
   return arr && arr.find(function (st) { return st.num === num; });
 }
 
+/**
+ * Ensure every stage with a githubIssueUrl will REST-fetch the issue (desc, quote, milestone).
+ * applyState only sets loading when the state JSON row includes githubIssueUrl; this guarantees
+ * hydration after merge. Also used when re-syncing after GitHub edits (tab focus / refresh).
+ */
+function markGithubLinkedStagesForHydration() {
+  getAllStages().forEach(function (s) {
+    if (s.githubIssueUrl && String(s.githubIssueUrl).trim()) {
+      s._githubBodyStatus = "loading";
+      delete s._githubErrorMessage;
+      delete s._githubMilestoneTitle;
+      delete s._githubQuoteHtml;
+    }
+  });
+}
+
 /** After render, load issue bodies for stages that set githubIssueUrl in capability-map-state.json */
 function hydrateGithubLinkedStages() {
   const pending = getAllStages().filter(function (s) {
@@ -3497,6 +3513,7 @@ function loadState() {
       return fetchDmsiArtifactOverrides();
     })
     .then(function () {
+      markGithubLinkedStagesForHydration();
       return hydrateGithubLinkedStageStatusesFromProject();
     })
     .then(function () {
@@ -3506,6 +3523,15 @@ function loadState() {
       renderAll();
       hydrateGithubLinkedStages();
     });
+}
+
+/** Re-fetch Project Status + issue bodies from GitHub (e.g. after editing issues in another tab). */
+function refreshGithubLinkedDataFromServer() {
+  markGithubLinkedStagesForHydration();
+  return hydrateGithubLinkedStageStatusesFromProject().then(function () {
+    renderAll();
+    hydrateGithubLinkedStages();
+  });
 }
 
 function updateSummaryVersionLabel() {
@@ -3518,6 +3544,27 @@ function updateSummaryVersionLabel() {
 
 updateSummaryVersionLabel();
 loadState();
+
+/* When you return to this tab, pull fresh issue text/status (GitHub is not push-synced to the map). */
+(function setupGithubLinkedRefreshOnFocus() {
+  var timer = null;
+  var lastRun = 0;
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      var now = Date.now();
+      if (now - lastRun < 2000) return;
+      lastRun = now;
+      refreshGithubLinkedDataFromServer().catch(function () {});
+    }, 350);
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") schedule();
+  });
+  window.addEventListener("pageshow", function (ev) {
+    if (ev.persisted) schedule();
+  });
+})();
 
 // Tab switching
 function switchTab(tabId) {
