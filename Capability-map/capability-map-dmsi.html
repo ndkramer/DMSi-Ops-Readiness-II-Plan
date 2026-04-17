@@ -1955,7 +1955,7 @@ function replaceStageCardEl(capId, stage) {
   const expanded = oldEl.classList.contains("expanded");
   const arr = getStageArrays(capId)[0];
   const idx = arr.findIndex(function (s) {
-    return s.num === stage.num;
+    return sameStageNum(s.num, stage.num);
   });
   const newEl = makeStageCard(stage, capId, idx >= 0 ? idx : 0, capIdToTheme(capId));
   if (expanded) newEl.classList.add("expanded");
@@ -1965,7 +1965,7 @@ function replaceStageCardEl(capId, stage) {
 /** Writable stage row in wmStages / paStages / … (getAllStages spreads copies; mutate this for hydration). */
 function canonicalStageFor(capId, num) {
   const arr = getStageArrays(capId)[0];
-  return arr && arr.find(function (st) { return st.num === num; });
+  return arr && arr.find(function (st) { return sameStageNum(st.num, num); });
 }
 
 /**
@@ -2630,7 +2630,7 @@ function toggleStageCard(id) {
 function updateStageStatus(capId, stageNum, value) {
   const allArrays = capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [];
   for (const arr of allArrays) {
-    const found = arr.find(s => s.num === stageNum);
+    const found = arr.find(s => sameStageNum(s.num, stageNum));
     if (found) { found.status = value; break; }
   }
   if (capId === 'wm') renderWM();
@@ -3213,6 +3213,13 @@ function getStageArrays(capId) {
   return capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [];
 }
 
+/** capability-map-state.json may have "num" as string; strict === skipped merge (e.g. githubIssueUrl) for that row. */
+function sameStageNum(a, b) {
+  var x = Number(a);
+  var y = Number(b);
+  return x === y && !Number.isNaN(x) && !Number.isNaN(y);
+}
+
 function applyState(state) {
   if (!state) return;
   if (state.lastUpdated) {
@@ -3236,7 +3243,7 @@ function applyState(state) {
     state.stages.forEach(function (s) {
       const arrays = getStageArrays(s.capabilityId);
       for (let i = 0; i < arrays.length; i++) {
-        const found = arrays[i].find(function (stage) { return stage.num === s.num; });
+        const found = arrays[i].find(function (stage) { return sameStageNum(stage.num, s.num); });
         if (found) {
           if (s.status !== undefined) {
             var nSt = normalizeCapabilityStatusToInternal(s.status);
@@ -3447,7 +3454,7 @@ function applyArtifactUrlOverrides(list) {
     if (typeof num !== 'number' || Number.isNaN(num)) return;
     var arrays = getStageArrays(s.capabilityId);
     for (var i = 0; i < arrays.length; i++) {
-      var found = arrays[i].find(function (stage) { return stage.num === num; });
+      var found = arrays[i].find(function (stage) { return sameStageNum(stage.num, num); });
       if (found) {
         found.artifactsUrl = s.artifactsUrl;
         break;
