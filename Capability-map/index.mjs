@@ -15,8 +15,9 @@
  *
  * GitHub API proxy (same-origin; avoids Confluence iframe CSP blocking api.github.com):
  *   POST /github-proxy/graphql  — JSON body { query, variables, github_token }; forwards to api.github.com/graphql
- *   GET|POST /github-api/...    — path must start with /orgs/, /repos/, or /projects/; pass GitHub PAT in X-GitHub-Token;
- *                                 query string is forwarded minus Lambda gate params (token, github_token, github_proxy)
+ *   GET|POST /github-api/...    — path must start with /orgs/, /repos/, or /projects/;
+ *                                 X-GitHub-Token optional for GET (omit for unauthenticated / public resources);
+ *                                 required for POST/PATCH/PUT. Query string is forwarded minus Lambda gate params.
  */
 import { readFileSync } from 'fs';
 import { dirname, extname, resolve, relative, sep } from 'path';
@@ -210,23 +211,25 @@ async function handleGithubRestProxy(event) {
     };
   }
   const ghTok = headerGet(event.headers, 'x-github-token');
-  if (!ghTok) {
+  const method = (event.requestContext?.http?.method || event.httpMethod || 'GET').toUpperCase();
+  if (!ghTok && method !== 'GET') {
     return {
       statusCode: 400,
-      headers: corsHeadersForGithubProxy({ 'Content-Type': 'text/plain' }),
-      body: 'Missing X-GitHub-Token header',
+      headers: corsHeadersForGithubProxy({ 'Content-Type': 'text/plain; charset=utf-8' }),
+      body: 'X-GitHub-Token required for non-GET requests',
     };
   }
-  const method = (event.requestContext?.http?.method || event.httpMethod || 'GET').toUpperCase();
   const cleanQs = sanitizeGithubRestQueryString(event.rawQueryString || '');
   const qs = cleanQs ? `?${cleanQs}` : '';
   const url = `https://api.github.com${restPath}${qs}`;
   const headers = {
-    Authorization: `Bearer ${ghTok}`,
     Accept: headerGet(event.headers, 'accept') || 'application/vnd.github+json',
     'X-GitHub-Api-Version': headerGet(event.headers, 'x-github-api-version') || '2022-11-28',
     'User-Agent': 'DMSI-Lambda-GitHub-Proxy',
   };
+  if (ghTok) {
+    headers.Authorization = `Bearer ${ghTok}`;
+  }
   const init = { method, headers };
   if (method === 'POST' || method === 'PATCH' || method === 'PUT') {
     init.body = getRequestBody(event);

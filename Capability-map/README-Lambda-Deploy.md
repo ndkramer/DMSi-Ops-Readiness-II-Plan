@@ -69,7 +69,7 @@ For a **private** repository, the raw URL returns **404** to anonymous browsers,
 
 **Implication:** After you edit `capability-map-state.json` in Git, the hosted map updates when **CI deploys** a new Lambda zip (or you run the deploy workflow). Pushing to `main` alone does not change the live map until that deploy runs.
 
-**GitHub-linked stages** (issue descriptions, quotes, org Project status) call the GitHub API and need a PAT: **`?github_token=`** or **`?gh_token=`** (or hash), **localStorage** key `dmsiStalledBlockedGithubPat`, or **`Project-Plan/Stalled-Blocked-github-token.local.json`** co-deployed with Lambda (see optional secret above). Without a token, GraphQL project status is skipped; unauthenticated REST may work for **public** issues until rate limits apply.
+**GitHub-linked stages** use the GitHub API via the same-origin **`/github-api`** and **`/github-proxy/graphql`** routes on Lambda (avoids browser CORS to `api.github.com`). **Issue body** (REST `GET /repos/.../issues/N`) works **without** a PAT for **public** repositories; **private** issues still need a PAT (**`?github_token=`** / **`?gh_token=`**, localStorage `dmsiStalledBlockedGithubPat`, or co-deployed **`Project-Plan/Stalled-Blocked-github-token.local.json`** — see optional secret). **Org Project “Status”** (GraphQL) always requires a PAT. Anonymous REST is subject to GitHub’s rate limit for the Lambda’s outbound IP; a PAT is recommended for reliability.
 
 ## Stage artifact links (SharePoint)
 
