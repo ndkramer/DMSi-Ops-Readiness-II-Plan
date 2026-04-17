@@ -3558,7 +3558,10 @@ function fetchUrlWithPageToken(resourcePath) {
   }
 }
 
-/** Avoid stale JSON after Lambda deploy; public fallback helps file:// and other failed same-origin loads. */
+/**
+ * Anonymous raw URL — only works for public repos (private → 404; browser cannot authenticate).
+ * Lambda viewers get state from same-origin `capability-map-state.json` (last deploy). See README-Lambda-Deploy.md.
+ */
 var CAPABILITY_MAP_STATE_PUBLIC_FALLBACK =
   'https://raw.githubusercontent.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS/main/Capability-map/capability-map-state.json';
 var STATE_AND_ARTIFACT_FETCH_OPTS = { cache: 'no-store' };

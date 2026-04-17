@@ -58,6 +58,19 @@ After the first deploy from GitHub, the Lambda will serve the latest `capability
 
 If you use **`CONFLUENCE_TOKEN`** auth, open the map with **`?token=...`** on the HTML URL. The page repeats that token on **`fetch`** requests to `capability-map-state.json` and `capability-map-artifacts-dmsi.json` so those requests are allowed by the same Lambda auth.
 
+## Capability map state JSON vs GitHub
+
+The HTML loads `capability-map-state.json` in this order:
+
+1. **Same-origin** — On the Lambda Function URL, this is the copy **bundled in the last deployment** (not a live stream from GitHub).
+2. **Public raw fallback** — `https://raw.githubusercontent.com/.../main/Capability-map/capability-map-state.json` is used when same-origin fails (e.g. opening the file from disk without a local server).
+
+For a **private** repository, the raw URL returns **404** to anonymous browsers, so step 2 never succeeds. The page then uses **embedded** state baked into the HTML (offline fallback).
+
+**Implication:** After you edit `capability-map-state.json` in Git, the hosted map updates when **CI deploys** a new Lambda zip (or you run the deploy workflow). Pushing to `main` alone does not change the live map until that deploy runs.
+
+**GitHub-linked stages** (issue descriptions, quotes, org Project status) call the GitHub API and need a PAT: **`?github_token=`** or **`?gh_token=`** (or hash), **localStorage** key `dmsiStalledBlockedGithubPat`, or **`Project-Plan/Stalled-Blocked-github-token.local.json`** co-deployed with Lambda (see optional secret above). Without a token, GraphQL project status is skipped; unauthenticated REST may work for **public** issues until rate limits apply.
+
 ## Stage artifact links (SharePoint)
 
 The map shows a folder icon whenever `artifactsUrl` is set and is not `#` or `PASTE_DMSI_URL`. For **working** links from the Lambda URL, prefer **full `https://...` SharePoint URLs** in state or in DMSi overrides. **Relative** paths (e.g. `sharepoint-wm-s0.html`) still show the icon but resolve against the Function URL; if that file is not in the deployment package, the handler returns **`Not found`** until you add the file to the zip or switch to full URLs.
