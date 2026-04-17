@@ -85,6 +85,8 @@ The map shows a folder icon whenever `artifactsUrl` is set and is not `#` or `PA
 2. **One-off / trusted browser:** Open the map with **`&github_token=ghp_…`** (or `gh_token`) in addition to `token=`. Do not share that URL.
 3. Open the **Stalled/Blocked** report on the same Lambda, paste a PAT when prompted (stored in `localStorage` under `dmsiStalledBlockedGithubPat`); reload the capability map in the same browser.
 
+**Note:** A URL like `…?token=…&github_token=…` is fine for **verifying** that private-issue sync works after a deploy. It is **not** a pattern to keep in bookmarks, Confluence, or chat — the PAT is visible in the address bar and in referrer logs. For day-to-day use, prefer **`STALLED_BLOCKED_GITHUB_PAT`** (deployed JSON) or **`localStorage`** after using the Stalled/Blocked report.
+
 Then hard-refresh the map. Expand a linked stage: errors now include a short hint if GitHub returned 403/404.
 
 ## If the new HTML doesn’t show after a successful deploy
