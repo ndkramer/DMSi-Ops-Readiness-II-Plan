@@ -434,7 +434,7 @@
   .stage-quote-inner p { margin: 0.35em 0; }
   .stage-quote-inner p:first-child { margin-top: 0; }
   .stage-quote-inner p:last-child { margin-bottom: 0; }
-  .stage-quote-bubble + .stage-desc { margin-top: 10px; }
+  .without-this + .stage-quote-bubble { margin-top: 10px; }
 
   .status-select { margin-top: 10px; display: flex; align-items: center; gap: 8px; }
   .status-select label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -2449,11 +2449,6 @@ function makeStageCard(stage, capId, idx, theme) {
   card.className = `stage-card status-${stage.status}`;
   card.id = `${capId}-stage-${stage.num}`;
 
-  let bubbleHtml = '';
-  if (stage.bubble) {
-    bubbleHtml = `<div class="bubble-callout"><span class="bubble-icon">&#128172;</span><div><span class="bubble-title">${stage.bubble.title}</span>${stage.bubble.text}</div></div>`;
-  }
-
   // Date range (show "Not scheduled" when both targetStart and targetEnd are missing or empty)
   const hasDates = stage.targetStart || stage.targetEnd;
   const dateText = hasDates
@@ -2559,9 +2554,17 @@ function makeStageCard(stage, capId, idx, theme) {
     descBlock = `<p class="stage-github-error">${escapeHtml(stage._githubErrorMessage || "Could not load GitHub issue.")} Showing embedded description below.</p><p class="stage-desc">${escapeHtml(stage.desc)}</p>`;
     withoutBlock = `<div class="without-this">${escapeHtml(stage.without || "")}</div>`;
   } else {
-    const quotePrefix = ghQuoteReady ? String(stage._githubQuoteHtml) : "";
-    descBlock = quotePrefix + `<p class="stage-desc">${escapeHtml(stage.desc)}</p>`;
+    descBlock = `<p class="stage-desc">${escapeHtml(stage.desc)}</p>`;
     withoutBlock = `<div class="without-this">${escapeHtml(stage.without || "")}</div>`;
+  }
+
+  /** Bottom gray callout: GitHub <quote> replaces embedded JSON bubble when issue is loaded and has a quote. */
+  let bottomCalloutHtml = "";
+  if (ghQuoteReady) {
+    bottomCalloutHtml = String(stage._githubQuoteHtml);
+  } else if (stage.bubble) {
+    bottomCalloutHtml =
+      `<div class="bubble-callout"><span class="bubble-icon">&#128172;</span><div><span class="bubble-title">${stage.bubble.title}</span>${stage.bubble.text}</div></div>`;
   }
 
   card.innerHTML = `
@@ -2586,7 +2589,7 @@ function makeStageCard(stage, capId, idx, theme) {
         ${blockerSectionHtml}
         ${prereqBlock}
         ${withoutBlock}
-        ${bubbleHtml}
+        ${bottomCalloutHtml}
         ${hasStageArtifactUrl(stage.artifactsUrl) ? `<a class="artifacts-link" href="${stage.artifactsUrl}" target="_blank" rel="noopener">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h5.586a1 1 0 01.707.293l3.414 3.414A1 1 0 0113 6.414V13a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" stroke="#2563eb" stroke-width="1.5"/><path d="M8 2v4h4" stroke="#2563eb" stroke-width="1.5"/></svg>
           Stage Artifacts Folder
