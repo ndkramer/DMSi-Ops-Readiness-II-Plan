@@ -75,6 +75,18 @@ For a **private** repository, the raw URL returns **404** to anonymous browsers,
 
 The map shows a folder icon whenever `artifactsUrl` is set and is not `#` or `PASTE_DMSI_URL`. For **working** links from the Lambda URL, prefer **full `https://...` SharePoint URLs** in state or in DMSi overrides. **Relative** paths (e.g. `sharepoint-wm-s0.html`) still show the icon but resolve against the Function URL; if that file is not in the deployment package, the handler returns **`Not found`** until you add the file to the zip or switch to full URLs.
 
+## GitHub issue text still missing on the map (Lambda)
+
+`githubIssueUrl` loads issue bodies via the **`/github-api`** proxy. **Public** repositories work without a PAT. **`DynamoLLC-Hub/dynamo-toolbox`** (and other private repos) return **HTTP 403** to anonymous API calls — the map cannot show issue text until a token is available to the page.
+
+**Do one of the following:**
+
+1. **Recommended for team use:** In the repo, add Actions secret **`STALLED_BLOCKED_GITHUB_PAT`** (PAT with `repo` / issue read access to the linked repos). Redeploy the Capability Map workflow so **`Project-Plan/Stalled-Blocked-github-token.local.json`** is included in the Lambda zip. The map loads that file same-origin (with your existing `?token=` gate).
+2. **One-off / trusted browser:** Open the map with **`&github_token=ghp_…`** (or `gh_token`) in addition to `token=`. Do not share that URL.
+3. Open the **Stalled/Blocked** report on the same Lambda, paste a PAT when prompted (stored in `localStorage` under `dmsiStalledBlockedGithubPat`); reload the capability map in the same browser.
+
+Then hard-refresh the map. Expand a linked stage: errors now include a short hint if GitHub returned 403/404.
+
 ## If the new HTML doesn’t show after a successful deploy
 
 1. **Browser cache** – Do a hard refresh (e.g. Cmd+Shift+R / Ctrl+Shift+R) or open the Function URL in an incognito/private window. The handler sends `Cache-Control: no-cache, max-age=0` so new loads should not be cached.

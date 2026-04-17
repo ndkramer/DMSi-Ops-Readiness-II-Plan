@@ -1758,6 +1758,24 @@ function fetchGithubIssueWithResolvedToken(owner, repo, issueNum, token) {
   return fetch(apiUrl, { headers, cache: "no-store" });
 }
 
+/** User-visible hint when REST returns 403/404 (common for private repos without PAT on Lambda). */
+function githubIssueFetchErrorMessage(err) {
+  var raw = err && err.message ? String(err.message) : "GitHub request failed";
+  if (/HTTP 403\b/.test(raw)) {
+    return (
+      raw +
+      " — Likely a private repo or SSO: set GitHub Actions secret STALLED_BLOCKED_GITHUB_PAT and redeploy, or add &github_token=PAT to this page URL (trusted environments only)."
+    );
+  }
+  if (/HTTP 404\b/.test(raw)) {
+    return (
+      raw +
+      " — Wrong issue number, or private repo without a PAT (same fix as 403)."
+    );
+  }
+  return raw;
+}
+
 function fetchGithubIssueParsed(owner, repo, issueNum) {
   return resolveGithubTokenForMap().then(function (token) {
     return fetchGithubIssueWithResolvedToken(owner, repo, issueNum, token);
@@ -1996,7 +2014,7 @@ function hydrateGithubLinkedStages() {
       })
       .catch(function (err) {
         stage._githubBodyStatus = "error";
-        stage._githubErrorMessage = err && err.message ? err.message : "GitHub request failed";
+        stage._githubErrorMessage = githubIssueFetchErrorMessage(err);
         delete stage._githubQuoteHtml;
         replaceStageCardEl(s.capId, stage);
       });
