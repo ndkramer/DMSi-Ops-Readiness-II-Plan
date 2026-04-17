@@ -37,6 +37,10 @@ Optional **variable** (defaults to `us-east-1` if unset):
 
 The IAM user/role must have at least: `lambda:UpdateFunctionCode`, `lambda:GetFunction`.
 
+**Canonical repo:** `https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS`. If you clone from a new URL or the project moved orgs, **re-create** these secrets and variables on that repository — GitHub does not copy them automatically. After secrets exist, run **Actions → Deploy Capability Map to Lambda → Run workflow** to confirm Lambda deploy succeeds.
+
+**Superseded remote:** If a prior repo (e.g. under a personal account) is retired, **archive** it on GitHub and set the description to “Moved to `https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS`”. Update **Confluence** iframes, bookmarks, and any saved clone URLs to the canonical repo.
+
 ## When deployments run
 
 - **Automatic:** Push to `main` that changes files under `Capability-map/` included in the deploy zip (see workflow) or the workflow file itself.
