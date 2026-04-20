@@ -2,56 +2,56 @@
   "lastUpdated": "Apr 20, 2026",
   "summary": {
     "headline": "Sprint 5 is active (Apr 13 – Apr 27, 2026).",
-    "narrative": "Sprint 5 focus: Pipeline Automation begins the Nginx Reference Pipeline POC (#14), Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry (#49), expands Dynatrace agents into STL servers (#50), and validates PagerDuty AIOps rollout features (#51). Work Management advances M2 (#38) to firm up the prioritized 360 pull queue. Workstreams B, C, and D continue planning behind these execution threads."
+    "narrative": "Sprint 5 focus: Pipeline Automation begins the Nginx Reference Pipeline POC, Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry, expands Dynatrace agents into STL servers, and validates PagerDuty AIOps rollout features. Work Management advances M2 to firm up the prioritized 360 pull queue. Workstreams B, C, and D continue planning behind these execution threads."
   },
   "recentlyCompleted": [
     {
-      "stage": "#39",
+      "stage": "",
       "title": "ScoreCard Data Validation",
       "date": "Sprint 4 (Apr 13, 2026)",
       "capability": "Strategic Visibility"
     },
     {
-      "stage": "#41",
-      "title": "360 Access Blocked",
+      "stage": "",
+      "title": "360 Access Unblocked",
       "date": "Sprint 4 (Apr 13, 2026)",
       "capability": "Work Management"
     },
     {
-      "stage": "#21",
-      "title": "Select Terraform or CloudFormation for IaC",
+      "stage": "PA S1",
+      "title": "Selected Terraform / CloudFormation for IaC",
       "date": "Sprint 4 (Apr 13, 2026)",
       "capability": "Pipeline Automation"
     }
   ],
   "comingNext": [
     {
-      "stage": "#14",
+      "stage": "PA S2",
       "title": "Phase 1 POC – Nginx Reference Pipeline",
       "date": "Sprint 5 focus (Apr 13 – Apr 27)",
       "capability": "Pipeline Automation"
     },
     {
-      "stage": "#49",
+      "stage": "VI",
       "title": "Open Telemetry setup for Dynatrace POC",
       "date": "Sprint 5 focus (Apr 13 – Apr 27)",
       "capability": "Visibility Infrastructure"
     },
     {
-      "stage": "#50",
+      "stage": "VI",
       "title": "Deploy Dynatrace agents to additional STL servers",
       "date": "Sprint 5 focus (Apr 13 – Apr 27)",
       "capability": "Visibility Infrastructure"
     },
     {
-      "stage": "#51",
+      "stage": "VI",
       "title": "PagerDuty – validate AIOps rollout features",
       "date": "Sprint 5 focus (Apr 13 – Apr 27)",
       "capability": "Visibility Infrastructure"
     },
     {
-      "stage": "#38",
-      "title": "Work Management M2 – prioritized 360 pull queue",
+      "stage": "WM M2",
+      "title": "Prioritized 360 Pull Queue",
       "date": "Sprint 5 focus (Apr 13 – Apr 27)",
       "capability": "Work Management"
     }
