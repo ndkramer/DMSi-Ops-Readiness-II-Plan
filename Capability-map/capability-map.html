@@ -839,6 +839,9 @@
   .milestone-detail .md-cap { color: var(--text-muted); font-weight: 600; font-size: 10.5px; margin-left: 4px; }
   .milestone-detail .md-outcome { margin-top: 8px; }
   .milestone-detail .md-outcome b { font-weight: 700; color: var(--text); }
+  .milestone-detail p { margin: 0 0 8px; }
+  .milestone-detail p:last-child { margin-bottom: 0; }
+  .milestone-detail b { font-weight: 700; color: var(--text); }
 
   /* Recent / Upcoming lists */
   .activity-list { display: flex; flex-direction: column; gap: 7px; }
@@ -1006,25 +1009,25 @@
       <div class="summary-headline" id="summaryHeadline">Loading...</div>
       <div class="summary-narrative" id="summaryNarrativeText"></div>
 
-      <div class="summary-explainer">
-        <p style="margin-top:1.2em;"><b>M2 Work Management Deliverables Update</b></p>
-
-        <p><b>360 work completed.</b> New case fields are live (work type, impact classification, product, category, accepted date) and the score calculation works when required fields are populated (Luke verified via a new case). Fields are currently visible only to Cameron, Luke, and Tom.</p>
-
-        <p><b>Next steps.</b> Cameron is following up with Tom on (a) the status of the score calculation and what it takes to surface the score in list views and (b) the best path to change the default engineer view. Cameron is setting a session with Luke and Andy next week to agree on the minimum rollout, field placement, whether fields should be required, and Andy's tolerances. After the Andy session, Cameron will document the launch plan and share it with Luke for engagement and training planning.</p>
-
-        <p><b>Potential 360 updates to resolve before broad rollout.</b> Score does not yet display in case list views; the list still sorts by priority (and priority-backward in some views), not by score; the new fields sit below the fold on the case form, which Luke flagged as a zero-adoption risk; the Product field defaults to "technical services" instead of core products; the category does not yet include a "progress database" subcategory needed to filter out the 50% of work Andy's team owns; work type and impact classification are not required, so cases can flow through unscored; the engineer's default view ("my cases" at top, backlog secondary, sorted by score) is a special two-part view that Tom needs to build or promote.</p>
-      </div>
+      <div class="summary-section-label" style="margin-top: 24px;">Milestone Progress</div>
+      <div class="milestone-list" id="milestonePills"></div>
 
       <button class="sprint-detail-btn" onclick="openSprintModal()" style="display:none;">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         Sprint Detail
       </button>
     </div>
-    <!-- Col 2: Milestones -->
+    <!-- Col 2: Active milestone detail cards -->
     <div class="summary-section">
-      <div class="summary-section-label">Milestone Progress</div>
-      <div class="milestone-list" id="milestonePills"></div>
+      <div class="summary-section-label">Active Milestones</div>
+
+      <div class="milestone-detail" id="milestoneDetailM2">
+        <div class="md-title">M2: Establish the Structure (Update)</div>
+        <div class="md-target">Target: March 28, 2026</div>
+        <p><b>360 work completed.</b> New case fields are live (work type, impact classification, product, category, accepted date) and the score calculation works when required fields are populated (Luke verified via a new case). Fields are currently visible only to Cameron, Luke, and Tom.</p>
+        <p><b>Next steps.</b> Cameron is following up with Tom on (a) the status of the score calculation and what it takes to surface the score in list views and (b) the best path to change the default engineer view. Cameron is setting a session with Luke and Andy next week to agree on the minimum rollout, field placement, whether fields should be required, and Andy's tolerances. After the Andy session, Cameron will document the launch plan and share it with Luke for engagement and training planning.</p>
+        <p><b>Potential 360 updates to resolve before broad rollout.</b> Score does not yet display in case list views; the list still sorts by priority (and priority-backward in some views), not by score; the new fields sit below the fold on the case form, which Luke flagged as a zero-adoption risk; the Product field defaults to "technical services" instead of core products; the category does not yet include a "progress database" subcategory needed to filter out the 50% of work Andy's team owns; work type and impact classification are not required, so cases can flow through unscored; the engineer's default view ("my cases" at top, backlog secondary, sorted by score) is a special two-part view that Tom needs to build or promote.</p>
+      </div>
 
       <div class="milestone-detail" id="milestoneDetailM3">
         <div class="md-title">M3 — Build the Foundation</div>
