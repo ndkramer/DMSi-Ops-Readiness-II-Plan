@@ -935,21 +935,28 @@
 <!-- ── Summary Panel ── -->
 <div class="summary-panel" id="summaryPanel">
   <div class="summary-panel-inner">
-    <!-- Col 1: Narrative -->
+    <!-- Col 1: Sprint narrative + Recent + Active Development -->
     <div class="summary-section" id="summaryNarrative">
       <div class="summary-section-label">Status Summary</div>
       <div class="summary-headline" id="summaryHeadline">Loading...</div>
       <div class="summary-narrative" id="summaryNarrativeText"></div>
 
-      <div class="summary-section-label" style="margin-top: 24px;">Milestone Progress</div>
-      <div class="milestone-list" id="milestonePills"></div>
+      <div class="summary-section-label" style="margin-top:24px; margin-bottom:6px;">Recently Completed</div>
+      <div class="activity-list" id="recentList" style="margin-bottom:14px;"></div>
+      <div class="summary-section-label" style="margin-bottom:6px;">Active Development</div>
+      <div class="activity-list" id="upcomingList"></div>
 
       <button class="sprint-detail-btn" onclick="openSprintModal()" style="display:none;">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         Sprint Detail
       </button>
     </div>
-    <!-- Col 2: Active milestone detail cards -->
+    <!-- Col 2: Milestone Progress pills -->
+    <div class="summary-section">
+      <div class="summary-section-label">Milestone Progress</div>
+      <div class="milestone-list" id="milestonePills"></div>
+    </div>
+    <!-- Col 3: Active milestone detail cards -->
     <div class="summary-section">
       <div class="summary-section-label">Active Milestones</div>
 
@@ -987,13 +994,6 @@
         </ul>
         <p class="md-outcome"><b>Outcome:</b> Top 10 DMSi customers start to experience differentiated service. DMSi leadership has actionable dashboards visualizing engineering and customer support health. The technical foundation for reliable configuration deployment is in place. Observability design for A2W is complete and ready for deployment. TierPoint evaluation identifies potential cost reduction, targeting 10% minimum (~$1M/year) or equivalent reduction in duplicated internal work. Data-supported evidence for how Frameworks can drive growth beyond building materials, and where to focus.</p>
       </div>
-    </div>
-    <!-- Col 3: Recent + Upcoming -->
-    <div class="summary-section">
-      <div class="summary-section-label" style="margin-bottom:6px;">Recently Completed</div>
-      <div class="activity-list" id="recentList" style="margin-bottom:14px;"></div>
-      <div class="summary-section-label" style="margin-bottom:6px;">Coming Next</div>
-      <div class="activity-list" id="upcomingList"></div>
     </div>
   </div>
 </div>
