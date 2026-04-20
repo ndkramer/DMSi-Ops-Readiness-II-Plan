@@ -799,6 +799,9 @@
   .summary-narrative {
     font-size: 12px; color: var(--text-dim); line-height: 1.6;
   }
+  .summary-narrative .sn-intro { margin: 0 0 6px; }
+  .summary-narrative .sn-bullets { list-style: disc; padding-left: 18px; margin: 0; }
+  .summary-narrative .sn-bullets li { margin-bottom: 3px; }
   .summary-explainer {
     margin-top: 5.5em;
     font-size: 12px; color: var(--text-dim); line-height: 1.6;
@@ -2795,7 +2798,16 @@ var EMBEDDED_STATE = {
   "lastUpdated": "Apr 20, 2026",
   "summary": {
     "headline": "Sprint 5 is active (Apr 13 – Apr 27, 2026).",
-    "narrative": "Sprint 5 focus: Pipeline Automation begins the Nginx Reference Pipeline POC, Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry, expands Dynatrace agents into STL servers, and validates PagerDuty AIOps rollout features. Work Management advances M2 to firm up the prioritized 360 pull queue. Workstreams B, C, and D continue planning behind these execution threads."
+    "narrative": "Sprint 5 focus: Pipeline Automation begins the Nginx Reference Pipeline POC, Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry, expands Dynatrace agents into STL servers, and validates PagerDuty AIOps rollout features. Work Management advances M2 to firm up the prioritized 360 pull queue. Workstreams B, C, and D continue planning behind these execution threads.",
+    "narrativeIntro": "Sprint 5 focus:",
+    "narrativeBullets": [
+      "Pipeline Automation begins the Nginx Reference Pipeline POC",
+      "Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry",
+      "Visibility Infrastructure expands Dynatrace agents into STL servers",
+      "Visibility Infrastructure validates PagerDuty AIOps rollout features",
+      "Work Management advances M2 to firm up the prioritized 360 pull queue",
+      "Workstreams B, C, and D continue planning behind these execution threads"
+    ]
   },
   "recentlyCompleted": [
     {
@@ -3512,7 +3524,16 @@ function renderSummaryPanel(state) {
     const h = document.getElementById('summaryHeadline');
     const n = document.getElementById('summaryNarrativeText');
     if (h) h.textContent = state.summary.headline || '';
-    if (n) n.textContent = state.summary.narrative || '';
+    if (n) {
+      const bullets = Array.isArray(state.summary.narrativeBullets) ? state.summary.narrativeBullets : [];
+      if (bullets.length > 0) {
+        const introHtml = state.summary.narrativeIntro ? `<p class="sn-intro">${escapeHtml(state.summary.narrativeIntro)}</p>` : '';
+        const itemsHtml = bullets.map(b => `<li>${escapeHtml(String(b))}</li>`).join('');
+        n.innerHTML = `${introHtml}<ul class="sn-bullets">${itemsHtml}</ul>`;
+      } else {
+        n.textContent = state.summary.narrative || '';
+      }
+    }
   }
 
   // Milestones

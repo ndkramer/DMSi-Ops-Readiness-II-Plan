@@ -2,7 +2,16 @@
   "lastUpdated": "Apr 20, 2026",
   "summary": {
     "headline": "Sprint 5 is active (Apr 13 – Apr 27, 2026).",
-    "narrative": "Sprint 5 focus: Pipeline Automation begins the Nginx Reference Pipeline POC, Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry, expands Dynatrace agents into STL servers, and validates PagerDuty AIOps rollout features. Work Management advances M2 to firm up the prioritized 360 pull queue. Workstreams B, C, and D continue planning behind these execution threads."
+    "narrative": "Sprint 5 focus: Pipeline Automation begins the Nginx Reference Pipeline POC, Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry, expands Dynatrace agents into STL servers, and validates PagerDuty AIOps rollout features. Work Management advances M2 to firm up the prioritized 360 pull queue. Workstreams B, C, and D continue planning behind these execution threads.",
+    "narrativeIntro": "Sprint 5 focus:",
+    "narrativeBullets": [
+      "Pipeline Automation begins the Nginx Reference Pipeline POC",
+      "Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry",
+      "Visibility Infrastructure expands Dynatrace agents into STL servers",
+      "Visibility Infrastructure validates PagerDuty AIOps rollout features",
+      "Work Management advances M2 to firm up the prioritized 360 pull queue",
+      "Workstreams B, C, and D continue planning behind these execution threads"
+    ]
   },
   "recentlyCompleted": [
     {
