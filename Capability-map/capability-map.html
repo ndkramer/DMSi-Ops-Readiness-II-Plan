@@ -2512,7 +2512,8 @@ function githubMilestoneMarkerHtml(githubMilestoneTitle) {
       ? "&#10003;"
       : escapeHtml(meta && meta.id ? meta.id : raw);
   const tip = meta && meta.label ? `${meta.id}: ${meta.label}` : raw;
-  return ` <span class="milestone-pill milestone-pill-inline ${cls}" title="${escapeHtml(tip)}"><span class="m-badge">${badgeInner}</span></span>`;
+  const dataAttr = meta && meta.id ? ` data-milestone-id="${escapeHtml(String(meta.id).toLowerCase())}"` : "";
+  return ` <span class="milestone-pill milestone-pill-inline ${cls}"${dataAttr} title="${escapeHtml(tip)}"><span class="m-badge">${badgeInner}</span></span>`;
 }
 
 function makeStageCard(stage, capId, idx, theme) {
