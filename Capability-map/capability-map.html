@@ -2744,11 +2744,63 @@ function toggleEl(id) {
 /* ═══════════════════════════════ */
 
 var EMBEDDED_STATE = {
-  "lastUpdated": "Apr 16, 2026",
+  "lastUpdated": "Apr 20, 2026",
   "summary": {
-    "headline": "Sprint 4 is active across all workstreams.",
-    "narrative": "Work Management and Visibility Infrastructure remain on track. Pipeline Automation moves from discovery into design and feasibility. Proactive Detection continues integration and baseline stability work. Workstreams B, C, and D advance planning; timelines stay tied to tooling and platform decisions."
+    "headline": "Sprint 5 is active (Apr 13 – Apr 27, 2026).",
+    "narrative": "Sprint 5 focus: Pipeline Automation begins the Nginx Reference Pipeline POC (#14), Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry (#49), expands Dynatrace agents into STL servers (#50), and validates PagerDuty AIOps rollout features (#51). Work Management advances M2 (#38) to firm up the prioritized 360 pull queue. Workstreams B, C, and D continue planning behind these execution threads."
   },
+  "recentlyCompleted": [
+    {
+      "stage": "#39",
+      "title": "ScoreCard Data Validation",
+      "date": "Sprint 4 (Apr 13, 2026)",
+      "capability": "Strategic Visibility"
+    },
+    {
+      "stage": "#41",
+      "title": "360 Access Blocked",
+      "date": "Sprint 4 (Apr 13, 2026)",
+      "capability": "Work Management"
+    },
+    {
+      "stage": "#21",
+      "title": "Select Terraform or CloudFormation for IaC",
+      "date": "Sprint 4 (Apr 13, 2026)",
+      "capability": "Pipeline Automation"
+    }
+  ],
+  "comingNext": [
+    {
+      "stage": "#14",
+      "title": "Phase 1 POC – Nginx Reference Pipeline",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Pipeline Automation"
+    },
+    {
+      "stage": "#49",
+      "title": "Open Telemetry setup for Dynatrace POC",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Visibility Infrastructure"
+    },
+    {
+      "stage": "#50",
+      "title": "Deploy Dynatrace agents to additional STL servers",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Visibility Infrastructure"
+    },
+    {
+      "stage": "#51",
+      "title": "PagerDuty – validate AIOps rollout features",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Visibility Infrastructure"
+    },
+    {
+      "stage": "#38",
+      "title": "Work Management M2 – prioritized 360 pull queue",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Work Management"
+    }
+  ],
   "milestones": [
     {
       "id": "M2",
@@ -3038,7 +3090,17 @@ var EMBEDDED_STATE = {
       "num": 2,
       "status": "not-started",
       "artifactsUrl": "#",
-      "blockers": [],
+      "blockers": [
+        {
+          "text": "AWS Account Access and Permissions",
+          "stalledBlocked": {
+            "repo": "DynamoLLC-Hub/dynamo-toolbox",
+            "issue": 44
+          },
+          "url": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/44",
+          "secondaryUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/44"
+        }
+      ],
       "targetStart": "Mar 30, 2026",
       "targetEnd": "May 29, 2026",
       "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/61"
@@ -3839,8 +3901,8 @@ window.addEventListener('resize', function () { equalizeCapCards(); equalizeBCCa
   <div class="sprint-modal">
     <div class="sprint-modal-header">
       <div>
-        <h2>Sprint 4 &mdash; DMSi Operational Readiness</h2>
-        <div class="sprint-meta">Program: Operational Readiness &nbsp;&middot;&nbsp; Mar 30 &ndash; Apr 13, 2026</div>
+        <h2>Sprint 5 &mdash; DMSi Operational Readiness</h2>
+        <div class="sprint-meta">Program: Operational Readiness &nbsp;&middot;&nbsp; Apr 13 &ndash; Apr 27, 2026</div>
       </div>
       <button class="sprint-modal-close" onclick="closeSprintModal()">&#x2715;</button>
     </div>
@@ -3848,11 +3910,17 @@ window.addEventListener('resize', function () { equalizeCapCards(); equalizeBCCa
 
       <div class="sprint-section-label">Sprint Context</div>
       <p class="sprint-narrative">
-        Sprint 4 builds on Sprint 3 integration and decision momentum toward
-        <strong>execution, stabilization, and clearer measures of progress.</strong>
+        Sprint 5 carries Sprint 4's discovery and decisions into
+        <strong>visible execution: a working Nginx pipeline POC, a live Dynatrace POC, broader Dynatrace coverage, validated PagerDuty AIOps features, and a prioritized 360 pull queue.</strong>
         All work aligns with the North Star: <em>efficiency and reliability to support DMSi's growth.</em>
-        Dynatrace and broader tool rationalization remain the largest cross-cutting decisions; teams continue to
-        prioritize work that does not block on those outcomes so momentum stays visible each sprint.
+        Dynatrace and broader tool rationalization remain the largest cross-cutting decisions; this sprint stands up the proof points that make those decisions concrete.
+        <br><br>
+        <strong>Highlighted issues this sprint:</strong>
+        <a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/14" target="_blank" rel="noopener">#14</a>,
+        <a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/49" target="_blank" rel="noopener">#49</a>,
+        <a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/50" target="_blank" rel="noopener">#50</a>,
+        <a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/51" target="_blank" rel="noopener">#51</a>,
+        <a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/38" target="_blank" rel="noopener">#38</a>.
       </p>
 
       <div class="sprint-section-label" style="margin-bottom:10px;">This Sprint's Interactions</div>
@@ -3865,16 +3933,16 @@ window.addEventListener('resize', function () { equalizeCapCards(); equalizeBCCa
           </tr>
         </thead>
         <tbody>
-          <tr><td>PagerDuty AIOps Integration</td><td>Focus on PagerDuty AIOps rollout and monitoring optimization to enhance incident management and reduce alert noise.</td><td>Dustin, Tom, Jack</td></tr>
-          <tr><td>NGINX Pipeline Discovery</td><td>Map existing NGINX pipeline automation and establish configuration management patterns for future workflows.</td><td>Rex</td></tr>
-          <tr><td>Tool Rationalization Prep</td><td>Executive decision package: cost analysis, tool rationalization, transition planning.</td><td>Brent</td></tr>
-          <tr><td>CheckMK Documentation</td><td>Script reduction and optimization to reduce alert noise during transition.</td><td>Rex, Dustin, Tom</td></tr>
-          <tr><td>Engineering Scorecard</td><td>Prioritize actionable metrics for a scorecard to assess operational effectiveness and cultural health. Conduct a gap analysis against current collection capability.</td><td>Andy, Bryan, Engineering team</td></tr>
-          <tr><td>Engineering Work Management</td><td>Establishing design principles and process wireframes for planned work prioritization, assignment, and tracking.</td><td>Andy</td></tr>
+          <tr><td>Nginx Reference Pipeline POC (<a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/14" target="_blank" rel="noopener">#14</a>)</td><td>Build the Phase 1 Nginx reference pipeline end-to-end: AWS VPC, self-hosted runner, validation + deployment workflows, full PR-to-deploy cycle to Tierpoint.</td><td>Cameron, Engineering team</td></tr>
+          <tr><td>Dynatrace POC – Open Telemetry (<a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/49" target="_blank" rel="noopener">#49</a>)</td><td>Stand up Open Telemetry instrumentation feeding the Dynatrace POC so signal quality can be evaluated against current tools.</td><td>Mike C.</td></tr>
+          <tr><td>Dynatrace agent expansion – STL (<a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/50" target="_blank" rel="noopener">#50</a>)</td><td>Deploy Dynatrace agents into additional STL servers to broaden POC coverage and pressure-test the rollout playbook.</td><td>Mike C.</td></tr>
+          <tr><td>PagerDuty AIOps validation (<a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/51" target="_blank" rel="noopener">#51</a>)</td><td>Verify which PagerDuty AIOps Phase 1 features have actually been rolled out (priority service, noise reduction) and capture what's still outstanding.</td><td>Mike C., Dustin, Tom</td></tr>
+          <tr><td>Work Management M2 – 360 pull queue (<a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/38" target="_blank" rel="noopener">#38</a>)</td><td>Move the prioritized 360 pull queue from concept toward a first surfaced version with a priority score, so engineering work intake is clearer in the short term.</td><td>Luke, Nick (with DMSi 360 team)</td></tr>
+          <tr><td>Engineering Scorecard – continuation</td><td>Continue Sprint 4 scorecard work: refine actionable metrics and close gaps surfaced by the data-validation review.</td><td>Andy, Bryan, Engineering team</td></tr>
         </tbody>
       </table>
 
-      <div class="sprint-section-label" style="margin-bottom:10px;">Sprint 4 Focus by Capability</div>
+      <div class="sprint-section-label" style="margin-bottom:10px;">Sprint 5 Focus by Capability</div>
       <table class="sprint-table" style="margin-bottom:24px;">
         <thead>
           <tr>
@@ -3885,24 +3953,24 @@ window.addEventListener('resize', function () { equalizeCapCards(); equalizeBCCa
         </thead>
         <tbody>
           <tr>
-            <td>WSA: Visibility Infrastructure</td>
-            <td>PagerDuty integration setup, incident workflow design, training coordination with DMSi team.</td>
-            <td><span class="target-badge">Integration active with incident workflows documented and team engaged</span></td>
-          </tr>
-          <tr>
             <td>WSA: Pipeline Automation</td>
-            <td>NGINX pipeline discovery and design phase: document requirements, constraints, and tooling options with Rex.</td>
-            <td><span class="target-badge">Pipeline design framework scoped and documented; GitHub Actions feasibility assessed</span></td>
+            <td>Phase 1 Proof of Concept: build the Nginx reference pipeline end-to-end (one runner deploys one Nginx config change to Tierpoint). Issue <a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/14" target="_blank" rel="noopener">#14</a>.</td>
+            <td><span class="target-badge">Working PR → validate → approve → deploy cycle demonstrated against a Tierpoint Nginx target</span></td>
           </tr>
           <tr>
             <td>WSA: Visibility Infrastructure</td>
-            <td>Foundation and plan alignment; consolidate existing analysis into executive decision package with cost comparison and transition plan. CheckMK script cleanup to stabilize current monitoring baseline.</td>
-            <td><span class="target-badge">Decision package ready; continued reduction of script overhead and alert noise</span></td>
+            <td>Stand up the Dynatrace POC with Open Telemetry instrumentation (<a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/49" target="_blank" rel="noopener">#49</a>) and expand Dynatrace agent coverage into additional STL servers (<a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/50" target="_blank" rel="noopener">#50</a>).</td>
+            <td><span class="target-badge">Dynatrace POC receiving OTel data; agent footprint expanded across STL hosts</span></td>
           </tr>
           <tr>
-            <td>WSD: Strategic Visibility</td>
-            <td>Define DORA metrics requirements, identify current collection gaps, propose initial scorecard framework.</td>
-            <td><span class="target-badge">Requirements defined, gap analysis complete, proposed scorecard for engineering review</span></td>
+            <td>WSA: Visibility Infrastructure</td>
+            <td>Validate which PagerDuty AIOps Phase 1 features are actually live versus pending; document what remains for Engineering. Issue <a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/51" target="_blank" rel="noopener">#51</a>.</td>
+            <td><span class="target-badge">Confirmed rollout state for AIOps features and a prioritized list of remaining items</span></td>
+          </tr>
+          <tr>
+            <td>WSA: Work Management</td>
+            <td>Advance M2 of Work Management: deliver a first surfaced version of the 360 pull queue with a priority score so work intake is clearer while we learn whether 360 stays the long-term home. Issue <a href="https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/38" target="_blank" rel="noopener">#38</a>.</td>
+            <td><span class="target-badge">Prioritized pull queue visible in 360 with priority scoring and learnings captured</span></td>
           </tr>
         </tbody>
       </table>

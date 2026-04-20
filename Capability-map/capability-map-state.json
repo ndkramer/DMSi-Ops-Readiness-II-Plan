@@ -1,9 +1,61 @@
 {
-  "lastUpdated": "Apr 16, 2026",
+  "lastUpdated": "Apr 20, 2026",
   "summary": {
-    "headline": "Sprint 4 is active across all workstreams.",
-    "narrative": "Work Management and Visibility Infrastructure remain on track. Pipeline Automation moves from discovery into design and feasibility. Proactive Detection continues integration and baseline stability work. Workstreams B, C, and D advance planning; timelines stay tied to tooling and platform decisions."
+    "headline": "Sprint 5 is active (Apr 13 – Apr 27, 2026).",
+    "narrative": "Sprint 5 focus: Pipeline Automation begins the Nginx Reference Pipeline POC (#14), Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry (#49), expands Dynatrace agents into STL servers (#50), and validates PagerDuty AIOps rollout features (#51). Work Management advances M2 (#38) to firm up the prioritized 360 pull queue. Workstreams B, C, and D continue planning behind these execution threads."
   },
+  "recentlyCompleted": [
+    {
+      "stage": "#39",
+      "title": "ScoreCard Data Validation",
+      "date": "Sprint 4 (Apr 13, 2026)",
+      "capability": "Strategic Visibility"
+    },
+    {
+      "stage": "#41",
+      "title": "360 Access Blocked",
+      "date": "Sprint 4 (Apr 13, 2026)",
+      "capability": "Work Management"
+    },
+    {
+      "stage": "#21",
+      "title": "Select Terraform or CloudFormation for IaC",
+      "date": "Sprint 4 (Apr 13, 2026)",
+      "capability": "Pipeline Automation"
+    }
+  ],
+  "comingNext": [
+    {
+      "stage": "#14",
+      "title": "Phase 1 POC – Nginx Reference Pipeline",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Pipeline Automation"
+    },
+    {
+      "stage": "#49",
+      "title": "Open Telemetry setup for Dynatrace POC",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Visibility Infrastructure"
+    },
+    {
+      "stage": "#50",
+      "title": "Deploy Dynatrace agents to additional STL servers",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Visibility Infrastructure"
+    },
+    {
+      "stage": "#51",
+      "title": "PagerDuty – validate AIOps rollout features",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Visibility Infrastructure"
+    },
+    {
+      "stage": "#38",
+      "title": "Work Management M2 – prioritized 360 pull queue",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Work Management"
+    }
+  ],
   "milestones": [
     {
       "id": "M2",
@@ -293,7 +345,17 @@
       "num": 2,
       "status": "not-started",
       "artifactsUrl": "#",
-      "blockers": [],
+      "blockers": [
+        {
+          "text": "AWS Account Access and Permissions",
+          "stalledBlocked": {
+            "repo": "DynamoLLC-Hub/dynamo-toolbox",
+            "issue": 44
+          },
+          "url": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/44",
+          "secondaryUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/44"
+        }
+      ],
       "targetStart": "Mar 30, 2026",
       "targetEnd": "May 29, 2026",
       "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/61"
