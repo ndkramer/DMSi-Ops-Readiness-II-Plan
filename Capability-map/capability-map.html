@@ -821,6 +821,8 @@
   .milestone-pill.m-done .m-badge { background: var(--status-done-bg); color: var(--status-done); }
   .milestone-pill.m-in-progress .m-badge { background: var(--status-progress-bg); color: var(--status-progress); }
   .milestone-pill.m-not-started .m-badge { background: var(--status-not-started-bg); color: var(--status-not-started); }
+  .milestone-pill[data-milestone-id="m2"] .m-badge { background: #d92d20; color: #fff; }
+  .milestone-pill[data-milestone-id="m3"] .m-badge { background: #15803d; color: #fff; }
   .milestone-pill .m-label { font-size: 12px; }
   .milestone-pill.m-in-progress .m-label { font-weight: 600; color: var(--text); }
   .milestone-pill.m-done .m-label { color: var(--status-done); }
@@ -1026,8 +1028,6 @@
     </div>
     <!-- Col 3: Active milestone detail cards -->
     <div class="summary-section">
-      <div class="summary-section-label">Active Milestones</div>
-
       <div class="milestone-detail" id="milestoneDetailM2">
         <div class="md-title">M2: Establish the Structure (Update)</div>
         <div class="md-target">Target: March 28, 2026</div>
@@ -3523,7 +3523,7 @@ function renderSummaryPanel(state) {
         const eff = normalizeCapabilityStatusToInternal(m.status) != null ? normalizeCapabilityStatusToInternal(m.status) : m.status;
         const cls = eff === 'done' ? 'm-done' : eff === 'in-progress' ? 'm-in-progress' : 'm-not-started';
         const badge = eff === 'done' ? '&#10003;' : m.id;
-        return `<div class="milestone-pill ${cls}">
+        return `<div class="milestone-pill ${cls}" data-milestone-id="${String(m.id || '').toLowerCase()}">
           <span class="m-badge">${badge}</span>
           <span class="m-label">${m.label}</span>
         </div>`;
