@@ -34,12 +34,13 @@ on:
       - 'Project-Plan/outcome-stall-overlay.json'
       - 'Project-Plan/github-stall-live.js'
       - 'Scripts/sync-outcome-stall-overlay.js'
-      - 'WSA/'
-      - 'WSB-WSC/WB/'
-      - 'WSB-WSC/'
+      - 'WSA/WM/**'
+      - 'WSA/VI/**'
+      - 'WSA/PA/**'
+      - 'WSB-WSC/WB/**'
+      - 'WSB-WSC/WSB-WSC-Outcome-Map.html'
       - 'WSB-WSC/wsb-wsc-outcome-dependencies.json'
       - 'WSB-WSC/dependency-sources.yml'
-      - 'WSA/PA/pa-outcomes.json'
       - '.github/workflows/deploy-capability-map.yml'
   workflow_dispatch:
 

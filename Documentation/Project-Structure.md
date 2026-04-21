@@ -2,7 +2,7 @@
 
 Snapshot of the **DMSI-OP-Readiness-OS** repository layout. Folders end with `/`.
 
-**Generated:** 2026-04-17
+**Generated:** 2026-04-21
 
 **Omitted from this listing**
 
@@ -29,33 +29,26 @@ DMSI-OP-Readiness-OS/
 ├── .github/
 │   └── workflows/
 │       └── deploy-capability-map.yml
+├── README.md
 ├── Capability-map/
 │   ├── archive/
-│   │   ├── capability-map-copy.html
-│   │   ├── capability-map-state.json
-│   │   └── index.mjs
-│   ├── Capability-map archive/
-│   │   ├── archive/
-│   │   │   ├── capability-map-state.json
-│   │   │   ├── capability-map.html
-│   │   │   └── index.mjs
-│   │   ├── capability-map-artifacts-dmsi.json
-│   │   ├── capability-map-dmsi.html
-│   │   ├── capability-map-state.json
-│   │   ├── capability-map.html
-│   │   ├── index.mjs
-│   │   ├── README-Lambda-Deploy.md
-│   │   ├── Sprint Calendar.csv
-│   │   └── sync-stage-dates-from-outcome-maps.js
-│   ├── .DS_Store
+│   │   ├── README.md
+│   │   └── legacy-2026-04-21/
+│   │       ├── README.md
+│   │       ├── capability-map-archive-duplicate/
+│   │       └── root-archive/
+│   ├── MOVED-Capability-map-archive.txt
+│   ├── README-Lambda-Deploy.md
 │   ├── capability-map-artifacts-dmsi.json
 │   ├── capability-map-dmsi.html
 │   ├── capability-map-state.json
 │   ├── capability-map.html
 │   ├── index.mjs
-│   ├── README-Lambda-Deploy.md
+│   ├── sync-capability-status-from-github.mjs
+│   ├── sync-dmsi-embedded-from-state.mjs
+│   ├── sync-stage-dates-from-outcome-maps.js
 │   ├── Sprint Calendar.csv
-│   └── sync-stage-dates-from-outcome-maps.js
+│   └── ...
 ├── Documentation/
 │   ├── Capacity-Map-Target-Date-Updates.md
 │   ├── dynamo_os_architecture_v4.svg
@@ -93,8 +86,11 @@ DMSI-OP-Readiness-OS/
 │   ├── jira-import-wm.js
 │   ├── jira-kanban-status-from-export.js
 │   ├── jira-link-wm-action-items.js
+│   ├── sync-outcome-map-fallbacks.js
+│   ├── sync-outcome-stall-overlay.js
 │   ├── README.md
 │   ├── planning-path-context.js
+│   ├── validate-plan-artifacts.js
 │   ├── wbs-capability-folder.js
 │   ├── wbs-load-prep.js
 │   ├── wbs-load-report-counts.js

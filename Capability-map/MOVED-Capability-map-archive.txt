@@ -1,0 +1,1 @@
+The former folder "Capability-map archive" was consolidated into Capability-map/archive/legacy-2026-04-21/ (see archive/README.md). Update bookmarks to that path.

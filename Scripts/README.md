@@ -5,9 +5,28 @@
 The project root has **`dynamo-os.config.cjs`** (capability `diskPath`, Jira roots, gantt paths) and **`package.json`** with **`devDependencies.dynamo-os-planning-toolkit`** (`file:../dynamo-os/planning-toolkit` — adjust if your clone layout differs). After **`npm install`** at the repo root:
 
 ```bash
+npm run validate
 npm run plan:validate
 npm run plan:paths
 ```
+
+**`npm run validate`** runs config validation and **`Scripts/validate-plan-artifacts.js`** (JSON checks on key planning files). Other **`npm run plan:*`** scripts wrap **`dynamo-plan`** subcommands; pass arguments after `--`, e.g. `npm run plan:wbs:prep -- PA`.
+
+| Script | CLI equivalent |
+|--------|----------------|
+| `plan:gantt` | `dynamo-plan gantt build` |
+| `plan:gantt:inline` | `dynamo-plan gantt build --inline` |
+| `plan:capability-map:sync-dates` | `dynamo-plan capability-map sync-dates` |
+| `plan:wbs:prep` | `dynamo-plan wbs prep <CAP>` |
+| `plan:wbs:archive-input` | `dynamo-plan wbs archive-input <CAP> <dateStamp>` |
+| `plan:wbs:report-counts` | `dynamo-plan wbs report-counts <CAP> <dateStamp>` |
+| `plan:jira:export` | `dynamo-plan jira export …` |
+| `plan:jira:kanban-rebuild` | `dynamo-plan jira kanban-rebuild [CAP]` |
+| `plan:jira:delete-under-root` | `dynamo-plan jira delete-under-root …` |
+| `plan:jira:delete-tree` | `dynamo-plan jira delete-tree …` |
+| `plan:jira:import-wm` | `dynamo-plan jira import-wm …` |
+| `plan:jira:link-wm-action-items` | `dynamo-plan jira link-wm-action-items …` |
+| `plan:paths:resolve` | `dynamo-plan paths resolve <CAP>` |
 
 Or invoke the CLI directly:
 
@@ -16,6 +35,8 @@ node ../dynamo-os/planning-toolkit/bin/cli.js config validate
 ```
 
 After `npm link` in `dynamo-os/planning-toolkit`, **`dynamo-plan`** is on your PATH as well.
+
+**Legacy wrappers** (`Scripts/wbs-load-prep.js`, `jira-export-pa.js`, etc.) still forward to the same CLI; prefer **`npm run plan:*`** so there is one documented entry point.
 
 ---
 

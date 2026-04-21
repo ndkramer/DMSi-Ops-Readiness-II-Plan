@@ -6,7 +6,7 @@ This folder contains the **Capability Map** HTML and the Lambda handler that ser
 
 - **`capability-map.html`** – Single-page capability map (no local script/CSS dependencies).
 - **`capability-map-dmsi.html`** – Same app; loads DMSi artifact URL overrides from `capability-map-artifacts-dmsi.json` (or use `capability-map.html?artifacts=dmsi`).
-- **`capability-map-artifacts-dmsi.json`** – Sparse list of `{ "capabilityId", "num", "artifactsUrl" }` under `overrides`; shared state remains in `capability-map-state.json`. **Only the copy under `Capability-map/` is deployed** (not `Capability-map archive/`). After editing URLs in the archive copy, copy that file here before deploy so Lambda gets the real links, not `PASTE_DMSI_URL` placeholders.
+- **`capability-map-artifacts-dmsi.json`** – Sparse list of `{ "capabilityId", "num", "artifactsUrl" }` under `overrides`; shared state remains in `capability-map-state.json`. **Only the copy in this folder** (repo root of the capability map) **is deployed** — not files under [`archive/`](archive/README.md). After experimenting in a snapshot under `archive/`, copy the file here before deploy so Lambda gets the real links, not `PASTE_DMSI_URL` placeholders.
 - **`index.mjs`** – Node.js Lambda handler (ESM). Serves the HTML at `/` and supports Lambda Function URL `rawPath`-style routing. **Canonical source:** `dynamo-os/planning-toolkit/lambda/static-handler/index.mjs` (copy here when updating). Default root file is **`capability-map.html`**; override with Lambda env **`LAMBDA_INDEX`** (e.g. `index.html` for other sites).
 
 Deployments are done by the GitHub Actions workflow [Deploy Capability Map to Lambda](../.github/workflows/deploy-capability-map.yml).
