@@ -1,0 +1,4069 @@
+<!DOCTYPE html>
+<!-- archive snapshot -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMSi Operational Readiness II - Capability Map</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-primary: #7cb342;
+    --green-dark: #558b2f;
+    --green-light: #f1f8e9;
+    --green-banner: #689f38;
+    --blue-primary: #3949ab;
+    --blue-dark: #1a237e;
+    --blue-light: #e8eaf6;
+    --blue-banner: #303f9f;
+    --gold-primary: #f9a825;
+    --gold-dark: #f57f17;
+    --gold-light: #fffde7;
+    --gold-banner: #f57f17;
+    --purple-primary: #7b1fa2;
+    --purple-dark: #4a148c;
+    --purple-light: #f3e5f5;
+    --purple-banner: #6a1b9a;
+    --orange-primary: #ef6c00;
+    --orange-dark: #e65100;
+    --orange-light: #fff3e0;
+    --orange-banner: #e65100;
+    --violet-primary: #5c6bc0;
+    --violet-dark: #3949ab;
+    --violet-light: #e8eaf6;
+    --violet-banner: #3949ab;
+    --slate-primary: #607D7A;
+    --slate-dark: #4A6360;
+    --slate-light: #ECF0EF;
+    --slate-banner: #4D655F;
+    --teal-primary: #26a69a;
+    --teal-dark: #00796b;
+    --teal-light: #e0f2f1;
+    --teal-banner: #00897b;
+    --status-done: #2e7d32;
+    --status-done-bg: #e8f5e9;
+    --status-progress: #f57f17;
+    --status-progress-bg: #fff8e1;
+    --status-not-started: #9e9e9e;
+    --status-not-started-bg: #fafafa;
+    --status-not-started-border: #e0e0e0;
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --text: #1a1a1a;
+    --text-dim: #4a4a4a;
+    --text-muted: #888;
+    --border: #e0e0e0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.1);
+    --radius: 12px;
+    --connector-color: #bdbdbd;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'Source Sans 3', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── Top bar ── */
+  .top-bar {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .top-bar-inner {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .top-bar h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .top-bar .subtitle { font-size: 13px; color: var(--text-muted); }
+
+  .progress-section { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .progress-group { display: flex; align-items: center; gap: 8px; }
+  .progress-group-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .progress-track { display: flex; gap: 3px; }
+
+  .progress-dot {
+    width: 22px; height: 7px; border-radius: 4px;
+    background: var(--status-not-started-border);
+    cursor: pointer; transition: all 0.2s ease; position: relative;
+  }
+  .progress-dot:hover { transform: scaleY(1.5); }
+  .progress-dot.done { background: var(--status-done); }
+  .progress-dot.in-progress { background: var(--status-progress); }
+
+  .progress-dot .dot-tooltip {
+    display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+    transform: translateX(-50%); background: var(--text); color: #fff;
+    font-size: 11px; padding: 4px 8px; border-radius: 4px; white-space: nowrap; pointer-events: none; z-index: 10;
+  }
+  .progress-dot:hover .dot-tooltip { display: block; }
+
+  /* ── Main two-column layout ── */
+  .main {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 28px 32px 80px;
+  }
+
+  .legend {
+    display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  .capabilities-row {
+    display: flex;
+    gap: 56px;
+    align-items: flex-start;
+  }
+
+  .capability-column {
+    flex: 0 0 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* ── Capability card ── */
+  .cap-card {
+    background: var(--bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .cap-card.theme-green { border: 2px solid var(--green-primary); }
+  .cap-card.theme-blue { border: 2px solid var(--blue-primary); }
+  .cap-card.theme-teal { border: 2px solid var(--teal-primary); }
+  .cap-card.theme-gold { border: 2px solid var(--gold-primary); }
+  .cap-card.theme-purple { border: 2px solid var(--purple-primary); }
+  .cap-card.theme-orange { border: 2px solid var(--orange-primary); }
+  .cap-card.theme-violet { border: 2px solid var(--violet-primary); }
+  .cap-card.theme-slate { border: 2px solid var(--slate-primary); }
+
+  .cap-card .cap-card-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .cap-card.expanded .cap-card-body {
+    max-height: 500px;
+  }
+
+  /* Force same collapsed height for cap cards */
+  .cap-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; cursor: pointer; user-select: none; transition: background 0.15s;
+    min-height: 60px;
+  }
+
+  .theme-green .cap-card-header:hover { background: var(--green-light); }
+  .theme-blue .cap-card-header:hover { background: var(--blue-light); }
+  .theme-teal .cap-card-header:hover { background: var(--teal-light); }
+  .theme-gold .cap-card-header:hover { background: var(--gold-light); }
+  .theme-purple .cap-card-header:hover { background: var(--purple-light); }
+  .theme-orange .cap-card-header:hover { background: var(--orange-light); }
+  .theme-violet .cap-card-header:hover { background: var(--violet-light); }
+  .theme-slate .cap-card-header:hover { background: var(--slate-light); }
+
+  .cap-card-header h2 {
+    font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 10px;
+  }
+
+  .cap-card-header h2 .cap-icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; flex-shrink: 0;
+  }
+
+  .theme-green .cap-icon { background: var(--green-primary); }
+  .theme-blue .cap-icon { background: var(--blue-primary); }
+  .theme-teal .cap-icon { background: var(--teal-primary); }
+  .theme-gold .cap-icon { background: var(--gold-primary); }
+  .theme-purple .cap-icon { background: var(--purple-primary); }
+  .theme-orange .cap-icon { background: var(--orange-primary); }
+  .theme-violet .cap-icon { background: var(--violet-primary); }
+  .theme-slate .cap-icon { background: var(--slate-primary); }
+
+  .confidence-label {
+    font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px;
+    letter-spacing: 0.4px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+  }
+  .confidence-label.discovery { background: #e5e7eb; color: #4b5563; }
+  .confidence-label.on-track { background: #d1fae5; color: #065f46; }
+  .confidence-label.at-risk { background: #fef3c7; color: #92400e; }
+  .confidence-label.behind { background: #fee2e2; color: #991b1b; }
+
+  .cap-card-header .expand-icon {
+    font-size: 16px; color: var(--text-muted); transition: transform 0.3s ease; flex-shrink: 0;
+  }
+  .cap-card.expanded .cap-card-header .expand-icon { transform: rotate(180deg); }
+
+  .cap-card-content { padding: 0 20px 40px; border-top: 1px solid var(--border); }
+  .cap-card-content p { font-size: 13px; line-height: 1.6; color: var(--text-dim); margin-top: 12px; }
+  .cap-card-content strong { color: var(--text); }
+
+  .future-state-tag {
+    display: inline-block; color: #fff;
+    font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+  }
+  .theme-green .future-state-tag { background: var(--green-banner); }
+  .theme-blue .future-state-tag { background: var(--blue-banner); }
+  .theme-teal .future-state-tag { background: var(--teal-banner); }
+  .theme-gold .future-state-tag { background: var(--gold-banner); }
+  .theme-purple .future-state-tag { background: var(--purple-banner); }
+  .theme-orange .future-state-tag { background: var(--orange-banner); }
+  .theme-violet .future-state-tag { background: var(--violet-banner); }
+  .theme-slate .future-state-tag { background: var(--slate-banner); }
+
+  /* ── Stages column ── */
+  .stages-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 0;
+  }
+
+  /* ── Connector ── */
+  .connector {
+    width: 2px; height: 28px; position: relative; display: flex; justify-content: center;
+  }
+
+  .connector-line {
+    width: 2px; height: 100%; background: var(--connector-color); transition: background 0.3s ease;
+  }
+  .connector-line.active { background: var(--green-primary); width: 2.5px; }
+  .connector-line.active-blue { background: var(--blue-primary); width: 2.5px; }
+  .connector-line.active-teal { background: var(--teal-primary); width: 2.5px; }
+  .connector-line.active-gold { background: var(--gold-primary); width: 2.5px; }
+  .connector-line.active-purple { background: var(--purple-primary); width: 2.5px; }
+  .connector-line.active-orange { background: var(--orange-primary); width: 2.5px; }
+  .connector-line.active-violet { background: var(--violet-primary); width: 2.5px; }
+  .connector-line.active-slate { background: var(--slate-primary); width: 2.5px; }
+
+  .connector-arrow {
+    position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent; border-right: 5px solid transparent;
+    border-bottom: 7px solid var(--connector-color);
+    transition: border-bottom-color 0.3s ease;
+  }
+  .connector-arrow.active { border-bottom-color: var(--green-primary); }
+  .connector-arrow.active-blue { border-bottom-color: var(--blue-primary); }
+  .connector-arrow.active-teal { border-bottom-color: var(--teal-primary); }
+  .connector-arrow.active-gold { border-bottom-color: var(--gold-primary); }
+  .connector-arrow.active-purple { border-bottom-color: var(--purple-primary); }
+  .connector-arrow.active-orange { border-bottom-color: var(--orange-primary); }
+  .connector-arrow.active-violet { border-bottom-color: var(--violet-primary); }
+  .connector-arrow.active-slate { border-bottom-color: var(--slate-primary); }
+
+  .connector-dot {
+    position: absolute; bottom: -3px; left: 50%; transform: translateX(-50%);
+    width: 5px; height: 5px; border-radius: 50%; background: var(--connector-color);
+    transition: background 0.3s ease;
+  }
+  .connector-dot.active { background: var(--green-primary); }
+  .connector-dot.active-blue { background: var(--blue-primary); }
+  .connector-dot.active-teal { background: var(--teal-primary); }
+  .connector-dot.active-gold { background: var(--gold-primary); }
+  .connector-dot.active-purple { background: var(--purple-primary); }
+  .connector-dot.active-orange { background: var(--orange-primary); }
+  .connector-dot.active-violet { background: var(--violet-primary); }
+  .connector-dot.active-slate { background: var(--slate-primary); }
+
+  /* ── Stage card ── */
+  .stage-card {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: visible;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+    cursor: pointer;
+    scroll-margin-top: 100px;
+    width: 100%;
+  }
+
+  .stage-card:hover { box-shadow: var(--shadow-md); }
+  .stage-card.expanded { box-shadow: var(--shadow-lg); }
+  .stage-card.status-done { border-left: 4px solid var(--status-done); }
+  .stage-card.status-in-progress { border-left: 4px solid var(--status-progress); }
+  .stage-card.status-not-started { border-left: 4px solid var(--status-not-started); }
+
+  .stage-header {
+    display: flex; align-items: center; gap: 10px; padding: 12px 14px; user-select: none;
+    min-height: 54px;
+  }
+
+  .stage-number {
+    font-size: 11px; font-weight: 700; color: #fff; width: 26px; height: 26px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .status-done .stage-number { background: var(--status-done); }
+  .status-in-progress .stage-number { background: var(--status-progress); }
+  .status-not-started .stage-number { background: var(--status-not-started); }
+
+  .stage-header-text { flex: 1; min-width: 0; }
+  .stage-header-text h3 {
+    font-size: 13px; font-weight: 700; line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .stage-status-badge {
+    font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 10px;
+    text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
+  }
+  .status-done .stage-status-badge { background: var(--status-done-bg); color: var(--status-done); }
+  .status-in-progress .stage-status-badge { background: var(--status-progress-bg); color: var(--status-progress); }
+  .status-not-started .stage-status-badge { background: var(--status-not-started-bg); color: var(--status-not-started); }
+
+  .stage-expand-icon {
+    font-size: 12px; color: var(--text-muted); transition: transform 0.3s ease; flex-shrink: 0;
+  }
+  .stage-card.expanded .stage-expand-icon { transform: rotate(180deg); }
+
+  .stage-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .stage-card.expanded .stage-body { max-height: 800px; }
+
+  .stage-body-content { padding: 0 14px 16px; border-top: 1px solid var(--border); }
+  .stage-body-content .stage-desc { font-size: 12.5px; line-height: 1.6; color: var(--text-dim); margin-top: 12px; }
+  .stage-github-status { opacity: 0.88; font-style: italic; }
+  .stage-github-error { font-size: 12px; line-height: 1.45; color: #b45309; margin: 8px 0; }
+  .stage-github-placeholder { opacity: 0.6; }
+
+  .stage-body-content .prereq-label {
+    font-size: 11px; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-top: 10px; margin-bottom: 6px;
+  }
+
+  .stage-body-content ul { list-style: none; padding: 0; margin-bottom: 10px; }
+
+  .stage-body-content ul li {
+    font-size: 12px; line-height: 1.5; color: var(--text-dim); padding: 3px 0 3px 16px; position: relative;
+  }
+
+  .stage-body-content ul li::before {
+    content: ''; position: absolute; left: 3px; top: 9px;
+    width: 5px; height: 5px; border-radius: 50%; opacity: 0.6;
+  }
+
+  .theme-green .stage-body-content ul li::before { background: var(--green-primary); }
+  .theme-blue .stage-body-content ul li::before { background: var(--blue-primary); }
+  .theme-teal .stage-body-content ul li::before { background: var(--teal-primary); }
+  .theme-gold .stage-body-content ul li::before { background: var(--gold-primary); }
+  .theme-purple .stage-body-content ul li::before { background: var(--purple-primary); }
+  .theme-orange .stage-body-content ul li::before { background: var(--orange-primary); }
+  .theme-violet .stage-body-content ul li::before { background: var(--violet-primary); }
+  .theme-slate .stage-body-content ul li::before { background: var(--slate-primary); }
+
+  /* Nested sub-bullets (prereq items with { main, sub } structure) */
+  .stage-body-content ul ul { margin: 6px 0 6px 16px; padding-left: 12px; }
+  .stage-body-content ul ul li::before { width: 4px; height: 4px; top: 10px; opacity: 0.5; }
+
+  .stage-body-content .without-this {
+    font-size: 12px; font-style: italic; font-weight: 600;
+    line-height: 1.5; padding: 10px 12px;
+    border-radius: 8px; border-left: 3px solid;
+  }
+
+  .theme-green .without-this { color: var(--green-dark); background: var(--green-light); border-left-color: var(--green-primary); }
+  .theme-blue .without-this { color: var(--blue-dark); background: var(--blue-light); border-left-color: var(--blue-primary); }
+  .theme-teal .without-this { color: var(--teal-dark); background: var(--teal-light); border-left-color: var(--teal-primary); }
+  .theme-gold .without-this { color: var(--gold-dark); background: var(--gold-light); border-left-color: var(--gold-primary); }
+  .theme-purple .without-this { color: var(--purple-dark); background: var(--purple-light); border-left-color: var(--purple-primary); }
+  .theme-orange .without-this { color: var(--orange-dark); background: var(--orange-light); border-left-color: var(--orange-primary); }
+  .theme-violet .without-this { color: var(--violet-dark); background: var(--violet-light); border-left-color: var(--violet-primary); }
+  .theme-slate .without-this { color: var(--slate-dark); background: var(--slate-light); border-left-color: var(--slate-primary); }
+
+  .bubble-callout {
+    margin-top: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 10px;
+    padding: 10px 12px; font-size: 12px; color: var(--text-dim); line-height: 1.5;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .bubble-callout .bubble-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .bubble-callout .bubble-title { font-weight: 700; color: var(--text); display: block; margin-bottom: 2px; font-size: 12px; }
+
+  /* GitHub issue <quote>…</quote> → gray callout (inner HTML sanitized; b/strong etc. allowed) */
+  .stage-quote-bubble {
+    margin-top: 12px;
+    background: #f5f5f5;
+    border: 1px solid #d4d4d4;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  .stage-quote-bubble + .stage-quote-bubble { margin-top: 8px; }
+  .stage-quote-icon-svg {
+    flex-shrink: 0;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+  .stage-quote-inner b,
+  .stage-quote-inner strong { font-weight: 700; color: var(--text); }
+  .stage-quote-inner p { margin: 0.35em 0; }
+  .stage-quote-inner p:first-child { margin-top: 0; }
+  .stage-quote-inner p:last-child { margin-bottom: 0; }
+  .without-this + .stage-quote-bubble { margin-top: 10px; }
+
+  .status-select { margin-top: 10px; display: flex; align-items: center; gap: 8px; }
+  .status-select label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .status-select select {
+    font-family: inherit; font-size: 11px; padding: 3px 6px;
+    border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); cursor: pointer;
+  }
+
+  /* ── Date range pill ── */
+  .stage-dates {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 10px; color: var(--text-muted);
+  }
+  .stage-dates svg { flex-shrink: 0; }
+  /* Inline milestone pill next to stage dates — same scheme as .milestone-list (colors from JSON status) */
+  .milestone-pill.milestone-pill-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 0.35em;
+    vertical-align: middle;
+    flex-wrap: wrap;
+    max-width: min(100%, 320px);
+  }
+  .milestone-pill.milestone-pill-inline .m-badge {
+    font-size: 9px;
+    min-width: 22px;
+    padding: 1px 5px;
+  }
+
+  .stage-info-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; margin-top: 2px;
+  }
+
+  .stage-dates-col {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  }
+
+  .sprint-indicator {
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; padding: 2px 6px;
+    border-radius: 4px; min-width: 24px; text-align: center;
+    border: 1px solid transparent;
+    cursor: default; position: relative;
+  }
+  .sprint-indicator.sprint-past {
+    background: #e5e7eb; color: #6b7280; border-color: #d1d5db;
+  }
+  .sprint-indicator.sprint-current {
+    background: #d1fae5; color: #065f46; border-color: #a7f3d0;
+  }
+  .sprint-indicator.sprint-future {
+    background: #fef9c3; color: #854d0e; border-color: #fde047;
+  }
+  .sprint-indicators-wrap {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+  }
+  .sprint-indicator-tooltip {
+    display: none; position: absolute; bottom: calc(100% + 6px); left: 0;
+    background: #1a1a1a; color: #fff;
+    font-size: 11px; font-weight: 400; padding: 6px 10px; border-radius: 6px;
+    white-space: nowrap; pointer-events: none; z-index: 20;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .sprint-indicator-tooltip::after {
+    content: ''; position: absolute; top: 100%; left: 8px;
+    border: 5px solid transparent; border-top-color: #1a1a1a;
+  }
+  .sprint-indicator:hover .sprint-indicator-tooltip { display: block; }
+
+  /* ── Blocker badge ── */
+  .stage-card { position: relative; }
+  .blocker-badge {
+    position: absolute; top: -10px; right: -10px; z-index: 5;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #dc2626; color: #fff;
+    font-size: 15px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    cursor: default; box-shadow: 0 2px 6px rgba(220,38,38,0.45);
+    border: 2.5px solid #fff;
+  }
+  .blocker-tooltip {
+    display: none; position: absolute; bottom: calc(100% + 8px); right: -4px;
+    background: #1a1a1a; color: #fff;
+    font-size: 11px; font-weight: 400; padding: 8px 12px; border-radius: 6px;
+    white-space: normal; width: 220px; line-height: 1.5;
+    pointer-events: none; z-index: 20; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .blocker-tooltip::after {
+    content: ''; position: absolute; top: 100%; right: 12px;
+    border: 5px solid transparent; border-top-color: #1a1a1a;
+  }
+  .blocker-badge:hover .blocker-tooltip { display: block; }
+  .blocker-badge.blocker-badge-link {
+    cursor: pointer;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  /* ── Blocker list in expanded body ── */
+  .blocker-section { margin-top: 10px; }
+  .blocker-section .blocker-label {
+    font-size: 11px; font-weight: 700; color: #dc2626;
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .blocker-section ul li { color: #b91c1c; }
+  .blocker-section ul li::before { background: #dc2626 !important; opacity: 1 !important; }
+  .blocker-secondary-link {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .blocker-secondary-link a { color: #2563eb; }
+
+  /* ── Timestamp ── */
+  .last-updated {
+    font-size: 11px; color: var(--text-muted); font-style: italic;
+  }
+
+  /* ── Parallel split/merge rows ── */
+  .parallel-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .parallel-branch {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    position: relative;
+  }
+
+  /* Trailing connector fills remaining space in shorter branch */
+  .branch-tail {
+    flex: 1;
+    width: 2px;
+    min-height: 20px;
+    background: var(--connector-color);
+    margin: 0 auto;
+  }
+
+  /* Branch cards: stacked vertical layout */
+  .parallel-branch .stage-header {
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 10px 12px;
+    min-height: 64px;
+  }
+
+  .parallel-branch .stage-header-text {
+    flex: 1 1 calc(100% - 50px);
+  }
+
+  .parallel-branch .stage-header-text h3 {
+    -webkit-line-clamp: unset;
+    white-space: normal;
+    font-size: 12px;
+  }
+
+  .parallel-branch .stage-expand-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  .parallel-branch .stage-header {
+    position: relative;
+    padding-right: 28px;
+  }
+
+  .parallel-branch .stage-status-badge {
+    order: 10;
+    margin-left: auto;
+  }
+  .parallel-branch .blocker-tooltip::after {
+    left: 20px; transform: none;
+  }
+
+  /* ── Split connector (one line splits into two) ── */
+  .split-connector {
+    width: 100%;
+    height: 36px;
+    position: relative;
+    overflow: visible;
+  }
+
+  .split-connector svg {
+    display: block;
+    overflow: visible;
+  }
+
+  /* ── Merge connector (two lines merge into one) ── */
+  .merge-connector {
+    width: 100%;
+    height: 36px;
+    position: relative;
+    overflow: visible;
+  }
+
+  .merge-connector svg {
+    display: block;
+    overflow: visible;
+  }
+
+  /* ── Tab bar ── */
+  /* Stack above .tab-panel / .main: later DOM siblings paint on top by default, so without z-index
+     the Workstream A dropdown visually overlaps the content below but clicks hit the cards underneath. */
+  .tab-bar {
+    position: relative;
+    z-index: 40;
+    max-width: 1600px; margin: 0 auto; padding: 0 32px;
+    display: flex; gap: 0; border-bottom: 2px solid var(--border);
+    background: var(--bg);
+  }
+  .tab-btn {
+    padding: 12px 24px; font-size: 14px; font-weight: 600;
+    color: var(--text-muted); background: none; border: none;
+    border-bottom: 3px solid transparent; cursor: pointer;
+    transition: all 0.2s ease; margin-bottom: -2px;
+    font-family: inherit; white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--text-dim); background: var(--surface); }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--green-primary); }
+  .tab-btn.active[data-tab="tab-bc"] { border-bottom-color: var(--orange-primary); }
+  .tab-btn.active[data-tab="tab-d"] { border-bottom-color: var(--slate-primary); }
+  /* Workstream A: hamburger + tab label (siblings; no nested buttons) */
+  .tab-item-ws-a {
+    display: inline-flex;
+    align-items: stretch;
+    position: relative;
+    margin-bottom: -2px;
+  }
+  /* Same bottom-indicator box model as .tab-btn so the green bar aligns with Workstream A tab */
+  .tab-item-ws-a .tab-hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    margin: 0;
+    margin-bottom: -2px;
+    box-sizing: border-box;
+  }
+  .tab-item-ws-a .tab-hamburger-btn:hover {
+    color: var(--text-dim);
+    background: var(--surface);
+  }
+  .tab-item-ws-a:has(.tab-btn.active) .tab-hamburger-btn {
+    color: var(--text);
+    border-bottom: 3px solid var(--green-primary);
+  }
+  .tab-item-ws-a .tab-btn { padding-left: 6px; }
+  .tab-hamburger-icon { display: block; }
+  .tab-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    min-width: 180px;
+    padding: 6px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    z-index: 110;
+  }
+  .tab-dropdown.is-open { display: block; }
+  .tab-dropdown-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tab-dropdown-item:hover { background: var(--surface2); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── B&C two-column layout ── */
+  .bc-row { display: flex; gap: 32px; align-items: flex-start; }
+  .bc-row .capability-column { flex: 1 1 0; min-width: 0; }
+
+  /* ── WS D centered single-column layout ── */
+  .d-column-wrap {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* ── Horizontal scroll on small screens ── */
+  .capabilities-row {
+    min-width: 1900px;
+  }
+  .bc-row {
+    min-width: 600px;
+  }
+  .main {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (max-width: 600px) {
+    .top-bar { padding: 16px; }
+    .top-bar-inner { flex-direction: column; align-items: flex-start; }
+    .main { padding: 20px 12px 60px; }
+  }
+
+  /* ── Summary Panel ── */
+  .summary-panel {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .summary-panel-inner {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 18px 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    align-items: start;
+  }
+
+  .summary-section {
+    padding: 0 24px;
+    border-right: 1px solid var(--border);
+  }
+  .summary-section:first-child { padding-left: 0; }
+  .summary-section:last-child { border-right: none; padding-right: 0; }
+
+  .summary-section-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.7px; color: var(--text-muted); margin-bottom: 10px;
+  }
+
+  /* Narrative section */
+  .summary-headline {
+    font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.4;
+  }
+  .summary-narrative {
+    font-size: 12px; color: var(--text-dim); line-height: 1.6;
+  }
+  .summary-narrative .sn-intro { margin: 0 0 6px; }
+  .summary-narrative .sn-bullets { list-style: disc; padding-left: 18px; margin: 0; }
+  .summary-narrative .sn-bullets li { margin-bottom: 3px; }
+  .summary-explainer {
+    margin-top: 5.5em;
+    font-size: 12px; color: var(--text-dim); line-height: 1.6;
+  }
+  .summary-explainer b { font-weight: 700; color: var(--text); }
+
+  /* Milestone pills */
+  .milestone-list {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .milestone-pill {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--text-dim);
+  }
+  .milestone-pill .m-badge {
+    font-size: 10px; font-weight: 700; padding: 2px 7px;
+    border-radius: 4px; flex-shrink: 0; letter-spacing: 0.3px;
+    min-width: 28px; text-align: center;
+  }
+  .milestone-pill.m-done .m-badge { background: var(--status-done-bg); color: var(--status-done); }
+  .milestone-pill.m-in-progress .m-badge { background: var(--status-progress-bg); color: var(--status-progress); }
+  .milestone-pill.m-not-started .m-badge { background: var(--status-not-started-bg); color: var(--status-not-started); }
+  .milestone-pill[data-milestone-id="m2"] .m-badge { background: #d92d20; color: #fff; }
+  .milestone-pill[data-milestone-id="m3"] .m-badge { background: #15803d; color: #fff; }
+  .milestone-pill .m-label { font-size: 12px; }
+  .milestone-pill.m-in-progress .m-label { font-weight: 600; color: var(--text); }
+  .milestone-pill.m-done .m-label { color: var(--status-done); }
+
+  /* Milestone detail card (sits under milestone pills) */
+  .milestone-detail {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--text-dim); line-height: 1.55;
+  }
+  .milestone-detail:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+  .milestone-detail .md-title { font-weight: 700; color: var(--text); font-size: 13px; margin-bottom: 2px; }
+  .milestone-detail .md-target { font-size: 10px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; }
+  .milestone-detail .md-deliverables { list-style: disc; padding-left: 18px; margin: 0 0 10px; }
+  .milestone-detail .md-deliverables li { margin-bottom: 3px; }
+  .milestone-detail .md-cap { color: var(--text-muted); font-weight: 600; font-size: 10.5px; margin-left: 4px; }
+  .milestone-detail .md-outcome { margin-top: 8px; }
+  .milestone-detail .md-outcome b { font-weight: 700; color: var(--text); }
+  .milestone-detail p { margin: 0 0 8px; }
+  .milestone-detail p:last-child { margin-bottom: 0; }
+  .milestone-detail b { font-weight: 700; color: var(--text); }
+
+  /* Recent / Upcoming lists */
+  .activity-list { display: flex; flex-direction: column; gap: 7px; }
+  .activity-item { display: flex; flex-direction: column; gap: 1px; }
+  .activity-item .a-title { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.4; }
+  .activity-item .a-meta { font-size: 11px; color: var(--text-muted); }
+  .activity-item .a-cap { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); }
+
+  /* Summary toggle button */
+  .summary-toggle {
+    max-width: 1600px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: flex-end;
+    padding: 0 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .summary-toggle-btn {
+    font-family: inherit; font-size: 11px; font-weight: 600;
+    color: var(--text-muted); background: none; border: none;
+    cursor: pointer; padding: 6px 0; display: flex; align-items: center; gap: 4px;
+    transition: color 0.15s;
+  }
+  .summary-toggle-btn:hover { color: var(--text); }
+  .summary-version-label {
+    margin-right: auto;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* Artifacts link (inside expanded body) */
+  .artifacts-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; color: #2563eb;
+    text-decoration: none; margin-top: 10px;
+    padding: 5px 10px; border-radius: 6px;
+    border: 1px solid #bfdbfe; background: #eff6ff;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .artifacts-link:hover { background: #dbeafe; border-color: #93c5fd; }
+  .artifacts-link svg { flex-shrink: 0; }
+
+  /* Artifact icon on collapsed card header (click goes directly to link) */
+  .artifact-indicator {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; flex-shrink: 0;
+    color: #2563eb; opacity: 0.75;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .artifact-indicator:hover { opacity: 1; }
+  .stage-card.expanded .artifact-indicator { display: none; }
+
+  /* Sprint detail button */
+  .sprint-detail-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 12px;
+    font-family: inherit; font-size: 12px; font-weight: 600;
+    color: #1B2A4A; background: #f1f5f9;
+    border: 1px solid #cbd5e1; border-radius: 6px;
+    padding: 6px 12px; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .sprint-detail-btn:hover { background: #e2e8f0; border-color: #94a3b8; }
+
+  /* Sprint detail modal */
+  .sprint-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.45); backdrop-filter: blur(2px);
+    align-items: flex-start; justify-content: center;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+  .sprint-modal-overlay.open { display: flex; }
+
+  .sprint-modal {
+    background: var(--bg); border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    width: 100%; max-width: 820px;
+    overflow: hidden; position: relative;
+  }
+
+  .sprint-modal-header {
+    background: #1B2A4A; color: #fff;
+    padding: 20px 28px 16px;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  }
+  .sprint-modal-header h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .sprint-modal-header .sprint-meta { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 3px; }
+  .sprint-modal-close {
+    background: rgba(255,255,255,0.12); border: none; color: #fff;
+    width: 30px; height: 30px; border-radius: 50%; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: background 0.15s;
+    font-family: inherit;
+  }
+  .sprint-modal-close:hover { background: rgba(255,255,255,0.22); }
+
+  .sprint-modal-body { padding: 24px 28px; }
+
+  .sprint-section-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.7px; color: var(--text-muted); margin-bottom: 10px;
+  }
+
+  .sprint-narrative {
+    font-size: 13px; color: var(--text-dim); line-height: 1.65;
+    margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .sprint-narrative strong { color: var(--text); }
+
+  .sprint-table {
+    width: 100%; border-collapse: collapse; margin-bottom: 24px;
+    font-size: 12.5px;
+  }
+  .sprint-table th {
+    text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--text-muted);
+    padding: 6px 10px; border-bottom: 2px solid var(--border);
+    background: var(--surface);
+  }
+  .sprint-table td {
+    padding: 10px 10px; border-bottom: 1px solid var(--border);
+    vertical-align: top; line-height: 1.55; color: var(--text-dim);
+  }
+  .sprint-table tr:last-child td { border-bottom: none; }
+  .sprint-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+  .sprint-table .target-badge {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    padding: 2px 7px; border-radius: 4px; margin-top: 4px;
+    background: #d1fae5; color: #065f46;
+  }
+
+  .sprint-value-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+  }
+  .sprint-value-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+  }
+  .sprint-value-card .vc-icon { font-size: 18px; margin-bottom: 6px; }
+  .sprint-value-card .vc-title { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .sprint-value-card .vc-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <div>
+      <h1>DMSi Operational Readiness: Capability Map</h1>
+      <div class="subtitle">Phase 2 Workstream Tracker <span class="last-updated">-- as of Mar 31, 2026</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Summary Panel ── -->
+<div class="summary-panel" id="summaryPanel">
+  <div class="summary-panel-inner">
+    <!-- Col 1: Sprint narrative + Recent + Active Development -->
+    <div class="summary-section" id="summaryNarrative">
+      <div class="summary-section-label">Status Summary</div>
+      <div class="summary-headline" id="summaryHeadline">Loading...</div>
+      <div class="summary-narrative" id="summaryNarrativeText"></div>
+
+      <div class="summary-section-label" style="margin-top:24px; margin-bottom:6px;">Recently Completed</div>
+      <div class="activity-list" id="recentList" style="margin-bottom:14px;"></div>
+      <div class="summary-section-label" style="margin-bottom:6px;">Active Development</div>
+      <div class="activity-list" id="upcomingList"></div>
+
+      <button class="sprint-detail-btn" onclick="openSprintModal()" style="display:none;">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Sprint Detail
+      </button>
+    </div>
+    <!-- Col 2: Milestone Progress pills -->
+    <div class="summary-section">
+      <div class="summary-section-label">Milestone Progress</div>
+      <div class="milestone-list" id="milestonePills"></div>
+    </div>
+    <!-- Col 3: Active milestone detail cards -->
+    <div class="summary-section">
+      <div class="milestone-detail" id="milestoneDetailM2">
+        <div class="md-title">M2: Establish the Structure (Update)</div>
+        <div class="md-target">Target: March 28, 2026</div>
+
+        <p><b>360 work completed.</b></p>
+        <ul class="md-deliverables">
+          <li>New fields added to cases: work type, impact classification, product, category, accepted date</li>
+          <li>Scoring calculation appears to work when required fields are populated (Luke tested via new case)</li>
+        </ul>
+
+        <p><b>Open items before broad rollout.</b></p>
+        <ul class="md-deliverables">
+          <li>Score not yet visible in case list views; lists still sort by priority, not by score</li>
+          <li>New fields sit below the fold on the case form (adoption risk)</li>
+          <li>Field defaults still need fixing: Product defaults to &ldquo;technical services&rdquo;; &ldquo;progress database&rdquo; subcategory missing; work type and impact classification not required, so cases can flow through unscored</li>
+          <li>Engineer&rsquo;s two-part default view (&ldquo;my cases&rdquo; + backlog, sorted by score) still needs to be built or promoted by Tom</li>
+        </ul>
+      </div>
+
+      <div class="milestone-detail" id="milestoneDetailM3">
+        <div class="md-title">M3 — Build the Foundation</div>
+        <div class="md-target">Target: May 28, 2026</div>
+        <ul class="md-deliverables">
+          <li>Tiered service designed for top customers <span class="md-cap">WSB</span></li>
+          <li>Support Scorecard operational <span class="md-cap">WSB &middot; WSD</span></li>
+          <li>Code-as-Config pipeline built (ready to deploy) <span class="md-cap">WSA</span></li>
+          <li>Observability documented <span class="md-cap">WSA</span></li>
+          <li>Deployment mapping &amp; documentation complete <span class="md-cap">WSA</span></li>
+          <li>A2W / Frameworks telemetry strategy complete <span class="md-cap">WSA</span></li>
+          <li>TierPoint SLA evaluation complete <span class="md-cap">WSA</span></li>
+          <li>Product Market Strategy complete <span class="md-cap">WSE</span></li>
+        </ul>
+        <p class="md-outcome"><b>Outcome:</b> Top 10 DMSi customers start to experience differentiated service. DMSi leadership has actionable dashboards visualizing engineering and customer support health. The technical foundation for reliable configuration deployment is in place. Observability design for A2W is complete and ready for deployment. TierPoint evaluation identifies potential cost reduction, targeting 10% minimum (~$1M/year) or equivalent reduction in duplicated internal work. Data-supported evidence for how Frameworks can drive growth beyond building materials, and where to focus.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="summary-toggle">
+  <span class="summary-version-label" id="summaryVersionLabel" style="display: none;" aria-hidden="true">DMSi Version</span>
+  <button class="summary-toggle-btn" onclick="toggleSummary()">
+    <span id="summaryToggleLabel">Hide summary</span>
+    <span id="summaryToggleIcon">&#9650;</span>
+  </button>
+</div>
+
+<div class="tab-bar">
+  <div class="tab-item-ws-a">
+    <button type="button" class="tab-hamburger-btn" id="tabAHamburger" aria-label="Workstream A menu" aria-expanded="false" aria-haspopup="true" onclick="event.stopPropagation(); toggleTabAMenu(event)">
+      <svg class="tab-hamburger-icon" width="18" height="14" viewBox="0 0 18 14" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M1 1h16M1 7h16M1 13h16"/></svg>
+    </button>
+    <button type="button" class="tab-btn active" data-tab="tab-a" onclick="switchTab('tab-a')">Workstream A</button>
+    <div class="tab-dropdown" id="tabAMenu" role="menu" aria-labelledby="tabAHamburger">
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuMilestones(event)">Milestones</button>
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuProjectPlan(event)">Project Plan</button>
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuBoard(event)">Board</button>
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuStalledBlocked(event)">Stalled/Blocked</button>
+    </div>
+  </div>
+  <button class="tab-btn" data-tab="tab-bc" onclick="switchTab('tab-bc')">Workstream B &amp; C</button>
+  <button class="tab-btn" data-tab="tab-d" onclick="switchTab('tab-d')">Workstream D</button>
+</div>
+
+<div id="tab-a" class="tab-panel active">
+<div class="main">
+
+  <div class="capabilities-row">
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- WORK MANAGEMENT (left column, linear)  -->
+    <!-- ═══════════════════════════════════════ -->
+    <div class="capability-column theme-green" id="colWM">
+      <div class="cap-card theme-green expanded" id="capWM">
+        <div class="cap-card-header" onclick="toggleEl('capWM')">
+          <h2><span class="cap-icon">&#9881;</span> Work Management</h2>
+          <span class="confidence-label on-track">On Track</span>
+          <span class="expand-icon">&#9662;</span>
+        </div>
+        <div class="cap-card-body">
+          <div class="cap-card-content">
+            <p>Engineering leaders and team members have a single view of all planned work, current capacity, and can make prioritization decisions with confidence they'll be executed. Work is visible, sequenced, and tracked.</p>
+            <p><strong>What customers notice:</strong> Requests don't disappear. Commitments made are commitments kept. When priorities shift, customers hear about it proactively.</p>
+            <div class="future-state-tag">Future State</div>
+          </div>
+        </div>
+      </div>
+      <div class="stages-column" id="stagesWM"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- VISIBILITY INFRASTRUCTURE (middle column, linear) -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="capability-column theme-teal" id="colVI">
+      <div class="cap-card theme-teal expanded" id="capVI">
+        <div class="cap-card-header" onclick="toggleEl('capVI')">
+          <h2><span class="cap-icon">&#9673;</span> Visibility Infrastructure</h2>
+          <span class="confidence-label on-track">On Track</span>
+          <span class="expand-icon">&#9662;</span>
+        </div>
+        <div class="cap-card-body">
+          <div class="cap-card-content">
+            <p>Engineering, leadership, and support teams see real-time system health through dashboards they trust and reference daily. Anomalies are detected and alerts fire before customers raise issues. The team responds to signals from the system, not complaints from customers.</p>
+            <p><strong>What customers notice:</strong> DMSi reaches out about issues before customers report them. When customers do call, support already knows what's happening and can provide status immediately. Issues get diagnosed faster because the team isn't starting from scratch each time.</p>
+            <div class="future-state-tag">Future State</div>
+          </div>
+        </div>
+      </div>
+      <div class="stages-column" id="stagesVI"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- PIPELINE AUTOMATION (far right column, linear)  -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="capability-column theme-gold" id="colPA">
+      <div class="cap-card theme-gold expanded" id="capPA">
+        <div class="cap-card-header" onclick="toggleEl('capPA')">
+          <h2><span class="cap-icon">&#9881;</span> Pipeline Automation</h2>
+          <span class="confidence-label discovery">Discovery</span>
+          <span class="expand-icon">&#9662;</span>
+        </div>
+        <div class="cap-card-body">
+          <div class="cap-card-content">
+            <p>Configuration and code changes flow through automated pipelines that are tested, approved, and reversible without manual intervention. This level of rigor is applied consistently to all internal environments and production systems. The process is repeatable, auditable, and standard for both platform and development teams.</p>
+            <p><strong>What customers notice:</strong> Fewer "something changed and now it's broken" incidents. When changes do cause issues, resolution is faster because the team knows exactly what changed and can roll it back quickly. Maintenance windows become shorter and less disruptive.</p>
+            <div class="future-state-tag">Future State</div>
+          </div>
+        </div>
+      </div>
+      <div class="stages-column" id="stagesPA"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- LEARNING SYSTEM (far right column, linear)      -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="capability-column theme-purple" id="colLS">
+      <div class="cap-card theme-purple expanded" id="capLS">
+        <div class="cap-card-header" onclick="toggleEl('capLS')">
+          <h2><span class="cap-icon">&#128218;</span> Learning System</h2>
+          <span class="confidence-label discovery">Discovery</span>
+          <span class="expand-icon">&#9662;</span>
+        </div>
+        <div class="cap-card-body">
+          <div class="cap-card-content">
+            <p>The organization learns from incidents systematically. An observability platform provides integrated SLOs, error budgets, and alerting. Incidents are categorized consistently and responses follow documented playbooks. Root cause analysis drives fixes that eliminate recurring problems. The environment improves through deliberate process, not heroic effort.</p>
+            <p><strong>What customers notice:</strong> Problems that used to recur stop happening. The platform feels more stable over time, not just "patched until next time." When incidents do occur, resolution is consistent regardless of who's on call. Customers develop confidence that DMSi is actively improving, not just maintaining.</p>
+            <div class="future-state-tag">Future State</div>
+          </div>
+        </div>
+      </div>
+      <div class="stages-column" id="stagesLS"></div>
+    </div>
+
+  </div>
+</div>
+</div><!-- end tab-a -->
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB: Workstream B & C                              -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="tab-bc" class="tab-panel">
+<div class="main">
+
+  <div class="bc-row">
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- WORKSTREAM B: Customer Support Operating Model  -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="capability-column theme-orange" id="colWSB">
+      <div class="cap-card theme-orange expanded" id="capWSB">
+        <div class="cap-card-header" onclick="toggleEl('capWSB')">
+          <h2><span class="cap-icon">&#128101;</span> B: Customer Support Operating Model</h2>
+          <span class="confidence-label discovery">Discovery</span>
+          <span class="expand-icon">&#9662;</span>
+        </div>
+        <div class="cap-card-body">
+          <div class="cap-card-content">
+            <p>Product pods own 80% of cases with deep module expertise. Support/Engineering/Product triads coordinate with clear accountability -- cases never fall into a black hole after handoff. Incidents are managed with consistent discipline. MBM owns customer communications. RCAs are completed within 5 business days, and learnings translate into prevention. Engineering escalations reduced 50%. MTTR measured in hours, not days.</p>
+            <p><strong>What customers notice:</strong> Strategic accounts no longer wonder if their issues are being taken seriously. When they call, they're routed to someone who knows their environment and history. When an incident occurs, they hear from DMSi first -- not the other way around. Resolution times are measured in hours, not days. For commercial customers, the experience becomes consistent and predictable.</p>
+            <div class="future-state-tag">Future State</div>
+          </div>
+        </div>
+      </div>
+      <div class="stages-column" id="stagesWSB"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- WORKSTREAM C: Support & Engineering Tooling        -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="capability-column theme-violet" id="colWSC">
+      <div class="cap-card theme-violet expanded" id="capWSC">
+        <div class="cap-card-header" onclick="toggleEl('capWSC')">
+          <h2><span class="cap-icon">&#128736;</span> C: Support &amp; Engineering Tooling Strategy</h2>
+          <span class="confidence-label discovery">Discovery</span>
+          <span class="expand-icon">&#9662;</span>
+        </div>
+        <div class="cap-card-body">
+          <div class="cap-card-content">
+            <p>Tooling supports the full case lifecycle, product pods, and incident tracking in one integrated platform. Cases route automatically by product area and customer segment. The tooling triggers KCS notification and reduces inter-team friction. Automated contributions remove manual handling effort. 10-15% efficiency beyond operating model KPIs.</p>
+            <p><strong>What customers notice:</strong> Support interactions feel faster and more informed. Less "let me check and get back to you" and more immediate context. When they call about an issue, support already has visibility -- no tickets disappearing in the service desk. Communications are answered proactively and consistently -- not dependent on which agent happens to pick up the phone. Over time, issues that used to require a call now resolve through self-service or are fixed before they notice.</p>
+            <div class="future-state-tag">Future State</div>
+          </div>
+        </div>
+      </div>
+      <div class="stages-column" id="stagesWSC"></div>
+    </div>
+
+  </div>
+</div>
+</div><!-- end tab-bc -->
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB: Workstream D: Strategic Visibility              -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div id="tab-d" class="tab-panel">
+<div class="main">
+
+  <div class="d-column-wrap">
+    <div class="capability-column theme-slate" id="colWSD">
+      <div class="cap-card theme-slate expanded" id="capWSD">
+        <div class="cap-card-header" onclick="toggleEl('capWSD')">
+          <h2><span class="cap-icon">&#128202;</span> D: Strategic Visibility</h2>
+          <span class="confidence-label on-track">On Track</span>
+          <span class="expand-icon">&#9662;</span>
+        </div>
+        <div class="cap-card-body">
+          <div class="cap-card-content">
+            <p>Instead of discovering risk through outages, escalations, and churn, leadership sees it forming and can intervene early. Leaders have one view of reality, trusted by everyone who needs to make decisions, and they can see what's actually happening -- not individual narratives. Data is actionable, strategically aligned, and has the context necessary to make decisions. Opinions are tested against data. DMSi builds the muscle of looking at the numbers first, then deciding.</p>
+            <div class="future-state-tag">Future State</div>
+          </div>
+        </div>
+      </div>
+      <div class="stages-column" id="stagesWSD"></div>
+    </div>
+  </div>
+
+</div>
+</div><!-- end tab-d -->
+
+<script>
+/* ═══════════════════════════════ */
+/* DATA                            */
+/* ═══════════════════════════════ */
+
+const wmStages = [
+  { num: 6, title: "Prioritization Drives Execution", status: "not-started",
+    targetStart: "Jun 2026", targetEnd: "Jul 2026",
+    desc: "Decisions made in the system are reflected in what the team actually works on. The backlog is authoritative.",
+    prereqs: ["Team pulls planned work from the system, not from side channels","Priority changes in the system change what gets worked on","Engineering leadership can reallocate capacity and see it happen","Competing requests get triaged through the system, not around it"],
+    without: "Without this, the system exists but doesn't govern. Engineering leaders have visibility but not control.",
+    bubble: { title: '"Commitments stick"', text: "What gets promised gets delivered; customers experience follow-through" }},
+  { num: 5, title: "Work Visible and Current", status: "not-started",
+    targetStart: "May 2026", targetEnd: "Jun 2026",
+    desc: "The system reflects reality. What's in progress is actually in progress. What's blocked is marked blocked.",
+    prereqs: ["Team habit formed (updating status is part of the workflow)","Staleness is caught and corrected quickly","Work items have enough detail to be actionable","Blocked items surface with clear blockers identified"],
+    without: 'Without this, Engineering leaders can\'t trust the board. "Is this still accurate?" undermines every decision.',
+    bubble: { title: '"Status is always available"', text: "When customers ask about work status, there's an accurate answer without chasing" }},
+  { num: 4, title: "Team Using the System", status: "not-started",
+    targetStart: "Apr 2026", targetEnd: "May 2026",
+    desc: "Engineering team is entering, updating, and closing work in the system. Initial adoption has occurred.",
+    prereqs: ["Team trained on the workflow","System is accessible and not burdensome","Clear expectations set for what gets tracked and how","Early resistance addressed (value demonstrated, friction reduced)"],
+    without: "Without this, the system exists but is empty or stale. A tool no one uses is not a system of record."},
+  { num: 3, title: "System Configured and Ready", status: "not-started",
+    targetStart: "Mar 2026", targetEnd: "Apr 2026",
+    blockers: ["GitHub vs. Jira decision still pending"],
+    desc: "The work management system is set up with the right structure, categories, and workflows for how this team operates.",
+    prereqs: ["Tool selected (or existing tool confirmed)","Work categories defined (incidents, projects, maintenance, etc.)","Workflow stages configured (backlog, in progress, blocked, done)","Capacity buckets established if needed","Views/boards created for different audiences"],
+    without: "Without this, we're asking the team to adopt a system that doesn't fit how they work. Friction kills adoption."},
+  { num: 2, title: "Work Taxonomy Defined", status: "not-started",
+    targetStart: "Mar 2026", targetEnd: "Mar 2026",
+    desc: "We have a shared language for the types of work the team does, how they're categorized, and what priority means.",
+    prereqs: ["Team trained on the workflow","System is accessible and not burdensome","Clear expectations set for what gets tracked and how","Early resistance addressed (value demonstrated, friction reduced)"],
+    without: "Without this, the system exists but is empty or stale. A tool no one uses is not a system of record."},
+  { num: 1, title: "Current State Documented", status: "in-progress",
+    targetStart: "Feb 2026", targetEnd: "Mar 2026",
+    desc: "We know how work enters the system today, where it gets tracked (if anywhere), and what falls through the cracks.",
+    prereqs: ["Work intake channels mapped (email, Teams, tickets, hallway conversations)","Existing tracking mechanisms identified (spreadsheets, personal lists, nothing)","Pain points documented (what gets lost, what causes confusion)","Volume and mix understood (how much reactive vs. planned work)"],
+    without: "Without this, we design a system for how we imagine work flows, not how it actually flows. Gaps remain."},
+  { num: 0, title: "Access and Engagement", status: "done",
+    targetStart: "Feb 2026", targetEnd: "Feb 2026",
+    desc: "We have access to the Engineering team. They're willing to share how things work today.",
+    prereqs: ["Team available for interviews/shadowing",'Framing is "fix the system" not "evaluate the people"',"Trust established that this is about helping, not judging"],
+    without: "Without this, we get polished answers instead of reality. The system we build solves the wrong problems."}
+];
+
+// Visibility Infrastructure: Combined Constraints Model (S0-S9)
+const viStages = [
+  { num: 9, title: "Predictive Operations and Advanced Capabilities", status: "not-started",
+    targetStart: "Oct 2026", targetEnd: "Dec 2026",
+    desc: "Full monitoring stack drives predictive operations. DORA metrics visible. Advanced platform capabilities operational.",
+    prereqs: ["S8 exit gate satisfied (proactive operations proven)","DORA metrics visible -- all five metrics derivable from SDLC events","Data from all monitoring layers rolls to the right people at the right time","Synthetic and APM signals correlated with customer experience models","SLI dashboards drive priority for engineering"],
+    without: "Without this, the team is reactive-with-good-tools instead of predictive. They detect and respond; they don't anticipate."},
+  { num: 8, title: "Proactive Operations Capability", status: "not-started",
+    targetStart: "Jul 2026", targetEnd: "Sep 2026",
+    desc: "MTTD ≤10 min validated. Status page auto-updates live. Dashboards part of daily workflows. System drives proactive customer communication.",
+    prereqs: ["S7 exit gate satisfied (alerting tuned, dashboards trusted)","MTTD ≤10 min validated -- 4 consecutive weeks of synthetic data showing detection before customer reports","Status page auto-updates live -- Dynatrace synthetic failures trigger automatic degraded state","Dashboards are part of daily workflows -- people check them, reference them, trust what they see"],
+    without: "Without this, the tools work, but the organization hasn't adopted them. Monitoring is a reporting artifact, not an operational capability.",
+    bubble: { title: '"Proactive communication"', text: "Customers receive outreach about issues before they call." }},
+  { num: 7, title: "Alerting Tuned, Persona Views Live, and Trusted", status: "not-started",
+    targetStart: "Jun 2026", targetEnd: "Jul 2026",
+    desc: "Alert volume rationalized. Persona-specific dashboards delivered. On-call schedules operational. The system is trusted.",
+    prereqs: ["S6 exit gate satisfied (baselines established, data quality validated)","Alert rationalization completed -- target 50% reduction from baseline","On-call schedule by product pod finalized","Persona-relevant dashboards delivered -- engineering, support, leadership each get tailored views"],
+    without: "Without this, alerts are noisy. People don't know where to look. The monitoring stack works technically but nobody uses it as their source of truth.",
+    bubble: { title: '"Informed conversations"', text: "Customer interactions reference real data; support can answer without escalating." }},
+  { num: 6, title: "Baselines Established and Data Quality Validated", status: "not-started",
+    targetStart: "May 2026", targetEnd: "Jun 2026",
+    desc: "Davis AI baselines learned. Anomaly detection tuned. Data trusted. Elastic fully decommissioned.",
+    prereqs: ["S5 exit gate satisfied (APM live, Elastic migration path confirmed)","Davis AI baseline learning period completed -- minimum 1 week for service baselines, 14 days for full seasonal patterns","Anomaly detection validated against known incident history -- sensitivity tuned per service before PagerDuty routing goes live","Threshold tuning completed across all monitoring layers -- synthetic, infrastructure, APM"],
+    without: "Without this, alerts fire on noise. Teams lose trust. Dashboards exist but nobody believes them. Elastic lingers as a safety blanket."},
+  { num: 5, title: "Application Telemetry Operational", status: "not-started",
+    targetStart: "Apr 2026", targetEnd: "May 2026",
+    desc: "APM visibility into application behavior. JVM-level and (optionally) ABL-level instrumentation live.",
+    prereqs: ["S4 exit gate satisfied (external availability monitoring live)","PASOE JVM APM operational -- OneAgent auto-detects JVM","Infrastructure and service dashboards built -- engineer-facing views: host health, PASOE instance status, storage IOPS, network latency"],
+    without: "Without this, external monitoring tells you something is wrong, but you have no visibility into what the application is actually doing."},
+  { num: 4, title: "External Availability Monitoring Operational", status: "not-started",
+    targetStart: "Mar 2026", targetEnd: "Apr 2026",
+    desc: "Synthetic monitoring live. External availability measured continuously. MTTD measurement baseline established.",
+    prereqs: ["S3 exit gate satisfied (data flowing from all sources)","Public synthetic locations validated -- reachability from external Dynatrace nodes to TierPoint-hosted endpoints confirmed","Login flow synthetic test operational -- 1-min cadence for login, 5-min for transactions","Critical transaction synthetic tests built -- top 3-5 business flows"],
+    without: "Without this, external availability is unknown. MTTD cannot be measured. The team cannot prove they detect issues before customers.",
+    bubble: { title: '"We usually know first"', text: "DMSi detects user-facing issues before customer reports." }},
+  { num: 3, title: "Data Flowing from All Sources", status: "not-started",
+    targetStart: "Mar 2026", targetEnd: "Apr 2026",
+    desc: "Log ingestion pipeline operational. Dynatrace and Elastic running in parallel. All monitoring data sources connected and flowing.",
+    prereqs: ["S2 exit gate satisfied (infrastructure monitoring live)","Dynatrace log ingest configured -- NGINX access/error logs, PASOE application logs, OpenEdge database logs","Custom log parsing rules built -- NGINX, PASOE, and OpenEdge formats require structured field extraction","Log ingestion scope decided -- all logs vs. WARN+ only vs. prod full / non-prod sampled","30-day parallel validation period initiated -- Elastic and Dynatrace log ingestion run simultaneously"],
+    without: "Without this, log migration happens blind. Dashboards get built on incomplete data. Elastic gets decommissioned before Dynatrace proves it can replace it."},
+  { num: 2, title: "Infrastructure Monitoring Modernized", status: "not-started",
+    targetStart: "Feb 2026", targetEnd: "Mar 2026",
+    desc: "OneAgent deployed to all production hosts. ActiveGate in place. Host and service topology validated. Basic infrastructure metrics flowing.",
+    prereqs: ["S1 exit gate satisfied (telemetry strategy, licensing, retention confirmed)","OneAgent rollout to production hosts completed (RHEL 7 compatibility confirmed per-server)","ActiveGate deployed at network boundary for TierPoint hosts lacking direct internet","PASOE process group naming convention established (auto-naming with overrides recommended)","Host and service topology validated in Dynatrace UI -- all production PASOE instances visible and correctly grouped"],
+    without: "Without this, no baseline. No infrastructure signals. Everything above this stage (synthetics, APM, log migration, dashboards) has nothing to attach to."},
+  { num: 1, title: "Telemetry Strategy Validated", status: "in-progress",
+    targetStart: "Feb 2026", targetEnd: "Mar 2026",
+    desc: "Telemetry approach is defined, licensing is procured, and the team knows exactly what will be instrumented, ingested, and retained.",
+    prereqs: ["S0 exit gate satisfied (D-01, D-02 resolved)","ABL telemetry strategy evaluated against monitoring requirements -- what are the critical checkpoints?","Quality audit of ABL/OE telemetry reviewed against industry standards","Diagnostic coverage assessment completed (log analytics platform, existing instrumentation, metrics, SLIs)","Decision on Dynatrace migration path, Prometheus, and any additional telemetry needs"],
+    without: "Without this, we deploy agents and ingest logs without knowing what \"good\" looks like. Garbage in, garbage out. Licensing surprises hit mid-implementation."},
+  { num: 0, title: "Foundation and Plan Alignment", status: "in-progress",
+    targetStart: "Feb 2026", targetEnd: "Mar 2026",
+    desc: "Tool landscape assessed, engagement secured, plan aligned with all stakeholders.",
+    prereqs: ["Read-only access to all production environments granted (servers, Elastic, CheckMK, PagerDuty)","Full environment inventory completed -- server OS versions, PASOE instance count, custom services, trial infrastructure scope","TierPoint network topology mapped -- which hosts reach internet directly vs. require ActiveGate relay","Elastic usage confirmed as monitoring/observability only (not app search or customer-facing)","Key stakeholders identified and engaged (Andy, Brent, Leanne GRC, Jared Support, Hilltop)"],
+    without: "Without this, everything downstream is built on assumptions. Wrong deployment model, wrong licensing, wrong scope. The entire timeline resets."}
+];
+
+const paStages = [
+  { num: 8, title: "Development Team Adoption", status: "not-started",
+    targetStart: "Nov 2026", targetEnd: "Jan 2027",
+    desc: "Development teams use the CI/CD pipeline by default for application deploys. The platform answer with configs has extended to code.",
+    prereqs: ["CI/CD pipeline handles test, compile, deploy automatically for each merge","Team training complete; developers commit and deploy without manual intervention","Monitoring confirms deployment success and failure rate tracking is automated","Rollback is automated and trusted"],
+    without: "Without this, the pipeline exists but developers ship code manually. The benefits are inconsistent; not people.",
+    bubble: { title: '"Fewer change-related outages"', text: "Change failure rate drops; customers experience fewer \"it worked until you updated it\" incidents." }},
+  { num: 7, title: "CI/CD Pipeline for Application Code", status: "not-started",
+    targetStart: "Sep 2026", targetEnd: "Nov 2026",
+    desc: "The pipeline supports application builds, tests, and deployments, not just config pushes.",
+    prereqs: ["Build pipeline covers compile, package, and artifact creation","Test integration runs on each push (unit, integration where available)","Stage-appropriate deployment support for internal, QA, and production environments","Rollback capability for application deployments from build artifacts","Telemetry: capability for code deploy offset (config deploy rates)"],
+    without: "Without this, we have a config pipeline but no path for application code. Dev teams have nothing to adopt."},
+  { num: 6, title: "Application Code in Version Control", status: "not-started",
+    targetStart: "Jul 2026", targetEnd: "Sep 2026",
+    desc: "Code and deployment artifacts/tests in GitHub with associated branching strategy. 100% of application code is managed in version control.",
+    prereqs: ["All ABL code migrated to GitHub from legacy source control","Branching strategy defined with automation-compatible workflow","Code review process in place (PR-based, with approval gates)","Build automation can reference code repository directly","Migration validated: diff confirms completeness, no code left behind"],
+    without: "Without this, CI/CD pipeline has nothing to build from. Can't automate deployment of code that isn't in a system automation can access."},
+  { num: 5, title: "Config-as-Code Operational", status: "not-started",
+    targetStart: "Jun 2026", targetEnd: "Jul 2026",
+    desc: "Implementation turns the config pipeline into defaults. The pattern to prevent drift and ensure consistency is understood, enforced, and in use.",
+    prereqs: ["Config-as-code enforced for critical configs (80%+ coverage)","No manual changes allowed outside the pipeline for covered config types","Drift detection active: unauthorized changes flagged automatically","Team trained and following config-as-code workflow"],
+    without: "Without this, the pipeline exists but manual changes still happen. Drift continues and incidents from config mismatch persist.",
+    bubble: { title: '"Faster recovery from config issues"', text: "When config changes cause problems, rollback is quick; shorter incident duration." }},
+  { num: 4, title: "Config Pipeline Operational", status: "not-started",
+    targetStart: "May 2026", targetEnd: "Jun 2026",
+    desc: "The pipeline runs reliably for all config types. Changes flow from PR approval to deployed config.",
+    prereqs: ["PR-based approval workflow integrated with deployment triggers","Automated validation (lint, schema checks) runs before merge","Pipeline tested for reliability (90%+ success rate for routine deploys)","Error handling for partial deploys and rollback scenarios defined","Status updates: config push status at all checkpoints (e.g., approved, deploying, complete, failed)"],
+    without: "Without this, configs are in GitHub but still deployed manually. Version control without automation leaves half the problem unsolved."},
+  { num: 3, title: "Configs in Version Control", status: "not-started",
+    targetStart: "Apr 2026", targetEnd: "May 2026",
+    desc: "All operational configurations are sourced in GitHub as the single source of truth.",
+    prereqs: ["All identified configs exported from source systems to repo","Repository structure organized by config type, client, or environment","Change history visible: each config change is a commit with context","Config ownership mapped (who approves changes to what)"],
+    without: "Without this, pipeline has nothing to push. Can't automate deployment of things that aren't versioned."},
+  { num: 2, title: "Migration Path Defined", status: "not-started",
+    targetStart: "Mar 2026", targetEnd: "Apr 2026",
+    desc: "We know how to export and structure each config type. Format decisions made, repository structure agreed.",
+    prereqs: ["Export method documented (API, CLI, dump, manual extraction) for each config type","Canonical format chosen (YAML, JSON, etc.) per config type","Repository structure defined","Storage and access patterns established: who has visibility, read-only versus edit","Priority order established, with customer runtime environment configs (70-80% of operational incidents) first, then internal tools and platform configurations"],
+    without: "Without this, migration stalls because no one knows what 'done' looks like for each config type."},
+  { num: 1, title: "Config Inventory Complete", status: "in-progress",
+    targetStart: "Feb 2026", targetEnd: "Mar 2026",
+    blockers: ["Waiting on read-only server access across customer environments"],
+    desc: "All operational configurations are identified and cataloged. We know what exists in each tool and who owns it.",
+    prereqs: ["Complete inventory of everything qualifying as config (reporting params, PASOE, NGINX, etc.)","Configuration categories documented: customer runtime configs, platform configs, application configs","Coverage mapped to customer runtime configs: daily, production, provider settings for all customer environments","App server configurations documented","Infra-layer configurations documented","Third party integrations captured","Current state documented per config policy/practice with clear risk methodology"],
+    without: "Without this, we can't see what config exists. Can't automate what, from where, and what's critical."},
+  { num: 0, title: "Access and Process Knowledge", status: "in-progress",
+    targetStart: "Feb 2026", targetEnd: "Mar 2026",
+    desc: "We have the access, documentation, and understanding of current deployment and configuration processes needed to begin automation work.",
+    prereqs: ["SSH/RDP access to target server environments (read-only initially)","Current deployment documentation or tribal knowledge captured","Deployment process walkthrough completed with deployment specialist","Understanding of what changes, what from where, and what order"],
+    without: "Without this, we can't see what config exists. Can't understand what we're trying to automate, document, or control."}
+];
+
+const lsStages = [
+  { num: 6, title: "Continuous Improvement Cycle Operating", status: "not-started",
+    targetStart: "Oct 2026", targetEnd: "Dec 2026",
+    desc: "The feedback loop is closed. Incident reviews drive root cause fixes at scale; patterns are correlated, decisions are data-driven. The system improves through structured process.",
+    prereqs: ["Incident review process is quarterly practice","Primary question is 'what factors contributed?'","Dependency question: 'Do we have a remediation playbook?'","To fully operate, all playbooks validated through auditable workflow","Error budget consumption triggers prioritization discussion","After-action reports update metrics for future incidents","Postmortems owned by SREs or designated team function"],
+    without: "Without this, the observability platform and playbooks exist but the organization doesn't learn from incidents.",
+    bubble: { title: '"Problems stop recurring"', text: "Issues that used to repeat get fixed permanently; customers notice the platform getting more stable over time." }},
+  { num: 5, title: "Error Budgets Governing Decisions", status: "not-started",
+    targetStart: "Aug 2026", targetEnd: "Oct 2026",
+    desc: "SLOs are defined in the observability platform, error budgets are tracked, and consumption influences prioritization.",
+    prereqs: ["SLO definitions are reviewed and agreed in the observability platform","Error budget consumption visible in real time","Alerting tied to error budget burn rate thresholds","Consumption data influences sprint/cycle priorities","DORA metrics are displayed alongside error budget/change failure risk levels and trends"],
+    without: "Without this, error budgets are a dashboard we look at.",
+    bubble: { title: '"Reliability is prioritized"', text: "When stability is at risk, reliability work takes precedence over feature-line; customers see fewer issues." }},
+  { num: 4, title: "Playbooks Established for Top Incident Types", status: "not-started",
+    targetStart: "Jun 2026", targetEnd: "Aug 2026",
+    desc: "Consistent manual responses are documented. The team knows what to do when common incidents occur.",
+    prereqs: ["Top incident types identified from pattern analysis (Stage 3)","Playbooks written for each documented incident type with step-by-step response","Playbooks validated: follow the steps and confirm they resolve the case","Playbooks accessible from the observability platform","All response actions tied to monitoring alerts linked to playbooks/run-books"],
+    without: "Without this, response varies by who is on call. Inconsistency persists.",
+    bubble: { title: '"Consistent response"', text: "Incident resolution in this phase becomes predictable regardless of who's on call; customers experience reliable resolution." }},
+  { num: 3, title: "Incident Patterns Analysable", status: "not-started",
+    targetStart: "May 2026", targetEnd: "Jun 2026",
+    desc: "We have enough incident data to identify what breaks, how often, and what the response looks like.",
+    prereqs: ["Incident data in ServiceNow/ConnectWise consistent and complete (machine-readable); correlation to source events","Sufficient volume of incidents described with information needed to sort and categorize","Alert-to-incident linkage with observability platform (PagerDuty)","Failure modes, recurrence, problem-correlation data combined","Query/report software is in-hands analytics (ability to run analysis)"],
+    without: "Without this, we're analyzing noise. Patterns identified from inconsistent data lead to wrong conclusions."},
+  { num: 2, title: "Observability Platform Operational", status: "not-started",
+    targetStart: "Apr 2026", targetEnd: "May 2026",
+    desc: "Observability platform is deployed, configured, integrated with Elastic and PagerDuty, and generating alerts.",
+    prereqs: ["Platform deployed and integrated with infrastructure (e.g. CheckMK, Elastic)","Integrations confirmed: alerts from platform feed to PagerDuty","Alert rules configured based on SLIs, telemetry patterns","Topology/service configured for infrastructure correlation views","BCDR capability documented with recovery confirmation","Incident/alert data validated; configuration and documentation compiled","Cost allocation to workload/app/team visibility"],
+    without: "Without this, we're still in CheckMK with manual enriching. No modern observability, no modern alerting, no meaningful real-time path visibility."},
+  { num: 1, title: "Platform Selected and Implementation Planned", status: "not-started",
+    targetStart: "Mar 2026", targetEnd: "Apr 2026",
+    desc: "We've chosen a platform and have an implementation approach.",
+    prereqs: ["Evaluation criteria defined (cost, features, integration requirements, training, capacity)","Brief short-list generated (top 2-3)","Build/buy decision documented","Validated: all overlap of capabilities evaluated by criteria, risk, value, and level of effort","Decision table with client buy-in","Implementation plan approved","Integration points mapped (Elastic, PagerDuty, infrastructure)"],
+    without: "Without this, we're debating tools instead of implementing."},
+  { num: 0, title: "Prerequisites Substantially Complete", status: "not-started",
+    targetStart: "Feb 2026", targetEnd: "Mar 2026",
+    blockers: ["Depends on Workstream A capabilities and Workstream B/C alignment"],
+    desc: "Other Workstream A capabilities and Workstream B/C work are far enough along that Learning System has clean data to work with and infrastructure to build on.",
+    prereqs: ["Visibility Infrastructure: monitoring operational, data flowing, dashboards in progress","Pipeline Automation: config inventory started, Git ready, pipeline early/in progress","Workstream B/C alignment: direct confirmation that Learning System's workload dependencies confirmed","Scope alignment: does this overlap/use Visibility Infrastructure or Learning System as a data source?","Milestone dependency: M3 brings Learning System S1; M4 brings S1 and S2; plan for early maturity"],
+    without: "Without this, Learning System tries building without reliable data or clear foundation. Starting too early means it ingests garbage."}
+];
+
+/* ═══════════════════════════════ */
+/* WS-B DATA                       */
+/* ═══════════════════════════════ */
+
+const wsbStages = [
+  { num: 5, title: "Triad Coordination Operational", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Support/Engineering/Product triads meet bi-weekly for Agility. Cases never fall into a \"black hole\" after handoff. Incident patterns and RCAs are standing agenda items. After-hours coverage handles P1/P2 within SLOs.",
+    prereqs: [
+      "Named triad members for Agility with recurring rhythm",
+      "Escalation framework operational",
+      "After-hours on-call rotation active",
+      "Case ownership rules enforced in Incident Management system",
+      "Incident review as standing agenda item",
+      "RCA backlog visible to triad"
+    ],
+    without: "Pods operate in silos. Engineering fixes arrive but Support can't close the loop with customers. Recurring issues never reach Product. Incident learnings don't translate into prevention.",
+    bubble: { title: '"Issues don\'t disappear anymore"', text: "When cases escalate to Engineering, customers still get updates. Problems that used to recur get fixed permanently. After-hours incidents get handled, not queued until Monday." }},
+  { num: 4, title: "Product Pods Active", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Agility Core, Reporting/Printing, and WMS/Integrations pods are operational. Cases route directly to specialized teams. Agents develop deep module expertise.",
+    prereqs: [
+      "Pod assignments made",
+      "Routing logic configured in Incident Management system",
+      "Agents trained on pod-specific workflows",
+      "Cross-training plan for coverage",
+      "Other Products desk staffed (CRM, Frameworks, Millwork)",
+      "Pod-level metrics visible"
+    ],
+    without: "Tiered service exists on paper but cases still land in a generalist pool. No specialization means slow resolution and unnecessary handoffs. The long P75 tail on Other Products persists.",
+    bubble: { title: '"They know our product"', text: "Customers talk to someone with module expertise. Less \"let me transfer you\" or \"let me check with someone who knows that area.\" First-call resolution improves." }},
+  { num: 3, title: "Tiered Service Framework Active", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Enterprise vs Commercial segmentation is operational. SLO clocks are running for both cases and incidents. Fast lanes for strategic accounts are enforced.",
+    prereqs: [
+      "Customer segmentation in Incident Management system (segment field populated)",
+      "SLA indicators configured for cases and incidents",
+      "Key account list flagged",
+      "Triage routing cases by segment + severity",
+      "MIM rotation covered and on-call",
+      "Incident communication log in use"
+    ],
+    without: "Service levels are defined but not enforced. Strategic accounts still wait in the same queue as low-risk customers. When Sev-1 fires, MIM role isn't covered.",
+    bubble: { title: '"We\'re a priority now"', text: "Enterprise customers experience faster first response and more consistent updates during incidents. When Sev-1 fires, communication arrives within 15-30 minutes without customers having to ask." }},
+  { num: 2, title: "Service Level Definitions Complete", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "SLOs defined by segment (Enterprise/Commercial) and severity (P1/P2/P3) for both cases and incidents. Entitlement rules documented. Routing logic designed for 360.",
+    prereqs: [
+      "SLO matrix for cases and incidents ratified by leadership",
+      "Entitlement rules documented (what Enterprise gets during incidents)",
+      "Routing design approved",
+      "Key account list agreed with Senior Leadership/Customer Experience",
+      "MIM rotation plan drafted"
+    ],
+    without: "Can't configure triage or routing. No shared definition of what \"fast\" means for each customer type. Incident SLOs disconnected from case SLOs."},
+  { num: 1, title: "Foundation Complete", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    blockers: ["Incident vs. Case vs. Tickets -- taxonomy not yet resolved"],
+    desc: "Current escalation patterns documented. Incident management discipline established. Stakeholder alignment achieved on redesign direction and incident process.",
+    prereqs: [
+      "Escalation baseline report",
+      "Shared definition: Incident vs case (severity criteria for Sev-1/2/3)",
+      "MIM function designed (role, rotation, accountability)",
+      "Communication SLOs defined (15-30 min initial, 30 min ongoing for Sev-1/2)",
+      "RCA SLO defined (48-72 hr draft, 5 business days final)",
+      "RCA follow-up, tracking, and visibility process defined",
+      "Incident communication log template created",
+      "Handoff protocol documented: Support owns customer comms, Engineering owns technical resolution",
+      "Leadership buy-in on tiered service direction and incident discipline"
+    ],
+    without: "Redesign decisions aren't grounded in data. No shared language for what an \"incident\" even is. Tiered service design is incomplete because it only covers cases. When Sev-1 fires, people still scramble without a playbook. RCA coverage doesn't improve."},
+  { num: 0, title: "System Access & Discovery", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Access to 360 case data. Access to incident history. Understanding of current workflows. Relationship building with Support and Engineering leadership.",
+    prereqs: [
+      "360 access granted with case export capability",
+      "Incident data access",
+      "Shadowing sessions with supervisors scheduled",
+      "Key stakeholder introductions complete (Jared for Support, Engineering leads for incident response)"
+    ],
+    without: "Can't support ongoing analysis of escalation patterns or incidents. Can't support data-driven redesign."}
+];
+
+/* ═══════════════════════════════ */
+/* WS-C DATA                       */
+/* ═══════════════════════════════ */
+
+const wscStages = [
+  { num: 5, title: "Optimization Active", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Workflow automation running. Reporting dashboards serving leadership and triads. Process refinement based on usage data. AI layer providing auto-triage, suggested replies, and incident communication drafting.",
+    prereqs: [
+      "Automation rules deployed and tuned",
+      "Dashboards in production (Support metrics, incident metrics, triad views)",
+      "Feedback loop established for continuous improvement",
+      "AI integration operational",
+      "Team trained on new workflows",
+      "Solve-with-article tracking active"
+    ],
+    without: "Tool is deployed but underutilized. Manual workarounds persist. Investment doesn't produce the projected 10-12% handling reduction. Leadership still asks for manual status reports.",
+    bubble: { title: '"Support already knows"', text: "When customers call, agents have context immediately. AI-suggested responses are faster and more accurate. Self-service options work. Incident communications are consistent regardless of who's on call." }},
+  { num: 4, title: "Deployment Complete", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Phased rollout executed. Training completed for all agents and supervisors. Transition period managed. Old workflows sunset or integrated.",
+    prereqs: [
+      "Rollout plan executed by pod/team",
+      "All agents trained on new workflows",
+      "Data migrated (if platform change)",
+      "360 integration working (if hybrid approach)",
+      "Go-live support in place",
+      "Rollback plan ready",
+      "Incident workflows tested in production"
+    ],
+    without: "Partial adoption creates chaos. Some agents use new tool, some use 360. Data lives in two places. Metrics are unreliable. Incident communication workflow isn't trusted.",
+    bubble: { title: '"Possible minor friction during transition"', text: "Customer portal may look different if platform changes." }},
+  { num: 3, title: "Implementation Plan Approved", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Recommended path selected (enhance 360, adopt new platform, or hybrid). Migration strategy defined. Integration requirements documented. Budget approved.",
+    prereqs: [
+      "Recommendation document with TCO analysis",
+      "Leadership decision on path",
+      "Migration plan (if applicable)",
+      "Integration specs (PagerDuty, monitoring tools, knowledge base)",
+      "Budget sign-off",
+      "Implementation scheduled with vendor (if applicable)",
+      "Timeline approved"
+    ],
+    without: "Evaluation is complete but no decision. Team is stuck waiting. Workstream B can't finalize routing/SLA configuration because tooling path is unclear. Incident workflow design is blocked."},
+  { num: 2, title: "Evaluation Complete", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Options analyzed against requirements. Proof-of-concept testing done for viable candidates. TCO comparison completed. Incident management capabilities explicitly evaluated.",
+    prereqs: [
+      "Options analysis document (360 enhancement vs Zendesk/Freshdesk/JSM class)",
+      "POC results for top candidates",
+      "TCO model (license + implementation + ongoing)",
+      "Risk assessment per option",
+      "Case workflow vs. Incident management capabilities",
+      "Evaluation of incident workflow support (MIM paging, communication templates, RCA tracking)",
+      "DMSi sign-off and vendor contracting complete (if applicable)",
+      "DMSi staffing needs for implementation developed (if applicable)"
+    ],
+    without: "Recommendation isn't evidence-based. Leadership can't make confident decision. Risk of choosing tool that doesn't support the operating model or incident discipline."},
+  { num: 1, title: "Requirements Documented", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    blockers: ["Used by all personas -- must incorporate all stakeholder priorities"],
+    desc: "Current state of 360 documented. Capability gaps identified against Workstream B needs. Must-have vs nice-to-have prioritized.",
+    prereqs: [
+      "Current state documentation (what 360 can and can't do today)",
+      "Capability gap analysis against B requirements: customer segmentation and entitlement-aware routing, SLA tracking by segment and severity, product/module tagging for pod routing, parent/child case relationships, MIM notification and paging integration, incident communication log and template support, RCA tracking and linkage to cases, knowledge base integration, analytics (MTTR percentiles, FCR, reopen rates, backlog aging), AI readiness (auto-triage, suggested responses, potential for customer interaction), agent automation (password resets, etc.)",
+      "Prioritized requirements list (must-have vs nice-to-have)",
+      "Alignment with Workstream B's requirements",
+      "DMSi's RFP/vendor contracting process and schedule is documented"
+    ],
+    without: "Evaluation criteria are vague. Can't objectively compare options. Risk of selecting tool that doesn't support the operating model or incident management discipline."},
+  { num: 0, title: "System Access & B Alignment", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Access to 360. Alignment with Workstream B on what the operating model and incident discipline need from tooling.",
+    prereqs: [
+      "360 access",
+      "Understanding of 360's actual capabilities and limitations",
+      "Workstream B Stage 1 outputs as input (especially incident management requirements)",
+      "Access to current incident tooling (PagerDuty config, any existing runbooks)"
+    ],
+    without: "Requirements are guessed, not grounded in current state. We evaluate tools against wrong criteria. Incident workflow requirements are missed."}
+];
+
+/* ═══════════════════════════════ */
+/* WS-D DATA                       */
+/* ═══════════════════════════════ */
+
+/** Allowed inline-ish tags inside GitHub <quote>; everything else is unwrapped. */
+var GITHUB_QUOTE_ALLOWED_TAGS = { b: 1, strong: 1, i: 1, em: 1, u: 1, br: 1, p: 1, span: 1, sub: 1, sup: 1 };
+
+function stripGithubQuoteDangerousAttrs(el) {
+  var attrs = el.attributes;
+  for (var ai = attrs.length - 1; ai >= 0; ai--) {
+    var an = attrs[ai].name.toLowerCase();
+    if (/^on/i.test(an) || an === "style") el.removeAttribute(attrs[ai].name);
+  }
+}
+
+/** Sanitize inner HTML for quote bubbles (no script/on*; strip unknown tags by unwrapping). */
+function sanitizeGithubQuoteHtml(unsafe) {
+  if (!unsafe || typeof unsafe !== "string") return "";
+  try {
+    var doc = new DOMParser().parseFromString(
+      '<div class="gh-quote-sanitize-root">' + unsafe + "</div>",
+      "text/html"
+    );
+    var root = doc.body.firstElementChild;
+    if (!root) return "";
+    function walk(el) {
+      var n = el.firstChild;
+      while (n) {
+        var next = n.nextSibling;
+        if (n.nodeType === 8) {
+          el.removeChild(n);
+        } else if (n.nodeType === 1) {
+          var name = n.nodeName.toLowerCase();
+          if (!GITHUB_QUOTE_ALLOWED_TAGS[name]) {
+            while (n.firstChild) el.insertBefore(n.firstChild, n);
+            el.removeChild(n);
+            n = next;
+            continue;
+          }
+          stripGithubQuoteDangerousAttrs(n);
+          walk(n);
+        }
+        n = next;
+      }
+    }
+    walk(root);
+    return root.innerHTML;
+  } catch (e) {
+    return "";
+  }
+}
+
+var STAGE_QUOTE_ICON_SVG =
+  '<svg class="stage-quote-icon-svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+  '<path fill="none" stroke="currentColor" stroke-width="1.4" d="M6 4.5h12a2 2 0 012 2v8a2 2 0 01-2 2h-6.2L9 19.5v-3H6a2 2 0 01-2-2v-8a2 2 0 012-2z"/>' +
+  '<circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="12" cy="10" r="1" fill="currentColor"/>' +
+  '<circle cx="15" cy="10" r="1" fill="currentColor"/></svg>';
+
+function buildStageQuoteBubblesFromChunks(quoteChunks) {
+  if (!quoteChunks || !quoteChunks.length) return "";
+  var parts = [];
+  for (var qi = 0; qi < quoteChunks.length; qi++) {
+    var safe = sanitizeGithubQuoteHtml(quoteChunks[qi]);
+    if (!safe) continue;
+    parts.push(
+      '<div class="stage-quote-bubble">' +
+        STAGE_QUOTE_ICON_SVG +
+        '<div class="stage-quote-inner">' +
+        safe +
+        "</div></div>"
+    );
+  }
+  return parts.join("");
+}
+
+/**
+ * GitHub issue body → stage copy. Optional <quote>…</quote> → gray quote bubble(s) with limited inner HTML.
+ * Optional <without-this>…</without-this> maps to the green “Without this progress” box.
+ * Optional “For this to work:” section with markdown bullets.
+ */
+function parseGithubIssueBody(raw) {
+  const src = raw != null ? String(raw) : "";
+  const quoteChunks = [];
+  const quoteRe = /<quote>([\s\S]*?)<\/quote>/gi;
+  let qm;
+  while ((qm = quoteRe.exec(src)) !== null) {
+    quoteChunks.push(qm[1]);
+  }
+  const work = src.replace(/<quote>([\s\S]*?)<\/quote>/gi, "").trim();
+  const withoutMatch = work.match(/<without-this>([\s\S]*?)<\/without-this>/i);
+  const without = withoutMatch ? withoutMatch[1].trim().replace(/\s+/g, " ") : "";
+  const main = withoutMatch ? work.replace(withoutMatch[0], "").trim() : work.trim();
+  const parts = main.split(/\n\nFor this to work:\s*\n/i);
+  const desc = parts[0].trim();
+  const prereqs = parts[1]
+    ? parts[1].split("\n").map((line) => line.replace(/^[-*]\s+/, "").trim()).filter(Boolean)
+    : [];
+  const quoteHtml = buildStageQuoteBubblesFromChunks(quoteChunks);
+  return { desc, prereqs, without, quoteHtml };
+}
+
+/** Returns { owner, repo, issue } for github.com …/issues/N or …/pull/N URLs. */
+function parseGithubIssueUrl(url) {
+  if (!url || typeof url !== "string") return null;
+  const m = url.trim().match(/github\.com\/([^/]+)\/([^/]+)\/(?:issues|pull)\/(\d+)/i);
+  if (!m) return null;
+  return { owner: m[1], repo: m[2], issue: parseInt(m[3], 10) };
+}
+
+/** Same key as Project-Plan/github-stall-live.js + Stalled-Blocked-rpt.html */
+var GITHUB_PAT_STORAGE_KEY = "dmsiStalledBlockedGithubPat";
+
+function isLambdaFunctionUrlHost() {
+  try {
+    const h = (window.location.hostname || "").toLowerCase();
+    return h.indexOf("lambda-url") >= 0 || h.endsWith(".on.aws") || h.indexOf(".lambda-url.") >= 0;
+  } catch (e) {
+    return false;
+  }
+}
+
+/** Match Project-Plan: on Lambda Function URL, use same-origin /github-api proxy (Confluence CSP blocks api.github.com). */
+function useGithubProxy() {
+  try {
+    if (window.location.protocol === "file:") return false;
+    const q = new URLSearchParams(window.location.search || "");
+    if (q.get("github_proxy") === "0") return false;
+    if (q.get("github_proxy") === "1") return isLambdaFunctionUrlHost();
+    return isLambdaFunctionUrlHost();
+  } catch (e) {
+    return false;
+  }
+}
+
+function safePageOrigin() {
+  try {
+    const href = window.location.href;
+    if (href && href.indexOf("http") === 0) {
+      const u = new URL(href);
+      if (u.origin && u.origin !== "null") return u.origin;
+    }
+  } catch (e) { /* ignore */ }
+  try {
+    const o = window.location.origin;
+    if (o && o !== "null") return o;
+  } catch (e2) { /* ignore */ }
+  return "";
+}
+
+/** Append Lambda gate ?token= when present (same as Stalled-Blocked withLambdaGate). */
+function withLambdaGateForCapabilityMap(url) {
+  try {
+    const q = new URLSearchParams(window.location.search || "");
+    const t = q.get("token");
+    if (!t) return url;
+    const sep = url.indexOf("?") >= 0 ? "&" : "?";
+    return url + sep + "token=" + encodeURIComponent(t);
+  } catch (e) {
+    return url;
+  }
+}
+
+/** Same query/hash pattern as Stalled/Blocked report: ?github_token= or ?gh_token= */
+function getGithubTokenFromPage() {
+  try {
+    const q = new URLSearchParams(window.location.search || "");
+    let g = q.get("github_token") || q.get("gh_token");
+    if (g) return g;
+    const hash = (window.location.hash || "").replace(/^#/, "");
+    if (!hash) return null;
+    const hq = new URLSearchParams(hash);
+    return hq.get("github_token") || hq.get("gh_token");
+  } catch (e) {
+    return null;
+  }
+}
+
+function getGithubTokenFromLocalStorage() {
+  try {
+    const t = localStorage.getItem(GITHUB_PAT_STORAGE_KEY);
+    return t ? String(t).trim() : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/** Same-origin JSON as Stalled-Blocked report (deploy zip includes it when CI writes the file). */
+function githubPatFileFetchUrl() {
+  try {
+    const base = window.location.href;
+    const rel =
+      window.location.protocol === "file:"
+        ? new URL("../Stalled-Blocked/Stalled-Blocked-github-token.local.json", base).href
+        : new URL("Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json", base).href;
+    return fetchUrlWithPageToken(rel);
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Same order as Project-Plan/github-stall-live.js resolveGithubToken: URL → localStorage → optional JSON.
+ * @returns {Promise<string|null>}
+ */
+function resolveGithubTokenForMap() {
+  const fromQ = getGithubTokenFromPage();
+  if (fromQ) return Promise.resolve(String(fromQ).trim());
+  const fromLs = getGithubTokenFromLocalStorage();
+  if (fromLs) return Promise.resolve(fromLs);
+  const fileUrl = githubPatFileFetchUrl();
+  if (!fileUrl || window.location.protocol === "file:") return Promise.resolve(null);
+  return fetch(fileUrl, { cache: "no-store" })
+    .then(function (r) {
+      return r.ok ? r.json() : null;
+    })
+    .then(function (data) {
+      let raw = data && (data.github_token || data.gh_token || data.token);
+      raw = raw ? String(raw).trim() : "";
+      if (!raw || raw.indexOf("PASTE_YOUR") >= 0) return null;
+      return raw;
+    })
+    .catch(function () {
+      return null;
+    });
+}
+
+function fetchGithubIssueWithResolvedToken(owner, repo, issueNum, token) {
+  const apiUrl =
+    "https://api.github.com/repos/" +
+    encodeURIComponent(owner) +
+    "/" +
+    encodeURIComponent(repo) +
+    "/issues/" +
+    issueNum;
+  const baseHeaders = {
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+  if (useGithubProxy() && safePageOrigin()) {
+    let path;
+    try {
+      path = new URL(apiUrl).pathname;
+    } catch (e) {
+      return Promise.reject(new Error("Bad issue URL"));
+    }
+    const proxyUrl = withLambdaGateForCapabilityMap(safePageOrigin() + "/github-api" + path);
+    var hdr = Object.assign({}, baseHeaders);
+    if (token) hdr["X-GitHub-Token"] = token;
+    return fetch(proxyUrl, {
+      headers: hdr,
+      cache: "no-store"
+    });
+  }
+  const headers = Object.assign({}, baseHeaders);
+  if (token) headers["Authorization"] = "Bearer " + token;
+  return fetch(apiUrl, { headers, cache: "no-store" });
+}
+
+/** User-visible hint when REST returns 403/404 (common for private repos without PAT on Lambda). */
+function githubIssueFetchErrorMessage(err) {
+  var raw = err && err.message ? String(err.message) : "GitHub request failed";
+  if (/HTTP 403\b/.test(raw)) {
+    return (
+      raw +
+      " — Likely a private repo or SSO: set GitHub Actions secret STALLED_BLOCKED_GITHUB_PAT and redeploy, or add &github_token=PAT to this page URL (trusted environments only)."
+    );
+  }
+  if (/HTTP 404\b/.test(raw)) {
+    return (
+      raw +
+      " — Wrong issue number, or private repo without a PAT (same fix as 403)."
+    );
+  }
+  return raw;
+}
+
+function fetchGithubIssueParsed(owner, repo, issueNum) {
+  return resolveGithubTokenForMap().then(function (token) {
+    return fetchGithubIssueWithResolvedToken(owner, repo, issueNum, token);
+  }).then(function (r) {
+    if (!r.ok) return Promise.reject(new Error("GitHub API HTTP " + r.status));
+    return r.json();
+  }).then(function (data) {
+    const body = data.body != null ? String(data.body) : "";
+    var milestoneTitle = "";
+    if (data.milestone && data.milestone.title != null) {
+      milestoneTitle = String(data.milestone.title).trim();
+    }
+    return {
+      title: data.title != null ? String(data.title) : "",
+      parsed: parseGithubIssueBody(body),
+      milestoneTitle: milestoneTitle
+    };
+  });
+}
+
+/** Same mapping as Project-Plan/Capability-map/sync-capability-status-from-github.mjs and Stalled-Blocked-rpt project Status. */
+var GITHUB_ISSUE_PROJECT_STATUS_QUERY =
+  "query IssueGithubProjectStatus($owner: String!, $name: String!, $number: Int!) {\n" +
+  "  repository(owner: $owner, name: $name) {\n" +
+  "    issue(number: $number) {\n" +
+  "      projectItems(first: 25) {\n" +
+  "        nodes {\n" +
+  "          fieldValues(first: 40) {\n" +
+  "            nodes {\n" +
+  "              __typename\n" +
+  "              ... on ProjectV2ItemFieldSingleSelectValue {\n" +
+  "                name\n" +
+  "                field {\n" +
+  "                  ... on ProjectV2SingleSelectField {\n" +
+  "                    name\n" +
+  "                  }\n" +
+  "                }\n" +
+  "              }\n" +
+  "            }\n" +
+  "          }\n" +
+  "        }\n" +
+  "      }\n" +
+  "    }\n" +
+  "  }\n" +
+  "}\n";
+
+function fetchGithubGraphqlData(query, variables, token) {
+  if (!token) return Promise.resolve(null);
+  var body = JSON.stringify({ query: query, variables: variables || {} });
+  var baseHeaders = {
+    "Content-Type": "application/json",
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+  var req;
+  if (useGithubProxy() && safePageOrigin()) {
+    var proxyUrl = withLambdaGateForCapabilityMap(safePageOrigin() + "/github-proxy/graphql");
+    req = fetch(proxyUrl, {
+      method: "POST",
+      headers: Object.assign({}, baseHeaders, { "X-GitHub-Token": token }),
+      body: body,
+      cache: "no-store"
+    });
+  } else {
+    req = fetch("https://api.github.com/graphql", {
+      method: "POST",
+      headers: Object.assign({}, baseHeaders, { Authorization: "Bearer " + token }),
+      body: body,
+      cache: "no-store"
+    });
+  }
+  return req
+    .then(function (r) {
+      if (!r.ok) return Promise.reject(new Error("GraphQL HTTP " + r.status));
+      return r.json();
+    })
+    .then(function (json) {
+      if (json.errors && json.errors.length) {
+        return Promise.reject(new Error(json.errors.map(function (e) { return e.message; }).join("; ")));
+      }
+      return json.data;
+    });
+}
+
+function githubProjectStatusFromGraphqlData(data) {
+  var issue = data && data.repository && data.repository.issue;
+  var nodes = issue && issue.projectItems && issue.projectItems.nodes;
+  if (!nodes || !nodes.length) return "";
+  for (var i = 0; i < nodes.length; i++) {
+    var fvNodes = nodes[i] && nodes[i].fieldValues && nodes[i].fieldValues.nodes;
+    if (!fvNodes) continue;
+    for (var j = 0; j < fvNodes.length; j++) {
+      var n = fvNodes[j];
+      if (!n || n.__typename !== "ProjectV2ItemFieldSingleSelectValue") continue;
+      var fname = String((n.field && n.field.name) || "")
+        .trim()
+        .toLowerCase();
+      if (fname === "status" || fname === "github status") {
+        return String(n.name || "").trim();
+      }
+    }
+  }
+  return "";
+}
+
+/** JSON + GitHub use "advancing"; CSS / stage rows use canonical "in-progress". */
+function normalizeCapabilityStatusToInternal(v) {
+  if (v == null || v === "") return null;
+  var x = String(v).toLowerCase();
+  if (x === "advancing" || x === "in-progress") return "in-progress";
+  return v;
+}
+
+function mapGithubProjectStatusToStageStatus(optionName) {
+  var t = String(optionName || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+  if (t === "backlog" || t === "ready") return "not-started";
+  if (t === "advancing" || t === "in review") return "advancing";
+  if (t === "done") return "done";
+  return null;
+}
+
+/**
+ * Before first render: set stage.status from org Project \"Status\" for stages with githubIssueUrl
+ * (requires PAT: ?github_token=, localStorage, or Stalled-Blocked-github-token.local.json).
+ * On failure or no token, status stays as loaded from JSON/embedded state.
+ */
+function hydrateGithubLinkedStageStatusesFromProject() {
+  return resolveGithubTokenForMap().then(function (token) {
+    if (!token) return;
+    var capIds = ["wm", "vi", "pa", "ls", "wsb", "wsc", "wsd"];
+    var ops = [];
+    capIds.forEach(function (capId) {
+      var arr = getStageArrays(capId)[0];
+      if (!arr) return;
+      arr.forEach(function (stage) {
+        if (!stage.githubIssueUrl || !String(stage.githubIssueUrl).trim()) return;
+        var parts = parseGithubIssueUrl(stage.githubIssueUrl);
+        if (!parts) return;
+        ops.push({
+          stage: stage,
+          vars: { owner: parts.owner, name: parts.repo, number: parts.issue }
+        });
+      });
+    });
+    if (!ops.length) return;
+    return Promise.all(
+      ops.map(function (op) {
+        return fetchGithubGraphqlData(GITHUB_ISSUE_PROJECT_STATUS_QUERY, op.vars, token)
+          .then(function (data) {
+            if (!data) return;
+            var raw = githubProjectStatusFromGraphqlData(data);
+            var mapped = mapGithubProjectStatusToStageStatus(raw);
+            if (mapped != null) {
+              var nSt = normalizeCapabilityStatusToInternal(mapped);
+              op.stage.status = nSt != null ? nSt : mapped;
+            }
+          })
+          .catch(function () {
+            /* keep JSON status */
+          });
+      })
+    );
+  });
+}
+
+function capIdToTheme(capId) {
+  const map = { wm: "green", vi: "blue", pa: "teal", ls: "gold", wsb: "orange", wsc: "violet", wsd: "slate" };
+  return map[capId] || "green";
+}
+
+function replaceStageCardEl(capId, stage) {
+  const id = capId + "-stage-" + stage.num;
+  const oldEl = document.getElementById(id);
+  if (!oldEl || !oldEl.parentNode) return;
+  const expanded = oldEl.classList.contains("expanded");
+  const arr = getStageArrays(capId)[0];
+  const idx = arr.findIndex(function (s) {
+    return sameStageNum(s.num, stage.num);
+  });
+  const newEl = makeStageCard(stage, capId, idx >= 0 ? idx : 0, capIdToTheme(capId));
+  if (expanded) newEl.classList.add("expanded");
+  oldEl.parentNode.replaceChild(newEl, oldEl);
+}
+
+/** Writable stage row in wmStages / paStages / … (getAllStages spreads copies; mutate this for hydration). */
+function canonicalStageFor(capId, num) {
+  const arr = getStageArrays(capId)[0];
+  return arr && arr.find(function (st) { return sameStageNum(st.num, num); });
+}
+
+/**
+ * Ensure every stage with a githubIssueUrl will REST-fetch the issue (desc, quote, milestone).
+ * applyState only sets loading when the state JSON row includes githubIssueUrl; this guarantees
+ * hydration after merge. Also used when re-syncing after GitHub edits (tab focus / refresh).
+ */
+function markGithubLinkedStagesForHydration() {
+  getAllStages().forEach(function (s) {
+    if (s.githubIssueUrl && String(s.githubIssueUrl).trim()) {
+      s._githubBodyStatus = "loading";
+      delete s._githubErrorMessage;
+      delete s._githubMilestoneTitle;
+      delete s._githubQuoteHtml;
+    }
+  });
+}
+
+/** After render, load issue bodies for stages that set githubIssueUrl in capability-map-state.json */
+function hydrateGithubLinkedStages() {
+  const pending = getAllStages().filter(function (s) {
+    return s.githubIssueUrl && s._githubBodyStatus === "loading";
+  });
+  pending.forEach(function (s) {
+    const parts = parseGithubIssueUrl(s.githubIssueUrl);
+    const stage = canonicalStageFor(s.capId, s.num) || s;
+    if (!parts) {
+      stage._githubBodyStatus = "error";
+      stage._githubErrorMessage = "Invalid githubIssueUrl (expected …/owner/repo/issues/N)";
+      delete stage._githubQuoteHtml;
+      replaceStageCardEl(s.capId, stage);
+      return;
+    }
+    fetchGithubIssueParsed(parts.owner, parts.repo, parts.issue)
+      .then(function (result) {
+        stage.desc = result.parsed.desc;
+        stage.prereqs = result.parsed.prereqs;
+        stage.without = result.parsed.without;
+        stage._githubBodyStatus = "ready";
+        delete stage._githubErrorMessage;
+        if (result.parsed.quoteHtml) stage._githubQuoteHtml = result.parsed.quoteHtml;
+        else delete stage._githubQuoteHtml;
+        if (result.milestoneTitle) stage._githubMilestoneTitle = result.milestoneTitle;
+        else delete stage._githubMilestoneTitle;
+        replaceStageCardEl(s.capId, stage);
+      })
+      .catch(function (err) {
+        stage._githubBodyStatus = "error";
+        stage._githubErrorMessage = githubIssueFetchErrorMessage(err);
+        delete stage._githubQuoteHtml;
+        replaceStageCardEl(s.capId, stage);
+      });
+  });
+}
+
+const wsdStages = [
+  { num: 4, title: "Data-Driven Habits Forming", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "DMSi is building the habit of looking at data first. Dashboards are becoming the default starting point for operational questions. Shadow spreadsheets are declining. Debates are starting to shift from \"what's actually happening?\" to \"what should we do about it?\"",
+    prereqs: [
+      "Dashboards answer the questions leaders actually ask (validated through usage)",
+      "Refresh cadence matches decision rhythms",
+      "Access is frictionless (bookmarked, mobile-friendly, or integrated into existing workflows)",
+      "Trust is building (fewer \"shadow spreadsheets\" competing for attention)",
+      "Reporting cycles are refining views based on actual usage patterns"
+    ],
+    without: "Dashboards exist but aren't part of the workflow, old patterns persist. The investment doesn't translate into changed behavior." },
+  { num: 3, title: "Executive Dashboard Operational", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Combined view allowing cross-functional metrics exists. Pulls from Engineering, Support, and other key functions. Executive leadership consumes it regularly.",
+    prereqs: [
+      "Engineering Scorecard data flowing",
+      "Support Scorecard data flowing",
+      "Other key data sources identified and integrated (key sales/financial, Product, etc. as determined in Stage 0)",
+      "Consolidated view designed and built",
+      "Metrics organized around the agreed framework (pillars, functions, or hybrid)",
+      "Leadership has reviewed and provided feedback",
+      "Dashboard answers cross-functional questions (not just functional silos)"
+    ],
+    without: "Leadership has fragmented views with no synthesis. They still have to mentally combine data or ask someone to explain how the pieces connect." },
+  { num: 2, title: "Support Scorecard Live", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Support metrics dashboard operational. NPS tracking implemented. SLA visibility in place. Integrates into the Support L10.",
+    prereqs: [
+      "Support metrics defined and agreed with Support leadership",
+      "Data sources for Support metrics identified and accessible",
+      "Customer satisfaction data flowing (a clear plan for collection)",
+      "SLA definitions exist and are tracked",
+      "Support L10 structure understood (what do they review now?)",
+      "Dashboards built and validated against actual Support questions",
+      "Scorecard visible and referenced in the Support L10"
+    ],
+    without: "Executive Dashboard is incomplete. Engineering health is visible but customer-facing operations are a black box." },
+  { num: 1, title: "System Engineering Scorecard Live", status: "not-started",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "Scorecard v0 is aligned to Engineering goals and is being integrated into L10 meetings.",
+    prereqs: [
+      "Engineering goals clearly defined (what does \"good\" look like?)",
+      "Metrics selected that measure progress toward goals",
+      "Data sources for those metrics have been identified and are accessible",
+      "Engineering L10 structure understood (what do they review now?)",
+      "Scorecard format validated with Engineering leadership",
+      "Scorecard visible and referenced in the Engineering L10",
+      "First proof of value demonstrated.."
+    ],
+    without: "No foundation to build on. Support Scorecard would be designed in isolation, and we'd discover misalignment later." },
+  { num: 0, title: "Scope, Discovery, and Documentation", status: "done",
+    targetStart: "TBD", targetEnd: "TBD",
+    desc: "We've determined what to measure, who we're building for, and documented the current state.",
+    prereqs: [
+      "Assessment scope defined (what are we actually measuring?)",
+      "Organizing framework selected (strategic pillars/KPIs, organizational functions, track/workstream metrics, team productivity, or combination)",
+      "Key audiences identified (who are the primary consumers? Executive Board? Departmental/IT/Ops leaders? What questions does each audience need answered?)",
+      "L10/rhythm roles mapped (which L10s use or expect the information? Who's on each Scorecard today? What goes in/reviewed, and where are the gaps?)",
+      "Current state documented (what data sources exist today? Where is system-generated vs. manually compiled? What's missing?)"
+    ],
+    without: "We build dashboards that answer the wrong questions for the wrong people, or we discover mismatches late -- the data doesn't exist." }
+];
+
+/* Sprint calendar: matches Project-Plan/Capability-map/Sprint Calendar.csv (Start, End per sprint) */
+const sprintCalendar = [
+  { start: "02/16/26", end: "02/27/26" },
+  { start: "03/02/26", end: "03/13/26" },
+  { start: "03/16/26", end: "03/27/26" },
+  { start: "03/30/26", end: "04/13/26" },
+  { start: "04/13/26", end: "04/27/26" },
+  { start: "04/27/26", end: "05/11/26" },
+  { start: "05/11/26", end: "05/25/26" },
+  { start: "05/25/26", end: "06/08/26" },
+  { start: "06/08/26", end: "06/22/26" },
+  { start: "06/22/26", end: "07/06/26" },
+  { start: "07/06/26", end: "07/20/26" },
+  { start: "07/20/26", end: "08/03/26" },
+  { start: "08/03/26", end: "08/17/26" },
+  { start: "08/17/26", end: "08/31/26" },
+  { start: "08/31/26", end: "09/14/26" },
+  { start: "09/14/26", end: "09/28/26" },
+  { start: "09/28/26", end: "10/12/26" },
+  { start: "10/12/26", end: "10/26/26" },
+  { start: "10/26/26", end: "11/09/26" },
+  { start: "11/09/26", end: "11/23/26" },
+  { start: "11/23/26", end: "12/07/26" },
+  { start: "12/07/26", end: "12/21/26" },
+  { start: "12/21/26", end: "01/04/27" },
+  { start: "01/04/27", end: "01/18/27" },
+  { start: "01/18/27", end: "02/01/27" }
+];
+
+/** Parse MM/DD/YY, "Mon D, YYYY", or "Mon YYYY" to Date for sprint lookup. */
+function parseStageDate(str) {
+  if (!str || typeof str !== "string") return null;
+  const s = str.trim();
+  const mdy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if (mdy) {
+    const yy = mdy[3].length === 2 ? 2000 + parseInt(mdy[3], 10) : parseInt(mdy[3], 10);
+    return new Date(yy, parseInt(mdy[1], 10) - 1, parseInt(mdy[2], 10));
+  }
+  const months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
+  const monDayY = s.match(/^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})$/);
+  if (monDayY) {
+    const mi = months.indexOf(monDayY[1]);
+    if (mi !== -1) return new Date(parseInt(monDayY[3], 10), mi, parseInt(monDayY[2], 10));
+  }
+  const monY = s.match(/^([A-Za-z]+)\s+(\d{4})$/);
+  if (monY) {
+    const mi = months.indexOf(monY[1]);
+    if (mi !== -1) return new Date(parseInt(monY[2], 10), mi, 15);
+  }
+  return null;
+}
+
+function parseSprintMDY(str) {
+  const [mm, dd, yy] = str.split("/").map(Number);
+  const year = yy < 100 ? 2000 + yy : yy;
+  return new Date(year, mm - 1, dd);
+}
+
+/** Return { num, start, end } for the sprint containing the given date string, or null. */
+function getSprintForDate(dateStr) {
+  const d = parseStageDate(dateStr);
+  if (!d) return null;
+  for (let i = 0; i < sprintCalendar.length; i++) {
+    const s = sprintCalendar[i];
+    const start = parseSprintMDY(s.start);
+    const end = parseSprintMDY(s.end);
+    if (d >= start && d <= end) return { num: i + 1, start: s.start, end: s.end };
+  }
+  return null;
+}
+
+/** Return array of { num, start, end } for all sprints that overlap the stage date range. */
+function getSprintsForDateRange(startStr, endStr) {
+  const startD = parseStageDate(startStr);
+  const endD = parseStageDate(endStr);
+  if (!startD && !endD) return [];
+  const rangeStart = startD || endD;
+  const rangeEnd = endD || startD;
+  const result = [];
+  for (let i = 0; i < sprintCalendar.length; i++) {
+    const s = sprintCalendar[i];
+    const sprintStart = parseSprintMDY(s.start);
+    const sprintEnd = parseSprintMDY(s.end);
+    if (rangeEnd < sprintStart || rangeStart > sprintEnd) continue;
+    result.push({ num: i + 1, start: s.start, end: s.end });
+  }
+  return result;
+}
+
+/** Return 'past' | 'current' | 'future' for a sprint (by num 1..n). */
+function getSprintStatus(sprintNum) {
+  if (!sprintNum || sprintNum < 1 || sprintNum > sprintCalendar.length) return 'future';
+  const s = sprintCalendar[sprintNum - 1];
+  const start = parseSprintMDY(s.start);
+  const end = parseSprintMDY(s.end);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (today > end) return 'past';
+  if (today >= start && today <= end) return 'current';
+  return 'future';
+}
+
+/** Return the 1-based sprint number that is currently active (green), or null. */
+function getCurrentSprintNum() {
+  for (let i = 0; i < sprintCalendar.length; i++) {
+    if (getSprintStatus(i + 1) === 'current') return i + 1;
+  }
+  return null;
+}
+
+/** 90-day window around current sprint start. Only sprint labels within this window are shown. */
+const SPRINT_DISPLAY_WINDOW_DAYS = 90;
+
+/** Return { windowStart, windowEnd } (Date) for filtering sprint labels, or null to show all. */
+function getSprintDisplayWindow() {
+  const num = getCurrentSprintNum();
+  if (!num) return null;
+  const s = sprintCalendar[num - 1];
+  const start = parseSprintMDY(s.start);
+  const windowStart = new Date(start);
+  windowStart.setDate(windowStart.getDate() - SPRINT_DISPLAY_WINDOW_DAYS);
+  const windowEnd = new Date(start);
+  windowEnd.setDate(windowEnd.getDate() + SPRINT_DISPLAY_WINDOW_DAYS);
+  return { windowStart, windowEnd };
+}
+
+/** True if the sprint's full date range lies entirely within the 90-day display window. */
+function isSprintInDisplayWindow(sprintInfo) {
+  const window = getSprintDisplayWindow();
+  if (!window) return true;
+  const sprintStart = parseSprintMDY(sprintInfo.start);
+  const sprintEnd = parseSprintMDY(sprintInfo.end);
+  return sprintStart >= window.windowStart && sprintEnd <= window.windowEnd;
+}
+
+/* ═══════════════════════════════ */
+/* RENDERING                       */
+/* ═══════════════════════════════ */
+
+function getStatusLabel(s) {
+  return s === 'done' ? 'Completed' : s === 'in-progress' ? 'Advancing' : 'Not Started';
+}
+
+/** True when artifact icon/link should show: not placeholder (not #, blank, or PASTE_DMSI_URL). Includes relative helper paths from state (e.g. sharepoint-*.html). */
+function hasStageArtifactUrl(url) {
+  if (url == null || url === '') return false;
+  var s = String(url).trim();
+  if (s === '' || s === '#') return false;
+  if (/^PASTE_DMSI_URL$/i.test(s)) return false;
+  return true;
+}
+
+/** Escape text for HTML text nodes and attribute values. */
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/**
+ * Blocker: string, or { text, url?, secondaryUrl?, stalledBlocked? } (legacy: label, href).
+ * stalledBlocked: { repo, issue } or { issueUrl } — same deep link as WM-Outcome-Map B → Stalled-Blocked-rpt modal.
+ * url: optional extra (e.g. Confluence). secondaryUrl: optional direct GitHub issue page.
+ */
+function normalizeBlockerEntry(b) {
+  if (b == null) return { text: '', url: '', secondaryUrl: '', stalledBlocked: null };
+  if (typeof b === 'string') return { text: b, url: '', secondaryUrl: '', stalledBlocked: null };
+  if (typeof b === 'object') {
+    var text = b.text != null ? String(b.text) : (b.label != null ? String(b.label) : '');
+    var url = '';
+    if (b.url != null && String(b.url).trim() !== '') url = String(b.url).trim();
+    else if (b.href != null && String(b.href).trim() !== '') url = String(b.href).trim();
+    var secondaryUrl = '';
+    if (b.secondaryUrl != null && String(b.secondaryUrl).trim() !== '') secondaryUrl = String(b.secondaryUrl).trim();
+    var stalledBlocked = null;
+    if (b.stalledBlocked && typeof b.stalledBlocked === 'object') {
+      var sb = b.stalledBlocked;
+      var r = sb.repo != null ? String(sb.repo).trim() : '';
+      var iss = sb.issue;
+      var iu = sb.issueUrl != null ? String(sb.issueUrl).trim() : (sb.issue_url != null ? String(sb.issue_url).trim() : '');
+      if (r && iss != null && String(iss) !== '') stalledBlocked = { repo: r, issue: String(iss) };
+      else if (iu) stalledBlocked = { issueUrl: iu };
+    }
+    return { text: text, url: url, secondaryUrl: secondaryUrl, stalledBlocked: stalledBlocked };
+  }
+  return { text: String(b), url: '', secondaryUrl: '', stalledBlocked: null };
+}
+
+function normalizeBlockersList(blockers) {
+  if (!Array.isArray(blockers)) return [];
+  return blockers.map(normalizeBlockerEntry);
+}
+
+/** Relative path to Stalled-Blocked/Stalled-Blocked-rpt.html (repo root on Lambda; ../Stalled-Blocked when opened from Project-Plan/Capability-map/). */
+function getStalledBlockedReportHtmlPath() {
+  var path = window.location.pathname || '';
+  if (path.indexOf('/Project-Plan/Capability-map/') !== -1 || path.indexOf('/Capability-map/') !== -1)
+    return '../Stalled-Blocked/Stalled-Blocked-rpt.html';
+  return 'Project-Plan/Stalled-Blocked/Stalled-Blocked-rpt.html';
+}
+
+/** Builds ?repo=&issue= or ?issue_url= link; copies token/github_token from current page (matches github-stall-live / WM Outcome Map). */
+function buildStalledBlockedReportHrefFromBlocker(x) {
+  if (!x || !x.stalledBlocked) return '';
+  var sb = x.stalledBlocked;
+  var reportPath = getStalledBlockedReportHtmlPath();
+  var p = new URLSearchParams();
+  try {
+    var cur = new URLSearchParams(window.location.search || '');
+    var tok = cur.get('token');
+    var gh = cur.get('github_token') || cur.get('gh_token');
+    if (tok) p.set('token', tok);
+    if (gh) p.set('github_token', gh);
+  } catch (e) { /* ignore */ }
+  if (sb.repo && sb.issue != null && String(sb.issue) !== '') {
+    p.set('repo', sb.repo);
+    p.set('issue', String(sb.issue));
+  } else if (sb.issueUrl) {
+    p.set('issue_url', sb.issueUrl);
+  } else {
+    return '';
+  }
+  var qs = p.toString();
+  if (!qs) return '';
+  var sep = reportPath.indexOf('?') >= 0 ? '&' : '?';
+  return reportPath + sep + qs;
+}
+
+/** First http(s) primary url among blockers (fallback when no stalledBlocked). */
+function firstBlockerUrl(normalized) {
+  if (!normalized || !normalized.length) return '';
+  for (var i = 0; i < normalized.length; i++) {
+    var u = normalized[i].url;
+    if (u && /^https?:\/\//i.test(u)) return u;
+  }
+  return '';
+}
+
+/** B badge: prefer Stalled/Blocked report deep link (opens modal), else generic url. */
+function firstBlockerBadgeHref(normalized) {
+  if (!normalized || !normalized.length) return '';
+  for (var i = 0; i < normalized.length; i++) {
+    var stall = buildStalledBlockedReportHrefFromBlocker(normalized[i]);
+    if (stall) return stall;
+  }
+  return firstBlockerUrl(normalized);
+}
+
+/** Snapshot of state.milestones; used to color stage GitHub milestone markers like top milestone pills. */
+var CAPABILITY_MAP_MILESTONES = [];
+
+/** Match GitHub milestone title to capability-map-state.json milestones (id e.g. M3, or label). */
+function findMilestoneMetaForGithubTitle(githubTitle) {
+  const raw = String(githubTitle || "").trim();
+  if (!raw) return null;
+  const list = CAPABILITY_MAP_MILESTONES;
+  if (!list || !list.length) return null;
+  const lower = raw.toLowerCase();
+  const compact = raw.toUpperCase().replace(/\s+/g, "");
+  var m = list.find(function (x) {
+    const id = String(x.id || "").trim();
+    return id.toUpperCase() === compact || id.toUpperCase() === raw.toUpperCase().trim();
+  });
+  if (m) return m;
+  m = list.find(function (x) {
+    const id = String(x.id || "").toUpperCase().replace(/\s+/g, "");
+    return id.length >= 2 && (compact === id || compact.indexOf(id) === 0);
+  });
+  if (m) return m;
+  m = list.find(function (x) {
+    return String(x.label || "").toLowerCase() === lower;
+  });
+  return m || null;
+}
+
+function milestonePillClassFromMeta(meta) {
+  if (!meta) return "m-not-started";
+  var st = normalizeCapabilityStatusToInternal(meta.status);
+  var eff = st != null ? st : meta.status;
+  if (eff === "done") return "m-done";
+  if (eff === "in-progress") return "m-in-progress";
+  return "m-not-started";
+}
+
+/** Badge only (M3 / checkmark); colors from JSON milestone status. Full name on hover via title. */
+function githubMilestoneMarkerHtml(githubMilestoneTitle) {
+  const raw = String(githubMilestoneTitle || "").trim();
+  if (!raw) return "";
+  const meta = findMilestoneMetaForGithubTitle(raw);
+  const cls = milestonePillClassFromMeta(meta);
+  const badgeInner =
+    cls === "m-done" && meta
+      ? "&#10003;"
+      : escapeHtml(meta && meta.id ? meta.id : raw);
+  const tip = meta && meta.label ? `${meta.id}: ${meta.label}` : raw;
+  const dataAttr = meta && meta.id ? ` data-milestone-id="${escapeHtml(String(meta.id).toLowerCase())}"` : "";
+  return ` <span class="milestone-pill milestone-pill-inline ${cls}"${dataAttr} title="${escapeHtml(tip)}"><span class="m-badge">${badgeInner}</span></span>`;
+}
+
+function makeStageCard(stage, capId, idx, theme) {
+  const card = document.createElement('div');
+  card.className = `stage-card status-${stage.status}`;
+  card.id = `${capId}-stage-${stage.num}`;
+
+  // Date range (show "Not scheduled" when both targetStart and targetEnd are missing or empty)
+  const hasDates = stage.targetStart || stage.targetEnd;
+  const dateText = hasDates
+    ? (stage.targetStart === stage.targetEnd ? stage.targetStart : `${stage.targetStart || '?'} &ndash; ${stage.targetEnd || '?'}`)
+    : 'Not scheduled';
+  const ms = stage._githubMilestoneTitle && String(stage._githubMilestoneTitle).trim();
+  const milestoneHtml = ms ? githubMilestoneMarkerHtml(ms) : "";
+  const sprintInfos = getSprintsForDateRange(stage.targetStart, stage.targetEnd);
+  const sprintInfosInWindow = sprintInfos.filter(isSprintInDisplayWindow);
+  const sprintHtml = sprintInfosInWindow.length
+    ? `<div class="sprint-indicators-wrap">` + sprintInfosInWindow.map(function (sprintInfo) {
+        const status = getSprintStatus(sprintInfo.num);
+        return `<span class="sprint-indicator sprint-${status}" title="Sprint ${sprintInfo.num}: ${sprintInfo.start} – ${sprintInfo.end}">
+          S${sprintInfo.num}
+          <span class="sprint-indicator-tooltip">Start: ${sprintInfo.start} &nbsp; End: ${sprintInfo.end}</span>
+        </span>`;
+      }).join('') + `</div>`
+    : '';
+  const dateHtml = `<div class="stage-dates-col">
+    <div class="stage-dates">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v4M11 1v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      ${dateText}${milestoneHtml}
+    </div>
+    ${sprintHtml}
+  </div>`;
+
+  // Blocker badge (collapsed header); stalledBlocked → Stalled-Blocked-rpt.html?repo=&issue= (same modal as WM Outcome Map B)
+  const blockersNorm = normalizeBlockersList(stage.blockers);
+  let blockerBadgeHtml = '';
+  if (blockersNorm.length > 0) {
+    const tooltipText = blockersNorm.map(x => escapeHtml(x.text)).join('<br>');
+    const tooltipInner = `<div class="blocker-tooltip">${tooltipText}</div>`;
+    const primaryUrl = firstBlockerBadgeHref(blockersNorm);
+    if (primaryUrl) {
+      var badgeTitle = blockersNorm.some(x => x.stalledBlocked)
+        ? 'Open Stalled/Blocked report (GitHub issue detail popup)'
+        : 'Open tracking link';
+      blockerBadgeHtml = `<a class="blocker-badge blocker-badge-link" href="${escapeHtml(primaryUrl)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(badgeTitle)}" onclick="event.stopPropagation()">B${tooltipInner}</a>`;
+    } else {
+      blockerBadgeHtml = `<span class="blocker-badge">B${tooltipInner}</span>`;
+    }
+  }
+
+  // Blocker section (expanded body)
+  let blockerSectionHtml = '';
+  if (blockersNorm.length > 0) {
+    const liHtml = blockersNorm.map(x => {
+      const t = escapeHtml(x.text);
+      const stallHref = buildStalledBlockedReportHrefFromBlocker(x);
+      const u = x.url && /^https?:\/\//i.test(x.url) ? x.url : '';
+      const su = x.secondaryUrl && /^https?:\/\//i.test(x.secondaryUrl) ? x.secondaryUrl : '';
+      let inner = t;
+      if (stallHref) {
+        inner = `<a href="${escapeHtml(stallHref)}" target="_blank" rel="noopener noreferrer">${t}</a>`;
+      } else if (u) {
+        inner = `<a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${t}</a>`;
+      }
+      if (stallHref && u && u !== stallHref) {
+        inner += `<span class="blocker-secondary-link"><a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">View on Confluence</a></span>`;
+      }
+      if (su) {
+        inner += `<span class="blocker-secondary-link"><a href="${escapeHtml(su)}" target="_blank" rel="noopener noreferrer">Open on GitHub</a></span>`;
+      }
+      return `<li>${inner}</li>`;
+    }).join('');
+    blockerSectionHtml = `<div class="blocker-section">
+      <p class="blocker-label">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l7 14H1L8 1z" fill="#dc2626"/><text x="8" y="12" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">!</text></svg>
+        Active Blockers
+      </p>
+      <ul>${liHtml}</ul>
+    </div>`;
+  }
+
+  const ghLoading = stage.githubIssueUrl && stage._githubBodyStatus === "loading";
+  const ghError = stage.githubIssueUrl && stage._githubBodyStatus === "error";
+  const ghQuoteReady =
+    !ghLoading &&
+    !ghError &&
+    stage.githubIssueUrl &&
+    stage._githubBodyStatus === "ready" &&
+    stage._githubQuoteHtml &&
+    String(stage._githubQuoteHtml).trim();
+  const prereqRows = (stage.prereqs || []).map(p => {
+    if (typeof p === "object" && p !== null && "main" in p && Array.isArray(p.sub)) {
+      return `<li>${escapeHtml(p.main)}<ul>${p.sub.map(s => `<li>${escapeHtml(s)}</li>`).join("")}</ul></li>`;
+    }
+    const line = typeof p === "string" ? p : (p && p.main) || "";
+    return `<li>${escapeHtml(line)}</li>`;
+  }).join("");
+  const prereqBlock =
+    ghLoading
+      ? `<p class="prereq-label">For this to work:</p><ul><li class="stage-github-placeholder">…</li></ul>`
+      : prereqRows
+        ? `<p class="prereq-label">For this to work:</p><ul>${prereqRows}</ul>`
+        : "";
+  let descBlock;
+  let withoutBlock;
+  if (ghLoading) {
+    descBlock = `<p class="stage-desc"><span class="stage-github-status">Loading issue from GitHub…</span></p>`;
+    withoutBlock = `<div class="without-this">&nbsp;</div>`;
+  } else if (ghError) {
+    descBlock = `<p class="stage-github-error">${escapeHtml(stage._githubErrorMessage || "Could not load GitHub issue.")} Showing embedded description below.</p><p class="stage-desc">${escapeHtml(stage.desc)}</p>`;
+    withoutBlock = `<div class="without-this">${escapeHtml(stage.without || "")}</div>`;
+  } else {
+    descBlock = `<p class="stage-desc">${escapeHtml(stage.desc)}</p>`;
+    withoutBlock = `<div class="without-this">${escapeHtml(stage.without || "")}</div>`;
+  }
+
+  /** Bottom gray callout: GitHub <quote> replaces embedded JSON bubble when issue is loaded and has a quote. */
+  let bottomCalloutHtml = "";
+  if (ghQuoteReady) {
+    bottomCalloutHtml = String(stage._githubQuoteHtml);
+  } else if (stage.bubble) {
+    bottomCalloutHtml =
+      `<div class="bubble-callout"><span class="bubble-icon">&#128172;</span><div><span class="bubble-title">${stage.bubble.title}</span>${stage.bubble.text}</div></div>`;
+  }
+
+  card.innerHTML = `
+    ${blockerBadgeHtml}
+    <div class="stage-header" onclick="toggleStageCard('${card.id}')">
+      <div class="stage-number">${stage.num}</div>
+      <div class="stage-header-text">
+        <h3>S${stage.num}: ${stage.title}</h3>
+        <div class="stage-info-row">
+          ${dateHtml}
+          <span class="stage-status-badge">${getStatusLabel(stage.status)}</span>
+        </div>
+      </div>
+      ${hasStageArtifactUrl(stage.artifactsUrl) ? `<a class="artifact-indicator" href="${stage.artifactsUrl}" target="_blank" rel="noopener" title="Open stage artifacts" onclick="event.stopPropagation()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h5.586a1 1 0 01.707.293l3.414 3.414A1 1 0 0113 6.414V13a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" stroke="#2563eb" stroke-width="1.5"/><path d="M8 2v4h4" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>` : ''}
+      <span class="stage-expand-icon">&#9662;</span>
+    </div>
+    <div class="stage-body">
+      <div class="stage-body-content">
+        ${descBlock}
+        ${blockerSectionHtml}
+        ${prereqBlock}
+        ${withoutBlock}
+        ${bottomCalloutHtml}
+        ${hasStageArtifactUrl(stage.artifactsUrl) ? `<a class="artifacts-link" href="${stage.artifactsUrl}" target="_blank" rel="noopener">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 3a1 1 0 011-1h5.586a1 1 0 01.707.293l3.414 3.414A1 1 0 0113 6.414V13a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" stroke="#2563eb" stroke-width="1.5"/><path d="M8 2v4h4" stroke="#2563eb" stroke-width="1.5"/></svg>
+          Stage Artifacts Folder
+        </a>` : ''}
+        <div class="status-select">
+          <label>Status:</label>
+          <select onchange="event.stopPropagation(); updateStageStatus('${capId}', ${stage.num}, this.value)">
+            <option value="not-started" ${stage.status === 'not-started' ? 'selected' : ''}>Not Started</option>
+            <option value="in-progress" ${stage.status === 'in-progress' ? 'selected' : ''}>Advancing</option>
+            <option value="done" ${stage.status === 'done' ? 'selected' : ''}>Complete</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  `;
+  return card;
+}
+
+function makeConnector(active, theme) {
+  const activeClass = active ? (theme === 'blue' ? 'active-blue' : theme === 'teal' ? 'active-teal' : theme === 'gold' ? 'active-gold' : theme === 'purple' ? 'active-purple' : theme === 'orange' ? 'active-orange' : theme === 'violet' ? 'active-violet' : theme === 'slate' ? 'active-slate' : 'active') : '';
+  const conn = document.createElement('div');
+  conn.className = 'connector';
+  conn.innerHTML = `
+    <div class="connector-line ${activeClass}"></div>
+    <div class="connector-dot ${activeClass}"></div>
+    <div class="connector-arrow ${activeClass}"></div>
+  `;
+  return conn;
+}
+
+function renderWM() {
+  const col = document.getElementById('stagesWM');
+  col.innerHTML = '';
+  wmStages.forEach((stage, idx) => {
+    if (idx > 0) col.appendChild(makeConnector(false, 'green'));
+    col.appendChild(makeStageCard(stage, 'wm', idx, 'green'));
+  });
+}
+
+function renderVI() {
+  const col = document.getElementById('stagesVI');
+  col.innerHTML = '';
+  viStages.forEach((stage, idx) => {
+    if (idx > 0) col.appendChild(makeConnector(false, 'teal'));
+    col.appendChild(makeStageCard(stage, 'vi', idx, 'teal'));
+  });
+}
+
+function renderPA() {
+  const col = document.getElementById('stagesPA');
+  col.innerHTML = '';
+  paStages.forEach((stage, idx) => {
+    if (idx > 0) col.appendChild(makeConnector(false, 'gold'));
+    col.appendChild(makeStageCard(stage, 'pa', idx, 'gold'));
+  });
+}
+
+function renderLS() {
+  const col = document.getElementById('stagesLS');
+  col.innerHTML = '';
+  lsStages.forEach((stage, idx) => {
+    if (idx > 0) col.appendChild(makeConnector(false, 'purple'));
+    col.appendChild(makeStageCard(stage, 'ls', idx, 'purple'));
+  });
+}
+
+function renderWSB() {
+  const col = document.getElementById('stagesWSB');
+  col.innerHTML = '';
+  wsbStages.forEach((stage, idx) => {
+    if (idx > 0) col.appendChild(makeConnector(false, 'orange'));
+    col.appendChild(makeStageCard(stage, 'wsb', idx, 'orange'));
+  });
+}
+
+function renderWSC() {
+  const col = document.getElementById('stagesWSC');
+  col.innerHTML = '';
+  wscStages.forEach((stage, idx) => {
+    if (idx > 0) col.appendChild(makeConnector(false, 'violet'));
+    col.appendChild(makeStageCard(stage, 'wsc', idx, 'violet'));
+  });
+}
+
+function renderWSD() {
+  const col = document.getElementById('stagesWSD');
+  col.innerHTML = '';
+  wsdStages.forEach((stage, idx) => {
+    if (idx > 0) col.appendChild(makeConnector(false, 'slate'));
+    col.appendChild(makeStageCard(stage, 'wsd', idx, 'slate'));
+  });
+}
+
+function toggleStageCard(id) {
+  const card = document.getElementById(id);
+  const wasExpanded = card.classList.contains('expanded');
+  // Close all in same column
+  const col = card.closest('.capability-column');
+  col.querySelectorAll('.stage-card.expanded').forEach(c => c.classList.remove('expanded'));
+  if (!wasExpanded) {
+    card.classList.add('expanded');
+    setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+  }
+}
+
+function updateStageStatus(capId, stageNum, value) {
+  const allArrays = capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [];
+  for (const arr of allArrays) {
+    const found = arr.find(s => sameStageNum(s.num, stageNum));
+    if (found) { found.status = value; break; }
+  }
+  if (capId === 'wm') renderWM();
+  else if (capId === 'vi') renderVI();
+  else if (capId === 'pa') renderPA();
+  else if (capId === 'ls') renderLS();
+  else if (capId === 'wsb') renderWSB();
+  else if (capId === 'wsc') renderWSC();
+  else if (capId === 'wsd') renderWSD();
+}
+
+function toggleEl(id) {
+  document.getElementById(id).classList.toggle('expanded');
+  setTimeout(() => { equalizeCapCards(); equalizeBCCards(); }, 450);
+}
+
+/* ═══════════════════════════════ */
+/* STATE FROM JSON / EMBEDDED      */
+/* capability-map-state.json: same-origin fetch (cache: no-store), then GitHub raw main fallback, then EMBEDDED_STATE.
+   Regenerate EMBEDDED after JSON edits: node Project-Plan/Capability-map/sync-dmsi-embedded-from-state.mjs
+   Repeat ?token= on fetches when present (Lambda; query or hash). Merge capability-map-artifacts-dmsi.json onto artifactsUrl only.
+   Optional per stage: githubIssueUrl — GraphQL org Project Status (needs PAT; Lambda /github-proxy/graphql); REST issue body via /github-api (public issues: no PAT; private: same token sources as Stalled-Blocked-rpt). */
+/* ═══════════════════════════════ */
+
+var EMBEDDED_STATE = {
+  "lastUpdated": "Apr 20, 2026",
+  "summary": {
+    "headline": "Sprint 5 is active (Apr 13 – Apr 27, 2026).",
+    "narrative": "Sprint 5 focus: Pipeline Automation begins the Nginx Reference Pipeline POC, Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry, expands Dynatrace agents into STL servers, and validates PagerDuty AIOps rollout features. Work Management advances M2 to firm up the prioritized 360 pull queue. Workstreams B, C, and D continue planning behind these execution threads.",
+    "narrativeIntro": "Sprint 5 focus:",
+    "narrativeBullets": [
+      "Pipeline Automation begins the Nginx Reference Pipeline POC",
+      "Visibility Infrastructure stands up the Dynatrace POC with Open Telemetry",
+      "Visibility Infrastructure expands Dynatrace agents into STL servers",
+      "Visibility Infrastructure validates PagerDuty AIOps rollout features",
+      "Work Management advances M2 to firm up the prioritized 360 pull queue",
+      "Workstreams B, C, and D continue planning behind these execution threads"
+    ]
+  },
+  "recentlyCompleted": [
+    {
+      "stage": "",
+      "title": "ScoreCard Data Validation",
+      "date": "Sprint 4 (Apr 13, 2026)",
+      "capability": "Strategic Visibility"
+    },
+    {
+      "stage": "",
+      "title": "360 Access Unblocked",
+      "date": "Sprint 4 (Apr 13, 2026)",
+      "capability": "Work Management"
+    },
+    {
+      "stage": "PA S1",
+      "title": "Selected Terraform / CloudFormation for IaC",
+      "date": "Sprint 4 (Apr 13, 2026)",
+      "capability": "Pipeline Automation"
+    }
+  ],
+  "comingNext": [
+    {
+      "stage": "PA S2",
+      "title": "Phase 1 POC – Nginx Reference Pipeline",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Pipeline Automation"
+    },
+    {
+      "stage": "VI",
+      "title": "Open Telemetry setup for Dynatrace POC",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Visibility Infrastructure"
+    },
+    {
+      "stage": "VI",
+      "title": "Deploy Dynatrace agents to additional STL servers",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Visibility Infrastructure"
+    },
+    {
+      "stage": "VI",
+      "title": "PagerDuty – validate AIOps rollout features",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Visibility Infrastructure"
+    },
+    {
+      "stage": "WM M2",
+      "title": "Prioritized 360 Pull Queue",
+      "date": "Sprint 5 focus (Apr 13 – Apr 27)",
+      "capability": "Work Management"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "M2",
+      "label": "Establish the Structure",
+      "status": "advancing"
+    },
+    {
+      "id": "M3",
+      "label": "Build the Foundation",
+      "status": "advancing"
+    },
+    {
+      "id": "M4",
+      "label": "Operationalize Intelligence",
+      "status": "not-started"
+    },
+    {
+      "id": "M5",
+      "label": "Support Excellence",
+      "status": "not-started"
+    },
+    {
+      "id": "M6",
+      "label": "Modernized Release Management",
+      "status": "not-started"
+    },
+    {
+      "id": "M7",
+      "label": "Completion",
+      "status": "not-started"
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "wm",
+      "confidence": "on-track"
+    },
+    {
+      "id": "vi",
+      "confidence": "on-track"
+    },
+    {
+      "id": "pd",
+      "confidence": "on-track"
+    },
+    {
+      "id": "pa",
+      "confidence": "on-track"
+    },
+    {
+      "id": "ls",
+      "confidence": "on-track"
+    },
+    {
+      "id": "wsb",
+      "confidence": "discovery"
+    },
+    {
+      "id": "wsc",
+      "confidence": "discovery"
+    },
+    {
+      "id": "wsd",
+      "confidence": "discovery"
+    }
+  ],
+  "stages": [
+    {
+      "capabilityId": "wm",
+      "num": 0,
+      "status": "done",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Feb 16, 2026",
+      "targetEnd": "Feb 27, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/71"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 1,
+      "status": "done",
+      "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgAM_v5ZSDtbTZpSOGJExm7JAb8bOZUih-v-F0MJdVLnxDo?e=Iav3qO",
+      "blockers": [],
+      "targetStart": "Feb 16, 2026",
+      "targetEnd": "Feb 27, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/68"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 2,
+      "status": "done",
+      "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCQYCCV_9UMQ5_xCaJmFjmEATsb7XOD8J_mv-sk8DjJgXE?e=WPgs5e",
+      "blockers": [],
+      "targetStart": "Feb 23, 2026",
+      "targetEnd": "Mar 6, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/69"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 3,
+      "status": "advancing",
+      "artifactsUrl": "https://discoverdynamo.sharepoint.com/:f:/s/DMSiDynamoShared2/IgCesn-mHu54RLP2dj7D7iUoAb7FqufrhwIgagO25rHXbRs?e=draens",
+      "blockers": [
+        {
+          "text": "Prioritization of 360 Pull Queue [WM-OC-03]",
+          "stalledBlocked": {
+            "repo": "DynamoLLC-Hub/dynamo-toolbox",
+            "issue": 40
+          },
+          "url": "https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2242314241/Stalled+Blocked+360",
+          "secondaryUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/40"
+        }
+      ],
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/64",
+      "targetStart": "Mar 2, 2026",
+      "targetEnd": "Mar 27, 2026"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 16, 2026",
+      "targetEnd": "Apr 17, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/72"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "May 4, 2026",
+      "targetEnd": "Jun 5, 2026"
+    },
+    {
+      "capabilityId": "wm",
+      "num": 6,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "May 18, 2026",
+      "targetEnd": "Jun 19, 2026"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 0,
+      "status": "done",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Apr 1, 2026",
+      "targetEnd": "May 23, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/65"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 1,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Apr 28, 2026",
+      "targetEnd": "May 23, 2026"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "May 26, 2026",
+      "targetEnd": "Aug 8, 2026"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jun 8, 2026",
+      "targetEnd": "Aug 8, 2026"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jun 15, 2026",
+      "targetEnd": "Jul 11, 2026"
+    },
+    {
+      "capabilityId": "vi",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jul 20, 2026",
+      "targetEnd": "Aug 15, 2026"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 0,
+      "status": "advancing",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Feb 2026",
+      "targetEnd": "Mar 16, 2026"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 1,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "March 2026",
+      "targetEnd": "Apr 2026"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 2026",
+      "targetEnd": "Apr 2026"
+    },
+    {
+      "capabilityId": "pd",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pd",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pd",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pd",
+      "num": 6,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pd",
+      "num": 7,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Oct 2026",
+      "targetEnd": "Dec 2026"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 0,
+      "status": "done",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Feb 16, 2026",
+      "targetEnd": "Feb 22, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/66"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 1,
+      "status": "done",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 2, 2026",
+      "targetEnd": "Mar 13, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/67"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [
+        {
+          "text": "AWS Account Access and Permissions",
+          "stalledBlocked": {
+            "repo": "DynamoLLC-Hub/dynamo-toolbox",
+            "issue": 44
+          },
+          "url": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/44",
+          "secondaryUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/44"
+        }
+      ],
+      "targetStart": "Mar 30, 2026",
+      "targetEnd": "May 29, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/61"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jun 1, 2026",
+      "targetEnd": "Jul 3, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/62"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jul 6, 2026",
+      "targetEnd": "Sep 25, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/63"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Sep 28, 2026",
+      "targetEnd": "Oct 30, 2026",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/70"
+    },
+    {
+      "capabilityId": "pa",
+      "num": 6,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pa",
+      "num": 7,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "pa",
+      "num": 8,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 0,
+      "status": "not-started",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 1,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "ls",
+      "num": 6,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": []
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 0,
+      "status": "not-started",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Mar 1, 2026",
+      "targetEnd": "Mar 28, 2026"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 1,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 1, 2026",
+      "targetEnd": "Apr 11, 2026"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 15, 2026",
+      "targetEnd": "Apr 25, 2026"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 15, 2026",
+      "targetEnd": "May 9, 2026"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Apr 12, 2026",
+      "targetEnd": "Jun 20, 2026"
+    },
+    {
+      "capabilityId": "wsb",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Apr 12, 2026",
+      "targetEnd": "Jun 20, 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 0,
+      "status": "not-started",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "Mar 1, 2026",
+      "targetEnd": "Apr 11, 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 1,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 15, 2026",
+      "targetEnd": "Apr 11, 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Mar 29, 2026",
+      "targetEnd": "May 23, 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "May 10, 2026",
+      "targetEnd": "Jun 20, 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Jun 21, 2026",
+      "targetEnd": "Oct 24, 2026"
+    },
+    {
+      "capabilityId": "wsc",
+      "num": 5,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "Apr 12, 2026",
+      "targetEnd": "Jan 30, 2027"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 0,
+      "status": "done",
+      "artifactsUrl": "sharepoint-wm-s0.html",
+      "blockers": [],
+      "targetStart": "March 2026",
+      "targetEnd": "March 2026"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 1,
+      "status": "advancing",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "TBD",
+      "targetEnd": "TBD",
+      "githubIssueUrl": "https://github.com/DynamoLLC-Hub/dynamo-toolbox/issues/58"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 2,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "TBD",
+      "targetEnd": "TBD"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 3,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "TBD",
+      "targetEnd": "TBD"
+    },
+    {
+      "capabilityId": "wsd",
+      "num": 4,
+      "status": "not-started",
+      "artifactsUrl": "#",
+      "blockers": [],
+      "targetStart": "TBD",
+      "targetEnd": "TBD"
+    }
+  ]
+};
+
+function getStageArrays(capId) {
+  return capId === 'wm' ? [wmStages] : capId === 'vi' ? [viStages] : capId === 'pa' ? [paStages] : capId === 'ls' ? [lsStages] : capId === 'wsb' ? [wsbStages] : capId === 'wsc' ? [wscStages] : capId === 'wsd' ? [wsdStages] : [];
+}
+
+/** capability-map-state.json may have "num" as string; strict === skipped merge (e.g. githubIssueUrl) for that row. */
+function sameStageNum(a, b) {
+  var x = Number(a);
+  var y = Number(b);
+  return x === y && !Number.isNaN(x) && !Number.isNaN(y);
+}
+
+function applyState(state) {
+  if (!state) return;
+  if (state.lastUpdated) {
+    const el = document.querySelector('.last-updated');
+    if (el) el.textContent = ' as of ' + state.lastUpdated;
+  }
+  if (state.capabilities && Array.isArray(state.capabilities)) {
+    const confidenceDisplay = { 'discovery': 'Discovery', 'on-track': 'On Track', 'at-risk': 'At Risk', 'behind': 'Behind' };
+    state.capabilities.forEach(function (c) {
+      const capEl = document.getElementById('cap' + c.id.toUpperCase());
+      if (!capEl) return;
+      const label = capEl.querySelector('.confidence-label');
+      if (!label) return;
+      const allowed = ['discovery', 'on-track', 'at-risk', 'behind'];
+      const confidence = allowed.indexOf(c.confidence) >= 0 ? c.confidence : 'discovery';
+      label.className = 'confidence-label ' + confidence;
+      label.textContent = confidenceDisplay[confidence] || 'Discovery';
+    });
+  }
+  if (state.stages && Array.isArray(state.stages)) {
+    state.stages.forEach(function (s) {
+      const arrays = getStageArrays(s.capabilityId);
+      for (let i = 0; i < arrays.length; i++) {
+        const found = arrays[i].find(function (stage) { return sameStageNum(stage.num, s.num); });
+        if (found) {
+          if (s.status !== undefined) {
+            var nSt = normalizeCapabilityStatusToInternal(s.status);
+            found.status = nSt != null ? nSt : s.status || found.status;
+          }
+          found.blockers = Array.isArray(s.blockers) ? s.blockers : (found.blockers || []);
+          if ('targetStart' in s) found.targetStart = s.targetStart;
+          if ('targetEnd' in s) found.targetEnd = s.targetEnd;
+          // Do not clear dates when state has no dates for this stage (e.g. PA 6–8 are unmapped)
+          if ('artifactsUrl' in s) found.artifactsUrl = s.artifactsUrl;
+          if ('githubIssueUrl' in s) {
+            if (s.githubIssueUrl && String(s.githubIssueUrl).trim()) {
+              found.githubIssueUrl = String(s.githubIssueUrl).trim();
+              found._githubBodyStatus = 'loading';
+              delete found._githubErrorMessage;
+              delete found._githubMilestoneTitle;
+              delete found._githubQuoteHtml;
+            } else {
+              delete found.githubIssueUrl;
+              delete found._githubBodyStatus;
+              delete found._githubErrorMessage;
+              delete found._githubMilestoneTitle;
+              delete found._githubQuoteHtml;
+            }
+          }
+          break;
+        }
+      }
+    });
+  }
+  // Render summary panel
+  if (state.summary || state.milestones) {
+    renderSummaryPanel(state);
+  }
+}
+
+/* ── Summary panel ── */
+const CAP_LABELS = {
+  wm: 'Work Management', vi: 'Visibility Infrastructure',
+  pa: 'Pipeline Automation', ls: 'Learning System', wsb: 'Support Operating Model',
+  wsc: 'Support & Engineering Tooling', wsd: 'Strategic Visibility'
+};
+
+function getAllStages() {
+  return [
+    ...wmStages.map(s => ({ ...s, capId: 'wm' })),
+    ...viStages.map(s => ({ ...s, capId: 'vi' })),
+    ...paStages.map(s => ({ ...s, capId: 'pa' })),
+    ...lsStages.map(s => ({ ...s, capId: 'ls' })),
+    ...wsbStages.map(s => ({ ...s, capId: 'wsb' })),
+    ...wscStages.map(s => ({ ...s, capId: 'wsc' })),
+    ...wsdStages.map(s => ({ ...s, capId: 'wsd' }))
+  ];
+}
+
+function renderSummaryPanel(state) {
+  if (state.milestones && Array.isArray(state.milestones)) {
+    CAPABILITY_MAP_MILESTONES = state.milestones.map(function (m) {
+      var st = normalizeCapabilityStatusToInternal(m.status);
+      return Object.assign({}, m, { status: st != null ? st : m.status });
+    });
+  }
+  // Narrative
+  if (state.summary) {
+    const h = document.getElementById('summaryHeadline');
+    const n = document.getElementById('summaryNarrativeText');
+    if (h) h.textContent = state.summary.headline || '';
+    if (n) {
+      const bullets = Array.isArray(state.summary.narrativeBullets) ? state.summary.narrativeBullets : [];
+      if (bullets.length > 0) {
+        const introHtml = state.summary.narrativeIntro ? `<p class="sn-intro">${escapeHtml(state.summary.narrativeIntro)}</p>` : '';
+        const itemsHtml = bullets.map(b => `<li>${escapeHtml(String(b))}</li>`).join('');
+        n.innerHTML = `${introHtml}<ul class="sn-bullets">${itemsHtml}</ul>`;
+      } else {
+        n.textContent = state.summary.narrative || '';
+      }
+    }
+  }
+
+  // Milestones
+  if (state.milestones) {
+    const container = document.getElementById('milestonePills');
+    if (container) {
+      container.innerHTML = state.milestones.map(m => {
+        const eff = normalizeCapabilityStatusToInternal(m.status) != null ? normalizeCapabilityStatusToInternal(m.status) : m.status;
+        const cls = eff === 'done' ? 'm-done' : eff === 'in-progress' ? 'm-in-progress' : 'm-not-started';
+        const badge = eff === 'done' ? '&#10003;' : m.id;
+        return `<div class="milestone-pill ${cls}" data-milestone-id="${String(m.id || '').toLowerCase()}">
+          <span class="m-badge">${badge}</span>
+          <span class="m-label">${m.label}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Recent completions: use state.recentlyCompleted if provided, else derive from done stages
+  const recentEl = document.getElementById('recentList');
+  if (recentEl) {
+    if (state.recentlyCompleted && state.recentlyCompleted.length > 0) {
+      recentEl.innerHTML = state.recentlyCompleted.map(r => {
+        const prefix = r.stage && String(r.stage).trim() ? String(r.stage).trim() + ': ' : '';
+        return `<div class="activity-item">
+          <span class="a-title">${prefix}${r.title}</span>
+          <span class="a-meta">${r.date} &middot; <span class="a-cap">${r.capability}</span></span>
+        </div>`;
+      }).join('');
+    } else {
+      const all = getAllStages();
+      const done = all.filter(s => s.status === 'done').slice(0, 4);
+      if (done.length === 0) {
+        recentEl.innerHTML = '<div class="activity-item"><span class="a-meta">None completed yet.</span></div>';
+      } else {
+        recentEl.innerHTML = done.map(s => `
+          <div class="activity-item">
+            <span class="a-title">S${s.num}: ${s.title}</span>
+            <span class="a-meta">${s.targetEnd ? 'Completed ' + s.targetEnd : 'Complete'} &middot; <span class="a-cap">${CAP_LABELS[s.capId] || s.capId}</span></span>
+          </div>`).join('');
+      }
+    }
+  }
+
+  // Coming next: use state.comingNext if provided, else derive from in-progress + not-started
+  const upcomingEl = document.getElementById('upcomingList');
+  if (upcomingEl) {
+    if (state.comingNext && state.comingNext.length > 0) {
+      upcomingEl.innerHTML = state.comingNext.map(r => {
+        const prefix = r.stage && String(r.stage).trim() ? String(r.stage).trim() + ': ' : '';
+        return `<div class="activity-item">
+          <span class="a-title">${prefix}${r.title}</span>
+          <span class="a-meta">${r.date} &middot; <span class="a-cap">${r.capability}</span></span>
+        </div>`;
+      }).join('');
+    } else {
+      const all = getAllStages();
+      const inProg = all.filter(s => s.status === 'in-progress');
+      const upcoming = all.filter(s => s.status === 'not-started' && s.targetStart && s.targetStart !== 'TBD');
+      const next = [...inProg, ...upcoming].slice(0, 4);
+      if (next.length === 0) {
+        upcomingEl.innerHTML = '<div class="activity-item"><span class="a-meta">Dates TBD.</span></div>';
+      } else {
+        upcomingEl.innerHTML = next.map(s => {
+          const dateStr = s.status === 'in-progress'
+            ? (s.targetEnd ? 'Target: ' + s.targetEnd : 'In progress')
+            : (s.targetStart ? 'Starts: ' + s.targetStart : '');
+          return `<div class="activity-item">
+            <span class="a-title">S${s.num}: ${s.title}</span>
+            <span class="a-meta">${dateStr} &middot; <span class="a-cap">${CAP_LABELS[s.capId] || s.capId}</span></span>
+          </div>`;
+        }).join('');
+      }
+    }
+  }
+}
+
+function toggleSummary() {
+  const panel = document.getElementById('summaryPanel');
+  const label = document.getElementById('summaryToggleLabel');
+  const icon = document.getElementById('summaryToggleIcon');
+  const hidden = panel.style.display === 'none';
+  panel.style.display = hidden ? '' : 'none';
+  label.textContent = hidden ? 'Hide summary' : 'Show summary';
+  icon.innerHTML = hidden ? '&#9650;' : '&#9660;';
+}
+
+function openSprintModal() {
+  const m = document.getElementById('sprintModal');
+  m.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSprintModal() {
+  const m = document.getElementById('sprintModal');
+  m.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleModalClick(e) {
+  if (e.target === document.getElementById('sprintModal')) closeSprintModal();
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeTabAMenu();
+    closeSprintModal();
+  }
+});
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.tab-item-ws-a')) closeTabAMenu();
+});
+
+function renderAll() {
+  renderWM();
+  renderVI();
+  renderPA();
+  renderLS();
+  renderWSB();
+  renderWSC();
+  renderWSD();
+  equalizeCapCards();
+  equalizeBCCards();
+}
+
+/** True when DMSi-specific artifact folder URLs should load from capability-map-artifacts-dmsi.json. */
+function isDmsiArtifactsVariant() {
+  try {
+    var meta = document.querySelector('meta[name="capability-map-artifacts-variant"]');
+    if (meta && meta.getAttribute('content') === 'dmsi') return true;
+    var href = (window.location && window.location.href) || '';
+    var p = (window.location && window.location.pathname) || '';
+    if (/capability-map-dmsi\.html/i.test(href) || /capability-map-dmsi\.html/i.test(p)) return true;
+    var q = new URLSearchParams(window.location.search || '');
+    return q.get('artifacts') === 'dmsi';
+  } catch (e) {
+    return false;
+  }
+}
+
+/** Apply sparse { capabilityId, num, artifactsUrl } overrides after applyState (DMSi only). */
+function applyArtifactUrlOverrides(list) {
+  if (!list || !Array.isArray(list)) return;
+  list.forEach(function (s) {
+    if (!s || typeof s.capabilityId !== 'string' || !('artifactsUrl' in s)) return;
+    var num = s.num;
+    if (typeof num === 'string') num = parseInt(num, 10);
+    if (typeof num !== 'number' || Number.isNaN(num)) return;
+    var arrays = getStageArrays(s.capabilityId);
+    for (var i = 0; i < arrays.length; i++) {
+      var found = arrays[i].find(function (stage) { return sameStageNum(stage.num, num); });
+      if (found) {
+        found.artifactsUrl = s.artifactsUrl;
+        break;
+      }
+    }
+  });
+}
+
+/** Lambda auth token from the page URL (query ?token= or hash #token=). */
+function getPageToken() {
+  try {
+    var q = new URLSearchParams(window.location.search || '');
+    var t = q.get('token');
+    if (t) return t;
+    var hash = window.location.hash || '';
+    if (hash.startsWith('#')) hash = hash.slice(1);
+    if (!hash) return null;
+    return new URLSearchParams(hash).get('token');
+  } catch (e) {
+    return null;
+  }
+}
+
+/** Same-origin JSON fetches must repeat ?token= so Lambda auth (CONFLUENCE_TOKEN) allows the request. */
+function fetchUrlWithPageToken(resourcePath) {
+  try {
+    var token = getPageToken();
+    if (!token) return resourcePath;
+    var sep = resourcePath.indexOf('?') >= 0 ? '&' : '?';
+    return resourcePath + sep + 'token=' + encodeURIComponent(token);
+  } catch (e) {
+    return resourcePath;
+  }
+}
+
+/**
+ * Anonymous raw URL — only works for public repos (private → 404; browser cannot authenticate).
+ * Lambda viewers get state from same-origin `capability-map-state.json` (last deploy). See README-Lambda-Deploy.md.
+ */
+var CAPABILITY_MAP_STATE_PUBLIC_FALLBACK =
+  'https://raw.githubusercontent.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS/main/Project-Plan/Capability-map/capability-map-state.json';
+var STATE_AND_ARTIFACT_FETCH_OPTS = { cache: 'no-store' };
+
+/** Same-origin first; on failure or !ok, try GitHub raw (main). Returns null if both fail. */
+function fetchCapabilityMapStateJson() {
+  var localUrl = fetchUrlWithPageToken('capability-map-state.json');
+  return fetch(localUrl, STATE_AND_ARTIFACT_FETCH_OPTS)
+    .then(function (r) {
+      if (!r.ok) throw new Error('state not ok');
+      return r.json();
+    })
+    .catch(function () {
+      return fetch(CAPABILITY_MAP_STATE_PUBLIC_FALLBACK, STATE_AND_ARTIFACT_FETCH_OPTS).then(function (r) {
+        if (!r.ok) return null;
+        return r.json();
+      });
+    })
+    .catch(function () { return null; });
+}
+
+/** After state (file or embedded), load DMSi artifact overrides when this page is the DMSi variant. */
+function fetchDmsiArtifactOverrides() {
+  if (!isDmsiArtifactsVariant()) return Promise.resolve();
+  return fetch(fetchUrlWithPageToken('capability-map-artifacts-dmsi.json'), STATE_AND_ARTIFACT_FETCH_OPTS)
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (artifactData) {
+      var list = artifactData && (artifactData.overrides || (Array.isArray(artifactData) ? artifactData : null));
+      if (Array.isArray(list)) applyArtifactUrlOverrides(list);
+    })
+    .catch(function () { /* keep state/embedded URLs */ });
+}
+
+function loadState() {
+  var stateUsed = EMBEDDED_STATE;
+  fetchCapabilityMapStateJson()
+    .then(function (data) {
+      if (data) {
+        stateUsed = data;
+        applyState(data);
+      } else {
+        applyState(EMBEDDED_STATE);
+        stateUsed = EMBEDDED_STATE;
+      }
+      return fetchDmsiArtifactOverrides();
+    })
+    .catch(function () {
+      applyState(EMBEDDED_STATE);
+      stateUsed = EMBEDDED_STATE;
+      return fetchDmsiArtifactOverrides();
+    })
+    .then(function () {
+      markGithubLinkedStagesForHydration();
+      return hydrateGithubLinkedStageStatusesFromProject();
+    })
+    .then(function () {
+      if (stateUsed && (stateUsed.summary || stateUsed.milestones)) {
+        renderSummaryPanel(stateUsed);
+      }
+      renderAll();
+      hydrateGithubLinkedStages();
+    });
+}
+
+/** Re-fetch Project Status + issue bodies from GitHub (e.g. after editing issues in another tab). */
+function refreshGithubLinkedDataFromServer() {
+  markGithubLinkedStagesForHydration();
+  return hydrateGithubLinkedStageStatusesFromProject().then(function () {
+    renderAll();
+    hydrateGithubLinkedStages();
+  });
+}
+
+function updateSummaryVersionLabel() {
+  var el = document.getElementById('summaryVersionLabel');
+  if (!el) return;
+  var show = isDmsiArtifactsVariant();
+  el.style.display = show ? '' : 'none';
+  el.setAttribute('aria-hidden', show ? 'false' : 'true');
+}
+
+updateSummaryVersionLabel();
+loadState();
+
+/* When you return to this tab, pull fresh issue text/status (GitHub is not push-synced to the map). */
+(function setupGithubLinkedRefreshOnFocus() {
+  var timer = null;
+  var lastRun = 0;
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      var now = Date.now();
+      if (now - lastRun < 2000) return;
+      lastRun = now;
+      refreshGithubLinkedDataFromServer().catch(function () {});
+    }, 350);
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") schedule();
+  });
+  window.addEventListener("pageshow", function (ev) {
+    if (ev.persisted) schedule();
+  });
+})();
+
+function closeTabAMenu() {
+  var d = document.getElementById('tabAMenu');
+  var btn = document.getElementById('tabAHamburger');
+  if (d) d.classList.remove('is-open');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+function toggleTabAMenu(ev) {
+  if (ev) ev.stopPropagation();
+  var d = document.getElementById('tabAMenu');
+  var btn = document.getElementById('tabAHamburger');
+  if (!d || !btn) return;
+  if (d.classList.contains('is-open')) {
+    closeTabAMenu();
+  } else {
+    d.classList.add('is-open');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+}
+
+/**
+ * Opens an absolute http(s) URL in a new browsing context when possible.
+ * Confluence iframes or sandboxed embeds may block window.open; tries top window and a synthetic &lt;a target="_blank"&gt; next.
+ */
+function openExternalLink(url) {
+  if (!url || typeof url !== 'string') return;
+  try {
+    var w = window.open(url, '_blank', 'noopener,noreferrer');
+    if (w) return;
+  } catch (e1) { /* ignore */ }
+  try {
+    if (window.top && window.top !== window) {
+      var w2 = window.top.open(url, '_blank', 'noopener,noreferrer');
+      if (w2) return;
+    }
+  } catch (e2) { /* cross-origin top */ }
+  try {
+    var a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.referrerPolicy = 'no-referrer';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (e3) { /* ignore */ }
+}
+
+/**
+ * DMSi Confluence wiki targets for the Workstream A hamburger menu.
+ * Same URL shape as other space pages: /wiki/spaces/DMSi/pages/{pageId}/{Title+With+Pluses}.
+ * (Lambda ?token= on the map URL is for same-origin artifact fetches; wiki access uses normal Atlassian login.)
+ */
+var CONFLUENCE_WIKI_PROJECT_PLAN = 'https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2227044353/Project+Plan';
+
+/**
+ * DMSi Confluence wiki — Milestones page (sibling of Project Plan). If cleared, menu falls back to bundled Project-Plan/Milestones/milestone_capability_xref.html with optional ?token=.
+ */
+var CONFLUENCE_WIKI_MILESTONES = 'https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2241691649/Milestones';
+
+/** GitHub org project (Projects classic / new) for the Workstream A hamburger → Board. */
+var GITHUB_ORG_PROJECT_BOARD = 'https://github.com/orgs/DynamoLLC-Hub/projects/1';
+
+/** Lambda-hosted Stalled/Blocked report (?token= matches Capability Map gate; set GitHub PAT in the report UI, not in repo). */
+var GITHUB_ORG_PROJECT_STALLED_BLOCKED_VIEW = 'https://cu4m4deubhxq7m4y6dtminfsnu0jgttt.lambda-url.us-east-2.on.aws/Project-Plan/Stalled-Blocked/Stalled-Blocked-rpt.html?token=494180393f81b480384482af9ab6148f19ebf8a3204ddc8b';
+
+/** Opens Milestones: Confluence page when CONFLUENCE_WIKI_MILESTONES is set; otherwise bundled cross-ref with optional token. */
+function onTabAMenuMilestones(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  if (CONFLUENCE_WIKI_MILESTONES && /^https?:\/\//i.test(CONFLUENCE_WIKI_MILESTONES)) {
+    openExternalLink(CONFLUENCE_WIKI_MILESTONES);
+    return;
+  }
+  var milestonesUrl = new URL('Project-Plan/Milestones/milestone_capability_xref.html', window.location.href);
+  var tok = getPageToken();
+  if (tok) milestonesUrl.searchParams.set('token', tok);
+  openExternalLink(milestonesUrl.href);
+}
+
+/** Opens the Project Plan Confluence page (embedded Gantt is configured on that page). */
+function onTabAMenuProjectPlan(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  openExternalLink(CONFLUENCE_WIKI_PROJECT_PLAN);
+}
+
+/** Opens the GitHub org project board in a new tab. */
+function onTabAMenuBoard(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  openExternalLink(GITHUB_ORG_PROJECT_BOARD);
+}
+
+/** Opens the Stalled/Blocked report (Lambda) in a new tab. */
+function onTabAMenuStalledBlocked(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  openExternalLink(GITHUB_ORG_PROJECT_STALLED_BLOCKED_VIEW);
+}
+
+// Tab switching
+function switchTab(tabId) {
+  closeTabAMenu();
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+  // Re-equalize after tab switch
+  setTimeout(() => { equalizeCapCards(); equalizeBCCards(); }, 50);
+}
+
+// Equalize capability card heights
+function equalizeCapCards() {
+  const ids = ['capWM','capVI','capPA','capLS'];
+  const cards = ids.map(id => document.getElementById(id)).filter(Boolean);
+  if (!cards.length || !cards[0].offsetParent) return;
+  cards.forEach(c => c.style.minHeight = '');
+  const maxH = Math.max(...cards.map(c => c.offsetHeight));
+  cards.forEach(c => c.style.minHeight = maxH + 'px');
+}
+
+function equalizeBCCards() {
+  const ids = ['capWSB','capWSC'];
+  const cards = ids.map(id => document.getElementById(id)).filter(Boolean);
+  if (!cards.length || !cards[0].offsetParent) return;
+  cards.forEach(c => c.style.minHeight = '');
+  const maxH = Math.max(...cards.map(c => c.offsetHeight));
+  cards.forEach(c => c.style.minHeight = maxH + 'px');
+}
+
+window.addEventListener('resize', function () { equalizeCapCards(); equalizeBCCards(); });
+</script>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SPRINT DETAIL MODAL                                -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="sprint-modal-overlay" id="sprintModal" onclick="handleModalClick(event)">
+  <div class="sprint-modal">
+    <div class="sprint-modal-header">
+      <div>
+        <h2>Sprint 5 &mdash; DMSi Operational Readiness</h2>
+        <div class="sprint-meta">Program: Operational Readiness &nbsp;&middot;&nbsp; Apr 13 &ndash; Apr 27, 2026</div>
+      </div>
+      <button class="sprint-modal-close" onclick="closeSprintModal()">&#x2715;</button>
+    </div>
+    <div class="sprint-modal-body">
+
+      <div class="sprint-section-label">Sprint Context</div>
+      <p class="sprint-narrative">
+        Sprint 5 carries Sprint 4's discovery and decisions into
+        <strong>visible execution: a working Nginx pipeline POC, a live Dynatrace POC, broader Dynatrace coverage, validated PagerDuty AIOps features, and a prioritized 360 pull queue.</strong>
+        All work aligns with the North Star: <em>efficiency and reliability to support DMSi's growth.</em>
+        Dynatrace and broader tool rationalization remain the largest cross-cutting decisions; this sprint stands up the proof points that make those decisions concrete.
+      </p>
+
+      <div class="sprint-section-label" style="margin-bottom:10px;">This Sprint's Interactions</div>
+      <table class="sprint-table" style="margin-bottom:20px;">
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Focus</th>
+            <th>Who</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Nginx Reference Pipeline POC</td><td>Build the Phase 1 Nginx reference pipeline end-to-end: AWS VPC, self-hosted runner, validation + deployment workflows, full PR-to-deploy cycle to Tierpoint.</td><td>Cameron, Engineering team</td></tr>
+          <tr><td>Dynatrace POC – Open Telemetry</td><td>Stand up Open Telemetry instrumentation feeding the Dynatrace POC so signal quality can be evaluated against current tools.</td><td>Mike C.</td></tr>
+          <tr><td>Dynatrace agent expansion – STL</td><td>Deploy Dynatrace agents into additional STL servers to broaden POC coverage and pressure-test the rollout playbook.</td><td>Mike C.</td></tr>
+          <tr><td>PagerDuty AIOps validation</td><td>Verify which PagerDuty AIOps Phase 1 features have actually been rolled out (priority service, noise reduction) and capture what's still outstanding.</td><td>Mike C., Dustin, Tom</td></tr>
+          <tr><td>Work Management M2 – 360 pull queue</td><td>Move the prioritized 360 pull queue from concept toward a first surfaced version with a priority score, so engineering work intake is clearer in the short term.</td><td>Luke, Nick (with DMSi 360 team)</td></tr>
+          <tr><td>Engineering Scorecard – continuation</td><td>Continue Sprint 4 scorecard work: refine actionable metrics and close gaps surfaced by the data-validation review.</td><td>Andy, Bryan, Engineering team</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sprint-section-label" style="margin-bottom:10px;">Sprint 5 Focus by Capability</div>
+      <table class="sprint-table" style="margin-bottom:24px;">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th>What We're Doing</th>
+            <th>Sprint Target</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>WSA: Pipeline Automation</td>
+            <td>Phase 1 Proof of Concept: build the Nginx reference pipeline end-to-end (one runner deploys one Nginx config change to Tierpoint).</td>
+            <td><span class="target-badge">Working PR → validate → approve → deploy cycle demonstrated against a Tierpoint Nginx target</span></td>
+          </tr>
+          <tr>
+            <td>WSA: Visibility Infrastructure</td>
+            <td>Stand up the Dynatrace POC with Open Telemetry instrumentation and expand Dynatrace agent coverage into additional STL servers.</td>
+            <td><span class="target-badge">Dynatrace POC receiving OTel data; agent footprint expanded across STL hosts</span></td>
+          </tr>
+          <tr>
+            <td>WSA: Visibility Infrastructure</td>
+            <td>Validate which PagerDuty AIOps Phase 1 features are actually live versus pending; document what remains for Engineering.</td>
+            <td><span class="target-badge">Confirmed rollout state for AIOps features and a prioritized list of remaining items</span></td>
+          </tr>
+          <tr>
+            <td>WSA: Work Management</td>
+            <td>Advance M2 of Work Management: deliver a first surfaced version of the 360 pull queue with a priority score so work intake is clearer while we learn whether 360 stays the long-term home.</td>
+            <td><span class="target-badge">Prioritized pull queue visible in 360 with priority scoring and learnings captured</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sprint-section-label" style="margin-bottom:10px;">Value We're Driving Toward</div>
+      <div class="sprint-value-grid">
+        <div class="sprint-value-card">
+          <div class="vc-icon">&#128200;</div>
+          <div class="vc-title">Cost Avoidance &amp; Profitable Scaling</div>
+          <div class="vc-desc">Dynatrace decision and tool rationalization aim to reduce redundant tooling costs across CheckMK, Elastic, and New Relic. Engineering scorecard establishes the baseline for measuring capacity allocation.</div>
+        </div>
+        <div class="sprint-value-card">
+          <div class="vc-icon">&#128274;</div>
+          <div class="vc-title">Enhanced Reliability &amp; Stability</div>
+          <div class="vc-desc">PagerDuty integration and CheckMK cleanup directly reduce alert noise and improve incident response. NGINX pipeline discovery creates automation patterns that prevent configuration-related incidents.</div>
+        </div>
+        <div class="sprint-value-card">
+          <div class="vc-icon">&#128101;</div>
+          <div class="vc-title">Enhanced Customer Experience</div>
+          <div class="vc-desc">Faster incident detection and structured communication workflows address the core concern: DMSi should be aware of problems before customers do. Progress toward proactive monitoring moves closer to that goal.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
