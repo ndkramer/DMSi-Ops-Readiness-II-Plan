@@ -27,12 +27,10 @@ on:
       - 'Capability-map/capability-map-state.json'
       - 'Capability-map/capability-map-artifacts-dmsi.json'
       - 'Capability-map/index.mjs'
-      - 'Capability-map/Milestones/**'
-      - 'Capability-map/milestones.html'
+      - 'Project-Plan/Milestones/**'
       - 'Project-Plan/Combined-Outcome-Gantt.html'
       - 'Project-Plan/Stalled-Blocked-rpt.html'
       - 'Project-Plan/gantt-data.json'
-      - 'Capability-map/Milestones/project-milestones.json'
       - 'Project-Plan/outcome-stall-overlay.json'
       - 'Project-Plan/github-stall-live.js'
       - 'Scripts/sync-outcome-stall-overlay.js'
@@ -70,10 +68,12 @@ jobs:
       - name: Create deployment package
         run: |
           cd Capability-map
-          zip -r ../deploy.zip index.mjs capability-map.html capability-map-dmsi.html capability-map-state.json capability-map-artifacts-dmsi.json milestones.html Milestones
+          zip -r ../deploy.zip index.mjs capability-map.html capability-map-dmsi.html capability-map-state.json capability-map-artifacts-dmsi.json
           cd ../Project-Plan
-          # Root of zip: legacy Lambda URLs …/Combined-Outcome-Gantt.html
+          # Root of zip: legacy Lambda URLs …/Combined-Outcome-Gantt.html; Milestones/ at zip root for same-origin fetches
           zip -g ../deploy.zip Combined-Outcome-Gantt.html github-stall-live.js Stalled-Blocked-rpt.html gantt-data.json outcome-stall-overlay.json
+          zip -g ../deploy.zip Milestones/milestones.html Milestones/milestone_capability_xref.html Milestones/project-milestones.json
+          zip -j -g ../deploy.zip Milestones/milestones.html
           if [ -f Stalled-Blocked-github-token.local.json ]; then
             zip -g ../deploy.zip Stalled-Blocked-github-token.local.json
           fi
@@ -84,12 +84,14 @@ jobs:
             Project-Plan/Stalled-Blocked-rpt.html \
             Project-Plan/gantt-data.json \
             Project-Plan/outcome-stall-overlay.json \
-            Project-Plan/github-stall-live.js
+            Project-Plan/github-stall-live.js \
+            Project-Plan/Milestones/milestones.html \
+            Project-Plan/Milestones/milestone_capability_xref.html \
+            Project-Plan/Milestones/project-milestones.json
           if [ -f Project-Plan/Stalled-Blocked-github-token.local.json ]; then
             zip -g deploy.zip Project-Plan/Stalled-Blocked-github-token.local.json
           fi
-          # Repo-relative URL ../../Capability-map/Milestones/project-milestones.json (WM/PA/VI outcome maps)
-          zip -g deploy.zip Capability-map/Milestones/project-milestones.json
+          # Repo-relative URL ../../Project-Plan/Milestones/project-milestones.json (WM/PA/VI outcome maps)
           zip -r deploy.zip WSA/WM WSA/VI WSA/PA WSB-WSC/WB
           zip -j -g deploy.zip WSB-WSC/WSB-WSC-Outcome-Map.html
           zip -j -g deploy.zip WSB-WSC/wsb-wsc-outcome-dependencies.json WSB-WSC/dependency-sources.yml

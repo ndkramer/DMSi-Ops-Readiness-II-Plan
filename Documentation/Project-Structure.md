@@ -53,10 +53,6 @@ DMSI-OP-Readiness-OS/
 │   ├── capability-map-state.json
 │   ├── capability-map.html
 │   ├── index.mjs
-│   ├── milestones.html
-│   ├── Milestones/
-│   │   ├── milestone_capability_xref.html
-│   │   └── project-milestones.json
 │   ├── README-Lambda-Deploy.md
 │   ├── Sprint Calendar.csv
 │   └── sync-stage-dates-from-outcome-maps.js
@@ -76,6 +72,10 @@ DMSI-OP-Readiness-OS/
 │   ├── build-gantt-data.js
 │   ├── Combined-Outcome-Gantt.html
 │   ├── gantt-data.json
+│   ├── Milestones/
+│   │   ├── milestone_capability_xref.html
+│   │   ├── milestones.html
+│   │   └── project-milestones.json
 │   ├── README-build-gantt.md
 │   ├── reference-doc-Customer-Support-Implementation-Plan.docx
 │   └── Workstream-A-Implementation-Plan.docx

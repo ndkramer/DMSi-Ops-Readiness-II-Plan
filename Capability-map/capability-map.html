@@ -3889,7 +3889,7 @@ function openExternalLink(url) {
 var CONFLUENCE_WIKI_PROJECT_PLAN = 'https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2227044353/Project+Plan';
 
 /**
- * DMSi Confluence wiki — Milestones page (sibling of Project Plan). If cleared, menu falls back to bundled Milestones/milestone_capability_xref.html with optional ?token=.
+ * DMSi Confluence wiki — Milestones page (sibling of Project Plan). If cleared, menu falls back to bundled Project-Plan/Milestones/milestone_capability_xref.html with optional ?token=.
  */
 var CONFLUENCE_WIKI_MILESTONES = 'https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2241691649/Milestones';
 
@@ -3907,7 +3907,7 @@ function onTabAMenuMilestones(e) {
     openExternalLink(CONFLUENCE_WIKI_MILESTONES);
     return;
   }
-  var milestonesUrl = new URL('Milestones/milestone_capability_xref.html', window.location.href);
+  var milestonesUrl = new URL('Project-Plan/Milestones/milestone_capability_xref.html', window.location.href);
   var tok = getPageToken();
   if (tok) milestonesUrl.searchParams.set('token', tok);
   openExternalLink(milestonesUrl.href);

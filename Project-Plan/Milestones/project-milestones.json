@@ -1,0 +1,8 @@
+{
+  "description": "Program milestone dates for vertical markers on Combined Gantt (Project-Plan) and WM/VI/PA outcome maps. Source file: Project-Plan/Milestones/project-milestones.json. Edit ISO dates and display labels here; pages load via fetch with inline fallbacks if fetch fails (e.g. file://).",
+  "milestones": [
+    { "id": "M2", "date": "2026-03-27", "label": "M2: March 27th" },
+    { "id": "M3", "date": "2026-05-28", "label": "M3: May 28th" },
+    { "id": "M4", "date": "2026-10-27", "label": "M4: Oct 27th" }
+  ]
+}

@@ -1038,7 +1038,7 @@ function applyStallOverlayToOutcomeBars(data) {
   });
 }
 
-/** Program milestones: ../../Capability-map/Milestones/project-milestones.json. Week 1 = Feb 16, 2026; 18-week grid. */
+/** Program milestones: ../../Project-Plan/Milestones/project-milestones.json. Week 1 = Feb 16, 2026; 18-week grid. */
 const FALLBACK_PROJECT_MILESTONES = [
   { id: 'M2', date: '2026-03-27', label: 'M2 3/27' },
   { id: 'M3', date: '2026-05-28', label: 'M3 5/28' },
@@ -1046,7 +1046,7 @@ const FALLBACK_PROJECT_MILESTONES = [
 ];
 const WM_MILESTONE_WEEKS = 18;
 function loadProjectMilestones() {
-  return fetch('../../Capability-map/Milestones/project-milestones.json')
+  return fetch('../../Project-Plan/Milestones/project-milestones.json')
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(data => data.milestones || FALLBACK_PROJECT_MILESTONES)
     .catch(() => FALLBACK_PROJECT_MILESTONES);

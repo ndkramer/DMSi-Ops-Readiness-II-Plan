@@ -337,7 +337,7 @@ Object.values(workstreams).forEach(w => {
 // Matrix
 const matrix = document.getElementById('matrix');
 
-/** Same-origin fetch with optional Lambda ?token= gate (mirrors Capability-map/Milestones/project-milestones.json). */
+/** Same-origin fetch with optional Lambda ?token= gate (mirrors Project-Plan/Milestones/project-milestones.json). */
 function fetchUrlWithToken(path) {
   const token = new URLSearchParams(window.location.search).get('token');
   if (!token) return path;
