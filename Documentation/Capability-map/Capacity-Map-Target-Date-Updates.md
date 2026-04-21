@@ -29,8 +29,8 @@ This document describes the reusable process that updates stage target dates in 
 4. **Computes targetStart and targetEnd** per stage in **"Mon D, YYYY"** format (e.g. "Feb 16, 2026") when the outcome map provides day-level dates, so the capability map and sprint indicators show accurate ranges. For stages that map to multiple outcomes, it uses the earliest start and latest end.
 
 5. **Writes updates** to:
-   - **Capability-map/capability-map-state.json**: updates `stages[].targetStart` and `stages[].targetEnd` for wm, vi, pa, wsb, wsc; sets `lastUpdated` to the run date.
-   - **Capability-map/capability-map.html**: replaces the `EMBEDDED_STATE` block with the same state, so that opening the HTML file directly (e.g. via file://) shows the same dates without loading the JSON.
+   - **Project-Plan/Capability-map/capability-map-state.json**: updates `stages[].targetStart` and `stages[].targetEnd` for wm, vi, pa, wsb, wsc; sets `lastUpdated` to the run date.
+   - **Project-Plan/Capability-map/capability-map.html**: replaces the `EMBEDDED_STATE` block with the same state, so that opening the HTML file directly (e.g. via file://) shows the same dates without loading the JSON.
 
 Stages for capabilities that do not have an outcome map (pd, ls, wsd) are left unchanged.
 
@@ -82,17 +82,17 @@ flowchart LR
 node ../dynamo-os/planning-toolkit/bin/cli.js capability-map sync-dates
 ```
 
-Or: **`dynamo-plan capability-map sync-dates`** (after `npm link`). **`Capability-map/sync-stage-dates-from-outcome-maps.js`** forwards to the same CLI. Paths and **`capabilityMap`** settings live in **`dynamo-os.config.cjs`**.
+Or: **`dynamo-plan capability-map sync-dates`** (after `npm link`). **`Project-Plan/Capability-map/sync-stage-dates-from-outcome-maps.js`** forwards to the same CLI. Paths and **`capabilityMap`** settings live in **`dynamo-os.config.cjs`**.
 
 **Legacy:**
 
 ```bash
-node Capability-map/sync-stage-dates-from-outcome-maps.js
+node Project-Plan/Capability-map/sync-stage-dates-from-outcome-maps.js
 ```
 
 **Requirements:**
 
-- Node.js. Planning repo root = directory that contains **`dynamo-os.config.cjs`**, **`Capability-map`**, **`WSA`** (PA/VI/WM), and **`WSB-WSC`** as configured.
+- Node.js. Planning repo root = directory that contains **`dynamo-os.config.cjs`**, **`Project-Plan/Capability-map`**, **`WSA`** (PA/VI/WM), and **`WSB-WSC`** as configured.
 
 **Example output:**
 
@@ -115,9 +115,9 @@ If `WSB-WSC/WSB-WSC-Outcome-Map.html` is missing, the script still runs and upda
 
 ## Script location and source of truth
 
-- **Script:** `Capability-map/sync-stage-dates-from-outcome-maps.js`
-- **State file:** `Capability-map/capability-map-state.json`
-- **Display file:** `Capability-map/capability-map.html` (uses state from JSON when loaded via HTTP, or from EMBEDDED_STATE when opened as a file)
+- **Script:** `Project-Plan/Capability-map/sync-stage-dates-from-outcome-maps.js`
+- **State file:** `Project-Plan/Capability-map/capability-map-state.json`
+- **Display file:** `Project-Plan/Capability-map/capability-map.html` (uses state from JSON when loaded via HTTP, or from EMBEDDED_STATE when opened as a file)
 
 The outcome-map HTML files are the source of truth for dates. The script does not modify them; it only reads from them and updates the capability map state and embedded state.
 

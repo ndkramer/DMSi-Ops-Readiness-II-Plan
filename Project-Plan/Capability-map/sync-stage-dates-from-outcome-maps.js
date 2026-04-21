@@ -4,14 +4,14 @@
  *
  * Resolves CLI: DYNAMO_PLAN_CLI, or sibling dynamo-os/planning-toolkit/bin/cli.js.
  *
- * Run from project root: node Capability-map/sync-stage-dates-from-outcome-maps.js
+ * Run from project root: node Project-Plan/Capability-map/sync-stage-dates-from-outcome-maps.js
  */
 
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
-const projectRoot = path.resolve(__dirname, '..');
+const projectRoot = path.resolve(__dirname, '..', '..');
 
 function resolveCliPath() {
   const env = process.env.DYNAMO_PLAN_CLI;

@@ -844,7 +844,7 @@
     setMessage(
       'Opened as a local file (file://…): the browser will not load a token from a JSON file next to this page. ' +
         'Add ?github_token=… to the URL (trusted environments only), run a web server in this folder ' +
-        '(e.g. python3 -m http.server) and open http://localhost:…/Stalled-Blocked-rpt.html with ' +
+        '(e.g. python3 -m http.server) and open http://localhost:…/Stalled-Blocked/Stalled-Blocked-rpt.html with ' +
         'Stalled-Blocked-github-token.local.json beside the HTML, or clear site data if an old saved token remains.',
       'info'
     );
@@ -1060,7 +1060,7 @@
         throw new Error(
           'Lambda returned 403 (HTML). This deployment often requires the same gate token as the Capability Map.\n\n' +
             'Add to this page’s URL: ?token=YOUR_LAMBDA_TOKEN (and keep github_token= for GitHub). Example:\n' +
-            '…/Stalled-Blocked-rpt.html?token=…&github_token=…'
+            '…/Stalled-Blocked/Stalled-Blocked-rpt.html?token=…&github_token=…'
         );
       }
       throw new Error(
@@ -1078,7 +1078,7 @@
           : '';
       var notFound =
         res.status === 404
-          ? ' HTTP 404 on /github-proxy usually means the page is not on the Lambda URL (wrong host) or the deployed Lambda is missing /github-proxy — open the *.on.aws report URL or redeploy Capability-map/index.mjs.'
+          ? ' HTTP 404 on /github-proxy usually means the page is not on the Lambda URL (wrong host) or the deployed Lambda is missing /github-proxy — open the *.on.aws report URL or redeploy Project-Plan/Capability-map/index.mjs.'
           : '';
       throw new Error(
         (context || 'Request') +
@@ -1136,7 +1136,7 @@
       return Promise.reject(
         new Error(
           'GitHub proxy: cannot resolve this page’s origin (common in sandboxed iframes). ' +
-            'Embed using an iframe whose src is the full https://….on.aws/…/Stalled-Blocked-rpt.html URL with ?token= and ?github_token=, ' +
+            'Embed using an iframe whose src is the full https://….on.aws/…/Stalled-Blocked/Stalled-Blocked-rpt.html URL with ?token= and ?github_token=, ' +
             'or open that URL in a new tab. Remove ?github_proxy=1 unless the address bar host is *.on.aws.'
         )
       );

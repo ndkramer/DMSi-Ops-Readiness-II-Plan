@@ -43,8 +43,8 @@ module.exports = {
     inlineHtml: 'Project-Plan/Combined-Outcome-Gantt.html',
   },
   capabilityMap: {
-    state: 'Capability-map/capability-map-state.json',
-    html: 'Capability-map/capability-map.html',
+    state: 'Project-Plan/Capability-map/capability-map-state.json',
+    html: 'Project-Plan/Capability-map/capability-map.html',
     wsbWscHtml: 'WSB-WSC/WSB-WSC-Outcome-Map.html',
     baseYear: 2026,
     outcomeHtml: {

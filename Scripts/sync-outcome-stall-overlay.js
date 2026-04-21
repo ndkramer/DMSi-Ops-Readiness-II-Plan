@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Regenerates Project-Plan/outcome-stall-overlay.json from GitHub org Project (v2),
- * same source as Project-Plan/Stalled-Blocked-rpt.html.
+ * same source as Project-Plan/Stalled-Blocked/Stalled-Blocked-rpt.html.
  *
  * Mapping: each Issue/PR with label Stalled or Blocked is grouped under planning outcomes
  * found via (1) labels matching /^(wm|vi|pa|wb)-oc-\\d+(\\.\\d+)?$/i → WM-OC-03, etc., or

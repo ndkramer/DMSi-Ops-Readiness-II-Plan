@@ -10,8 +10,8 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 const files = [
-  'Capability-map/capability-map-state.json',
-  'Capability-map/capability-map-artifacts-dmsi.json',
+  'Project-Plan/Capability-map/capability-map-state.json',
+  'Project-Plan/Capability-map/capability-map-artifacts-dmsi.json',
   'WSA/PA/pa-outcomes.json',
   'WSB-WSC/wsb-wsc-outcome-dependencies.json',
   'Project-Plan/gantt-data.json',

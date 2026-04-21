@@ -1,6 +1,6 @@
 /**
  * Live GitHub org Project (v2) → stalled/blocked by planning outcome (WM-OC-03, …).
- * Same org/project/labels as Stalled-Blocked-rpt.html; uses Lambda /github-proxy when hosted on *.lambda-url.*.on.aws.
+ * Same org/project/labels as Stalled-Blocked/Stalled-Blocked-rpt.html; uses Lambda /github-proxy when hosted on *.lambda-url.*.on.aws.
  *
  * Exposes window.GithubStallLive: resolveGithubToken, fetchStallByOutcomeMap.
  * Token order: ?github_token= / ?gh_token=, localStorage dmsiStalledBlockedGithubPat, optional same-origin JSON (tokenFileUrl).
@@ -330,13 +330,13 @@
   }
 
   /**
-   * Build href to Stalled-Blocked-rpt.html with deep-link query params (repo/issue or issue_url) and token passthrough from the current page.
+   * Build href to the Stalled-Blocked report HTML with deep-link query params (repo/issue or issue_url) and token passthrough from the current page.
    * @param {{ number?: number, url?: string, repository?: { nameWithOwner?: string } }} entry
-   * @param {string} reportPath - e.g. '../../Project-Plan/Stalled-Blocked-rpt.html'
+   * @param {string} reportPath - e.g. '../../Project-Plan/Stalled-Blocked/Stalled-Blocked-rpt.html'
    * @returns {string}
    */
   function buildStalledBlockedReportUrl(entry, reportPath) {
-    reportPath = reportPath || 'Stalled-Blocked-rpt.html';
+    reportPath = reportPath || 'Stalled-Blocked/Stalled-Blocked-rpt.html';
     var p = new URLSearchParams();
     try {
       var cur = new URLSearchParams(

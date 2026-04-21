@@ -30,25 +30,6 @@ DMSI-OP-Readiness-OS/
 │   └── workflows/
 │       └── deploy-capability-map.yml
 ├── README.md
-├── Capability-map/
-│   ├── archive/
-│   │   ├── README.md
-│   │   └── legacy-2026-04-21/
-│   │       ├── README.md
-│   │       ├── capability-map-archive-duplicate/
-│   │       └── root-archive/
-│   ├── MOVED-Capability-map-archive.txt
-│   ├── README-Lambda-Deploy.md
-│   ├── capability-map-artifacts-dmsi.json
-│   ├── capability-map-dmsi.html
-│   ├── capability-map-state.json
-│   ├── capability-map.html
-│   ├── index.mjs
-│   ├── sync-capability-status-from-github.mjs
-│   ├── sync-dmsi-embedded-from-state.mjs
-│   ├── sync-stage-dates-from-outcome-maps.js
-│   ├── Sprint Calendar.csv
-│   └── ...
 ├── Documentation/
 │   ├── Capacity-Map-Target-Date-Updates.md
 │   ├── dynamo_os_architecture_v4.svg
@@ -61,6 +42,25 @@ DMSI-OP-Readiness-OS/
 ├── Project-Plan/
 │   ├── Archive/
 │   │   └── Combined-Outcome-Gantt.html
+│   ├── Capability-map/
+│   │   ├── archive/
+│   │   │   ├── README.md
+│   │   │   └── legacy-2026-04-21/
+│   │   │       ├── README.md
+│   │   │       ├── capability-map-archive-duplicate/
+│   │   │       └── root-archive/
+│   │   ├── MOVED-Capability-map-archive.txt
+│   │   ├── README-Lambda-Deploy.md
+│   │   ├── capability-map-artifacts-dmsi.json
+│   │   ├── capability-map-dmsi.html
+│   │   ├── capability-map-state.json
+│   │   ├── capability-map.html
+│   │   ├── index.mjs
+│   │   ├── sync-capability-status-from-github.mjs
+│   │   ├── sync-dmsi-embedded-from-state.mjs
+│   │   ├── sync-stage-dates-from-outcome-maps.js
+│   │   ├── Sprint Calendar.csv
+│   │   └── ...
 │   ├── .DS_Store
 │   ├── build-gantt-data.js
 │   ├── Combined-Outcome-Gantt.html

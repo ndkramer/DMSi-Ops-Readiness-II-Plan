@@ -4,7 +4,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="capability-map-artifacts-variant" content="dmsi">
 <title>DMSi Operational Readiness II - Capability Map</title>
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
 <style>
@@ -450,6 +449,7 @@
     font-size: 10px; color: var(--text-muted);
   }
   .stage-dates svg { flex-shrink: 0; }
+  /* Inline milestone pill next to stage dates — same scheme as .milestone-list (colors from JSON status) */
   .milestone-pill.milestone-pill-inline {
     display: inline-flex;
     align-items: center;
@@ -648,7 +648,11 @@
   }
 
   /* ── Tab bar ── */
+  /* Stack above .tab-panel / .main: later DOM siblings paint on top by default, so without z-index
+     the Workstream A dropdown visually overlaps the content below but clicks hit the cards underneath. */
   .tab-bar {
+    position: relative;
+    z-index: 40;
     max-width: 1600px; margin: 0 auto; padding: 0 32px;
     display: flex; gap: 0; border-bottom: 2px solid var(--border);
     background: var(--bg);
@@ -664,6 +668,70 @@
   .tab-btn.active { color: var(--text); border-bottom-color: var(--green-primary); }
   .tab-btn.active[data-tab="tab-bc"] { border-bottom-color: var(--orange-primary); }
   .tab-btn.active[data-tab="tab-d"] { border-bottom-color: var(--slate-primary); }
+  /* Workstream A: hamburger + tab label (siblings; no nested buttons) */
+  .tab-item-ws-a {
+    display: inline-flex;
+    align-items: stretch;
+    position: relative;
+    margin-bottom: -2px;
+  }
+  /* Same bottom-indicator box model as .tab-btn so the green bar aligns with Workstream A tab */
+  .tab-item-ws-a .tab-hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    margin: 0;
+    margin-bottom: -2px;
+    box-sizing: border-box;
+  }
+  .tab-item-ws-a .tab-hamburger-btn:hover {
+    color: var(--text-dim);
+    background: var(--surface);
+  }
+  .tab-item-ws-a:has(.tab-btn.active) .tab-hamburger-btn {
+    color: var(--text);
+    border-bottom: 3px solid var(--green-primary);
+  }
+  .tab-item-ws-a .tab-btn { padding-left: 6px; }
+  .tab-hamburger-icon { display: block; }
+  .tab-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    min-width: 180px;
+    padding: 6px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    z-index: 110;
+  }
+  .tab-dropdown.is-open { display: block; }
+  .tab-dropdown-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tab-dropdown-item:hover { background: var(--surface2); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
 
@@ -1010,7 +1078,18 @@
 </div>
 
 <div class="tab-bar">
-  <button class="tab-btn active" data-tab="tab-a" onclick="switchTab('tab-a')">Workstream A</button>
+  <div class="tab-item-ws-a">
+    <button type="button" class="tab-hamburger-btn" id="tabAHamburger" aria-label="Workstream A menu" aria-expanded="false" aria-haspopup="true" onclick="event.stopPropagation(); toggleTabAMenu(event)">
+      <svg class="tab-hamburger-icon" width="18" height="14" viewBox="0 0 18 14" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M1 1h16M1 7h16M1 13h16"/></svg>
+    </button>
+    <button type="button" class="tab-btn active" data-tab="tab-a" onclick="switchTab('tab-a')">Workstream A</button>
+    <div class="tab-dropdown" id="tabAMenu" role="menu" aria-labelledby="tabAHamburger">
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuMilestones(event)">Milestones</button>
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuProjectPlan(event)">Project Plan</button>
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuBoard(event)">Board</button>
+      <button type="button" class="tab-dropdown-item" role="menuitem" onclick="onTabAMenuStalledBlocked(event)">Stalled/Blocked</button>
+    </div>
+  </div>
   <button class="tab-btn" data-tab="tab-bc" onclick="switchTab('tab-bc')">Workstream B &amp; C</button>
   <button class="tab-btn" data-tab="tab-d" onclick="switchTab('tab-d')">Workstream D</button>
 </div>
@@ -1738,14 +1817,14 @@ function getGithubTokenFromLocalStorage() {
   }
 }
 
-/** Same-origin JSON as Stalled-Blocked-rpt (deploy zip includes it when CI writes the file). */
+/** Same-origin JSON as Stalled-Blocked report (deploy zip includes it when CI writes the file). */
 function githubPatFileFetchUrl() {
   try {
     const base = window.location.href;
     const rel =
       window.location.protocol === "file:"
-        ? new URL("../Project-Plan/Stalled-Blocked-github-token.local.json", base).href
-        : new URL("Project-Plan/Stalled-Blocked-github-token.local.json", base).href;
+        ? new URL("../Stalled-Blocked/Stalled-Blocked-github-token.local.json", base).href
+        : new URL("Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json", base).href;
     return fetchUrlWithPageToken(rel);
   } catch (e) {
     return null;
@@ -1848,7 +1927,7 @@ function fetchGithubIssueParsed(owner, repo, issueNum) {
   });
 }
 
-/** Same mapping as Capability-map/sync-capability-status-from-github.mjs and Stalled-Blocked-rpt project Status. */
+/** Same mapping as Project-Plan/Capability-map/sync-capability-status-from-github.mjs and Stalled-Blocked-rpt project Status. */
 var GITHUB_ISSUE_PROJECT_STATUS_QUERY =
   "query IssueGithubProjectStatus($owner: String!, $name: String!, $number: Int!) {\n" +
   "  repository(owner: $owner, name: $name) {\n" +
@@ -1933,6 +2012,7 @@ function githubProjectStatusFromGraphqlData(data) {
   return "";
 }
 
+/** JSON + GitHub use "advancing"; CSS / stage rows use canonical "in-progress". */
 function normalizeCapabilityStatusToInternal(v) {
   if (v == null || v === "") return null;
   var x = String(v).toLowerCase();
@@ -2137,7 +2217,7 @@ const wsdStages = [
     without: "We build dashboards that answer the wrong questions for the wrong people, or we discover mismatches late -- the data doesn't exist." }
 ];
 
-/* Sprint calendar: matches Capability-map/Sprint Calendar.csv (Start, End per sprint) */
+/* Sprint calendar: matches Project-Plan/Capability-map/Sprint Calendar.csv (Start, End per sprint) */
 const sprintCalendar = [
   { start: "02/16/26", end: "02/27/26" },
   { start: "03/02/26", end: "03/13/26" },
@@ -2301,6 +2381,7 @@ function escapeHtml(str) {
 /**
  * Blocker: string, or { text, url?, secondaryUrl?, stalledBlocked? } (legacy: label, href).
  * stalledBlocked: { repo, issue } or { issueUrl } — same deep link as WM-Outcome-Map B → Stalled-Blocked-rpt modal.
+ * url: optional extra (e.g. Confluence). secondaryUrl: optional direct GitHub issue page.
  */
 function normalizeBlockerEntry(b) {
   if (b == null) return { text: '', url: '', secondaryUrl: '', stalledBlocked: null };
@@ -2331,12 +2412,15 @@ function normalizeBlockersList(blockers) {
   return blockers.map(normalizeBlockerEntry);
 }
 
+/** Relative path to Stalled-Blocked/Stalled-Blocked-rpt.html (repo root on Lambda; ../Stalled-Blocked when opened from Project-Plan/Capability-map/). */
 function getStalledBlockedReportHtmlPath() {
   var path = window.location.pathname || '';
-  if (path.indexOf('/Capability-map/') !== -1) return '../Project-Plan/Stalled-Blocked-rpt.html';
-  return 'Project-Plan/Stalled-Blocked-rpt.html';
+  if (path.indexOf('/Project-Plan/Capability-map/') !== -1 || path.indexOf('/Capability-map/') !== -1)
+    return '../Stalled-Blocked/Stalled-Blocked-rpt.html';
+  return 'Project-Plan/Stalled-Blocked/Stalled-Blocked-rpt.html';
 }
 
+/** Builds ?repo=&issue= or ?issue_url= link; copies token/github_token from current page (matches github-stall-live / WM Outcome Map). */
 function buildStalledBlockedReportHrefFromBlocker(x) {
   if (!x || !x.stalledBlocked) return '';
   var sb = x.stalledBlocked;
@@ -2363,6 +2447,7 @@ function buildStalledBlockedReportHrefFromBlocker(x) {
   return reportPath + sep + qs;
 }
 
+/** First http(s) primary url among blockers (fallback when no stalledBlocked). */
 function firstBlockerUrl(normalized) {
   if (!normalized || !normalized.length) return '';
   for (var i = 0; i < normalized.length; i++) {
@@ -2372,6 +2457,7 @@ function firstBlockerUrl(normalized) {
   return '';
 }
 
+/** B badge: prefer Stalled/Blocked report deep link (opens modal), else generic url. */
 function firstBlockerBadgeHref(normalized) {
   if (!normalized || !normalized.length) return '';
   for (var i = 0; i < normalized.length; i++) {
@@ -2381,8 +2467,10 @@ function firstBlockerBadgeHref(normalized) {
   return firstBlockerUrl(normalized);
 }
 
+/** Snapshot of state.milestones; used to color stage GitHub milestone markers like top milestone pills. */
 var CAPABILITY_MAP_MILESTONES = [];
 
+/** Match GitHub milestone title to capability-map-state.json milestones (id e.g. M3, or label). */
 function findMilestoneMetaForGithubTitle(githubTitle) {
   const raw = String(githubTitle || "").trim();
   if (!raw) return null;
@@ -2415,6 +2503,7 @@ function milestonePillClassFromMeta(meta) {
   return "m-not-started";
 }
 
+/** Badge only (M3 / checkmark); colors from JSON milestone status. Full name on hover via title. */
 function githubMilestoneMarkerHtml(githubMilestoneTitle) {
   const raw = String(githubMilestoneTitle || "").trim();
   if (!raw) return "";
@@ -2460,7 +2549,7 @@ function makeStageCard(stage, capId, idx, theme) {
     ${sprintHtml}
   </div>`;
 
-  // Blocker badge: stalledBlocked → Stalled-Blocked-rpt.html?repo=&issue= (same modal as WM Outcome Map B)
+  // Blocker badge (collapsed header); stalledBlocked → Stalled-Blocked-rpt.html?repo=&issue= (same modal as WM Outcome Map B)
   const blockersNorm = normalizeBlockersList(stage.blockers);
   let blockerBadgeHtml = '';
   if (blockersNorm.length > 0) {
@@ -2703,7 +2792,7 @@ function toggleEl(id) {
 /* ═══════════════════════════════ */
 /* STATE FROM JSON / EMBEDDED      */
 /* capability-map-state.json: same-origin fetch (cache: no-store), then GitHub raw main fallback, then EMBEDDED_STATE.
-   Regenerate EMBEDDED after JSON edits: node Capability-map/sync-dmsi-embedded-from-state.mjs
+   Regenerate EMBEDDED after JSON edits: node Project-Plan/Capability-map/sync-dmsi-embedded-from-state.mjs
    Repeat ?token= on fetches when present (Lambda; query or hash). Merge capability-map-artifacts-dmsi.json onto artifactsUrl only.
    Optional per stage: githubIssueUrl — GraphQL org Project Status (needs PAT; Lambda /github-proxy/graphql); REST issue body via /github-api (public issues: no PAT; private: same token sources as Stalled-Blocked-rpt). */
 /* ═══════════════════════════════ */
@@ -3552,7 +3641,14 @@ function handleModalClick(e) {
 }
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeSprintModal();
+  if (e.key === 'Escape') {
+    closeTabAMenu();
+    closeSprintModal();
+  }
+});
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.tab-item-ws-a')) closeTabAMenu();
 });
 
 function renderAll() {
@@ -3633,7 +3729,7 @@ function fetchUrlWithPageToken(resourcePath) {
  * Lambda viewers get state from same-origin `capability-map-state.json` (last deploy). See README-Lambda-Deploy.md.
  */
 var CAPABILITY_MAP_STATE_PUBLIC_FALLBACK =
-  'https://raw.githubusercontent.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS/main/Capability-map/capability-map-state.json';
+  'https://raw.githubusercontent.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS/main/Project-Plan/Capability-map/capability-map-state.json';
 var STATE_AND_ARTIFACT_FETCH_OPTS = { cache: 'no-store' };
 
 /** Same-origin first; on failure or !ok, try GitHub raw (main). Returns null if both fail. */
@@ -3737,8 +3833,111 @@ loadState();
   });
 })();
 
+function closeTabAMenu() {
+  var d = document.getElementById('tabAMenu');
+  var btn = document.getElementById('tabAHamburger');
+  if (d) d.classList.remove('is-open');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+function toggleTabAMenu(ev) {
+  if (ev) ev.stopPropagation();
+  var d = document.getElementById('tabAMenu');
+  var btn = document.getElementById('tabAHamburger');
+  if (!d || !btn) return;
+  if (d.classList.contains('is-open')) {
+    closeTabAMenu();
+  } else {
+    d.classList.add('is-open');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+}
+
+/**
+ * Opens an absolute http(s) URL in a new browsing context when possible.
+ * Confluence iframes or sandboxed embeds may block window.open; tries top window and a synthetic &lt;a target="_blank"&gt; next.
+ */
+function openExternalLink(url) {
+  if (!url || typeof url !== 'string') return;
+  try {
+    var w = window.open(url, '_blank', 'noopener,noreferrer');
+    if (w) return;
+  } catch (e1) { /* ignore */ }
+  try {
+    if (window.top && window.top !== window) {
+      var w2 = window.top.open(url, '_blank', 'noopener,noreferrer');
+      if (w2) return;
+    }
+  } catch (e2) { /* cross-origin top */ }
+  try {
+    var a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.referrerPolicy = 'no-referrer';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (e3) { /* ignore */ }
+}
+
+/**
+ * DMSi Confluence wiki targets for the Workstream A hamburger menu.
+ * Same URL shape as other space pages: /wiki/spaces/DMSi/pages/{pageId}/{Title+With+Pluses}.
+ * (Lambda ?token= on the map URL is for same-origin artifact fetches; wiki access uses normal Atlassian login.)
+ */
+var CONFLUENCE_WIKI_PROJECT_PLAN = 'https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2227044353/Project+Plan';
+
+/**
+ * DMSi Confluence wiki — Milestones page (sibling of Project Plan). If cleared, menu falls back to bundled Project-Plan/Milestones/milestone_capability_xref.html with optional ?token=.
+ */
+var CONFLUENCE_WIKI_MILESTONES = 'https://godynamo.atlassian.net/wiki/spaces/DMSi/pages/2241691649/Milestones';
+
+/** GitHub org project (Projects classic / new) for the Workstream A hamburger → Board. */
+var GITHUB_ORG_PROJECT_BOARD = 'https://github.com/orgs/DynamoLLC-Hub/projects/1';
+
+/** Lambda-hosted Stalled/Blocked report (?token= matches Capability Map gate; set GitHub PAT in the report UI, not in repo). */
+var GITHUB_ORG_PROJECT_STALLED_BLOCKED_VIEW = 'https://cu4m4deubhxq7m4y6dtminfsnu0jgttt.lambda-url.us-east-2.on.aws/Project-Plan/Stalled-Blocked/Stalled-Blocked-rpt.html?token=494180393f81b480384482af9ab6148f19ebf8a3204ddc8b';
+
+/** Opens Milestones: Confluence page when CONFLUENCE_WIKI_MILESTONES is set; otherwise bundled cross-ref with optional token. */
+function onTabAMenuMilestones(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  if (CONFLUENCE_WIKI_MILESTONES && /^https?:\/\//i.test(CONFLUENCE_WIKI_MILESTONES)) {
+    openExternalLink(CONFLUENCE_WIKI_MILESTONES);
+    return;
+  }
+  var milestonesUrl = new URL('Project-Plan/Milestones/milestone_capability_xref.html', window.location.href);
+  var tok = getPageToken();
+  if (tok) milestonesUrl.searchParams.set('token', tok);
+  openExternalLink(milestonesUrl.href);
+}
+
+/** Opens the Project Plan Confluence page (embedded Gantt is configured on that page). */
+function onTabAMenuProjectPlan(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  openExternalLink(CONFLUENCE_WIKI_PROJECT_PLAN);
+}
+
+/** Opens the GitHub org project board in a new tab. */
+function onTabAMenuBoard(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  openExternalLink(GITHUB_ORG_PROJECT_BOARD);
+}
+
+/** Opens the Stalled/Blocked report (Lambda) in a new tab. */
+function onTabAMenuStalledBlocked(e) {
+  e.stopPropagation();
+  closeTabAMenu();
+  openExternalLink(GITHUB_ORG_PROJECT_STALLED_BLOCKED_VIEW);
+}
+
 // Tab switching
 function switchTab(tabId) {
+  closeTabAMenu();
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');

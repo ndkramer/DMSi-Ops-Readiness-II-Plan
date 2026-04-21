@@ -6,8 +6,8 @@
 #   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY  (or configure OIDC and use role)
 #   LAMBDA_FUNCTION_NAME                       (e.g. capability-map or your Lambda name)
 # Optional: AWS_REGION (defaults to us-east-2 for capability-map Lambda)
-# Optional: STALLED_BLOCKED_GITHUB_PAT — GitHub PAT for Project-Plan/Stalled-Blocked-rpt.html only.
-#   Written to Stalled-Blocked-github-token.local.json inside the zip at deploy time (never committed).
+# Optional: STALLED_BLOCKED_GITHUB_PAT — GitHub PAT for Project-Plan/Stalled-Blocked/Stalled-Blocked-rpt.html only.
+#   Written to Stalled-Blocked/Stalled-Blocked-github-token.local.json inside the zip at deploy time (never committed).
 #
 # Path filters: a push must change at least one listed path (empty commits do not trigger).
 #
@@ -22,14 +22,14 @@ on:
   push:
     branches: [main]
     paths:
-      - 'Capability-map/capability-map.html'
-      - 'Capability-map/capability-map-dmsi.html'
-      - 'Capability-map/capability-map-state.json'
-      - 'Capability-map/capability-map-artifacts-dmsi.json'
-      - 'Capability-map/index.mjs'
+      - 'Project-Plan/Capability-map/capability-map.html'
+      - 'Project-Plan/Capability-map/capability-map-dmsi.html'
+      - 'Project-Plan/Capability-map/capability-map-state.json'
+      - 'Project-Plan/Capability-map/capability-map-artifacts-dmsi.json'
+      - 'Project-Plan/Capability-map/index.mjs'
       - 'Project-Plan/Milestones/**'
       - 'Project-Plan/Combined-Outcome-Gantt.html'
-      - 'Project-Plan/Stalled-Blocked-rpt.html'
+      - 'Project-Plan/Stalled-Blocked/Stalled-Blocked-rpt.html'
       - 'Project-Plan/gantt-data.json'
       - 'Project-Plan/outcome-stall-overlay.json'
       - 'Project-Plan/github-stall-live.js'
@@ -63,34 +63,34 @@ jobs:
             echo "No STALLED_BLOCKED_GITHUB_PAT — deploy JSON token file for Stalled-Blocked-rpt on Lambda, or use ?github_token= in the URL."
             exit 0
           fi
-          node -e "const fs=require('fs');const t=process.env.STALLED_BLOCKED_GITHUB_PAT;if(!t)process.exit(0);fs.writeFileSync('Project-Plan/Stalled-Blocked-github-token.local.json',JSON.stringify({github_token:t}));"
-          echo "Wrote Project-Plan/Stalled-Blocked-github-token.local.json for deploy zip (not committed)."
+          node -e "const fs=require('fs');const t=process.env.STALLED_BLOCKED_GITHUB_PAT;if(!t)process.exit(0);fs.writeFileSync('Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json',JSON.stringify({github_token:t}));"
+          echo "Wrote Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json for deploy zip (not committed)."
 
       - name: Create deployment package
         run: |
-          cd Capability-map
-          zip -r ../deploy.zip index.mjs capability-map.html capability-map-dmsi.html capability-map-state.json capability-map-artifacts-dmsi.json
-          cd ../Project-Plan
-          # Root of zip: legacy Lambda URLs …/Combined-Outcome-Gantt.html; Milestones/ at zip root for same-origin fetches
-          zip -g ../deploy.zip Combined-Outcome-Gantt.html github-stall-live.js Stalled-Blocked-rpt.html gantt-data.json outcome-stall-overlay.json
-          zip -g ../deploy.zip Milestones/milestones.html Milestones/milestone_capability_xref.html Milestones/project-milestones.json
-          zip -j -g ../deploy.zip Milestones/milestones.html
-          if [ -f Stalled-Blocked-github-token.local.json ]; then
-            zip -g ../deploy.zip Stalled-Blocked-github-token.local.json
-          fi
+          cd Project-Plan/Capability-map
+          zip -r ../../deploy.zip index.mjs capability-map.html capability-map-dmsi.html capability-map-state.json capability-map-artifacts-dmsi.json
           cd ..
+          # Root of zip: legacy Lambda URLs …/Combined-Outcome-Gantt.html; Milestones/ at zip root for same-origin fetches
+          zip -g ../../deploy.zip Combined-Outcome-Gantt.html github-stall-live.js Stalled-Blocked/Stalled-Blocked-rpt.html gantt-data.json outcome-stall-overlay.json
+          zip -g ../../deploy.zip Milestones/milestones.html Milestones/milestone_capability_xref.html Milestones/project-milestones.json
+          zip -j -g ../../deploy.zip Milestones/milestones.html
+          if [ -f Stalled-Blocked/Stalled-Blocked-github-token.local.json ]; then
+            zip -g ../../deploy.zip Stalled-Blocked/Stalled-Blocked-github-token.local.json
+          fi
+          cd ../..
           # Repo-style paths: …/Project-Plan/Combined-Outcome-Gantt.html (Confluence / bookmarks)
           zip -g deploy.zip \
             Project-Plan/Combined-Outcome-Gantt.html \
-            Project-Plan/Stalled-Blocked-rpt.html \
+            Project-Plan/Stalled-Blocked/Stalled-Blocked-rpt.html \
             Project-Plan/gantt-data.json \
             Project-Plan/outcome-stall-overlay.json \
             Project-Plan/github-stall-live.js \
             Project-Plan/Milestones/milestones.html \
             Project-Plan/Milestones/milestone_capability_xref.html \
             Project-Plan/Milestones/project-milestones.json
-          if [ -f Project-Plan/Stalled-Blocked-github-token.local.json ]; then
-            zip -g deploy.zip Project-Plan/Stalled-Blocked-github-token.local.json
+          if [ -f Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json ]; then
+            zip -g deploy.zip Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json
           fi
           # Repo-relative URL ../../Project-Plan/Milestones/project-milestones.json (WM/PA/VI outcome maps)
           zip -r deploy.zip WSA/WM WSA/VI WSA/PA WSB-WSC/WB

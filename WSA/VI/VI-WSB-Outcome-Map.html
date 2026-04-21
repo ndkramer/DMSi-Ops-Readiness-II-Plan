@@ -1207,7 +1207,7 @@ function withToken(url) {
 
 /** Stalled/Blocked: live GitHub org project when PAT available (see Project-Plan/github-stall-live.js); else outcome-stall-overlay.json / #outcome-stall-overlay-fallback. */
 const STALL_OVERLAY_URL = '../../Project-Plan/outcome-stall-overlay.json';
-const STALLED_BLOCKED_REPORT = '../../Project-Plan/Stalled-Blocked-rpt.html';
+const STALLED_BLOCKED_REPORT = '../../Project-Plan/Stalled-Blocked/Stalled-Blocked-rpt.html';
 let outcomeStallByOutcome = {};
 
 function stallMarkerReportHref(entry) {
@@ -1238,7 +1238,7 @@ function loadOutcomeStallOverlayFromFile() {
 function loadOutcomeStallOverlay() {
   let tokenFileUrl = null;
   try {
-    tokenFileUrl = new URL('../../Project-Plan/Stalled-Blocked-github-token.local.json', window.location.href).href;
+    tokenFileUrl = new URL('../../Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json', window.location.href).href;
   } catch (e) { /* ignore */ }
   if (!window.GithubStallLive) return loadOutcomeStallOverlayFromFile();
   return window.GithubStallLive.resolveGithubToken({ tokenFileUrl: tokenFileUrl }).then((token) => {

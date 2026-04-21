@@ -1,5 +1,5 @@
 {
-  "_documentation": "Optional offline snapshot. Outcome maps and Combined Gantt load stall/blocked live from GitHub when a PAT is available (Project-Plan/github-stall-live.js: URL ?github_token=, localStorage, or Stalled-Blocked-github-token.local.json on deploy). If live fails or no token, they fall back to this file. Regenerate: GITHUB_TOKEN=... node Scripts/sync-outcome-stall-overlay.js. Mapping: wm-oc-03 labels and/or [WM-OC-03] in title; org DynamoLLC-Hub project #1.",
+  "_documentation": "Optional offline snapshot. Outcome maps and Combined Gantt load stall/blocked live from GitHub when a PAT is available (Project-Plan/github-stall-live.js: URL ?github_token=, localStorage, or Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json on deploy). If live fails or no token, they fall back to this file. Regenerate: GITHUB_TOKEN=... node Scripts/sync-outcome-stall-overlay.js. Mapping: wm-oc-03 labels and/or [WM-OC-03] in title; org DynamoLLC-Hub project #1.",
   "generatedAt": null,
   "byOutcome": {}
 }

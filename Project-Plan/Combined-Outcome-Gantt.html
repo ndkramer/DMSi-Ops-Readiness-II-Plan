@@ -651,7 +651,7 @@ function applyCombinedStallOverlay(byOutcome) {
     initGantt(data);
     var tokenFileUrl = null;
     try {
-      tokenFileUrl = new URL('Stalled-Blocked-github-token.local.json', window.location.href).href;
+      tokenFileUrl = new URL('Stalled-Blocked/Stalled-Blocked-github-token.local.json', window.location.href).href;
     } catch (e) { /* ignore */ }
     if (!window.GithubStallLive) {
       applyStallFromJson();

@@ -9,8 +9,8 @@ node_modules/
 .env
 .env.local
 *.pem
-# Local PAT for Stalled-Blocked-rpt.html (copy from .example; deploy beside HTML on Lambda only)
-Project-Plan/Stalled-Blocked-github-token.local.json
+# Local PAT for Stalled-Blocked report (copy from .example; deploy beside HTML on Lambda only)
+Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json
 
 # Editor / IDE
 .idea/

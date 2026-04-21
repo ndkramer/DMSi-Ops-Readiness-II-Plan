@@ -11,11 +11,11 @@
  * Stages without `githubIssueUrl` are unchanged. If the API returns no Status or an
  * unrecognized value, the existing JSON status is kept.
  *
- * Usage (from repo root or Capability-map/):
- *   GITHUB_TOKEN=ghp_… node Capability-map/sync-capability-status-from-github.mjs
+ * Usage (from repo root or Project-Plan/Capability-map/):
+ *   GITHUB_TOKEN=ghp_… node Project-Plan/Capability-map/sync-capability-status-from-github.mjs
  *
- * Token: same PAT as Project-Plan/Stalled-Blocked-rpt.html (read:project, read:org, repo
- * or fine-grained equivalent). Also reads `Project-Plan/Stalled-Blocked-github-token.local.json`
+ * Token: same PAT as Project-Plan/Stalled-Blocked/Stalled-Blocked-rpt.html (read:project, read:org, repo
+ * or fine-grained equivalent). Also reads `Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json`
  * when GITHUB_TOKEN / GH_TOKEN are unset.
  */
 import { readFileSync, writeFileSync } from 'fs';
@@ -24,7 +24,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const STATE_PATH = join(__dirname, 'capability-map-state.json');
-const TOKEN_JSON = join(__dirname, '..', 'Project-Plan', 'Stalled-Blocked-github-token.local.json');
+const TOKEN_JSON = join(__dirname, '..', 'Stalled-Blocked', 'Stalled-Blocked-github-token.local.json');
 
 const ISSUE_URL_RE = /^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/issues\/(\d+)\/?$/i;
 
@@ -74,7 +74,7 @@ function parseGithubIssueUrl(url) {
   return { owner: m[1], repo: m[2], issue: parseInt(m[3], 10) };
 }
 
-/** Same logic as Stalled-Blocked-rpt.html projectStatusOptionFromNode (Status / GitHub Status). */
+/** Same logic as Stalled-Blocked/Stalled-Blocked-rpt.html projectStatusOptionFromNode (Status / GitHub Status). */
 function statusFieldNameFromProjectItems(data) {
   const issue = data?.repository?.issue;
   const nodes = issue?.projectItems?.nodes;
@@ -134,7 +134,7 @@ async function main() {
   const token = resolveToken();
   if (!token) {
     console.error(
-      'Set GITHUB_TOKEN or GH_TOKEN, or add a real token to Project-Plan/Stalled-Blocked-github-token.local.json'
+      'Set GITHUB_TOKEN or GH_TOKEN, or add a real token to Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json'
     );
     process.exit(1);
   }

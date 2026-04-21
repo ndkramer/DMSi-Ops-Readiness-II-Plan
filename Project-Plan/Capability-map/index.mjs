@@ -11,7 +11,7 @@
  *   LAMBDA_INDEX — Filename served for GET / (default: capability-map.html for DMSI;
  *                 set to index.html for greenfield sites)
  *
- * Redeploy: push under Capability-map/ or Project-Plan/ (see workflow), or run workflow_dispatch in Actions.
+ * Redeploy: push under Project-Plan/Capability-map/ or other Project-Plan paths (see workflow), or run workflow_dispatch in Actions.
  *
  * GitHub API proxy (same-origin; avoids Confluence iframe CSP blocking api.github.com):
  *   POST /github-proxy/graphql  — JSON body { query, variables, github_token }; forwards to api.github.com/graphql

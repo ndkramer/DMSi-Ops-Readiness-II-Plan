@@ -9,7 +9,7 @@ This folder contains the **Capability Map** HTML and the Lambda handler that ser
 - **`capability-map-artifacts-dmsi.json`** – Sparse list of `{ "capabilityId", "num", "artifactsUrl" }` under `overrides`; shared state remains in `capability-map-state.json`. **Only the copy in this folder** (repo root of the capability map) **is deployed** — not files under [`archive/`](archive/README.md). After experimenting in a snapshot under `archive/`, copy the file here before deploy so Lambda gets the real links, not `PASTE_DMSI_URL` placeholders.
 - **`index.mjs`** – Node.js Lambda handler (ESM). Serves the HTML at `/` and supports Lambda Function URL `rawPath`-style routing. **Canonical source:** `dynamo-os/planning-toolkit/lambda/static-handler/index.mjs` (copy here when updating). Default root file is **`capability-map.html`**; override with Lambda env **`LAMBDA_INDEX`** (e.g. `index.html` for other sites).
 
-Deployments are done by the GitHub Actions workflow [Deploy Capability Map to Lambda](../.github/workflows/deploy-capability-map.yml).
+Deployments are done by the GitHub Actions workflow [Deploy Capability Map to Lambda](../../.github/workflows/deploy-capability-map.yml).
 
 ## GitHub setup (one-time)
 
@@ -23,11 +23,11 @@ Add these **secrets**:
 | `AWS_SECRET_ACCESS_KEY` | IAM user secret key                  |
 | `LAMBDA_FUNCTION_NAME`  | Exact name of your Lambda function   |
 
-Optional **secret** (for [Stalled-Blocked report](../Project-Plan/Stalled-Blocked-rpt.html) on Lambda without `?github_token=`):
+Optional **secret** (for [Stalled-Blocked report](../Stalled-Blocked/Stalled-Blocked-rpt.html) on Lambda without `?github_token=`):
 
 | Secret | Description |
 |--------|----------------|
-| `STALLED_BLOCKED_GITHUB_PAT` | GitHub PAT with read access to the org project and issues. At deploy time the workflow writes `Project-Plan/Stalled-Blocked-github-token.local.json` into the Lambda zip only (file stays gitignored in the repo). If unset, use `?github_token=` on the report URL (trusted environments) or co-deploy the JSON file manually. |
+| `STALLED_BLOCKED_GITHUB_PAT` | GitHub PAT with read access to the org project and issues. At deploy time the workflow writes `Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json` into the Lambda zip only (file stays gitignored in the repo). If unset, use `?github_token=` on the report URL (trusted environments) or co-deploy the JSON file manually. |
 
 Optional **variable** (defaults to `us-east-1` if unset):
 
@@ -43,7 +43,7 @@ The IAM user/role must have at least: `lambda:UpdateFunctionCode`, `lambda:GetFu
 
 ## When deployments run
 
-- **Automatic:** Push to `main` that changes files under `Capability-map/` included in the deploy zip (see workflow) or the workflow file itself.
+- **Automatic:** Push to `main` that changes files under `Project-Plan/Capability-map/` included in the deploy zip (see workflow) or the workflow file itself.
 - **Manual:** Actions tab → “Deploy Capability Map to Lambda” → “Run workflow”.
 
 ## Lambda configuration
@@ -63,13 +63,13 @@ If you use **`CONFLUENCE_TOKEN`** auth, open the map with **`?token=...`** on th
 The HTML loads `capability-map-state.json` in this order:
 
 1. **Same-origin** — On the Lambda Function URL, this is the copy **bundled in the last deployment** (not a live stream from GitHub).
-2. **Public raw fallback** — `https://raw.githubusercontent.com/.../main/Capability-map/capability-map-state.json` is used when same-origin fails (e.g. opening the file from disk without a local server).
+2. **Public raw fallback** — `https://raw.githubusercontent.com/.../main/Project-Plan/Capability-map/capability-map-state.json` is used when same-origin fails (e.g. opening the file from disk without a local server).
 
 For a **private** repository, the raw URL returns **404** to anonymous browsers, so step 2 never succeeds. The page then uses **embedded** state baked into the HTML (offline fallback).
 
 **Implication:** After you edit `capability-map-state.json` in Git, the hosted map updates when **CI deploys** a new Lambda zip (or you run the deploy workflow). Pushing to `main` alone does not change the live map until that deploy runs.
 
-**GitHub-linked stages** use the GitHub API via the same-origin **`/github-api`** and **`/github-proxy/graphql`** routes on Lambda (avoids browser CORS to `api.github.com`). **Issue body** (REST `GET /repos/.../issues/N`) works **without** a PAT for **public** repositories; **private** issues still need a PAT (**`?github_token=`** / **`?gh_token=`**, localStorage `dmsiStalledBlockedGithubPat`, or co-deployed **`Project-Plan/Stalled-Blocked-github-token.local.json`** — see optional secret). **Org Project “Status”** (GraphQL) always requires a PAT. Anonymous REST is subject to GitHub’s rate limit for the Lambda’s outbound IP; a PAT is recommended for reliability.
+**GitHub-linked stages** use the GitHub API via the same-origin **`/github-api`** and **`/github-proxy/graphql`** routes on Lambda (avoids browser CORS to `api.github.com`). **Issue body** (REST `GET /repos/.../issues/N`) works **without** a PAT for **public** repositories; **private** issues still need a PAT (**`?github_token=`** / **`?gh_token=`**, localStorage `dmsiStalledBlockedGithubPat`, or co-deployed **`Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json`** — see optional secret). **Org Project “Status”** (GraphQL) always requires a PAT. Anonymous REST is subject to GitHub’s rate limit for the Lambda’s outbound IP; a PAT is recommended for reliability.
 
 ## Stage artifact links (SharePoint)
 
@@ -81,7 +81,7 @@ The map shows a folder icon whenever `artifactsUrl` is set and is not `#` or `PA
 
 **Do one of the following:**
 
-1. **Recommended for team use:** In the repo, add Actions secret **`STALLED_BLOCKED_GITHUB_PAT`** (PAT with `repo` / issue read access to the linked repos). Redeploy the Capability Map workflow so **`Project-Plan/Stalled-Blocked-github-token.local.json`** is included in the Lambda zip. The map loads that file same-origin (with your existing `?token=` gate).
+1. **Recommended for team use:** In the repo, add Actions secret **`STALLED_BLOCKED_GITHUB_PAT`** (PAT with `repo` / issue read access to the linked repos). Redeploy the Capability Map workflow so **`Project-Plan/Stalled-Blocked/Stalled-Blocked-github-token.local.json`** is included in the Lambda zip. The map loads that file same-origin (with your existing `?token=` gate).
 2. **One-off / trusted browser:** Open the map with **`&github_token=ghp_…`** (or `gh_token`) in addition to `token=`. Do not share that URL.
 3. Open the **Stalled/Blocked** report on the same Lambda, paste a PAT when prompted (stored in `localStorage` under `dmsiStalledBlockedGithubPat`); reload the capability map in the same browser.
 
