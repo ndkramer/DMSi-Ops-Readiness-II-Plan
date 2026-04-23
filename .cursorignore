@@ -1,0 +1,12 @@
+# AI context: paths still in the repo that are bulky or low priority for default context.
+# Remove a pattern if @-file search must always include those files (Cursor behavior may vary).
+# Curate by hand, like .gitignore.
+
+# Dependencies
+node_modules/
+
+# Large Jira issue exports (dozens of KB+ JSON per file)
+**/Jira/*-json.json
+
+# Legacy / duplicate capability-map material (deep)
+Project-Plan/Capability-map/archive/

@@ -1,0 +1,9 @@
+# DMSI Op Readiness — planning repository (Cursor)
+
+**Rules:** [`.cursor/rules/`](.cursor/rules/) (see [AGENTS.md](AGENTS.md) for the table). **Skills:** [`.cursor/skills/`](.cursor/skills/).
+
+**Planning CLI:** Sibling [dynamo-os](https://github.com/DynamoLLC-Hub/dynamo-os) — `dynamo-os/planning-toolkit` (`dynamo-plan`).
+
+**More:** [README.md](README.md) · [Documentation/Project-Structure.md](Documentation/Project-Structure.md)
+
+**Local MCP:** if you add `.cursor/mcp.json` with tokens, add it to `.gitignore` and do not commit secrets.

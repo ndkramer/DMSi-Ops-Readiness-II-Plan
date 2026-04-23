@@ -2,12 +2,13 @@
 
 Snapshot of the **DMSI-OP-Readiness-OS** repository layout. Folders end with `/`.
 
-**Generated:** 2026-04-21
+**Generated:** 2026-04-23
 
 **Omitted from this listing**
 
 - `.git/` (version control metadata)
 - `.cursor/.env` if present (local secrets; not listed)
+- `.cursor/mcp.json` if present (local MCP; may contain tokens; not listed)
 
 ---
 
@@ -16,6 +17,8 @@ Snapshot of the **DMSI-OP-Readiness-OS** repository layout. Folders end with `/`
 DMSI-OP-Readiness-OS/
 ├── .cursor/
 │   ├── rules/
+│   │   ├── agent-run-terminal.mdc
+│   │   ├── one-step-user-instructions.mdc
 │   │   ├── pa.mdc
 │   │   ├── project-plan.mdc
 │   │   ├── vi.mdc
@@ -25,11 +28,15 @@ DMSI-OP-Readiness-OS/
 │       ├── jira-export/
 │       │   └── SKILL.md
 │       └── wbs-update-pattern/
+│           ├── reference.md
 │           └── SKILL.md
+├── .cursorignore
 ├── .github/
 │   └── workflows/
 │       └── deploy-capability-map.yml
+├── AGENTS.md
 ├── README.md
+├── .cursorrules
 ├── Documentation/
 │   ├── Capacity-Map-Target-Date-Updates.md
 │   ├── dynamo_os_architecture_v4.svg
@@ -37,6 +44,7 @@ DMSI-OP-Readiness-OS/
 │   ├── Jira-Export-Process.md
 │   ├── Jira-Json-Import.md
 │   ├── JQL-Capability-Hierarchy.md
+│   ├── Project-Plan-Design-System.md
 │   ├── Project-Structure.md
 │   └── WBS-Update-Pattern.md
 ├── Project-Plan/

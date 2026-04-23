@@ -1,0 +1,105 @@
+# Project plan design system (outcome-based HTML)
+
+Long-form reference for the **Combined Gantt**, **Outcome Maps**, and **Kanban** in this repository. The Cursor rule [`.cursor/rules/project-plan.mdc`](../.cursor/rules/project-plan.mdc) is a short pointer; this file holds the full design and behavior.
+
+The system is interconnected, self-contained HTML with **no external dependencies** (no CDN, no frameworks, no build). Vanilla HTML, CSS, and JavaScript only.
+
+**In this repo:** Combined Gantt lives in `Project-Plan/`. Workstream A capability folders (**WM**, **VI**, **PA**) live under **`WSA/`**; Customer Support (**WB**) lives in `WSB-WSC/WB/`. The same design system and layer structure apply to all of them.
+
+**Three layers:**
+
+1. **Combined Gantt** — top-level tabbed view, one bar per capability
+2. **Outcome Maps** — per-capability timeline, outcomes as bars on a week/period grid
+3. **Kanban Boards** — per-outcome board, deliverables as cards in workflow columns
+
+Navigation: Combined Gantt → Outcome Map → Kanban Board, with back links at each level.
+
+---
+
+## File structure
+
+- `Project-Plan/Combined-Outcome-Gantt.html` — top-level tabbed dashboard
+- `WSA/WM/WM-Outcome-Map.html`, `WSA/VI/VI-WSB-Outcome-Map.html`, `WSA/PA/PA-Outcome-map.html`, `WSB-WSC/WB/WB-Outcome-Map.html` — outcome maps
+- `WSA/WM/WM-kanban.html`, `WSA/VI/VI-kanban.html`, `WSA/PA/PA-kanban.html`, `WSB-WSC/WB/WB-kanban.html` — kanban boards
+
+Links use relative paths (no leading `/` or absolute paths).
+
+---
+
+## Brand and design system
+
+### Colors
+
+| Token | Hex | Usage |
+|-------|-----|--------|
+| Primary dark | `#2B2B2B` | Header, body text, must-dependency lines |
+| Primary green | `#76BE43` | Brand accent, active tabs, iterative bars |
+| Baseline blue | `#3498DB` | Baseline outcome bars |
+| Iterative green | `#76BE43` | Iterative outcome bars |
+| Conditional orange | `#E67E22` | Conditional bars, dashed border for contingent |
+| POC purple | `#9B59B6` | POC bars |
+| Milestone red | `#E74C3C` | Milestone lines, risk callouts |
+| Background | `#f7f7f7` | Page background |
+| Card white | `#ffffff` | Cards, summary cards |
+
+### Typography and common CSS
+
+- Font: `Arial, Helvetica, sans-serif`. Header 22–24px weight 600; section titles 16px weight 700 with `#76BE43` 2px bottom border; body 12–13px.
+- Reset: `* { margin: 0; padding: 0; box-sizing: border-box; }` and `body { font-family: Arial, Helvetica, sans-serif; background: #f7f7f7; color: #2B2B2B; }`
+- Cards: white, border-radius 8px, padding 20px, box-shadow `0 1px 3px rgba(0,0,0,0.08)`.
+- Header: dark `#2B2B2B`, brand text `#76BE43`, structure `<div class="header"><div><h1>...</h1><div class="subtitle">...</div></div><div class="brand">DYNAMO</div></div>`.
+
+---
+
+## Layer 1: Combined Gantt
+
+- Tabs: `.tab-btn` / `.tab-btn.active` (green bottom border). Tab content: `.tab-content` with `display: none` / `.tab-content.active` with `display: block`.
+- Iframe for workstreams: lazy-load `src` on first tab click; use `dateToPct(date)` for bar positioning.
+- Capability bars: WM `linear-gradient(135deg, #3498DB, #2980B9)`, VI `#9B59B6`→`#8E44AD`, PP/PA `#E67E22`→`#D35400`. Height 38px, 12px bold white. Click navigates to capability Outcome Map.
+- Milestones: dashed red line `#E74C3C`; today: solid green `#76BE43`. Summary cards: 3-column grid, colored left border per capability. **Do not include FTE** in summary cards or bar labels.
+- Tooltip: fixed position, background `#2B2B2B`, title `#76BE43`, follows cursor, max-width 360px.
+
+---
+
+## Layer 2: Outcome maps
+
+- Grid: `200px 1fr` per swim lane; track `repeat(N, 1fr)`; bars use `gridColumn: start / (end + 1)`.
+- Bar colors: Baseline `#3498DB`, Iterative `#76BE43`, Conditional `#E67E22` (dashed), POC `#9B59B6`.
+- **Plus (+) button** on each bar: circular, right side, links to `{PREFIX}-kanban.html#${oc.id}`; use `e.stopPropagation()` on click so tooltip does not block.
+- Conditional outcomes with no schedule (`start: 0, end: 0`): render as italic orange text `"Trigger: [condition]"`.
+- Outcome data: `id`, `name`, `cat`, `start`, `end`, `deps`, `risk`, `deliverables`, `milestone`, optional `status`, `dateRange`, `detail`.
+- Dependency graph (SVG): nodes by category; edges: must solid `#2B2B2B`, should `#76BE43`, contingent dashed `#E67E22`. Sections below: Planning Assumptions, insight cards, Critical Decisions (Type 1/2), dependency SVG.
+
+---
+
+## Layer 3: Kanban boards
+
+- Hash routing: `location.hash` (e.g. `#OC-01`) selects outcome; no/invalid hash shows outcome selector grid.
+- Columns: Backlog `#3498DB`, Advancing `#76BE43`, Stalled `#E67E22`, Blocked `#E74C3C`, Done `#999`. Default: all cards in Backlog. Layout: `grid-template-columns: repeat(5, 1fr)`.
+- Card: deliverable id, name, subtask toggle (expand/collapse checkboxes; no persistence). Back link to `{PREFIX}-Outcome-Map.html` in header.
+- Data: `outcomeData[outcomeId]` with `name` and `deliverables[]` (id, name, subtasks[]). Sourced from WBS markdown.
+
+---
+
+## Data and WBS
+
+- Source of truth: WBS markdown in `WSA/WM/WM-WBS.md`, `WSA/VI/VI-WBS.md`, `WSA/PA/PA-WBS.md`. Each has outcome map table, dependencies (Mermaid), per-outcome sections, deliverables (OC-XX.Y), subtask bullets.
+- When building/updating HTML: parse WBS for outcome metadata and deliverables/subtasks; timeline positions from outcome map data (week/period indices).
+
+---
+
+## Key constraints
+
+- **No external dependencies.** No CDNs, npm, or frameworks. Inline HTML/CSS/JS only.
+- **No build step.** Files open directly in browser.
+- **Relative links only.** Same-directory or relative paths; no leading `/`.
+- **No localStorage/sessionStorage** for kanban state.
+- **Do not include FTE** in Combined Gantt summary cards or bar labels.
+- **Responsive.** Use `@media` to collapse grids on small screens.
+- **Tooltips follow cursor** via mouseenter/mousemove/mouseleave, fixed position.
+
+## Document change log
+
+| Date | Summary |
+|------|---------|
+| 2026-04-23 | Initial long-form spec split from `.cursor/rules/project-plan.mdc`; rule is now a short pointer to this file. |
