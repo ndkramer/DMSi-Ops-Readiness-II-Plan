@@ -78,7 +78,8 @@ jobs:
           if [ -f Stalled-Blocked/Stalled-Blocked-github-token.local.json ]; then
             zip -g ../../deploy.zip Stalled-Blocked/Stalled-Blocked-github-token.local.json
           fi
-          cd ../..
+          # One level: Project-Plan → repository root. (cd ../.. would step above the repo and break the paths below.)
+          cd ..
           # Repo-style paths: …/Project-Plan/Combined-Outcome-Gantt.html (Confluence / bookmarks)
           zip -g deploy.zip \
             Project-Plan/Combined-Outcome-Gantt.html \
