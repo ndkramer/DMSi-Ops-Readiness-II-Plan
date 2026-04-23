@@ -81,6 +81,67 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
   font-size:10px; font-weight:600; color:var(--text-muted);
   display:block; margin-top:6px; line-height:1.35;
 }
+.milestone-link-btn {
+  margin:6px auto 0; padding:0; border:none; background:transparent; cursor:pointer;
+  color:var(--accent); display:flex; align-items:center; justify-content:center;
+  border-radius:6px; line-height:0; transition:background 0.15s, color 0.15s;
+}
+.milestone-link-btn:hover { background:var(--surface2); color:#1d4ed8; }
+.milestone-link-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+/* Milestone detail modal */
+.ms-modal-overlay {
+  display:none; position:fixed; inset:0; z-index:500;
+  background:rgba(15,23,42,0.55); backdrop-filter:blur(2px);
+  align-items:center; justify-content:center; padding:20px;
+}
+.ms-modal-overlay.open { display:flex; }
+.ms-modal {
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  max-width:920px; width:100%; max-height:90vh; overflow:auto;
+  box-shadow:0 24px 48px rgba(0,0,0,0.25);
+  position:relative;
+}
+.ms-modal-head {
+  position:sticky; top:0; z-index:1; background:linear-gradient(180deg, var(--surface) 90%, transparent);
+  padding:20px 48px 12px 24px; border-bottom:1px solid var(--border);
+}
+.ms-modal-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#1e3a5f; }
+.ms-modal-sub { font-size:12px; color:var(--text-dim); margin-top:4px; }
+.ms-modal-close {
+  position:absolute; top:14px; right:14px; width:36px; height:36px; border:none; border-radius:8px;
+  background:var(--surface2); color:var(--text-dim); cursor:pointer; font-size:18px; line-height:1;
+}
+.ms-modal-close:hover { background:var(--surface3); color:var(--text); }
+.ms-modal-body { padding:16px 24px 28px; }
+.ms-section { margin-bottom:22px; }
+.ms-section-title {
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.2px;
+  color:var(--text-muted); margin-bottom:10px;
+}
+.detail-card-grid { display:grid; gap:10px; }
+.detail-card {
+  background:var(--bg); border:1px solid var(--border); border-radius:var(--radius);
+  padding:12px 14px; border-top:3px solid #7c3aed;
+  box-shadow:0 1px 2px rgba(0,0,0,0.04);
+}
+.detail-card-text { font-size:12px; color:var(--text-dim); line-height:1.55; }
+.seg-progress {
+  display:flex; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap;
+}
+.seg-frac { font-size:11px; font-weight:600; color:var(--text-dim); min-width:2.2em; }
+.seg-pct { font-size:11px; font-weight:600; color:var(--text-dim); min-width:2.5em; text-align:right; }
+.seg-bar {
+  display:flex; gap:2px; flex:1; min-width:100px; height:8px; align-items:stretch;
+}
+.seg-slice {
+  flex:1; min-width:3px; border-radius:0; background:#ede9fe;
+  box-shadow: inset 0 0 0 1px rgba(124,58,237,0.12);
+}
+.seg-slice.filled { background:#7c3aed; }
+.seg-bar .seg-slice:first-child { border-radius:4px 0 0 4px; }
+.seg-bar .seg-slice:last-child { border-radius:0 4px 4px 0; }
+.seg-bar .seg-slice:only-child { border-radius:4px; }
 
 /* Capability header */
 .th-cap {
@@ -209,6 +270,17 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 
 <div class="tooltip" id="tooltip"></div>
 
+<div class="ms-modal-overlay" id="msModalOverlay" role="dialog" aria-modal="true" aria-labelledby="msModalTitle" aria-hidden="true">
+  <div class="ms-modal" id="msModal">
+    <button type="button" class="ms-modal-close" id="msModalClose" aria-label="Close">×</button>
+    <div class="ms-modal-head">
+      <div class="ms-modal-title" id="msModalTitle"></div>
+      <div class="ms-modal-sub" id="msModalSub"></div>
+    </div>
+    <div class="ms-modal-body" id="msModalBody"></div>
+  </div>
+</div>
+
 <script>
 /* ═══════════════════════════════════════════ DATA ═════════════════════════════════════════════ */
 
@@ -323,6 +395,53 @@ const notes = [
   { title:'Dev Team Dependencies', text:'Visibility Infrastructure Stage 5 (Application Telemetry) and Pipeline Automation Stages 6–8 have explicit development team dependencies. These stages cannot advance on engineering effort alone and require active dev team engagement.' }
 ];
 
+/* Rich milestone detail (modal). `done` / `total` are placeholders for future GitHub project sub-task rollups. */
+const milestoneDetails = {
+  M3: {
+    title: 'M3: Foundation',
+    subtitle: 'Targeted for Month 4 (End of May)',
+    what: [
+      { text: 'Tiered service designed for top customers (Workstream B)', done: 2, total: 13 },
+      { text: 'Support Scorecard operational (Workstream B & Workstream S)', done: 0, total: 8 },
+      { text: 'Code-as-Config pipeline built (we have built, not deployed, no training) (Workstream A) — Pipeline Automation Stage 4', done: 0, total: 10 }
+    ],
+    assumptions: [
+      { text: 'Only possible for infrastructure. (Workstream A)', done: 0, total: 1 },
+      { text: 'AWS', done: 0, total: 1 }
+    ],
+    deliverables: [
+      { text: 'NGinX Pipeline (AWS); NGinX will take us 90% to the done state and apply to an additional pipeline(s).', done: 0, total: 5 },
+      { text: 'Plan for future adoptions so that DMSI can use the templates to complete config changes', done: 0, total: 4 },
+      { text: 'Update PagerDuty pipeline to use Terraform (remove PowerShell)', done: 0, total: 3 }
+    ],
+    blockers: [
+      { text: 'Access to AWS', done: 0, total: 1 },
+      { text: 'Design of network connectivity from GitHub runners to VM', done: 0, total: 1 },
+      { text: 'NGinX and configs', done: 0, total: 1 },
+      { text: 'Cloudflare tunnels.', done: 0, total: 1 },
+      { text: 'Read access to Sharedrive (360): /agility/alpha/Customer/<customer>/<env>/', done: 0, total: 1 }
+    ],
+    outOfScope: [
+      { text: 'App code', done: 0, total: 1 },
+      { text: 'POS OE: Too big for this milestone', done: 0, total: 1 }
+    ],
+    questions: [
+      { text: 'CRE (Customer Runtime ENV): Should we include', done: 0, total: 1 },
+      { text: 'From Bryan: File extraction from servers (NGINX configs, Connect XML), database parameter exports, app server config captures, reporting server settings — we need to understand and de-constraint this (Brent A. owns)', done: 0, total: 1 },
+      { text: 'Connect XML &amp; database parameter: better understanding', done: 0, total: 1 },
+      { text: 'Config in version control — ?', done: 0, total: 1 },
+      { text: 'Observability documented (Workstream A)', done: 0, total: 1 },
+      { text: 'Dynatrace documentation', done: 0, total: 1 },
+      { text: 'Deployment mapping &amp; documentation complete (Workstream E)', done: 0, total: 1 },
+      { text: 'Document DMSi process; document process', done: 0, total: 1 },
+      { text: 'Doc for PA POC', done: 0, total: 1 },
+      { text: 'A2W / Frameworks telemetry strategy complete (Workstream A). We need to determine the telemetry strategy built into A2W and how it fits with the NEW telemetry strategy. GAP analysis, determine what needs to be added to A2W so that they add the correct telemetry strategy from the beginning', done: 0, total: 1 },
+      { text: 'TierPoint SLA evaluation complete (Workstream A). We need to research the current SLAs. Is TierPoint meeting the SLAs? How does our strategy reduce the dependencies on these SLAs? Can we trim TierPoint’s work to reduce TierPoint’s costs?', done: 0, total: 1 },
+      { text: 'Product market strategy complete (Workstream E)', done: 0, total: 1 }
+    ]
+  }
+};
+
 /* ═══════════════════════════════════════ RENDER ══════════════════════════════════════════════ */
 
 // Legend
@@ -368,16 +487,22 @@ function datesByMilestoneId(json) {
 }
 
 function buildThead(dateMap) {
+  const linkIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`;
   let thead = `<thead><tr>
   <th class="th-cap col-cap" style="background:var(--bg);border:1px solid var(--border);"></th>`;
   milestones.forEach(m => {
     const line = dateMap[m.id];
     const dateHtml = line ? `<span class="milestone-date">${line}</span>` : '';
+    const hasDetail = milestoneDetails[m.id];
+    const linkBtn = hasDetail
+      ? `<button type="button" class="milestone-link-btn" data-ms="${m.id}" title="Milestone details" aria-label="Open details for ${m.id}">${linkIcon}</button>`
+      : '';
     thead += `<th class="th-milestone">
     <span class="milestone-id">${m.id}</span>
     <span class="milestone-name">${m.name}</span>
     <span class="milestone-target">${m.target}</span>
     ${dateHtml}
+    ${linkBtn}
   </th>`;
   });
   thead += '</tr></thead>';
@@ -457,6 +582,99 @@ notes.forEach(n => {
     <div class="note-title">${n.title}</div>
     <div class="note-text">${n.text}</div>
   </div>`;
+});
+
+/* ══════════════════════════════════ MILESTONE DETAIL MODAL ═══════════════════════════════════ */
+
+const msModalOverlay = document.getElementById('msModalOverlay');
+const msModal = document.getElementById('msModal');
+
+function setMsModalOpen(open) {
+  if (open) {
+    msModalOverlay.classList.add('open');
+    msModalOverlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  } else {
+    msModalOverlay.classList.remove('open');
+    msModalOverlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+}
+
+function renderSegBar(done, total) {
+  const t = Math.max(1, total | 0);
+  const d = Math.min(t, Math.max(0, done | 0));
+  const pct = t ? Math.round(100 * d / t) : 0;
+  let slices = '';
+  for (let i = 0; i < t; i++) {
+    slices += `<div class="seg-slice${i < d ? ' filled' : ''}"></div>`;
+  }
+  return `<div class="seg-progress" role="group" aria-label="Progress: ${d} of ${t} complete">
+    <span class="seg-frac">${d} / ${t}</span>
+    <div class="seg-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${t}" aria-valuenow="${d}">${slices}</div>
+    <span class="seg-pct">${pct}%</span>
+  </div>`;
+}
+
+function renderDetailItems(items) {
+  if (!items || !items.length) return '';
+  return items
+    .map(
+      (item) => `<div class="detail-card">
+      <div class="detail-card-text">${item.text}</div>
+      ${renderSegBar(item.done, item.total)}
+    </div>`
+    )
+    .join('');
+}
+
+function openMsModal(milestoneId) {
+  const d = milestoneDetails[milestoneId];
+  if (!d) return;
+  const title = document.getElementById('msModalTitle');
+  const sub = document.getElementById('msModalSub');
+  const body = document.getElementById('msModalBody');
+  title.textContent = d.title;
+  sub.textContent = d.subtitle;
+  const sections = [
+    ['What', 'what'],
+    ['Assumptions', 'assumptions'],
+    ['Deliverables', 'deliverables'],
+    ['Blockers / risks', 'blockers'],
+    ['Out of scope', 'outOfScope'],
+    ['Questions', 'questions']
+  ];
+  body.innerHTML = sections
+    .map(([label, key]) => {
+      const list = d[key];
+      const grid = renderDetailItems(list);
+      if (!grid) return '';
+      return `<section class="ms-section" aria-label="${label}"><h2 class="ms-section-title">${label}</h2><div class="detail-card-grid">${grid}</div></section>`;
+    })
+    .filter(Boolean)
+    .join('');
+  setMsModalOpen(true);
+  document.getElementById('msModalClose').focus();
+}
+
+function closeMsModal() {
+  setMsModalOpen(false);
+}
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.milestone-link-btn');
+  if (btn && btn.dataset.ms) {
+    e.preventDefault();
+    openMsModal(btn.dataset.ms);
+  }
+});
+msModalOverlay.addEventListener('click', (e) => {
+  if (e.target === msModalOverlay) closeMsModal();
+});
+msModal.addEventListener('click', (e) => e.stopPropagation());
+document.getElementById('msModalClose').addEventListener('click', closeMsModal);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && msModalOverlay.classList.contains('open')) closeMsModal();
 });
 
 /* ═══════════════════════════════════════ TOOLTIP ═════════════════════════════════════════════ */
