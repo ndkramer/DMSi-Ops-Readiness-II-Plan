@@ -12,4 +12,4 @@ When you edit the **Combined Gantt**, **Outcome Maps**, or **Kanban** HTML, foll
 
 - **No** external CDNs, npm, or frameworks. Vanilla inline HTML/CSS/JS only. **No build.** **Relative** links (no leading `/`). **No** `localStorage` / `sessionStorage` for kanban. **No FTE** in Combined Gantt summary cards or bar labels.
 
-Capability-specific IDs, Jira keys, and WBS section conventions: [`.cursor/rules/pa.mdc`](pa.mdc), [`vi.mdc`](vi.mdc), [`wm.mdc`](wm.mdc), [`wb.mdc`](wb.mdc) and the relevant `*-WBS.md` files.
+Capability-specific stable IDs, outcome conventions, and WBS section structure: [`.cursor/rules/pa.mdc`](pa.mdc), [`vi.mdc`](vi.mdc), [`wm.mdc`](wm.mdc), [`wb.mdc`](wb.mdc) and the relevant `*-WBS.md` files.

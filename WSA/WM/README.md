@@ -15,14 +15,14 @@ Normative planning for the **Work Management** capability (single trusted view o
 ## Jira exports (`Jira/`)
 
 - **Dated full exports:** `WM-Jira-MM-DD-YYYY-json.json` — **keep multiple** dated files for history (same convention as PA).
-- **Target-state import JSON:** `Output/WM-WBS-Jira-Import.json` (regenerate with `node Scripts/wm-wsb-to-jira-import.js` when WBS-derived structure changes). **`Output/Archive/`** holds dated snapshots from WBS load prep. See **`Jira/README.md`**.
+- **Target-state import JSON:** `Output/WM-WBS-Load-Snapshot.json` (regenerate with `node Scripts/legacy/jira/wm-wsb-to-jira-import.js` when WBS-derived structure changes). **`Output/Archive/`** holds dated snapshots from WBS load prep. See **`Jira/README.md`**.
 
 ## Folder layout
 
 | Path | Role |
 |------|------|
 | **`Input/`** | Stakeholder inputs for WBS loads (create when needed). |
-| **`Output/`** | `WM-WBS-Jira-Import.json` and **`Output/Archive/`**. |
+| **`Output/`** | `WM-WBS-Load-Snapshot.json` and **`Output/Archive/`**. |
 | **`Update-Reports/`** | WBS load reports. |
 | **`Archive/`** | Point-in-time copies of **`WM-WBS.md`**. |
 

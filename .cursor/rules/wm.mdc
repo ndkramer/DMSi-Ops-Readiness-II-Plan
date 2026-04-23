@@ -23,4 +23,4 @@ When editing or creating content under **`WSA/WM/`**, follow the Work Management
 
 ## Reference
 
-The canonical WM outcome structure is in **`WM-WBS.md`** (under **`WSA/WM/`**). See **`README.md`** in that folder for layout, Jira exports, and optional **`wm-outcomes.json`**. When in doubt, match the WBS format and level of detail.
+The canonical WM outcome structure is in **`WM-WBS.md`** (under **`WSA/WM/`**). See **`README.md`** in that folder for layout and optional **`wm-outcomes.json`**. When in doubt, match the WBS format and level of detail.

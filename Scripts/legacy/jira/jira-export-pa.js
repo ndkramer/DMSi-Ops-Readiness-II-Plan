@@ -5,14 +5,14 @@
  * Resolves CLI: DYNAMO_PLAN_CLI, or sibling dynamo-os/planning-toolkit/bin/cli.js.
  *
  * Usage (from project root):
- *   node Scripts/jira-export-pa.js [capability] [rootKey] [actionItemRoot]
+ *   node Scripts/legacy/jira/jira-export-pa.js [capability] [rootKey] [actionItemRoot]
  */
 
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
-const projectRoot = path.resolve(__dirname, '..');
+const projectRoot = path.resolve(__dirname, '../../..');
 
 function resolveCliPath() {
   const env = process.env.DYNAMO_PLAN_CLI;

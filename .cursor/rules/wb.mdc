@@ -1,12 +1,12 @@
 ---
-description: WB (Customer Support / Workstream B) folder — outcome-based WBS, kanban, Jira alignment
+description: WB (Customer Support / Workstream B) folder — outcome-based WBS and planning HTML
 globs: WSB-WSC/WB/**
 alwaysApply: false
 ---
 
 # WB Folder Rules
 
-When editing or creating content under **`WSB-WSC/WB/`** (Customer Support capability folder), follow the outcome-based WBS structure and conventions (**WB-WBS**). Optional structured outcome ↔ Jira map: **`wb-outcomes.json`** (keep in sync with `WB-WBS.md` §11).
+When editing or creating content under **`WSB-WSC/WB/`** (Customer Support capability folder), follow the outcome-based WBS structure and conventions (**WB-WBS**). Optional structured registry: **`wb-outcomes.json`** (keep in sync with `WB-WBS.md` §11).
 
 ## Structure to follow
 
@@ -22,19 +22,15 @@ When editing or creating content under **`WSB-WSC/WB/`** (Customer Support capab
 - Deliverable IDs: **WB-OC-XX.Y**. Risk IDs: **WB-R-XX**, **WB-R-Xn** (cross-cutting). Decision IDs: **WB-D-XX**. Question IDs: **WB-Q-XX**. Cross-workstream: **WB-CW-XX**.
 - Keep dependency types explicit: **must**, **should**, **contingent**.
 
-## Jira alignment
+## Optional data under `Output/`
 
-- **Capability root** and **action-item Epic**: set in **`wb-outcomes.json`** when keys exist.
-- **Outcome Epics**: summaries `[WB-OC-XX] …` per `WB-WBS.md`.
-- **Import JSON**: `WSB-WSC/WB/Output/WB-WBS-Jira-Import.json` — extend with Stories/Sub-tasks from the WBS.
-- Export: **`node Scripts/jira-export-wb.js`** after keys are set (wraps `jira-export-pa.js WB …`).
+- **`Output/WB-WBS-Load-Snapshot.json`**: optional bridge-shaped JSON archived by `wbs prep` (filename from **dynamo-os** toolkit). Maintain from the WBS when needed; not required for **Input → WBS**.
 
-## WBS update pattern
+## WBS update (Input → WBS)
 
-- **Pattern A:** `node Scripts/wbs-load-prep.js WB` → process `WSB-WSC/WB/Input/` → regenerate `WB-WBS.md` → `node Scripts/wbs-move-input-to-archive.js WB <mm-dd-yyyy>`.
-- **Pattern B:** Reconcile Jira exports under **`WSB-WSC/WB/Jira/`** with `WB-WBS.md` change log and planning HTML.
+- **`dynamo-plan wbs prep WB`** (or `node Scripts/wbs-load-prep.js WB`) → process `WSB-WSC/WB/Input/` → regenerate `WB-WBS.md` and related planning artifacts → **`dynamo-plan wbs report-counts`** / **`dynamo-plan wbs archive-input`** with the same date stamp.
 
-See **`.cursor/skills/wbs-update-pattern/SKILL.md`** and **`WSB-WSC/WB/README.md`**.
+See **`.cursor/skills/wbs-update-pattern/SKILL.md`** and **`WSB-WSC/WB/README.md`**. Legacy Jira export scripts: [`Scripts/legacy/jira/README.md`](../../Scripts/legacy/jira/README.md).
 
 ## Reference
 

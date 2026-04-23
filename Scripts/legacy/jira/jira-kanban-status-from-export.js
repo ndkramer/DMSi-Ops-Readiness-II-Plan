@@ -5,7 +5,7 @@
  *
  * Resolves CLI: DYNAMO_PLAN_CLI, or sibling dynamo-os/planning-toolkit/bin/cli.js.
  *
- * Usage: node Scripts/jira-kanban-status-from-export.js [CAP]
+ * Usage: node Scripts/legacy/jira/jira-kanban-status-from-export.js [CAP]
  * Default CAP is PA (Pipeline Automation).
  */
 
@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
-const projectRoot = path.resolve(__dirname, '..');
+const projectRoot = path.resolve(__dirname, '../../..');
 
 function resolveCliPath() {
   const env = process.env.DYNAMO_PLAN_CLI;

@@ -22,20 +22,20 @@ Normative planning for the **DMSi Customer Support Transformation** (outcome-bas
 ## Jira exports (`Jira/`)
 
 - **Dated full exports:** `WB-Jira-MM-DD-YYYY-json.json` — retain multiple dated files (same convention as PA/WM).
-- **Target-state import JSON:** `Output/WB-WBS-Jira-Import.json` — expand from `WB-WBS.md` as Stories/Sub-tasks are defined for import. **`Output/Archive/`** holds snapshots from `node Scripts/wbs-load-prep.js WB`. See **`Jira/README.md`**.
+- **Target-state import JSON:** `Output/WB-WBS-Load-Snapshot.json` — expand from `WB-WBS.md` as Stories/Sub-tasks are defined for import. **`Output/Archive/`** holds snapshots from `node Scripts/wbs-load-prep.js WB`. See **`Jira/README.md`**.
 
 ## Folder layout
 
 | Path | Role |
 |------|------|
 | **`Input/`** | Stakeholder inputs for WBS loads (Pattern A). |
-| **`Output/`** | `WB-WBS-Jira-Import.json` and **`Output/Archive/`**. |
+| **`Output/`** | `WB-WBS-Load-Snapshot.json` and **`Output/Archive/`**. |
 | **`Update-Reports/`** | WBS load reports from prep. |
 | **`Archive/`** | Point-in-time copies of **`WB-WBS.md`**. |
 
 ## WBS update pattern
 
-- **Pattern A (Input → WBS):** `node Scripts/wbs-load-prep.js WB` → process `Input/` → regenerate `WB-WBS.md` → fill report → `node Scripts/wbs-move-input-to-archive.js WB <mm-dd-yyyy>` → update `Output/WB-WBS-Jira-Import.json`.
+- **Pattern A (Input → WBS):** `node Scripts/wbs-load-prep.js WB` → process `Input/` → regenerate `WB-WBS.md` → fill report → `node Scripts/wbs-move-input-to-archive.js WB <mm-dd-yyyy>` → update `Output/WB-WBS-Load-Snapshot.json`.
 - **Pattern B (Jira ↔ WBS ↔ HTML):** When Jira is live, export to `Jira/`, reconcile `WB-WBS.md` change log and `wb-outcomes.json`, refresh `WB-Outcome-Map.html` / `WB-kanban.html` narratives.
 
 See **`.cursor/skills/wbs-update-pattern/SKILL.md`** and **`Documentation/WBS-Update-Pattern.md`**.

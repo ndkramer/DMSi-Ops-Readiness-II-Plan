@@ -83,7 +83,7 @@ Examples: `WSA/PA/`, `WSB-WSC/WB/`.
 
 - **`Jira/`** — Dated Jira export JSON (and optional kanban status artifacts alongside exports, if that pattern is retained).
 
-- **`Output/`** — `*-WBS-Jira-Import.json` and **`Output/Archive/`** for dated snapshots.
+- **`Output/`** — `*-WBS-Load-Snapshot.json` and **`Output/Archive/`** for dated snapshots.
 
 - **`Archive/`** — Dated WBS markdown (and similar) archives from prep scripts.
 
@@ -141,10 +141,10 @@ Parameterize all of the following with **project config** (no hardcoded capabili
 
 | Area | Current location (this repo) | Notes |
 |------|------------------------------|--------|
-| Jira export / delete / import / link | **Engine:** `dynamo-os/planning-toolkit` → `dynamo-plan jira …` (`export`, `kanban-rebuild`, `delete-under-root`, `delete-tree`, `import-wm`, `link-wm-action-items`). **DMSI:** thin `Scripts/jira-*.js` wrappers + `dynamo-os.config.cjs` | Shared HTTP/auth; env from `jira.envFile` (e.g. `.cursor/.env`) |
+| Jira export / delete / import / link (optional) | **Engine:** `dynamo-os/planning-toolkit` → `dynamo-plan jira …` (`export`, `kanban-rebuild`, `delete-under-root`, `delete-tree`, `import-wm`, `link-wm-action-items`). **DMSI:** `Scripts/legacy/jira/*` shims + `dynamo-os.config.cjs` | Shared HTTP/auth; env from `jira.envFile` (e.g. `.cursor/.env`) |
 | Capability paths | `Scripts/wbs-capability-folder.js` | Replace with config-driven resolution (remove WB-only special case) |
 | WBS load lifecycle | `Scripts/wbs-load-prep.js`, `wbs-move-input-to-archive.js`, `wbs-load-report-counts.js` | Generic once paths come from config |
-| Kanban status from export | `Scripts/jira-kanban-status-from-export.js` | Generalize beyond PA-default paths |
+| Kanban status from export (optional) | `Scripts/legacy/jira/jira-kanban-status-from-export.js` | Generalize beyond PA-default paths |
 | Gantt data build | `Project-Plan/build-gantt-data.js` | Move engine to Dynamo-OS; **WBS list + base year** in config |
 | Capability map date sync | `Capability-map/sync-stage-dates-from-outcome-maps.js` | Move engine; **HTML paths + stage mapping + year** in config |
 | Lambda handler | `Capability-map/index.mjs` (sync **`dynamo-os/planning-toolkit/lambda/static-handler/index.mjs`**) | Generic static server; package with project HTML/JSON per deploy docs |
@@ -356,8 +356,8 @@ Cursor loads rules from **`.cursor/rules/*.mdc`** at the **repository root**. �
 
 - [Dynamo-OS-requirements.md](./Dynamo-OS-requirements.md) — **handoff brief** for Dynamo-OS maintainers (copy into that repo as `requirements.md` if desired)  
 - `Documentation/WBS-Update-Pattern.md`  
-- `Documentation/Jira-Export-Process.md`  
+- `Documentation/legacy/Jira-Export-Process.md`  
 - `Scripts/README.md`  
 - `.cursor/skills/wbs-update-pattern/SKILL.md`  
-- `.cursor/skills/jira-export/SKILL.md`  
+- *(Removed)* ~~`.cursor/skills/jira-export/SKILL.md`~~ — Jira flow is optional; see `Documentation/legacy/` and `Scripts/legacy/jira/`.
 - `.cursor/rules/project-plan.mdc`, `.cursor/rules/pa.mdc`, `.cursor/rules/vi.mdc`, `.cursor/rules/wm.mdc`, `.cursor/rules/wb.mdc`

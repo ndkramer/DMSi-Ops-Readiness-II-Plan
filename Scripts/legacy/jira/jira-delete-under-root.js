@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 /**
- * Thin wrapper: forwards to dynamo-os planning-toolkit `jira link-wm-action-items`.
- * Links WM action items using import JSON + numeric key ranges (see CLI --help).
+ * Thin wrapper: forwards to dynamo-os planning-toolkit `jira delete-under-root`.
+ * Deletes work under a capability root per `dynamo-os.config.cjs` (jiraCapabilityRoot / jiraActionItemRoot).
  *
- * Usage: node Scripts/jira-link-wm-action-items.js [--dry-run] [--epic-start N] [--story-start N] [--action-start N]
+ * Usage: node Scripts/legacy/jira/jira-delete-under-root.js [CAP] [rootKey] [actionItemRoot] [--dry-run] [--delete-root]
+ *    or: node Scripts/legacy/jira/jira-delete-under-root.js <issueKey> [actionItemRoot] [--dry-run] [--delete-root]
+ *
+ * Set DYNAMO_PLAN_CLI to planning-toolkit/bin/cli.js if dynamo-os is not a sibling of this repo.
  */
 
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
-const PROJECT_ROOT = path.resolve(__dirname, '..');
+const PROJECT_ROOT = path.resolve(__dirname, '../../..');
 
 function resolveCliPath() {
   const env = process.env.DYNAMO_PLAN_CLI;
@@ -31,7 +34,7 @@ function main() {
   const args = process.argv.slice(2);
   const r = spawnSync(
     process.execPath,
-    [cli, 'jira', 'link-wm-action-items', ...args, '--cwd', PROJECT_ROOT],
+    [cli, 'jira', 'delete-under-root', ...args, '--cwd', PROJECT_ROOT],
     { stdio: 'inherit', env: process.env }
   );
   process.exit(r.status === null ? 1 : r.status);

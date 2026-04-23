@@ -1,5 +1,7 @@
 # Jira JSON Import
 
+> **Legacy / not the default WBS path.** See [WBS-Update-Pattern.md](../WBS-Update-Pattern.md) and [README.md](README.md).
+
 This document describes the **Jira JSON export** artifact: what it is, its structure, how to generate it, and how it is used for comparison and import workflows alongside the WSB Jira-Import format.
 
 ## Overview
@@ -10,7 +12,7 @@ The **Jira JSON** file is a snapshot of a capability’s full hierarchy **as it 
 
 | Item | Value |
 |------|--------|
-| **Folder** | `{Capability}/Jira/` — PA/VI/WM resolve under **`WSA/{Capability}/Jira/`** (e.g. `WSA/PA/Jira/`); WB under `WSB-WSC/WB/Jira/`. |
+| **Folder** | `{Capability}/Jira/` — PA/VI/WM resolve under **`WSA/{Capability}/Jira/`**; WB under `WSB-WSC/WB/Jira/`. **PA:** this repo may not include `WSA/PA/Jira/` in git; running export **creates** it. |
 | **Filename** | `{Prefix}-Jira-mm-dd-yyyy-json.json` (e.g. `PA-Jira-03-17-2026-json.json`) |
 | **Date in name** | Export run date (`mm-dd-yyyy`) |
 
@@ -80,35 +82,35 @@ Same flat shape as above for **Action Items**, plus:
 | `link_to` | string | Key of the action-item root (e.g. `WSA-2657`). |
 | `link_type` | string | Link type (e.g. `"Related to"`). |
 
-Use `work_items` and `action_items_flat` when comparing to `PA-WBS-Jira-Import.json` (which has `work_items` and `action_items`) or when building an import/sync step.
+Use `work_items` and `action_items_flat` when comparing to `PA-WBS-Load-Snapshot.json` (which has `work_items` and `action_items`) or when building an import/sync step.
 
-## Relationship to WBS Jira-Import
+## Relationship to the WBS load snapshot
 
 | Artifact | Source | Purpose |
 |----------|--------|---------|
 | **Jira JSON** (`PA-Jira-mm-dd-yyyy-json.json`) | Export **from Jira** (this format) | Current state in Jira; input to diff/import. |
-| **WBS Jira-Import** (`PA-WBS-Jira-Import.json`) | Derived **from** [`PA-WBS.md`](../WSA/PA/PA-WBS.md) (manual or generator) | Target state; what should be in Jira. |
+| **WBS load snapshot** (`PA-WBS-Load-Snapshot.json`) | Derived **from** [`PA-WBS.md`](../../WSA/PA/PA-WBS.md) (manual or generator) | Target state; what should be in Jira. |
 
 - **Jira JSON** = “what Jira has.”
-- **PA-WBS-Jira-Import** = “what the WBS says should be in Jira.” (Filename aligns with **PA-WBS.md**; VI/WM use **`VI-WBS-Jira-Import.json`**, **`WM-WBS-Jira-Import.json`**.)
+- **PA-WBS-Load-Snapshot** = “what the WBS says should be in Jira.” (Filename aligns with **PA-WBS.md**; VI/WM use **`VI-WBS-Load-Snapshot.json`**, **`WM-WBS-Load-Snapshot.json`**.)
 
-Optional outcome ↔ epic registry: [`pa-outcomes.json`](../WSA/PA/pa-outcomes.json).
+Optional outcome ↔ epic registry: [`pa-outcomes.json`](../../WSA/PA/pa-outcomes.json).
 
-Diffing `work_items` / `action_items_flat` (Jira JSON) against `work_items` / `action_items` (PA-WBS-Jira-Import) by key or outcome_id supports add/update/delete decisions for a future Jira import or sync process.
+Diffing `work_items` / `action_items_flat` (Jira JSON) against `work_items` / `action_items` (PA-WBS-Load-Snapshot) by key or outcome_id supports add/update/delete decisions for a future Jira import or sync process.
 
 ## How to generate the Jira JSON (export)
 
-1. **Trigger phrase:** Say **"Export PA WSA-2656 from Jira"** (or **"Export PA from Jira"**). The agent runs the export and writes the file to `WSA/PA/Jira/`. See [.cursor/skills/jira-export/SKILL.md](../.cursor/skills/jira-export/SKILL.md).
+1. **Trigger:** Run **dynamo-os** `dynamo-plan jira export` or [`Scripts/legacy/jira/jira-export-pa.js`](../../Scripts/legacy/jira/jira-export-pa.js); for **PA** the default output directory is `WSA/PA/Jira/` (created on first export if absent).
 
 2. **Script (from project root):**
    ```bash
-   node Scripts/jira-export-pa.js [capability] [rootKey] [actionItemRoot]
+   node Scripts/legacy/jira/jira-export-pa.js [capability] [rootKey] [actionItemRoot]
    ```
-   Examples: `node Scripts/jira-export-pa.js`, or `node Scripts/jira-export-pa.js PA WSA-2656`.
+   Examples: `node Scripts/legacy/jira/jira-export-pa.js`, or `node Scripts/legacy/jira/jira-export-pa.js PA WSA-2656`.
 
 3. **Requirements:** `JIRA_URL`, `JIRA_USERNAME`, `JIRA_API_TOKEN` in the environment or in `.cursor/.env`.
 
-Details: [Jira Export Process](Jira-Export-Process.md), [PA/Jira/README.md](../WSA/PA/Jira/README.md), [Scripts/README.md](../Scripts/README.md).
+Details: [Jira Export Process](Jira-Export-Process.md), [WSA/PA/README.md](../../WSA/PA/README.md) (PA layout), [Scripts/README.md](../../Scripts/README.md).
 
 ## Using the Jira JSON for import workflows
 
@@ -119,6 +121,6 @@ Details: [Jira Export Process](Jira-Export-Process.md), [PA/Jira/README.md](../W
 ## See also
 
 - [Jira Export Process](Jira-Export-Process.md) — How to run the export and where output goes.
-- [PA/Jira/README.md](../WSA/PA/Jira/README.md) — PA export folder and file format.
-- [WBS Update Pattern](WBS-Update-Pattern.md) — WBS and WSB Jira-Import regeneration (WBS → Jira-Import, not Jira → JSON).
-- [Scripts/README.md](../Scripts/README.md) — `jira-export-pa.js` usage.
+- [Jira Export Process](Jira-Export-Process.md) — export output location and format.
+- [WBS Update Pattern](../WBS-Update-Pattern.md) — Input → WBS (default).
+- [Scripts/README.md](../../Scripts/README.md) — includes [`legacy/jira`](../../Scripts/legacy/jira/README.md).

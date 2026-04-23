@@ -1,6 +1,6 @@
 # DMSI operational readiness — planning repository
 
-Static planning artifacts (WBS, outcome maps, capability map, Gantt), Jira export/import workflows, and GitHub Actions deploy for the **Capability Map** Lambda bundle. **Lambda runs follow whatever repo you push to**; the org convention is [DynamoLLC-Hub/DMSI-OP-Readiness-OS](https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS) — set Actions secrets on that repository if that is the deploy target (see [AGENTS.md](AGENTS.md)).
+Static planning artifacts (WBS, outcome maps, capability map, Gantt) and GitHub Actions deploy for the **Capability Map** Lambda bundle. **Lambda runs follow whatever repo you push to**; the org convention is [DynamoLLC-Hub/DMSI-OP-Readiness-OS](https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS) — set Actions secrets on that repository if that is the deploy target (see [AGENTS.md](AGENTS.md)). The default planning workflow is **Input → WBS** (see [wbs-update-pattern](.cursor/skills/wbs-update-pattern/SKILL.md)); legacy Jira material is under [Documentation/legacy/](Documentation/legacy/) when present.
 
 ## Repository layout
 

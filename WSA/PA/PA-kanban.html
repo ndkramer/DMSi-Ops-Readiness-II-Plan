@@ -432,7 +432,7 @@
 
     <div id="selector" class="outcome-selector">
         <h2>Pipeline Automation Outcomes</h2>
-        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>PA-OC-00</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is the <strong>first outcome</strong>—Infrastructure &amp; Architecture POC—before <strong>PA-OC-01</strong>. See <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WBS.md</code> (v1.6). <strong>Jira:</strong> capability <strong>WSA-2656</strong>; Epic <strong>WSA-3758</strong> = PA-OC-00; outcome Epics <strong>WSA-3268</strong>–<strong>WSA-3278</strong> = PA-OC-01–11; action-item Epic <strong>WSA-2657</strong>. All Stories with <strong>[POC]</strong> in the summary belong under Epic <strong>WSA-3758</strong>. Cards and columns use the Jira export. Legacy <strong>WSA-36</strong> superseded by <strong>WSA-3268</strong>. Hash <code>#POC</code> redirects to <code>#OC-00</code>.</p>
+        <p style="font-size:13px;color:#666;line-height:1.5;margin:-8px 0 20px 0;"><strong>PA-OC-00</strong> (weeks 1–2 on <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA-Outcome-map.html</code>) is the <strong>first outcome</strong>—Infrastructure &amp; Architecture POC—before <strong>PA-OC-01</strong>. Normative content: <code style="font-size:12px;background:#eee;padding:2px 6px;border-radius:3px">PA/PA-WBS.md</code> (v1.6). This view uses only the embedded <code>outcomeData</code> in this file (deliverables and WBS subtasks as local checklists). It does <strong>not</strong> load any Jira export or sidecar files. Default column: Backlog. Hash <code>#POC</code> redirects to <code>#OC-00</code>.</p>
         <div class="outcome-list" id="outcomeList"></div>
     </div>
 
@@ -443,7 +443,7 @@
         </a>
 
         <h2 id="outcome-title" style="color: #2B2B2B; margin-bottom: 8px;"></h2>
-        <p id="kanban-jira-line" class="kanban-jira-line" style="display: none;" aria-live="polite"></p>
+        <p id="kanban-mode-line" class="kanban-jira-line" style="display: none;" aria-live="polite"></p>
 
         <div class="columns-wrapper">
             <div class="column">
@@ -469,14 +469,12 @@
         </div>
     </div>
 
-    <!-- Sets window.__PA_KANBAN_JIRA_STATUS__ so Jira columns work when opening this file via file:// (fetch() cannot load local JSON). -->
-    <script src="Jira/pa-kanban-jira-status.js"></script>
     <script>
         const outcomeData = {
             "OC-00": {
                 "name": "[PA-OC-00] Infrastructure & Architecture POC",
                 "deliverables": [
-                    {"id": "PA-OC-00.1", "name": "NGINX pipeline POC — infrastructure & architecture proof", "subtasks": ["Exercise end-to-end path consistent with target NGINX pipeline design", "Document approach, tooling, access, and open risks for PA-OC-01", "Align evidence under Jira Epic WSA-3758 ([POC] Stories)"]}
+                    {"id": "PA-OC-00.1", "name": "NGINX pipeline POC — infrastructure & architecture proof", "subtasks": ["Exercise end-to-end path consistent with target NGINX pipeline design", "Document approach, tooling, access, and open risks for PA-OC-01", "Align evidence for execution tracking ([POC] work under PA-OC-00)"]}
                 ]
             },
             "OC-01": {
@@ -623,7 +621,7 @@
         }
 
         /**
-         * Merge WBS deliverables with all Jira Stories under the outcome Epic (GP# and other extras appear as additional cards).
+         * Merge WBS deliverables with optional Jira rows (when jiraData is populated). WBS-only: jiraData is empty — one card per WBS deliverable in Backlog.
          */
         function buildKanbanRowPlan(outcomeId, outcome, jiraData) {
             const epicKey = outcomeIdToEpicKey(outcomeId);
@@ -667,7 +665,7 @@
                 return {
                     column: 'backlog',
                     jira: null,
-                    note: 'No Story in Jira export for this deliverable — run export or check summary prefix [PA-OC-xx.y].',
+                    note: null,
                 };
             }
             return {
@@ -679,26 +677,13 @@
 
         let jiraKanbanStatusPromise = null;
 
+        /** WBS-only: no Jira export, fetch, or embed. Empty maps → all WBS deliverables in Backlog with WBS subtask checklists. */
         function loadJiraKanbanStatusOnce() {
             if (!jiraKanbanStatusPromise) {
-                jiraKanbanStatusPromise = Promise.resolve().then(function () {
-                    var emb = typeof window.__PA_KANBAN_JIRA_STATUS__ !== 'undefined' && window.__PA_KANBAN_JIRA_STATUS__ !== null
-                        ? window.__PA_KANBAN_JIRA_STATUS__
-                        : null;
-                    if (emb && typeof emb.by_deliverable_id === 'object') {
-                        return { ok: true, data: emb, source: 'embed' };
-                    }
-                    return fetch('Jira/pa-kanban-jira-status.json', { cache: 'no-cache' })
-                        .then(function (r) {
-                            if (!r.ok) throw new Error('HTTP ' + r.status);
-                            return r.json();
-                        })
-                        .then(function (data) {
-                            return { ok: true, data: data, source: 'fetch' };
-                        })
-                        .catch(function (err) {
-                            return { ok: false, error: err.message || String(err) };
-                        });
+                jiraKanbanStatusPromise = Promise.resolve({
+                    ok: true,
+                    data: { by_deliverable_id: {}, by_epic_key: {} },
+                    source: 'wbs',
                 });
             }
             return jiraKanbanStatusPromise;
@@ -894,10 +879,10 @@
             document.getElementById('header-title').textContent = `PA: ${outcomeId}`;
             document.getElementById('outcome-title').textContent = `${outcomeId}: ${outcome.name}`;
 
-            const jiraLineEl = document.getElementById('kanban-jira-line');
-            jiraLineEl.style.display = 'none';
-            jiraLineEl.textContent = '';
-            jiraLineEl.className = 'kanban-jira-line';
+            const modeLineEl = document.getElementById('kanban-mode-line');
+            modeLineEl.style.display = 'none';
+            modeLineEl.textContent = '';
+            modeLineEl.className = 'kanban-jira-line';
 
             // Clear all columns
             document.getElementById('backlog').innerHTML = '';
@@ -909,35 +894,11 @@
             return loadJiraKanbanStatusOnce().then(function (result) {
                 const jiraById = result.ok && result.data.by_deliverable_id ? result.data.by_deliverable_id : {};
 
-                if (!result.ok) {
-                    jiraLineEl.style.display = 'block';
-                    jiraLineEl.classList.add('warn');
-                    jiraLineEl.innerHTML =
-                        '<strong>Jira status unavailable.</strong> (' +
-                        String(result.error) +
-                        ') Ensure <code>Jira/pa-kanban-jira-status.js</code> exists next to this HTML (run <code>node Scripts/jira-kanban-status-from-export.js</code> or <code>node Scripts/jira-export-pa.js</code> and commit). If you only have the JSON file, serve the folder over HTTP so <code>fetch</code> can load it. Cards fall back to Backlog.';
-                } else {
-                    jiraLineEl.style.display = 'block';
-                    jiraLineEl.classList.add('ok');
-                    const gen = result.data.generated ? new Date(result.data.generated) : null;
-                    const prefix =
-                        result.source === 'embed'
-                            ? 'Embedded Jira snapshot (file:// OK). '
-                            : result.source === 'fetch'
-                              ? 'Loaded Jira snapshot over HTTP. '
-                              : '';
-                    var extra = '';
-                    if (result.data.by_epic_key && outcomeIdToEpicKey(outcomeId)) {
-                        extra =
-                            outcomeId === 'OC-00'
-                                ? ' PA-OC-00 Epic WSA-3758 — all [POC] Stories and Sub-tasks from the export.'
-                                : ' Includes all Jira Stories under this outcome Epic (WSB rows + extra team stories).';
-                    }
-                    jiraLineEl.textContent =
-                        prefix +
-                        (gen
-                            ? 'Column placement from Jira (snapshot ' + gen.toLocaleString() + ').' + extra + ' Open a Story from the link on each card.'
-                            : 'Column placement from Jira export snapshot.' + extra);
+                if (result.ok) {
+                    modeLineEl.style.display = 'block';
+                    modeLineEl.classList.add('ok');
+                    modeLineEl.textContent =
+                        'WBS-only: deliverables and subtasks are embedded in this file. All cards use the Backlog column. Edit `outcomeData` here when the WBS changes, then re-open this page—no Jira data is loaded.';
                 }
 
                 const rows = buildKanbanRowPlan(outcomeId, outcome, result.ok ? result.data : {});
@@ -979,10 +940,10 @@
                 document.getElementById('selector').style.display = 'block';
                 document.getElementById('kanban').classList.remove('active');
                 document.getElementById('header-title').textContent = 'PA: Select an Outcome';
-                const jiraLineEl = document.getElementById('kanban-jira-line');
-                if (jiraLineEl) {
-                    jiraLineEl.style.display = 'none';
-                    jiraLineEl.textContent = '';
+                const modeLineEl = document.getElementById('kanban-mode-line');
+                if (modeLineEl) {
+                    modeLineEl.style.display = 'none';
+                    modeLineEl.textContent = '';
                 }
                 initializeOutcomeSelector();
             }

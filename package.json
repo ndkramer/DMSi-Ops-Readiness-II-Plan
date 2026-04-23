@@ -12,12 +12,6 @@
     "plan:wbs:prep": "dynamo-plan wbs prep",
     "plan:wbs:archive-input": "dynamo-plan wbs archive-input",
     "plan:wbs:report-counts": "dynamo-plan wbs report-counts",
-    "plan:jira:export": "dynamo-plan jira export",
-    "plan:jira:kanban-rebuild": "dynamo-plan jira kanban-rebuild",
-    "plan:jira:delete-under-root": "dynamo-plan jira delete-under-root",
-    "plan:jira:delete-tree": "dynamo-plan jira delete-tree",
-    "plan:jira:import-wm": "dynamo-plan jira import-wm",
-    "plan:jira:link-wm-action-items": "dynamo-plan jira link-wm-action-items",
     "validate": "npm run plan:validate && node Scripts/validate-plan-artifacts.js"
   },
   "devDependencies": {

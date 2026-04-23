@@ -15,14 +15,14 @@ Normative planning for **Visibility Infrastructure & proactive detection** (Dyna
 ## Jira exports (`Jira/`)
 
 - **Dated full exports:** `VI-Jira-MM-DD-YYYY-json.json` — **keep multiple** dated files when you run or save exports (same convention as PA).
-- **Target-state import JSON (manual / generator):** `Output/VI-WBS-Jira-Import.json` and **`Output/Archive/`** snapshots. See **`Jira/README.md`**.
+- **Target-state import JSON (manual / generator):** `Output/VI-WBS-Load-Snapshot.json` and **`Output/Archive/`** snapshots. See **`Jira/README.md`**.
 
 ## Folder layout
 
 | Path | Role |
 |------|------|
 | **`Input/`** | Stakeholder inputs for WBS loads; processed files move to **`Input/Archive/<date>/`**. |
-| **`Output/`** | `VI-WBS-Jira-Import.json` and **`Output/Archive/`**. |
+| **`Output/`** | `VI-WBS-Load-Snapshot.json` and **`Output/Archive/`**. |
 | **`Update-Reports/`** | WBS load reports (`WBS-Load-mm-dd-yyyy.md`). |
 | **`Archive/`** | Point-in-time copies of **`VI-WBS.md`**. |
 

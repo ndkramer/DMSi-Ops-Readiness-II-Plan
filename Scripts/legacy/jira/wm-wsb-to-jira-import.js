@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
- * Generates {filePrefix}-WBS-Jira-Import.json from the embedded WM outcome structure.
+ * Generates {filePrefix}-WBS-Load-Snapshot.json from the embedded WM outcome structure.
  * Paths and Jira roots default from dynamo-os.config.cjs (capabilities.WM) when the
  * planning toolkit is resolvable; otherwise falls back to legacy WSA/WM and WSA-2881/82.
  *
- * Usage: node Scripts/wm-wsb-to-jira-import.js
+ * Usage: node Scripts/legacy/jira/wm-wsb-to-jira-import.js
  */
 
 const fs = require('fs');
 const path = require('path');
-const { resolvePlanningContext } = require('./planning-path-context');
+const { resolvePlanningContext } = require('../../planning-path-context');
 
 function loadWmPlanningPaths() {
   const ctx = resolvePlanningContext();
@@ -22,7 +22,7 @@ function loadWmPlanningPaths() {
       filePrefix: wm.filePrefix || 'WM',
     };
   }
-  const { getCapabilityFolder } = require('./wbs-capability-folder');
+  const { getCapabilityFolder } = require('../../wbs-capability-folder');
   return {
     wmDir: getCapabilityFolder('WM'),
     rootKey: 'WSA-2881',
@@ -369,7 +369,7 @@ const outDir = path.join(_wmPaths.wmDir, 'Output');
 if (!fs.existsSync(outDir)) {
   fs.mkdirSync(outDir, { recursive: true });
 }
-const outPath = path.join(outDir, `${WM_FILE_PREFIX}-WBS-Jira-Import.json`);
+const outPath = path.join(outDir, `${WM_FILE_PREFIX}-WBS-Load-Snapshot.json`);
 fs.writeFileSync(outPath, JSON.stringify(payload, null, 2), 'utf8');
 console.log('Wrote', outPath);
 console.log('Counts: %d Epics, %d Stories, %d Sub-tasks, %d Action Items', epicCount, storyCount, subtaskCount, actionItems.length);

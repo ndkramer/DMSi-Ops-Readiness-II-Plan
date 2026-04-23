@@ -30,4 +30,4 @@ When editing or creating content under **`WSA/VI/`**, follow the VI outcome-base
 
 ## Reference
 
-The canonical VI outcome structure is in **`VI-WBS.md`** (under **`WSA/VI/`**). See **`README.md`** in that folder for layout, Jira exports, and optional **`vi-outcomes.json`**. When in doubt, match the WBS format and level of detail.
+The canonical VI outcome structure is in **`VI-WBS.md`** (under **`WSA/VI/`**). See **`README.md`** in that folder for layout and optional **`vi-outcomes.json`**. When in doubt, match the WBS format and level of detail.

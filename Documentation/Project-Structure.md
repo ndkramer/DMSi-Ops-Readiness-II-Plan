@@ -25,8 +25,6 @@ DMSI-OP-Readiness-OS/
 │   │   ├── wb.mdc
 │   │   └── wm.mdc
 │   └── skills/
-│       ├── jira-export/
-│       │   └── SKILL.md
 │       └── wbs-update-pattern/
 │           ├── reference.md
 │           └── SKILL.md
@@ -41,9 +39,11 @@ DMSI-OP-Readiness-OS/
 │   ├── Capacity-Map-Target-Date-Updates.md
 │   ├── dynamo_os_architecture_v4.svg
 │   ├── dynamo_os_definitions.docx
-│   ├── Jira-Export-Process.md
-│   ├── Jira-Json-Import.md
-│   ├── JQL-Capability-Hierarchy.md
+│   ├── legacy/
+│   │   ├── Jira-Export-Process.md
+│   │   ├── Jira-Json-Import.md
+│   │   ├── JQL-Capability-Hierarchy.md
+│   │   └── README.md
 │   ├── Project-Plan-Design-System.md
 │   ├── Project-Structure.md
 │   └── WBS-Update-Pattern.md
@@ -87,13 +87,8 @@ DMSI-OP-Readiness-OS/
 │   ├── project-plan-build-prompt.md
 │   └── wbs-to-html_dynamic_data_e3d6bcc5.plan.md
 ├── Scripts/
-│   ├── jira-delete-issue-tree.js
-│   ├── jira-delete-under-root.js
-│   ├── jira-export-pa.js
-│   ├── jira-export-wb.js
-│   ├── jira-import-wm.js
-│   ├── jira-kanban-status-from-export.js
-│   ├── jira-link-wm-action-items.js
+│   ├── legacy/
+│   │   └── jira/   (optional Jira CLI shims; see legacy/jira/README.md)
 │   ├── sync-outcome-map-fallbacks.js
 │   ├── sync-outcome-stall-overlay.js
 │   ├── README.md
@@ -102,8 +97,7 @@ DMSI-OP-Readiness-OS/
 │   ├── wbs-capability-folder.js
 │   ├── wbs-load-prep.js
 │   ├── wbs-load-report-counts.js
-│   ├── wbs-move-input-to-archive.js
-│   └── wm-wsb-to-jira-import.js
+│   └── wbs-move-input-to-archive.js
 ├── WSA/
 │   ├── PA/
 │   │   ├── Archive/
@@ -113,17 +107,10 @@ DMSI-OP-Readiness-OS/
 │   │   │       └── 03-17-2026/
 │   │   │           ├── DMSi_AWS_Runners_Executive_Brief.md
 │   │   │           └── DMSi_AWS_Self_Hosted_GitHub_Runners_Spec.md
-│   │   ├── Jira/
-│   │   │   ├── PA-Jira-03-17-2026-json.json
-│   │   │   ├── PA-Jira-03-23-2026-json.json
-│   │   │   ├── PA-Jira-03-24-2026-json.json
-│   │   │   ├── pa-kanban-jira-status.js
-│   │   │   ├── pa-kanban-jira-status.json
-│   │   │   └── README.md
 │   │   ├── Output/
 │   │   │   ├── Archive/
-│   │   │   │   └── PA-WBS-Jira-Import-03-17-2026.json
-│   │   │   └── PA-WBS-Jira-Import.json
+│   │   │   │   └── PA-WBS-Load-Snapshot-03-17-2026.json
+│   │   │   └── PA-WBS-Load-Snapshot.json
 │   │   ├── Update-Reports/
 │   │   │   └── WBS-Load-03-17-2026.md
 │   │   ├── .DS_Store
@@ -141,9 +128,9 @@ DMSI-OP-Readiness-OS/
 │   │   │   └── VI-Jira-03-17-2026-json.json
 │   │   ├── Output/
 │   │   │   ├── Archive/
-│   │   │   │   └── VI-WBS-Jira-Import-03-17-2026.json
+│   │   │   │   └── VI-WBS-Load-Snapshot-03-17-2026.json
 │   │   │   ├── .DS_Store
-│   │   │   └── VI-WBS-Jira-Import.json
+│   │   │   └── VI-WBS-Load-Snapshot.json
 │   │   ├── Update-Reports/
 │   │   │   └── WBS-Load-03-17-2026.md
 │   │   ├── .DS_Store
@@ -160,7 +147,7 @@ DMSI-OP-Readiness-OS/
 │   │   │   └── WM-Jira-03-17-2026-json.json
 │   │   ├── Output/
 │   │   │   ├── Archive/
-│   │   │   └── WM-WBS-Jira-Import.json
+│   │   │   └── WM-WBS-Load-Snapshot.json
 │   │   ├── compare-models.md
 │   │   ├── README.md
 │   │   ├── WM-Constraint-vs-Outcome-Map.html
@@ -184,8 +171,8 @@ DMSI-OP-Readiness-OS/
 │   │   ├── Output/
 │   │   │   ├── Archive/
 │   │   │   │   ├── .gitkeep
-│   │   │   │   └── WB-WBS-Jira-Import-03-26-2026.json
-│   │   │   └── WB-WBS-Jira-Import.json
+│   │   │   │   └── WB-WBS-Load-Snapshot-03-26-2026.json
+│   │   │   └── WB-WBS-Load-Snapshot.json
 │   │   ├── Update-Reports/
 │   │   │   ├── .gitkeep
 │   │   │   └── WBS-Load-03-26-2026.md

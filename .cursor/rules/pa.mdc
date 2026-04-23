@@ -6,14 +6,14 @@ alwaysApply: false
 
 # PA Folder Rules
 
-When editing or creating content under **`WSA/PA/`**, follow the Pipeline Automation outcome-based WBS structure and conventions (**PA-WBS**). Structured outcome ↔ Jira map: `pa-outcomes.json` (keep in sync with `PA-WBS.md` §10). **`dependency_edges`** in that file is canonical for `PA-Outcome-map.html` Dependency Flow; when edges or gates change, update the JSON and the HTML `#pa-dependency-edges-fallback` embed.
+When editing or creating content under **`WSA/PA/`**, follow the Pipeline Automation outcome-based WBS structure and conventions (**PA-WBS**). Structured outcome registry: `pa-outcomes.json` (keep in sync with `PA-WBS.md` §10; optional issue keys in data only). **`dependency_edges`** in that file is canonical for `PA-Outcome-map.html` Dependency Flow; when edges or gates change, update the JSON and the HTML `#pa-dependency-edges-fallback` embed.
 
 ## Structure to follow
 
 - **Outcome map**: Table with ID, Outcome, Category, Target Date, Calendar, Milestone Alignment.
 - **Dependencies**: Mermaid graph with `must` / `should` / `contingent`; document in Dependency Type Legend.
 - **Per-outcome sections**: Use `### PA-OC-XX: Outcome Title`; include **Category:**, **Target Date:**, **Owner:**, **Status:**; then **Success Criteria** (bullets), **Deliverables** (table), then **PA-OC-XX.Y: Deliverable Name** with bullet subtasks.
-- **Document Change Log** (end of `PA-WBS.md`, §12): Prepend a dated row on every substantive edit (**newest first**). Jira/planning bullets also stay in **§1 — Change log (planning ↔ Jira)** when relevant. See `.cursor/skills/wbs-update-pattern/SKILL.md`.
+- **Document Change Log** (end of `PA-WBS.md`, §12): Prepend a dated row on every substantive edit (**newest first**). Planning and systems-of-record bullets may also appear in **§1 — systems of record / change log** when relevant. See `.cursor/skills/wbs-update-pattern/SKILL.md`.
 
 ## Conventions
 
@@ -25,9 +25,9 @@ When editing or creating content under **`WSA/PA/`**, follow the Pipeline Automa
 - Cross-workstream dependency IDs: PA-CW-XX.
 - Keep dependency types explicit: must (hard prerequisite), should (recommended sequence), contingent (trigger-activated).
 
-## Jira alignment
+## Optional external issue keys (not required for Input → WBS)
 
-- **Capability root:** WSA-2656 (labels: `Pipeline-Automation`, `PA-capability-of-record`). **Action-item Epic:** WSA-2657 (`Pipeline-Automation`, `PA-action-items`). **Outcome Epics:** **WSA-3758** = **PA-OC-00** (*[PA-OC-00] Infrastructure & Architecture POC*); **WSA-3268**–**WSA-3278** = **PA-OC-01**…**PA-OC-11** — each has `Pipeline-Automation` + `oc-00`…`oc-11`, **Outcome Category** custom field, and **Pipeline Automation** component where set. **All Stories** whose summary starts with **`[POC]`** belong under Epic **WSA-3758** (including legacy **WSA-3719** until/unless folded into a single Story). Kanban hash **`#OC-00`**. No automatic sync from GitHub Projects—backlog of record is Jira unless otherwise agreed.
+If the team still tracks work in an external system, `pa-outcomes.json` / WBS may reference historical keys. The **default** planning path in this repo is **Input → WBS** and outcome maps; do not require an external tool for WBS or mapping updates.
 
 ## Reference
 

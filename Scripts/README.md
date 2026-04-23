@@ -2,7 +2,7 @@
 
 ## Dynamo-OS planning config
 
-The project root has **`dynamo-os.config.cjs`** (capability `diskPath`, Jira roots, gantt paths) and **`package.json`** with **`devDependencies.dynamo-os-planning-toolkit`** (`file:../dynamo-os/planning-toolkit` — adjust if your clone layout differs). After **`npm install`** at the repo root:
+The project root has **`dynamo-os.config.cjs`** (capability `diskPath`, optional Jira roots, gantt paths) and **`package.json`** with **`devDependencies.dynamo-os-planning-toolkit`** (`file:../dynamo-os/planning-toolkit` — adjust if your clone layout differs). After **`npm install`** at the repo root:
 
 ```bash
 npm run validate
@@ -20,13 +20,9 @@ npm run plan:paths
 | `plan:wbs:prep` | `dynamo-plan wbs prep <CAP>` |
 | `plan:wbs:archive-input` | `dynamo-plan wbs archive-input <CAP> <dateStamp>` |
 | `plan:wbs:report-counts` | `dynamo-plan wbs report-counts <CAP> <dateStamp>` |
-| `plan:jira:export` | `dynamo-plan jira export …` |
-| `plan:jira:kanban-rebuild` | `dynamo-plan jira kanban-rebuild [CAP]` |
-| `plan:jira:delete-under-root` | `dynamo-plan jira delete-under-root …` |
-| `plan:jira:delete-tree` | `dynamo-plan jira delete-tree …` |
-| `plan:jira:import-wm` | `dynamo-plan jira import-wm …` |
-| `plan:jira:link-wm-action-items` | `dynamo-plan jira link-wm-action-items …` |
 | `plan:paths:resolve` | `dynamo-plan paths resolve <CAP>` |
+
+Jira subcommands are **not** exposed as `npm run` entries; optional wrappers live in [`legacy/jira/`](legacy/jira/) if you need them.
 
 Or invoke the CLI directly:
 
@@ -36,7 +32,7 @@ node ../dynamo-os/planning-toolkit/bin/cli.js config validate
 
 After `npm link` in `dynamo-os/planning-toolkit`, **`dynamo-plan`** is on your PATH as well.
 
-**Legacy wrappers** (`Scripts/wbs-load-prep.js`, `jira-export-pa.js`, etc.) still forward to the same CLI; prefer **`npm run plan:*`** so there is one documented entry point.
+**Legacy wrappers** (`wbs-load-prep.js`, etc.) still forward to the same CLI; prefer **`npm run plan:*`** for WBS. Jira shims: [`legacy/jira/README.md`](legacy/jira/README.md).
 
 ---
 
@@ -68,12 +64,12 @@ node Scripts/wbs-load-prep.js <capability>
 
 - `dynamo-plan wbs prep PA` (or `node Scripts/wbs-load-prep.js PA`)
 - `dynamo-plan wbs prep VI`
-- `dynamo-plan wbs prep WM` (JSON archive skipped if `WSA/WM/Output/WM-WBS-Jira-Import.json` does not exist)
+- `dynamo-plan wbs prep WM` (JSON archive skipped if `WSA/WM/Output/WM-WBS-Load-Snapshot.json` does not exist)
 
 **What it does:**
 
 1. Copies current WBS → Archive (`{Prefix}-WBS.md` → `{Prefix}-WBS-mm-dd-yyyy.md` for PA, VI, WM)
-2. If present, copies `{Folder}/Output/{Prefix}-WBS-Jira-Import.json` → `{Folder}/Output/Archive/{Prefix}-WBS-Jira-Import-mm-dd-yyyy.json`
+2. If present, copies `{Folder}/Output/{Prefix}-WBS-Load-Snapshot.json` → `{Folder}/Output/Archive/{Prefix}-WBS-Load-Snapshot-mm-dd-yyyy.json`
 3. Creates `{Folder}/Update-Reports/WBS-Load-mm-dd-yyyy.md` with stub sections:
    - Summary (archived WBS and JSON paths)
    - **Change summary table:** Work items, Risks, Decisions, Questions × Added | Deleted | Updated (initial 0s; see counts script below)
@@ -87,7 +83,7 @@ Date format is `mm-dd-yyyy` (e.g. `03-17-2026`). Same run date is used for all a
 
 **Implementation:** **`dynamo-plan wbs report-counts`** (see **dynamo-os/planning-toolkit**). **`Scripts/wbs-load-report-counts.js`** forwards to the CLI (sibling **dynamo-os** or **`DYNAMO_PLAN_CLI`**).
 
-After regenerating the Jira import JSON, run this to fill the report’s **Change summary** table with added/deleted/updated counts (by diffing archived vs current JSON).
+After regenerating the WBS, run this to fill the report’s **Change summary** table (by diffing archived vs current `*-WBS-Load-Snapshot.json` in `Output/`, if present; filename comes from the planning toolkit).
 
 **Preferred usage (from project root):**
 
@@ -131,91 +127,8 @@ Run after the "Review Input and regenerate WBS" step; if Input/ is already empty
 
 ---
 
-## Jira Export (capability from Jira)
+## Optional: Jira (dynamo-os CLI, legacy shims)
 
-**Implementation:** **`dynamo-plan jira export`** (**dynamo-os/planning-toolkit**). Capability roots default from **`dynamo-os.config.cjs`** (`jiraCapabilityRoot`, `jiraActionItemRoot` per capability). **`Scripts/jira-export-pa.js`** forwards to the CLI (sibling **dynamo-os** or **`DYNAMO_PLAN_CLI`**).
-
-Reusable process to export a capability's **full Jira hierarchy** (capability root + all Epics, Stories, Sub-tasks, Action Items) to `{Capability}/Jira/{Prefix}-Jira-mm-dd-yyyy-json.json`. For PA, **`jira.kanbanFromExportFor`** can also write **`pa-kanban-jira-status.json`** / **`.js`**. You can say **"Export PA WSA-2656 from Jira"**; see [.cursor/skills/jira-export/SKILL.md](../.cursor/skills/jira-export/SKILL.md).
-
-**Preferred usage (from project root):**
-
-```bash
-node ../dynamo-os/planning-toolkit/bin/cli.js jira export
-node ../dynamo-os/planning-toolkit/bin/cli.js jira export PA
-node ../dynamo-os/planning-toolkit/bin/cli.js jira export PA WSA-2656
-node ../dynamo-os/planning-toolkit/bin/cli.js jira export PA WSA-2656 WSA-2657
-```
-
-**Legacy wrapper:**
-
-```bash
-node Scripts/jira-export-pa.js                    # PA, defaults from config
-node Scripts/jira-export-pa.js PA WSA-2656 WSA-2657
-```
-
-**Offline kanban rebuild (no API):** **`dynamo-plan jira kanban-rebuild PA`** or **`node Scripts/jira-kanban-status-from-export.js`**.
-
-**Requirements:** `JIRA_URL`, `JIRA_USERNAME`, and `JIRA_API_TOKEN` in the environment (or in **`jira.envFile`**, e.g. `.cursor/.env`). Uses Jira REST API v3; fetches full issue details when the search API returns minimal results.
-
-See [PA/Jira/README.md](../WSA/PA/Jira/README.md) for output format and folder.
-
----
-
-## Jira Delete Under Root
-
-**Implementation:** **`dynamo-plan jira delete-under-root`** (**dynamo-os/planning-toolkit**). **`Scripts/jira-delete-under-root.js`** forwards to the CLI (sibling **dynamo-os** or **`DYNAMO_PLAN_CLI`**). Roots default from **`dynamo-os.config.cjs`** (`jiraCapabilityRoot`, `jiraActionItemRoot` per capability).
-
-Deletes **all** work items under a capability root (Epics, Stories, Sub-tasks, Action Items) while **leaving the root and action-item root** unless **`--delete-root`** is set. Deletes in order: Sub-tasks → Stories → Epics → Action Items.
-
-**Preferred usage (from project root):**
-
-```bash
-node ../dynamo-os/planning-toolkit/bin/cli.js jira delete-under-root VI [--dry-run]
-```
-
-**Legacy wrapper:**
-
-```bash
-node Scripts/jira-delete-under-root.js VI [--dry-run]
-node Scripts/jira-delete-under-root.js VI WSA-508 WSA-509
-node Scripts/jira-delete-under-root.js WSA-121 [actionItemRoot] [--delete-root]
-```
-
-**Requirements:** Same as Jira Export. See [Documentation/JQL-Capability-Hierarchy.md](../Documentation/JQL-Capability-Hierarchy.md) for capability roots.
-
----
-
-## Jira Delete Issue Tree
-
-**Implementation:** **`dynamo-plan jira delete-tree`**. **`Scripts/jira-delete-issue-tree.js`** forwards to the CLI.
-
-Deletes a single issue and its **navigable** descendants (post-order). Optional **`--max-closure N`** safety cap.
-
-```bash
-node ../dynamo-os/planning-toolkit/bin/cli.js jira delete-tree WSA-1234 --dry-run
-```
-
----
-
-## Jira Import WM / Link WM Action Items
-
-**Implementation:** **`dynamo-plan jira import-wm`** and **`dynamo-plan jira link-wm-action-items`**. **`Scripts/jira-import-wm.js`** and **`Scripts/jira-link-wm-action-items.js`** forward to the CLI. Requires **`capabilities.WM`** and the WM **`Output/{filePrefix}-WBS-Jira-Import.json`** file (paths from config).
-
-```bash
-node ../dynamo-os/planning-toolkit/bin/cli.js jira import-wm --dry-run
-node ../dynamo-os/planning-toolkit/bin/cli.js jira link-wm-action-items --dry-run
-```
-
----
-
-## WM WBS → Jira import JSON (generator)
-
-**Script:** **`Scripts/wm-wsb-to-jira-import.js`** — regenerates **`{filePrefix}-WBS-Jira-Import.json`** from embedded WM structure (not the full planning toolkit). **Paths and Jira roots** come from **`dynamo-os.config.cjs`** when **`Scripts/planning-path-context.js`** can resolve the sibling **`dynamo-os/planning-toolkit`** (or **`node_modules/dynamo-os-planning-toolkit`**, or **`DYNAMO_PLAN_LIB`**). Otherwise it falls back to **`Scripts/wbs-capability-folder.js`** and hard-coded WSA-2881 / 2882.
-
-```bash
-node Scripts/wm-wsb-to-jira-import.js
-```
-
-**Shared helper:** **`Scripts/planning-path-context.js`** — `resolvePlanningContext()` for **`loadConfig` + `getCapabilityFolder`** (also used by **`jira-export-wb.js`**).
+This repo’s **default** process is WBS + planning views only. If you need **`dynamo-plan jira` …** (export, import WM, delete, etc.), use the **dynamo-os** CLI or the archived wrappers in **[`legacy/jira/`](legacy/jira/)** and see **[`legacy/jira/README.md`](legacy/jira/README.md)**. Historical Jira how-tos: **[Documentation/legacy/](../Documentation/legacy/README.md)** when present.
 
 ---

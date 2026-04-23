@@ -6,19 +6,19 @@
  * Prerequisite: wb-outcomes.json must have non-null jira.capability_issue_key and jira.action_items_epic_key.
  *
  * Usage (from project root):
- *   node Scripts/jira-export-wb.js
+ *   node Scripts/legacy/jira/jira-export-wb.js
  *
  * Alternative (explicit keys):
- *   node Scripts/jira-export-pa.js WB <WSA-capability> <WSA-action-items-epic>
+ *   node Scripts/legacy/jira/jira-export-pa.js WB <WSA-capability> <WSA-action-items-epic>
  */
 
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { resolvePlanningContext, PROJECT_ROOT } = require('./planning-path-context');
+const { resolvePlanningContext, PROJECT_ROOT } = require('../../planning-path-context');
 
 const ctx = resolvePlanningContext();
-const wbDir = ctx ? ctx.getCapabilityFolder('WB') : require('./wbs-capability-folder').getCapabilityFolder('WB');
+const wbDir = ctx ? ctx.getCapabilityFolder('WB') : require('../../wbs-capability-folder').getCapabilityFolder('WB');
 const registryPath = path.join(wbDir, 'wb-outcomes.json');
 
 function resolveCliPath() {

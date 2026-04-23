@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 /**
- * Thin wrapper: forwards to dynamo-os planning-toolkit `jira delete-tree`.
- * Deletes an issue and descendants (post-order). Uses prefer-file Jira credentials from jira.envFile.
+ * Thin wrapper: forwards to dynamo-os planning-toolkit `jira import-wm`.
+ * Creates WM issues from `{filePrefix}-WBS-Load-Snapshot.json` under capabilities.WM (see dynamo-os.config.cjs).
  *
- * Usage: node Scripts/jira-delete-issue-tree.js <ISSUE-KEY> [--dry-run] [--count-only] [--max-closure N]
+ * Usage: node Scripts/legacy/jira/jira-import-wm.js [--dry-run]
+ *    or: node Scripts/legacy/jira/jira-import-wm.js <jsonPath> [rootKey] [actionItemRootKey] [--dry-run]
+ *    or: node Scripts/legacy/jira/jira-import-wm.js <rootKey> [actionItemRootKey] [--dry-run]
  */
 
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
-const PROJECT_ROOT = path.resolve(__dirname, '..');
+const PROJECT_ROOT = path.resolve(__dirname, '../../..');
 
 function resolveCliPath() {
   const env = process.env.DYNAMO_PLAN_CLI;
@@ -31,7 +33,7 @@ function main() {
   const args = process.argv.slice(2);
   const r = spawnSync(
     process.execPath,
-    [cli, 'jira', 'delete-tree', ...args, '--cwd', PROJECT_ROOT],
+    [cli, 'jira', 'import-wm', ...args, '--cwd', PROJECT_ROOT],
     { stdio: 'inherit', env: process.env }
   );
   process.exit(r.status === null ? 1 : r.status);

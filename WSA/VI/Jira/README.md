@@ -6,8 +6,8 @@
 
 ## Target-state import JSON
 
-- **`../Output/VI-WBS-Jira-Import.json`** — shape matches PA’s import schema (`metadata`, `work_items`, `action_items`). Regenerate from **`VI-WBS.md`** when outcomes or deliverables change (manual or future generator).
-- **`../Output/Archive/VI-WBS-Jira-Import-MM-DD-YYYY.json`** — created by `node Scripts/wbs-load-prep.js VI` before a WBS load.
+- **`../Output/VI-WBS-Load-Snapshot.json`** — shape matches PA’s import schema (`metadata`, `work_items`, `action_items`). Regenerate from **`VI-WBS.md`** when outcomes or deliverables change (manual or future generator).
+- **`../Output/Archive/VI-WBS-Load-Snapshot-MM-DD-YYYY.json`** — created by `node Scripts/wbs-load-prep.js VI` before a WBS load.
 
 ## WBS alignment
 

@@ -61,7 +61,7 @@ Outcomes are **complete when exit criteria and deliverables for that phase are s
 - **Jira (authoritative backlog):** **[TBD]** — Link the Customer Support / WSB capability root and outcome Epics when issued. Reconcile Stories to **WB-OC-XX** and deliverable IDs **WB-OC-XX.Y**.
 - **Change log (planning ↔ source):**
   - **2026-03-26** — **Filename:** `WB-WBS.md` created from `Customer Support Implementation Plan.docx`, aligned to `PA-WBS.md` outcome-based patterns (outcome map, dependency graph, per-outcome sections, registers).
-  - **2026-03-26** — **Location:** canonical WBS under **`WSB-WSC/WB/WB-WBS.md`** for `wbs-load-prep.js WB` (resolved via `Scripts/wbs-capability-folder.js`); source `.docx` remains under `WSB-WSC/WSB/`. Added `WB-Outcome-Map.html`, `WB-kanban.html`, `wb-outcomes.json`, `Output/WB-WBS-Jira-Import.json` seed.
+  - **2026-03-26** — **Location:** canonical WBS under **`WSB-WSC/WB/WB-WBS.md`** for `wbs-load-prep.js WB` (resolved via `Scripts/wbs-capability-folder.js`); source `.docx` remains under `WSB-WSC/WSB/`. Added `WB-Outcome-Map.html`, `WB-kanban.html`, `wb-outcomes.json`, `Output/WB-WBS-Load-Snapshot.json` seed.
   - **2026-03-27** — **Folder:** capability folder **`WB/`** moved from repo root to **`WSB-WSC/WB/`**; scripts and docs updated to match.
 - **This document (WB-WBS):** Normative outcome definitions, success criteria, deliverable IDs, dependencies, risks, and decisions derived from the source implementation plan.
 - **Planning HTML:** [`WB-Outcome-Map.html`](WB-Outcome-Map.html), [`WB-kanban.html`](WB-kanban.html). Combined WSB+WSC view: [`WSB-WSC-Outcome-Map.html`](../WSB-WSC-Outcome-Map.html).

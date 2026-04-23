@@ -37,9 +37,9 @@
 |---------|----------|
 | Capability paths | **`dynamo-os.config.cjs`** + **`Scripts/planning-path-context.js`**; legacy fallback **`Scripts/wbs-capability-folder.js`** |
 | npm wiring | Root **`package.json`** → **`dynamo-os-planning-toolkit`** (`npm install`, then **`npm run plan:validate`**) |
-| Jira export / delete / import / link | **Toolkit:** `dynamo-os/planning-toolkit` → `dynamo-plan jira …`; **DMSI wrappers:** `Scripts/jira-export-pa.js`, `jira-export-wb.js`, `jira-delete-*.js`, `jira-import-wm.js`, `jira-link-wm-action-items.js` |
+| Jira export / delete / import / link (optional) | **Toolkit:** `dynamo-os/planning-toolkit` → `dynamo-plan jira …`; **DMSI legacy shims:** `Scripts/legacy/jira/*` (not part of default WBS workflow) |
 | WBS load prep / archive / report counts | `Scripts/wbs-load-prep.js`, `wbs-move-input-to-archive.js`, `wbs-load-report-counts.js` |
-| Kanban status from Jira export | `Scripts/jira-kanban-status-from-export.js` |
+| Kanban status from Jira export (optional) | `Scripts/legacy/jira/jira-kanban-status-from-export.js` |
 | Gantt JSON build | `Project-Plan/build-gantt-data.js` |
 | Capability map ↔ outcome maps sync | `Capability-map/sync-stage-dates-from-outcome-maps.js` |
 | Lambda handler | `Capability-map/index.mjs` |
@@ -108,5 +108,5 @@ DMSI is “up to speed” when:
 
 - [Dynamo-os-prd.md](./Dynamo-os-prd.md) — full PRD (layout, migration, Cursor rules evaluation, risks)
 - `Documentation/Project-Structure.md` — current tree snapshot
-- `Documentation/WBS-Update-Pattern.md`, `Documentation/Jira-Export-Process.md`
-- `.cursor/skills/wbs-update-pattern/SKILL.md`, `.cursor/skills/jira-export/SKILL.md`
+- `Documentation/WBS-Update-Pattern.md`, `Documentation/legacy/` (Jira-related historical docs)
+- `.cursor/skills/wbs-update-pattern/SKILL.md`
