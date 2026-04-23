@@ -1,6 +1,8 @@
 # Deploy Capability Map to existing AWS Lambda.
 # Pushes the latest capability-map.html and Lambda handler to your Lambda on push to main
-# or when run manually.
+# or when run manually. This job runs in THIS repository on GitHub — push to
+# https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS to deploy from the org; secrets
+# (AWS, LAMBDA_FUNCTION_NAME) must be on that repo if that is the target.
 #
 # Required GitHub secrets:
 #   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY  (or configure OIDC and use role)

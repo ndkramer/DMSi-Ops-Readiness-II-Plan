@@ -2,6 +2,12 @@
 
 This repository holds static planning artifacts (WBS, outcome maps, Gantt, capability map), Jira import/export flows, and GitHub Actions for the **Capability Map** deploy. The planning CLI lives in a **sibling** clone: [dynamo-os](https://github.com/DynamoLLC-Hub/dynamo-os) (`dynamo-os/planning-toolkit`, `dynamo-plan`).
 
+## Where Lambdas get deployed from (important)
+
+- **Canonica organization repo:** [DynamoLLC-Hub/DMSI-OP-Readiness-OS](https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS) — the **Deploy Capability Map to Lambda** job runs in **the GitHub repo that received the push**; it is not a cross-org deploy. `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `LAMBDA_FUNCTION_NAME` (and any other deploy secrets) must be defined under **that repo** → *Settings* → *Secrets and variables* → *Actions*.
+
+- A local `origin` may point to a personal fork (e.g. `ndkramer/DMSi-Ops-Readiness-II-Plan`). Pushing a fork can deploy from the fork if secrets exist there, which is usually not what you want. To use the org remote: add `git remote add dynamo https://github.com/DynamoLLC-Hub/DMSI-OP-Readiness-OS.git` (if not present) and `git push dynamo main` after the org is created and you have access, **or** set `origin` to the org URL and use `git push origin main` only. Confirm on GitHub that Actions runs in **DynamoLLC-Hub/DMSI-OP-Readiness-OS** and that a deploy run appears there.
+
 - **Start here (humans):** [README.md](README.md) — install, `npm run validate`, `plan:*` scripts.
 - **Full repository tree (documentation):** [Documentation/Project-Structure.md](Documentation/Project-Structure.md).
 - **Project plan UI spec (Gantt / maps / kanban):** [Documentation/Project-Plan-Design-System.md](Documentation/Project-Plan-Design-System.md).
